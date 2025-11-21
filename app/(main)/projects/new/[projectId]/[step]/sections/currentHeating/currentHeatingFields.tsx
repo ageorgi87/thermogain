@@ -354,17 +354,56 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
       {(watchTypeChauffage === "PAC Air/Air" ||
         watchTypeChauffage === "PAC Air/Eau" ||
         watchTypeChauffage === "PAC Eau/Eau") && (
-        <div className="grid grid-cols-2 gap-4">
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="cop_actuel"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>COP actuel</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="conso_pac_kwh"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Consommation (kWh/an)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
-            name="cop_actuel"
+            name="prix_elec_kwh"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>COP actuel</FormLabel>
+                <FormLabel>Prix de l&apos;électricité (€/kWh)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
-                    step="0.1"
+                    step="0.001"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -374,25 +413,7 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="conso_pac_kwh"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Consommation (kWh/an)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        </>
       )}
     </div>
   )
