@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -115,7 +116,16 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
+        <CardHeader className="space-y-4">
+          <div className="flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="ThermoGain"
+              width={120}
+              height={120}
+              priority
+            />
+          </div>
           <CardTitle>
             {step === "email" && "Bienvenue sur ThermoGain"}
             {step === "login" && "Bon retour"}
