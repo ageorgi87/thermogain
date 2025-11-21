@@ -1,20 +1,30 @@
 "use client"
 
 import { useState } from "react"
-import { signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 
 export function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const handleSignOut = async () => {
     setIsLoading(true)
     try {
-      await signOut({
-        redirect: true,
-        callbackUrl: "/login"
+      // Clear session by calling the API
+      const response = await fetch("/api/auth/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
+
+      if (response.ok) {
+        // Redirect to login page
+        router.push("/login")
+        router.refresh()
+      }
     } catch (error) {
       console.error("Sign out error:", error)
       setIsLoading(false)
