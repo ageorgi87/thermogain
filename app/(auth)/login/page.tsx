@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
+import { checkEmailExists, registerUser } from "@/lib/actions/auth"
 
 type Step = "email" | "login" | "register"
 
@@ -29,13 +30,7 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("/api/auth/check-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
+      const data = await checkEmailExists(email)
 
       if (data.exists) {
         setStep("login")
@@ -80,24 +75,13 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-          firstName,
-          lastName,
-          company,
-        }),
+      await registerUser({
+        email,
+        password,
+        firstName,
+        lastName,
+        company,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "L'inscription a échoué")
-        return
-      }
 
       // Auto login after registration
       const result = await signIn("credentials", {
@@ -112,8 +96,8 @@ export default function LoginPage() {
         router.push("/")
         router.refresh()
       }
-    } catch (error) {
-      setError("Une erreur s'est produite. Veuillez réessayer.")
+    } catch (error: any) {
+      setError(error.message || "Une erreur s'est produite. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }

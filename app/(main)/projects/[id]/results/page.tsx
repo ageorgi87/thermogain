@@ -104,7 +104,7 @@ function calculatePaybackPeriod(
 }
 
 export default async function HeatingResultsPage({ params }: PageProps) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session?.user?.email) {
     redirect("/login")
@@ -120,24 +120,51 @@ export default async function HeatingResultsPage({ params }: PageProps) {
 
   const { id } = await params
 
-  const project = await prisma.heatingProject.findUnique({
+  const project = await prisma.project.findUnique({
     where: {
       id,
       userId: user.id,
     },
+    include: {
+      logement: true,
+      chauffageActuel: true,
+      consommation: true,
+      projetPac: true,
+      couts: true,
+      aides: true,
+      financement: true,
+      evolutions: true,
+    },
   })
 
-  if (!project) {
+  if (!project || !project.completed) {
     redirect("/projects")
   }
 
+  // Flatten project data for calculations
+  const flatProject = {
+    ...project,
+    ...project.logement,
+    ...project.chauffageActuel,
+    ...project.consommation,
+    ...project.projetPac,
+    ...project.couts,
+    ...project.aides,
+    ...project.financement,
+    ...project.evolutions,
+    // Map old field names if needed
+    type_energie: project.consommation?.type_chauffage,
+    type_chauffage_actuel: project.chauffageActuel?.type_chauffage,
+    prix_elec_kwh: 0.17, // Default electricity price
+  }
+
   // Calculate results
-  const currentAnnualCost = calculateAnnualCost(project)
-  const { pacConsumptionKwh, pacAnnualCost } = calculatePACCost(project)
+  const currentAnnualCost = calculateAnnualCost(flatProject)
+  const { pacConsumptionKwh, pacAnnualCost } = calculatePACCost(flatProject)
   const annualSavings = currentAnnualCost - pacAnnualCost
-  const priceEvolutionDiff = project.evolution_prix_energie - project.evolution_prix_electricite
+  const priceEvolutionDiff = (flatProject.evolution_prix_energie || 0) - (flatProject.evolution_prix_electricite || 0)
   const paybackPeriod = calculatePaybackPeriod(
-    project.reste_a_charge,
+    flatProject.reste_a_charge || 0,
     annualSavings,
     priceEvolutionDiff
   )
@@ -145,12 +172,12 @@ export default async function HeatingResultsPage({ params }: PageProps) {
   // Calculate savings over study period
   let totalSavingsOverPeriod = 0
   let currentYearSavings = annualSavings
-  for (let year = 1; year <= project.duree_etude_annees; year++) {
+  for (let year = 1; year <= (flatProject.duree_etude_annees || 15); year++) {
     totalSavingsOverPeriod += currentYearSavings
     currentYearSavings *= (1 + priceEvolutionDiff / 100)
   }
 
-  const netBenefit = totalSavingsOverPeriod - project.reste_a_charge
+  const netBenefit = totalSavingsOverPeriod - (flatProject.reste_a_charge || 0)
 
   return (
     <div className="container mx-auto py-8 max-w-6xl">
@@ -179,7 +206,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
         <AlertDescription className="mt-2">
           {netBenefit > 0 ? (
             <p>
-              Sur {project.duree_etude_annees} ans, ce projet vous permettra d&apos;économiser{" "}
+              Sur {flatProject.duree_etude_annees || 15} ans, ce projet vous permettra d&apos;économiser{" "}
               <strong className="text-green-600">{totalSavingsOverPeriod.toFixed(0)} €</strong> avec un
               bénéfice net de <strong className="text-green-600">{netBenefit.toFixed(0)} €</strong>{" "}
               après déduction de l&apos;investissement.
@@ -187,7 +214,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             </p>
           ) : (
             <p>
-              Sur {project.duree_etude_annees} ans, les économies générées ({totalSavingsOverPeriod.toFixed(0)} €)
+              Sur {flatProject.duree_etude_annees || 15} ans, les économies générées ({totalSavingsOverPeriod.toFixed(0)} €)
               ne couvrent pas entièrement l&apos;investissement. Déficit de{" "}
               <strong className="text-orange-600">{Math.abs(netBenefit).toFixed(0)} €</strong>.
               Envisagez d&apos;augmenter les aides ou de prolonger la durée d&apos;étude.
@@ -209,28 +236,28 @@ export default async function HeatingResultsPage({ params }: PageProps) {
           <CardContent className="space-y-2">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Département</span>
-              <Badge variant="outline">{project.departement}</Badge>
+              <Badge variant="outline">{flatProject.departement}</Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Année de construction</span>
-              <span className="font-medium">{project.annee_construction}</span>
+              <span className="font-medium">{flatProject.annee_construction}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Surface habitable</span>
-              <span className="font-medium">{project.surface_habitable} m²</span>
+              <span className="font-medium">{flatProject.surface_habitable} m²</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Occupants</span>
-              <span className="font-medium">{project.nombre_occupants}</span>
+              <span className="font-medium">{flatProject.nombre_occupants}</span>
             </div>
             <Separator className="my-3" />
             <div className="space-y-1">
               <p className="text-sm font-medium">Isolation</p>
               <div className="flex gap-2 flex-wrap">
-                {project.isolation_murs && <Badge variant="secondary">Murs</Badge>}
-                {project.isolation_combles && <Badge variant="secondary">Combles</Badge>}
-                {project.double_vitrage && <Badge variant="secondary">Double vitrage</Badge>}
-                {!project.isolation_murs && !project.isolation_combles && !project.double_vitrage && (
+                {flatProject.isolation_murs && <Badge variant="secondary">Murs</Badge>}
+                {flatProject.isolation_combles && <Badge variant="secondary">Combles</Badge>}
+                {flatProject.double_vitrage && <Badge variant="secondary">Double vitrage</Badge>}
+                {!flatProject.isolation_murs && !flatProject.isolation_combles && !flatProject.double_vitrage && (
                   <span className="text-sm text-muted-foreground">Aucune isolation déclarée</span>
                 )}
               </div>
@@ -251,7 +278,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-muted-foreground">Chauffage actuel</span>
-                <Badge>{project.type_chauffage_actuel}</Badge>
+                <Badge>{flatProject.type_chauffage_actuel}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="font-semibold">Coût annuel actuel</span>
@@ -265,8 +292,8 @@ export default async function HeatingResultsPage({ params }: PageProps) {
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-muted-foreground">PAC {project.type_pac}</span>
-                <Badge variant="secondary">COP {project.cop_estime}</Badge>
+                <span className="text-sm text-muted-foreground">PAC {flatProject.type_pac}</span>
+                <Badge variant="secondary">COP {flatProject.cop_estime}</Badge>
               </div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm text-muted-foreground">Consommation</span>
@@ -310,63 +337,63 @@ export default async function HeatingResultsPage({ params }: PageProps) {
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Coût PAC</span>
-              <span className="font-medium">{project.cout_pac.toFixed(0)} €</span>
+              <span className="font-medium">{(flatProject.cout_pac || 0).toFixed(0)} €</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Installation</span>
-              <span className="font-medium">{project.cout_installation.toFixed(0)} €</span>
+              <span className="font-medium">{(flatProject.cout_installation || 0).toFixed(0)} €</span>
             </div>
-            {project.cout_travaux_annexes && (
+            {flatProject.cout_travaux_annexes && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Travaux annexes</span>
-                <span className="font-medium">{project.cout_travaux_annexes.toFixed(0)} €</span>
+                <span className="font-medium">{(flatProject.cout_travaux_annexes || 0).toFixed(0)} €</span>
               </div>
             )}
             <Separator />
             <div className="flex justify-between">
               <span className="font-semibold">Coût total</span>
-              <span className="font-bold">{project.cout_total.toFixed(0)} €</span>
+              <span className="font-bold">{(flatProject.cout_total || 0).toFixed(0)} €</span>
             </div>
 
             <Separator className="my-3" />
 
-            {project.ma_prime_renov && (
+            {flatProject.ma_prime_renov && (
               <div className="flex justify-between text-green-600">
                 <span>MaPrimeRénov&apos;</span>
-                <span className="font-medium">-{project.ma_prime_renov.toFixed(0)} €</span>
+                <span className="font-medium">-{(flatProject.ma_prime_renov || 0).toFixed(0)} €</span>
               </div>
             )}
-            {project.cee && (
+            {flatProject.cee && (
               <div className="flex justify-between text-green-600">
                 <span>CEE</span>
-                <span className="font-medium">-{project.cee.toFixed(0)} €</span>
+                <span className="font-medium">-{(flatProject.cee || 0).toFixed(0)} €</span>
               </div>
             )}
-            {project.autres_aides && (
+            {flatProject.autres_aides && (
               <div className="flex justify-between text-green-600">
                 <span>Autres aides</span>
-                <span className="font-medium">-{project.autres_aides.toFixed(0)} €</span>
+                <span className="font-medium">-{(flatProject.autres_aides || 0).toFixed(0)} €</span>
               </div>
             )}
             <Separator />
             <div className="flex justify-between">
               <span className="font-semibold">Total des aides</span>
-              <span className="font-bold text-green-600">-{project.total_aides.toFixed(0)} €</span>
+              <span className="font-bold text-green-600">-{(flatProject.total_aides || 0).toFixed(0)} €</span>
             </div>
 
             <Separator className="my-3" />
 
             <div className="flex justify-between">
               <span className="text-lg font-semibold">Reste à charge</span>
-              <span className="text-2xl font-bold">{project.reste_a_charge.toFixed(0)} €</span>
+              <span className="text-2xl font-bold">{(flatProject.reste_a_charge || 0).toFixed(0)} €</span>
             </div>
 
-            {project.mode_financement !== "Comptant" && project.mensualite && (
+            {flatProject.mode_financement !== "Comptant" && flatProject.mensualite && (
               <>
                 <Separator className="my-3" />
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Mensualité ({project.mode_financement})</span>
-                  <span className="font-semibold">{project.mensualite.toFixed(2)} €/mois</span>
+                  <span className="text-muted-foreground">Mensualité ({flatProject.mode_financement})</span>
+                  <span className="font-semibold">{(flatProject.mensualite || 0).toFixed(2)} €/mois</span>
                 </div>
               </>
             )}
@@ -380,7 +407,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
               <Calendar className="h-5 w-5" />
               Rentabilité
             </CardTitle>
-            <CardDescription>Analyse sur {project.duree_etude_annees} ans</CardDescription>
+            <CardDescription>Analyse sur {flatProject.duree_etude_annees} ans</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {paybackPeriod && (
@@ -400,7 +427,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Investissement (reste à charge)</span>
               <span className="font-semibold text-red-600">
-                -{project.reste_a_charge.toFixed(0)} €
+                -{(flatProject.reste_a_charge || 0).toFixed(0)} €
               </span>
             </div>
 
@@ -418,11 +445,11 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Évolution prix énergie actuelle</span>
-                <span>+{project.evolution_prix_energie}% /an</span>
+                <span>+{flatProject.evolution_prix_energie}% /an</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Évolution prix électricité</span>
-                <span>+{project.evolution_prix_electricite}% /an</span>
+                <span>+{flatProject.evolution_prix_electricite}% /an</span>
               </div>
             </div>
           </CardContent>
@@ -438,28 +465,28 @@ export default async function HeatingResultsPage({ params }: PageProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <p className="text-sm text-muted-foreground">Type de PAC</p>
-              <p className="font-semibold">{project.type_pac}</p>
+              <p className="font-semibold">{flatProject.type_pac}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Puissance</p>
-              <p className="font-semibold">{project.puissance_pac_kw} kW</p>
+              <p className="font-semibold">{flatProject.puissance_pac_kw} kW</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">COP estimé</p>
-              <p className="font-semibold">{project.cop_estime}</p>
+              <p className="font-semibold">{flatProject.cop_estime}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Température de départ</p>
-              <p className="font-semibold">{project.temperature_depart}°C</p>
+              <p className="font-semibold">{flatProject.temperature_depart}°C</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Émetteurs</p>
-              <p className="font-semibold">{project.emetteurs}</p>
+              <p className="font-semibold">{flatProject.emetteurs}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Ballon ECS</p>
               <p className="font-semibold">
-                {project.ballon_ecs ? `Oui (${project.volume_ballon}L)` : "Non"}
+                {flatProject.ballon_ecs ? `Oui (${flatProject.volume_ballon}L)` : "Non"}
               </p>
             </div>
           </div>

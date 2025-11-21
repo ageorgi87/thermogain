@@ -22,15 +22,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
+import { getProjects, deleteProject } from "@/lib/actions/projects"
 
 type Project = {
   id: string
   name: string
-  description: string | null
-  clientName: string | null
-  clientCompany: string | null
-  createdAt: string
-  updatedAt: string
+  currentStep: number
+  completed: boolean
+  createdAt: Date
+  updatedAt: Date
 }
 
 export default function ProjectsPage() {
@@ -46,11 +46,8 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("/api/projects")
-      if (response.ok) {
-        const data = await response.json()
-        setProjects(data)
-      }
+      const data = await getProjects()
+      setProjects(data)
     } catch (error) {
       console.error("Failed to fetch projects:", error)
     } finally {
@@ -63,14 +60,9 @@ export default function ProjectsPage() {
 
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/projects/${deleteId}`, {
-        method: "DELETE",
-      })
-
-      if (response.ok) {
-        setProjects(projects.filter((p) => p.id !== deleteId))
-        setDeleteId(null)
-      }
+      await deleteProject(deleteId)
+      setProjects(projects.filter((p) => p.id !== deleteId))
+      setDeleteId(null)
     } catch (error) {
       console.error("Failed to delete project:", error)
     } finally {
@@ -119,8 +111,8 @@ export default function ProjectsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nom du projet</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Entreprise</TableHead>
+                <TableHead>Étape</TableHead>
+                <TableHead>Statut</TableHead>
                 <TableHead>Créé le</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -130,13 +122,19 @@ export default function ProjectsPage() {
                 <TableRow key={project.id}>
                   <TableCell className="font-medium">{project.name}</TableCell>
                   <TableCell>
-                    {project.clientName || (
-                      <span className="text-muted-foreground">-</span>
-                    )}
+                    <Badge variant="outline">
+                      Étape {project.currentStep}/8
+                    </Badge>
                   </TableCell>
                   <TableCell>
-                    {project.clientCompany || (
-                      <span className="text-muted-foreground">-</span>
+                    {project.completed ? (
+                      <Badge variant="default" className="bg-green-600">
+                        Terminé
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">
+                        En cours
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -146,14 +144,16 @@ export default function ProjectsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push(`/projects/${project.id}`)}
+                      onClick={() => router.push(`/projects/${project.id}/results`)}
+                      title="Voir les résultats"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push(`/projects/${project.id}/edit`)}
+                      onClick={() => router.push(`/projects/new/${project.id}/logement`)}
+                      title="Continuer le projet"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -161,6 +161,7 @@ export default function ProjectsPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeleteId(project.id)}
+                      title="Supprimer le projet"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

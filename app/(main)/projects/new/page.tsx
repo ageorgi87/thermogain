@@ -3,35 +3,23 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { createProject } from "@/lib/actions/projects"
 
 export default function NewProjectPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const createProject = async () => {
+    const createNewProject = async () => {
       try {
-        const response = await fetch("/api/heating-projects", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name: "Projet PAC" }),
-        })
-
-        if (response.ok) {
-          const project = await response.json()
-          router.push(`/projects/new/${project.id}/logement`)
-        } else {
-          console.error("Failed to create project")
-          router.push("/projects")
-        }
+        const project = await createProject({ name: "Projet PAC" })
+        router.push(`/projects/new/${project.id}/logement`)
       } catch (error) {
         console.error("Error creating project:", error)
         router.push("/projects")
       }
     }
 
-    createProject()
+    createNewProject()
   }, [router])
 
   return (

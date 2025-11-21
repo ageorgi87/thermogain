@@ -28,7 +28,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   projects      Project[]
-  heatingProjects HeatingProject[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,31 +72,8 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// Project Management Models
+// Project - PAC Calculator (Multi-step wizard)
 model Project {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-
-  // Example form fields
-  textField      String?
-  numberField    Float?
-  radioChoice    String?
-  checkboxes     String[] // Array of selected options
-
-  // Client info
-  clientName     String?
-  clientCompany  String?
-
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// Heating Project - PAC Calculator (Multi-step wizard)
-model HeatingProject {
   id          String   @id @default(cuid())
   name        String   @default("Projet PAC")
   currentStep Int      @default(1) // Track wizard progress (1-8)
@@ -107,24 +83,24 @@ model HeatingProject {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations to section tables
-  logement         HeatingProjectLogement?
-  chauffageActuel  HeatingProjectChauffageActuel?
-  consommation     HeatingProjectConsommation?
-  projetPac        HeatingProjectProjetPac?
-  couts            HeatingProjectCouts?
-  aides            HeatingProjectAides?
-  financement      HeatingProjectFinancement?
-  evolutions       HeatingProjectEvolutions?
+  logement         ProjectLogement?
+  chauffageActuel  ProjectChauffageActuel?
+  consommation     ProjectConsommation?
+  projetPac        ProjectProjetPac?
+  couts            ProjectCouts?
+  aides            ProjectAides?
+  financement      ProjectFinancement?
+  evolutions       ProjectEvolutions?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 // Section 1: Logement (Housing Information)
-model HeatingProjectLogement {
+model ProjectLogement {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   departement          String
   annee_construction   Int
@@ -139,10 +115,10 @@ model HeatingProjectLogement {
 }
 
 // Section 2: Chauffage Actuel (Current Heating System)
-model HeatingProjectChauffageActuel {
+model ProjectChauffageActuel {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   type_chauffage       String
   age_installation     Int
@@ -153,10 +129,10 @@ model HeatingProjectChauffageActuel {
 }
 
 // Section 3: Consommation (Energy Consumption)
-model HeatingProjectConsommation {
+model ProjectConsommation {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   type_chauffage       String
   // Conditional fields based on type_chauffage
@@ -180,10 +156,10 @@ model HeatingProjectConsommation {
 }
 
 // Section 4: Projet PAC (Heat Pump Project)
-model HeatingProjectProjetPac {
+model ProjectProjetPac {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   type_pac             String
   puissance_pac_kw     Float
@@ -198,10 +174,10 @@ model HeatingProjectProjetPac {
 }
 
 // Section 5: Coûts (Costs)
-model HeatingProjectCouts {
+model ProjectCouts {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   cout_pac             Float
   cout_installation    Float
@@ -213,10 +189,10 @@ model HeatingProjectCouts {
 }
 
 // Section 6: Aides (Financial Aid)
-model HeatingProjectAides {
+model ProjectAides {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   ma_prime_renov       Float
   cee                  Float
@@ -229,10 +205,10 @@ model HeatingProjectAides {
 }
 
 // Section 7: Financement (Financing)
-model HeatingProjectFinancement {
+model ProjectFinancement {
   id                   String   @id @default(cuid())
-  heatingProjectId     String   @unique
-  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   mode_financement     String
   apport_personnel     Float?
@@ -246,10 +222,10 @@ model HeatingProjectFinancement {
 }
 
 // Section 8: Évolutions (Price Evolution)
-model HeatingProjectEvolutions {
+model ProjectEvolutions {
   id                          String   @id @default(cuid())
-  heatingProjectId            String   @unique
-  heatingProject              HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+  projectId                   String   @unique
+  project                     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   evolution_prix_energie      Float
   evolution_prix_electricite  Float

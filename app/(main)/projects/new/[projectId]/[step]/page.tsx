@@ -8,32 +8,54 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react"
 import {
-  logementSchema,
-  chauffageActuelSchema,
-  consommationSchema,
-  projetPacSchema,
-  coutsSchema,
-  aidesSchema,
-  financementSchema,
+  housingSchema as logementSchema,
+  type HousingData as LogementData,
+} from "./sections/housing/housingSchema"
+import {
+  currentHeatingSchema as chauffageActuelSchema,
+  type CurrentHeatingData as ChauffageActuelData,
+} from "./sections/currentHeating/currentHeatingSchema"
+import {
+  consumptionSchema as consommationSchema,
+  type ConsumptionData as ConsommationData,
+} from "./sections/consumption/consumptionSchema"
+import {
+  heatPumpProjectSchema as projetPacSchema,
+  type HeatPumpProjectData as ProjetPacData,
+} from "./sections/heatPumpProject/heatPumpProjectSchema"
+import {
+  costsSchema as coutsSchema,
+  type CostsData as CoutsData,
+} from "./sections/costs/costsSchema"
+import {
+  financialAidSchema as aidesSchema,
+  type FinancialAidData as AidesData,
+} from "./sections/financialAid/financialAidSchema"
+import {
+  financingSchema as financementSchema,
+  type FinancingData as FinancementData,
+} from "./sections/financing/financingSchema"
+import {
   evolutionsSchema,
-  type LogementData,
-  type ChauffageActuelData,
-  type ConsommationData,
-  type ProjetPacData,
-  type CoutsData,
-  type AidesData,
-  type FinancementData,
   type EvolutionsData,
-} from "@/lib/schemas/heating-form"
-import { LogementFields } from "./sections/housingFields"
-import { ChauffageActuelFields } from "./sections/currentHeatingFields"
-import { ConsommationFields } from "./sections/consumptionFields"
-import { ProjetPacFields } from "./sections/heatPumpProjectFields"
-import { CoutsFields } from "./sections/costsFields"
-import { AidesFields } from "./sections/financialAidFields"
-import { FinancementFields } from "./sections/financingFields"
-import { EvolutionsFields } from "./sections/evolutionsFields"
+} from "./sections/evolutions/evolutionsSchema"
+import { LogementFields } from "./sections/housing/housingFields"
+import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
+import { ConsommationFields } from "./sections/consumption/consumptionFields"
+import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
+import { CoutsFields } from "./sections/costs/costsFields"
+import { AidesFields } from "./sections/financialAid/financialAidFields"
+import { FinancementFields } from "./sections/financing/financingFields"
+import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
+import { saveHousingData } from "./sections/housing/housingActions"
+import { saveCurrentHeatingData } from "./sections/currentHeating/currentHeatingActions"
+import { saveConsumptionData } from "./sections/consumption/consumptionActions"
+import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
+import { saveCostsData } from "./sections/costs/costsActions"
+import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
+import { saveFinancingData } from "./sections/financing/financingActions"
+import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
@@ -132,8 +154,8 @@ export default function WizardStepPage() {
   }
 
   const form = useForm({
-    resolver: zodResolver(SCHEMAS[step as keyof typeof SCHEMAS]),
-    defaultValues: DEFAULT_VALUES[step as keyof typeof DEFAULT_VALUES],
+    resolver: zodResolver(SCHEMAS[step as keyof typeof SCHEMAS]) as any,
+    defaultValues: DEFAULT_VALUES[step as keyof typeof DEFAULT_VALUES] as any,
   })
 
   const watchTypeChauffage = form.watch("type_chauffage")
@@ -173,28 +195,46 @@ export default function WizardStepPage() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true)
     try {
-      const response = await fetch(`/api/heating-projects/${step}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ heatingProjectId: projectId, ...data }),
-      })
+      // Call the appropriate Server Action based on current step
+      switch (step) {
+        case "logement":
+          await saveHousingData(projectId, data)
+          break
+        case "chauffage-actuel":
+          await saveCurrentHeatingData(projectId, data)
+          break
+        case "consommation":
+          await saveConsumptionData(projectId, data)
+          break
+        case "projet-pac":
+          await saveHeatPumpProjectData(projectId, data)
+          break
+        case "couts":
+          await saveCostsData(projectId, data)
+          break
+        case "aides":
+          await saveFinancialAidData(projectId, data)
+          break
+        case "financement":
+          await saveFinancingData(projectId, data)
+          break
+        case "evolutions":
+          await saveEvolutionsData(projectId, data)
+          break
+        default:
+          throw new Error("Invalid step")
+      }
 
-      if (response.ok) {
-        if (currentStepIndex < STEPS.length - 1) {
-          // Go to next step
-          const nextStep = STEPS[currentStepIndex + 1]
-          router.push(`/projects/new/${projectId}/${nextStep.key}`)
-        } else {
-          // Final step, go to results
-          router.push(`/projects/${projectId}/results`)
-        }
+      // Navigate to next step or results
+      if (currentStepIndex < STEPS.length - 1) {
+        const nextStep = STEPS[currentStepIndex + 1]
+        router.push(`/projects/new/${projectId}/${nextStep.key}`)
       } else {
-        console.error("Failed to save section data")
+        router.push(`/projects/${projectId}/results`)
       }
     } catch (error) {
       console.error("Error submitting form:", error)
+      // You could add toast notification here
     } finally {
       setIsSubmitting(false)
     }
