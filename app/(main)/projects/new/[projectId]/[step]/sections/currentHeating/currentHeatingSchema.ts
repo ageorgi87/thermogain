@@ -159,6 +159,9 @@ export const currentHeatingSchema = baseSchema.superRefine((data, ctx) => {
         })
       }
       break
+    case "Autre":
+      // No specific validation for "Autre" type
+      break
   }
 })
 

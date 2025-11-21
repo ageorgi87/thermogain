@@ -52,6 +52,7 @@ import { saveFinancingData } from "./sections/financing/financingActions"
 import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
 import { getProject } from "@/lib/actions/projects"
 import { fetchEnergyPriceEvolutions } from "@/lib/actions/energyPrices"
+import { updateProjectStep } from "./updateProjectStep"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
@@ -196,7 +197,11 @@ export default function WizardStepPage() {
           if (sectionData && typeof sectionData === 'object') {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
-            form.reset(data)
+            // Convert null values to undefined for Zod optional fields
+            const cleanedData = Object.fromEntries(
+              Object.entries(data).map(([key, value]) => [key, value === null ? undefined : value])
+            )
+            form.reset(cleanedData)
           } else if (step === "evolutions" && !sectionData) {
             // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
             // charger les taux d'évolution depuis l'API DIDO
@@ -253,6 +258,10 @@ export default function WizardStepPage() {
         default:
           throw new Error("Invalid step")
       }
+
+      // Update project step to next step (step numbers start at 1)
+      const nextStepNumber = currentStepIndex + 2 // +1 for array index, +1 for next step
+      await updateProjectStep(projectId, nextStepNumber)
 
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {
