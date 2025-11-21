@@ -14,10 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
-import { ChauffageActuelData } from "@/lib/schemas/heating-form"
+import { CurrentHeatingData } from "./currentHeatingSchema"
 
 interface ChauffageActuelFieldsProps {
-  form: UseFormReturn<ChauffageActuelData>
+  form: UseFormReturn<CurrentHeatingData>
 }
 
 export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
