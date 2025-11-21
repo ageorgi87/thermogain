@@ -76,7 +76,7 @@ model VerificationToken {
 model Project {
   id          String   @id @default(cuid())
   name        String   @default("Projet PAC")
-  currentStep Int      @default(1) // Track wizard progress (1-8)
+  currentStep Int      @default(1) // Track wizard progress (1-7)
   completed   Boolean  @default(false) // All steps completed
 
   userId      String
@@ -85,7 +85,6 @@ model Project {
   // Relations to section tables
   logement         ProjectLogement?
   chauffageActuel  ProjectChauffageActuel?
-  consommation     ProjectConsommation?
   projetPac        ProjectProjetPac?
   couts            ProjectCouts?
   aides            ProjectAides?
@@ -114,7 +113,7 @@ model ProjectLogement {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 2: Chauffage Actuel (Current Heating System)
+// Section 2: Chauffage Actuel (Current Heating System) + Consumption
 model ProjectChauffageActuel {
   id                   String   @id @default(cuid())
   projectId            String   @unique
@@ -124,17 +123,7 @@ model ProjectChauffageActuel {
   age_installation     Int
   etat_installation    String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// Section 3: Consommation (Energy Consumption)
-model ProjectConsommation {
-  id                   String   @id @default(cuid())
-  projectId            String   @unique
-  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  // Conditional fields based on type_chauffage from ProjectChauffageActuel
+  // Consumption fields - conditional based on type_chauffage
   conso_fioul_litres   Float?
   prix_fioul_litre     Float?
   conso_gaz_kwh        Float?
@@ -154,7 +143,7 @@ model ProjectConsommation {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 4: Projet PAC (Heat Pump Project)
+// Section 3: Projet PAC (Heat Pump Project)
 model ProjectProjetPac {
   id                   String   @id @default(cuid())
   projectId            String   @unique
@@ -172,7 +161,7 @@ model ProjectProjetPac {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 5: Coûts (Costs)
+// Section 4: Coûts (Costs)
 model ProjectCouts {
   id                   String   @id @default(cuid())
   projectId            String   @unique
@@ -187,7 +176,7 @@ model ProjectCouts {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 6: Aides (Financial Aid)
+// Section 5: Aides (Financial Aid)
 model ProjectAides {
   id                   String   @id @default(cuid())
   projectId            String   @unique
@@ -203,7 +192,7 @@ model ProjectAides {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 7: Financement (Financing)
+// Section 6: Financement (Financing)
 model ProjectFinancement {
   id                   String   @id @default(cuid())
   projectId            String   @unique
@@ -220,7 +209,7 @@ model ProjectFinancement {
   updatedAt   DateTime @updatedAt
 }
 
-// Section 8: Évolutions (Price Evolution)
+// Section 7: Évolutions (Price Evolution)
 model ProjectEvolutions {
   id                          String   @id @default(cuid())
   projectId                   String   @unique

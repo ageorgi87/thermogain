@@ -21,6 +21,8 @@ interface ChauffageActuelFieldsProps {
 }
 
 export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
+  const watchTypeChauffage = form.watch("type_chauffage")
+
   return (
     <div className="space-y-4">
       <FormField
@@ -95,6 +97,303 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
           )}
         />
       </div>
+
+      {/* Consumption fields - conditional based on type_chauffage */}
+      {watchTypeChauffage === "Fioul" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_fioul_litres"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (litres/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_fioul_litre"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/litre)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {watchTypeChauffage === "Gaz" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_gaz_kwh"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (kWh/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_gaz_kwh"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/kWh)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {watchTypeChauffage === "GPL" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_gpl_kg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (kg/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_gpl_kg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/kg)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {watchTypeChauffage === "Pellets" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_pellets_kg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (kg/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_pellets_kg"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/kg)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {watchTypeChauffage === "Bois" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_bois_steres"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (stères/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_bois_stere"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/stère)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {watchTypeChauffage === "Electrique" && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="conso_elec_kwh"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (kWh/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="prix_elec_kwh"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prix (€/kWh)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
+
+      {(watchTypeChauffage === "PAC Air/Air" ||
+        watchTypeChauffage === "PAC Air/Eau" ||
+        watchTypeChauffage === "PAC Eau/Eau") && (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="cop_actuel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>COP actuel</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="conso_pac_kwh"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Consommation (kWh/an)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
     </div>
   )
 }

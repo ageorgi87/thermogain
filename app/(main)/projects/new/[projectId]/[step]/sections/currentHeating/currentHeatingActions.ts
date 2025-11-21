@@ -30,6 +30,7 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
     update: validatedData as any,
   })
 
+  // Update currentStep from 2 to 3 (skipping old consumption step)
   if (project.currentStep === 2) {
     await prisma.project.update({
       where: { id: projectId },

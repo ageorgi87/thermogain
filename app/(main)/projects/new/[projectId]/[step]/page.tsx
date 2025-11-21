@@ -16,10 +16,6 @@ import {
   type CurrentHeatingData as ChauffageActuelData,
 } from "./sections/currentHeating/currentHeatingSchema"
 import {
-  consumptionSchema as consommationSchema,
-  type ConsumptionData as ConsommationData,
-} from "./sections/consumption/consumptionSchema"
-import {
   heatPumpProjectSchema as projetPacSchema,
   type HeatPumpProjectData as ProjetPacData,
 } from "./sections/heatPumpProject/heatPumpProjectSchema"
@@ -41,7 +37,6 @@ import {
 } from "./sections/evolutions/evolutionsSchema"
 import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
-import { ConsommationFields } from "./sections/consumption/consumptionFields"
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
 import { CoutsFields } from "./sections/costs/costsFields"
 import { AidesFields } from "./sections/financialAid/financialAidFields"
@@ -50,7 +45,6 @@ import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
 import { saveHousingData } from "./sections/housing/housingActions"
 import { saveCurrentHeatingData } from "./sections/currentHeating/currentHeatingActions"
-import { saveConsumptionData } from "./sections/consumption/consumptionActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
 import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
@@ -60,8 +54,7 @@ import { getProject } from "@/lib/actions/projects"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
-  { key: "chauffage-actuel", title: "Chauffage actuel", description: "Votre système de chauffage actuel" },
-  { key: "consommation", title: "Consommation", description: "Votre consommation énergétique" },
+  { key: "chauffage-actuel", title: "Chauffage actuel", description: "Votre système de chauffage actuel et consommation" },
   { key: "projet-pac", title: "Projet PAC", description: "Caractéristiques de la pompe à chaleur" },
   { key: "couts", title: "Coûts", description: "Coûts d'installation et travaux" },
   { key: "aides", title: "Aides", description: "Aides financières disponibles" },
@@ -83,9 +76,6 @@ const DEFAULT_VALUES = {
     type_chauffage: "Gaz",
     age_installation: 10,
     etat_installation: "Moyen",
-  },
-  consommation: {
-    type_chauffage: "Gaz",
     conso_gaz_kwh: 12000,
     prix_gaz_kwh: 0.09,
   },
@@ -129,7 +119,6 @@ const DEFAULT_VALUES = {
 const SCHEMAS = {
   logement: logementSchema,
   "chauffage-actuel": chauffageActuelSchema,
-  consommation: consommationSchema,
   "projet-pac": projetPacSchema,
   couts: coutsSchema,
   aides: aidesSchema,
@@ -145,7 +134,6 @@ export default function WizardStepPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [typeChauffageFromStep2, setTypeChauffageFromStep2] = useState<string>("")
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -175,7 +163,6 @@ export default function WizardStepPage() {
           const sectionMap: Record<string, string> = {
             "logement": "logement",
             "chauffage-actuel": "chauffageActuel",
-            "consommation": "consommation",
             "projet-pac": "projetPac",
             "couts": "couts",
             "aides": "aides",
@@ -192,10 +179,6 @@ export default function WizardStepPage() {
             form.reset(data)
           }
 
-          // For consumption step, load type_chauffage from step 2
-          if (step === "consommation" && project.chauffageActuel) {
-            setTypeChauffageFromStep2(project.chauffageActuel.type_chauffage)
-          }
         }
       } catch (error) {
         console.error("Error loading data:", error)
@@ -217,9 +200,6 @@ export default function WizardStepPage() {
           break
         case "chauffage-actuel":
           await saveCurrentHeatingData(projectId, data)
-          break
-        case "consommation":
-          await saveConsumptionData(projectId, data)
           break
         case "projet-pac":
           await saveHeatPumpProjectData(projectId, data)
@@ -303,7 +283,6 @@ export default function WizardStepPage() {
             <CardContent className="pt-6">
               {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
-              {step === "consommation" && <ConsommationFields form={form as any} watchTypeChauffage={typeChauffageFromStep2} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}
