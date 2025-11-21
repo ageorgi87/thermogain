@@ -5,27 +5,35 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { UseFormReturn } from "react-hook-form"
-import { LogementData } from "@/lib/schemas/heating-form"
+import { HousingData } from "./housingSchema"
 
-interface LogementFieldsProps {
-  form: UseFormReturn<LogementData>
+interface HousingFieldsProps {
+  form: UseFormReturn<HousingData>
 }
 
-export function LogementFields({ form }: LogementFieldsProps) {
+export function HousingFields({ form }: HousingFieldsProps) {
   return (
     <div className="space-y-4">
       <FormField
         control={form.control}
-        name="departement"
+        name="code_postal"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Département</FormLabel>
+            <FormLabel>Code postal</FormLabel>
             <FormControl>
-              <Input placeholder="ex: 75" {...field} />
+              <Input
+                placeholder="ex: 75001, 20000, 97400"
+                maxLength={5}
+                {...field}
+              />
             </FormControl>
+            <FormDescription>
+              Code postal français (métropole, Corse, DOM-TOM)
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

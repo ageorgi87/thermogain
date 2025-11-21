@@ -235,8 +235,8 @@ export default async function HeatingResultsPage({ params }: PageProps) {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Département</span>
-              <Badge variant="outline">{flatProject.departement}</Badge>
+              <span className="text-muted-foreground">Code postal</span>
+              <Badge variant="outline">{flatProject.code_postal}</Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Année de construction</span>

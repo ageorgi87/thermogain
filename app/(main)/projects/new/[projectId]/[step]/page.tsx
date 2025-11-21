@@ -39,7 +39,7 @@ import {
   evolutionsSchema,
   type EvolutionsData,
 } from "./sections/evolutions/evolutionsSchema"
-import { LogementFields } from "./sections/housing/housingFields"
+import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
 import { ConsommationFields } from "./sections/consumption/consumptionFields"
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
@@ -70,7 +70,7 @@ const STEPS = [
 
 const DEFAULT_VALUES = {
   logement: {
-    departement: "",
+    code_postal: "",
     annee_construction: 2000,
     surface_habitable: 100,
     nombre_occupants: 2,
@@ -286,7 +286,7 @@ export default function WizardStepPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardContent className="pt-6">
-              {step === "logement" && <LogementFields form={form as any} />}
+              {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
               {step === "consommation" && <ConsommationFields form={form as any} watchTypeChauffage={watchTypeChauffage as string} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}

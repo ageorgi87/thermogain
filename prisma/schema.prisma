@@ -102,7 +102,7 @@ model ProjectLogement {
   projectId            String   @unique
   project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  departement          String
+  code_postal          String
   annee_construction   Int
   surface_habitable    Float
   nombre_occupants     Int
