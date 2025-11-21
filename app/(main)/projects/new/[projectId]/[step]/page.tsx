@@ -56,6 +56,7 @@ import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
 import { saveFinancingData } from "./sections/financing/financingActions"
 import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
+import { getProject } from "@/lib/actions/projects"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
@@ -166,20 +167,28 @@ export default function WizardStepPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch(`/api/heating-projects`)
-        if (response.ok) {
-          const projects = await response.json()
-          const project = projects.find((p: any) => p.id === projectId)
+        const project = await getProject(projectId)
 
-          if (project) {
-            const sectionKey = step.replace(/-/g, "")
-            const sectionData = project[sectionKey === "chauffageactuel" ? "chauffageActuel" : sectionKey === "projetpac" ? "projetPac" : sectionKey]
+        if (project) {
+          // Map step key to database field name
+          const sectionMap: Record<string, string> = {
+            "logement": "logement",
+            "chauffage-actuel": "chauffageActuel",
+            "consommation": "consommation",
+            "projet-pac": "projetPac",
+            "couts": "couts",
+            "aides": "aides",
+            "financement": "financement",
+            "evolutions": "evolutions",
+          }
 
-            if (sectionData) {
-              // Remove the ID and relations fields before resetting
-              const { id, heatingProjectId, createdAt, updatedAt, ...data } = sectionData
-              form.reset(data)
-            }
+          const sectionKey = sectionMap[step]
+          const sectionData = project[sectionKey as keyof typeof project]
+
+          if (sectionData && typeof sectionData === 'object') {
+            // Remove the ID, projectId, and timestamp fields before resetting
+            const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
+            form.reset(data)
           }
         }
       } catch (error) {
