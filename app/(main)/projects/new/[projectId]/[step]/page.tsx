@@ -156,6 +156,17 @@ export default function WizardStepPage() {
   const watchModeFinancement = form.watch("mode_financement")
   const watchBallonEcs = form.watch("ballon_ecs")
 
+  // Debug: Log form state changes
+  useEffect(() => {
+    if (step === "chauffage-actuel") {
+      console.log('=== FORM STATE DEBUG ===')
+      console.log('Form values:', form.getValues())
+      console.log('Form errors:', form.formState.errors)
+      console.log('Is valid:', form.formState.isValid)
+      console.log('========================')
+    }
+  }, [form.formState.errors, form.formState.isValid, step])
+
   // Load existing data if any
   useEffect(() => {
     const loadData = async () => {
@@ -301,7 +312,18 @@ export default function WizardStepPage() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(
+            onSubmit,
+            (errors) => {
+              console.log('=== VALIDATION ERRORS ===')
+              console.log('Errors:', errors)
+              console.log('Form values:', form.getValues())
+              console.log('========================')
+            }
+          )}
+          className="space-y-8"
+        >
           <Card>
             <CardContent className="pt-6">
               {step === "logement" && <HousingFields form={form as any} />}
