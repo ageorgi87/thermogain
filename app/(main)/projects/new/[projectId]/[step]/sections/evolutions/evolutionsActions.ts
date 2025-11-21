@@ -7,16 +7,8 @@ import { evolutionsSchema, type EvolutionsData } from "./evolutionsSchema"
 export async function saveEvolutionsData(projectId: string, data: EvolutionsData) {
   const session = await auth()
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     throw new Error("Non autorisé")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    throw new Error("Utilisateur non trouvé")
   }
 
   const validatedData = evolutionsSchema.parse(data)
@@ -25,7 +17,7 @@ export async function saveEvolutionsData(projectId: string, data: EvolutionsData
     where: { id: projectId },
   })
 
-  if (!project || project.userId !== user.id) {
+  if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
 

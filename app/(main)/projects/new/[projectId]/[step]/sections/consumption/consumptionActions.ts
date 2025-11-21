@@ -7,16 +7,8 @@ import { consumptionSchema, type ConsumptionData } from "./consumptionSchema"
 export async function saveConsumptionData(projectId: string, data: ConsumptionData) {
   const session = await auth()
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     throw new Error("Non autorisé")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    throw new Error("Utilisateur non trouvé")
   }
 
   const validatedData = consumptionSchema.parse(data)
@@ -25,7 +17,7 @@ export async function saveConsumptionData(projectId: string, data: ConsumptionDa
     where: { id: projectId },
   })
 
-  if (!project || project.userId !== user.id) {
+  if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
 

@@ -7,26 +7,18 @@ import { housingSchema, type HousingData } from "./housingSchema"
 export async function saveHousingData(projectId: string, data: HousingData) {
   const session = await auth()
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     throw new Error("Non autorisé")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    throw new Error("Utilisateur non trouvé")
   }
 
   const validatedData = housingSchema.parse(data)
 
-  // Check if heating project exists and belongs to user
+  // Check if project exists and belongs to user
   const project = await prisma.project.findUnique({
     where: { id: projectId },
   })
 
-  if (!project || project.userId !== user.id) {
+  if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
 

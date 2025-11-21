@@ -7,16 +7,8 @@ import { currentHeatingSchema, type CurrentHeatingData } from "./currentHeatingS
 export async function saveCurrentHeatingData(projectId: string, data: CurrentHeatingData) {
   const session = await auth()
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     throw new Error("Non autorisé")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (!user) {
-    throw new Error("Utilisateur non trouvé")
   }
 
   const validatedData = currentHeatingSchema.parse(data)
@@ -25,7 +17,7 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
     where: { id: projectId },
   })
 
-  if (!project || project.userId !== user.id) {
+  if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
 
