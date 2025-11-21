@@ -18,12 +18,16 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  firstName     String?
+  lastName      String?
+  company       String?
   email         String    @unique
   emailVerified DateTime?
   image         String?
   password      String?
   accounts      Account[]
   sessions      Session[]
+  projects      Project[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,4 +70,27 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+// Project Management Models
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Example form fields
+  textField      String?
+  numberField    Float?
+  radioChoice    String?
+  checkboxes     String[] // Array of selected options
+
+  // Client info
+  clientName     String?
+  clientCompany  String?
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
