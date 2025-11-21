@@ -117,17 +117,19 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
-          <div className="flex justify-center">
+          <div className="flex items-center justify-center gap-4">
             <Image
               src="/logo.png"
               alt="ThermoGain"
-              width={120}
-              height={120}
+              width={80}
+              height={80}
               priority
+              className="object-contain"
             />
+            <h1 className="text-4xl font-bold">ThermoGain</h1>
           </div>
-          <CardTitle>
-            {step === "email" && "Bienvenue sur ThermoGain"}
+          <CardTitle className="text-center">
+            {step === "email" && "Bienvenue"}
             {step === "login" && "Bon retour"}
             {step === "register" && "Créez votre compte"}
           </CardTitle>
