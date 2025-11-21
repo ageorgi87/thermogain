@@ -151,7 +151,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
     ...project.financement,
     ...project.evolutions,
     // Map old field names if needed
-    type_energie: project.consommation?.type_chauffage,
+    type_energie: project.chauffageActuel?.type_chauffage,
     type_chauffage_actuel: project.chauffageActuel?.type_chauffage,
     prix_elec_kwh: 0.17, // Default electricity price
   }

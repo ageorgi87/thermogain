@@ -207,6 +207,13 @@ export default function WizardStepPage() {
   }, [projectId, step, form])
 
   const onSubmit = async (data: any) => {
+    console.log('=== FORM SUBMIT DEBUG ===')
+    console.log('Step:', step)
+    console.log('Form data:', JSON.stringify(data, null, 2))
+    console.log('Form errors:', form.formState.errors)
+    console.log('Form isValid:', form.formState.isValid)
+    console.log('=========================')
+
     setIsSubmitting(true)
     try {
       // Call the appropriate Server Action based on current step
