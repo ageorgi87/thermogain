@@ -96,11 +96,36 @@ model Project {
   updatedAt   DateTime @updatedAt
 }
 
-// Heating Project - PAC Calculator
+// Heating Project - PAC Calculator (Multi-step wizard)
 model HeatingProject {
   id          String   @id @default(cuid())
+  name        String   @default("Projet PAC")
+  currentStep Int      @default(1) // Track wizard progress (1-8)
+  completed   Boolean  @default(false) // All steps completed
 
-  // Logement
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations to section tables
+  logement         HeatingProjectLogement?
+  chauffageActuel  HeatingProjectChauffageActuel?
+  consommation     HeatingProjectConsommation?
+  projetPac        HeatingProjectProjetPac?
+  couts            HeatingProjectCouts?
+  aides            HeatingProjectAides?
+  financement      HeatingProjectFinancement?
+  evolutions       HeatingProjectEvolutions?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 1: Logement (Housing Information)
+model HeatingProjectLogement {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
   departement          String
   annee_construction   Int
   surface_habitable    Float
@@ -109,65 +134,126 @@ model HeatingProject {
   isolation_combles    Boolean
   double_vitrage       Boolean
 
-  // Chauffage actuel
-  type_chauffage_actuel String
-  age_installation      Int
-  etat_installation     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
-  // Consommation
-  type_energie          String
-  conso_fioul_litres    Float?
-  prix_fioul_litre      Float?
-  conso_gaz_kwh         Float?
-  prix_gaz_kwh          Float?
-  conso_gpl_kg          Float?
-  prix_gpl_kg           Float?
-  conso_pellets_kg      Float?
-  prix_pellets_kg       Float?
-  conso_bois_steres     Float?
-  prix_bois_stere       Float?
-  conso_elec_kwh        Float?
-  prix_elec_kwh         Float?
-  cop_actuel            Float?
-  conso_pac_kwh         Float?
+// Section 2: Chauffage Actuel (Current Heating System)
+model HeatingProjectChauffageActuel {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
 
-  // Projet PAC
-  type_pac              String
-  puissance_pac_kw      Float
-  cop_estime            Float
-  temperature_depart    Int
-  emetteurs             String
-  ballon_ecs            Boolean
-  volume_ballon         Int?
+  type_chauffage       String
+  age_installation     Int
+  etat_installation    String
 
-  // Coûts
-  cout_pac              Float
-  cout_installation     Float
-  cout_travaux_annexes  Float?
-  cout_total            Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
-  // Aides
-  ma_prime_renov        Float?
-  cee                   Float?
-  autres_aides          Float?
-  total_aides           Float
-  reste_a_charge        Float
+// Section 3: Consommation (Energy Consumption)
+model HeatingProjectConsommation {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
 
-  // Financement
-  mode_financement      String
-  apport_personnel      Float?
-  montant_credit        Float?
-  taux_interet          Float?
-  duree_credit_mois     Int?
-  mensualite            Float?
+  type_chauffage       String
+  // Conditional fields based on type_chauffage
+  conso_fioul_litres   Float?
+  prix_fioul_litre     Float?
+  conso_gaz_kwh        Float?
+  prix_gaz_kwh         Float?
+  conso_gpl_kg         Float?
+  prix_gpl_kg          Float?
+  conso_pellets_kg     Float?
+  prix_pellets_kg      Float?
+  conso_bois_steres    Float?
+  prix_bois_stere      Float?
+  conso_elec_kwh       Float?
+  prix_elec_kwh        Float?
+  cop_actuel           Float?
+  conso_pac_kwh        Float?
 
-  // Évolutions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 4: Projet PAC (Heat Pump Project)
+model HeatingProjectProjetPac {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
+  type_pac             String
+  puissance_pac_kw     Float
+  cop_estime           Float
+  temperature_depart   Int
+  emetteurs            String
+  ballon_ecs           Boolean
+  volume_ballon        Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 5: Coûts (Costs)
+model HeatingProjectCouts {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
+  cout_pac             Float
+  cout_installation    Float
+  cout_travaux_annexes Float
+  cout_total           Float
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 6: Aides (Financial Aid)
+model HeatingProjectAides {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
+  ma_prime_renov       Float
+  cee                  Float
+  autres_aides         Float
+  total_aides          Float
+  reste_a_charge       Float
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 7: Financement (Financing)
+model HeatingProjectFinancement {
+  id                   String   @id @default(cuid())
+  heatingProjectId     String   @unique
+  heatingProject       HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
+  mode_financement     String
+  apport_personnel     Float?
+  montant_credit       Float?
+  taux_interet         Float?
+  duree_credit_mois    Int?
+  mensualite           Float?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 8: Évolutions (Price Evolution)
+model HeatingProjectEvolutions {
+  id                          String   @id @default(cuid())
+  heatingProjectId            String   @unique
+  heatingProject              HeatingProject @relation(fields: [heatingProjectId], references: [id], onDelete: Cascade)
+
   evolution_prix_energie      Float
   evolution_prix_electricite  Float
   duree_etude_annees          Int
-
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

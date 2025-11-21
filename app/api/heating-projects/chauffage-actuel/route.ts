@@ -1,0 +1,62 @@
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { chauffageActuelSchema } from "@/lib/schemas/heating-form"
+
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 })
+    }
+
+    const body = await req.json()
+    const { heatingProjectId, ...chauffageData } = body
+    const validatedData = chauffageActuelSchema.parse(chauffageData)
+
+    // Check if heating project exists and belongs to user
+    const heatingProject = await prisma.heatingProject.findUnique({
+      where: { id: heatingProjectId },
+    })
+
+    if (!heatingProject || heatingProject.userId !== user.id) {
+      return NextResponse.json({ error: "Projet non trouvé" }, { status: 404 })
+    }
+
+    // Upsert chauffage actuel data
+    const chauffageActuel = await prisma.heatingProjectChauffageActuel.upsert({
+      where: { heatingProjectId },
+      create: {
+        ...validatedData,
+        heatingProjectId,
+      },
+      update: validatedData,
+    })
+
+    // Update project's current step if needed
+    if (heatingProject.currentStep === 2) {
+      await prisma.heatingProject.update({
+        where: { id: heatingProjectId },
+        data: { currentStep: 3 },
+      })
+    }
+
+    return NextResponse.json(chauffageActuel)
+  } catch (error) {
+    console.error("Error saving chauffage actuel data:", error)
+    return NextResponse.json(
+      { error: "Erreur lors de la sauvegarde des données" },
+      { status: 500 }
+    )
+  }
+}

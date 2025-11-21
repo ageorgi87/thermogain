@@ -128,3 +128,11 @@ export const heatingFormSchema = z.object({
 })
 
 export type HeatingFormData = z.infer<typeof heatingFormSchema>
+export type LogementData = z.infer<typeof logementSchema>
+export type ChauffageActuelData = z.infer<typeof chauffageActuelSchema>
+export type ConsommationData = z.infer<typeof consommationSchema>
+export type ProjetPacData = z.infer<typeof projetPacSchema>
+export type CoutsData = z.infer<typeof coutsSchema>
+export type AidesData = z.infer<typeof aidesSchema>
+export type FinancementData = z.infer<typeof financementSchema>
+export type EvolutionsData = z.infer<typeof evolutionsSchema>
