@@ -43,7 +43,7 @@ export default function LoginPage() {
         setStep("register")
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError("Une erreur s'est produite. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -62,13 +62,13 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError("Invalid password")
+        setError("Mot de passe invalide")
       } else {
         router.push("/")
         router.refresh()
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError("Une erreur s'est produite. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -95,7 +95,7 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Registration failed")
+        setError(data.error || "L'inscription a échoué")
         return
       }
 
@@ -107,13 +107,13 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError("Account created but login failed. Please try logging in.")
+        setError("Compte créé mais la connexion a échoué. Veuillez essayer de vous connecter.")
       } else {
         router.push("/")
         router.refresh()
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError("Une erreur s'est produite. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -133,14 +133,14 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>
-            {step === "email" && "Welcome to ThermoGain"}
-            {step === "login" && "Welcome back"}
-            {step === "register" && "Create your account"}
+            {step === "email" && "Bienvenue sur ThermoGain"}
+            {step === "login" && "Bon retour"}
+            {step === "register" && "Créez votre compte"}
           </CardTitle>
           <CardDescription>
-            {step === "email" && "Enter your email to get started"}
-            {step === "login" && "Enter your password to continue"}
-            {step === "register" && "Complete your profile to create an account"}
+            {step === "email" && "Entrez votre email pour commencer"}
+            {step === "login" && "Entrez votre mot de passe pour continuer"}
+            {step === "register" && "Complétez votre profil pour créer un compte"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,7 +157,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="vous@exemple.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -167,7 +167,7 @@ export default function LoginPage() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Continue
+                Continuer
               </Button>
             </form>
           )}
@@ -184,12 +184,12 @@ export default function LoginPage() {
                     size="sm"
                     onClick={resetToEmail}
                   >
-                    Change
+                    Modifier
                   </Button>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mot de passe</Label>
                 <Input
                   id="password"
                   type="password"
@@ -202,7 +202,7 @@ export default function LoginPage() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
+                Se connecter
               </Button>
             </form>
           )}
@@ -219,13 +219,13 @@ export default function LoginPage() {
                     size="sm"
                     onClick={resetToEmail}
                   >
-                    Change
+                    Modifier
                   </Button>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">Prénom</Label>
                   <Input
                     id="firstName"
                     type="text"
@@ -237,7 +237,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Nom</Label>
                   <Input
                     id="lastName"
                     type="text"
@@ -249,18 +249,18 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="company">Company (optional)</Label>
+                <Label htmlFor="company">Entreprise (optionnel)</Label>
                 <Input
                   id="company"
                   type="text"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   disabled={isLoading}
-                  placeholder="Your company name"
+                  placeholder="Nom de votre entreprise"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="registerPassword">Password</Label>
+                <Label htmlFor="registerPassword">Mot de passe</Label>
                 <Input
                   id="registerPassword"
                   type="password"
@@ -271,12 +271,12 @@ export default function LoginPage() {
                   minLength={6}
                 />
                 <p className="text-xs text-muted-foreground">
-                  At least 6 characters
+                  Au moins 6 caractères
                 </p>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Account
+                Créer un compte
               </Button>
             </form>
           )}

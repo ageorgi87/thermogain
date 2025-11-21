@@ -40,7 +40,7 @@ export function SignOutButton() {
       className="text-red-600 hover:text-red-700 dark:text-red-400"
     >
       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      Sign Out
+      Se déconnecter
     </Button>
   )
 }

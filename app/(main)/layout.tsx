@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { SignOutButton } from "@/components/sign-out-button"
+import { SignOutButton } from "@/components/signOutButton"
 
 export default async function MainLayout({
   children,

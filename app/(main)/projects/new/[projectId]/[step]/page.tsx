@@ -25,14 +25,14 @@ import {
   type FinancementData,
   type EvolutionsData,
 } from "@/lib/schemas/heating-form"
-import { LogementFields } from "./sections/logement-fields"
-import { ChauffageActuelFields } from "./sections/chauffage-actuel-fields"
-import { ConsommationFields } from "./sections/consommation-fields"
-import { ProjetPacFields } from "./sections/projet-pac-fields"
-import { CoutsFields } from "./sections/couts-fields"
-import { AidesFields } from "./sections/aides-fields"
-import { FinancementFields } from "./sections/financement-fields"
-import { EvolutionsFields } from "./sections/evolutions-fields"
+import { LogementFields } from "./sections/logementFields"
+import { ChauffageActuelFields } from "./sections/chauffageActuelFields"
+import { ConsommationFields } from "./sections/consommationFields"
+import { ProjetPacFields } from "./sections/projetPacFields"
+import { CoutsFields } from "./sections/coutsFields"
+import { AidesFields } from "./sections/aidesFields"
+import { FinancementFields } from "./sections/financementFields"
+import { EvolutionsFields } from "./sections/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
 
 const STEPS = [

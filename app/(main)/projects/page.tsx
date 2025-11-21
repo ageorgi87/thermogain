@@ -90,9 +90,9 @@ export default function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Projects</h1>
+          <h1 className="text-3xl font-bold">Projets</h1>
           <p className="text-muted-foreground mt-1">
-            Manage your client projects
+            Gérez vos projets clients
           </p>
         </div>
         <Button onClick={() => router.push("/projects/new")}>
@@ -105,11 +105,11 @@ export default function ProjectsPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">
-              No projects yet. Create your first project to get started.
+              Aucun projet pour le moment. Créez votre premier projet pour commencer.
             </p>
             <Button onClick={() => router.push("/projects/new")}>
               <Plus className="mr-2 h-4 w-4" />
-              Create Project
+              Créer un projet
             </Button>
           </CardContent>
         </Card>
@@ -118,10 +118,10 @@ export default function ProjectsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Project Name</TableHead>
+                <TableHead>Nom du projet</TableHead>
                 <TableHead>Client</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead>Entreprise</TableHead>
+                <TableHead>Créé le</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -175,10 +175,9 @@ export default function ProjectsPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Project</DialogTitle>
+            <DialogTitle>Supprimer le projet</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this project? This action cannot be
-              undone.
+              Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -187,7 +186,7 @@ export default function ProjectsPage() {
               onClick={() => setDeleteId(null)}
               disabled={isDeleting}
             >
-              Cancel
+              Annuler
             </Button>
             <Button
               variant="destructive"
@@ -195,7 +194,7 @@ export default function ProjectsPage() {
               disabled={isDeleting}
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
+              Supprimer
             </Button>
           </DialogFooter>
         </DialogContent>
