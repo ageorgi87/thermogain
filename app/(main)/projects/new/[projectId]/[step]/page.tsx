@@ -25,14 +25,15 @@ import {
   type FinancementData,
   type EvolutionsData,
 } from "@/lib/schemas/heating-form"
-import { LogementSection } from "../../../sections/logement-section"
-import { ChauffageActuelSection } from "../../../sections/chauffage-actuel-section"
-import { ConsommationSection } from "../../../sections/consommation-section"
-import { ProjetPacSection } from "../../../sections/projet-pac-section"
-import { CoutsSection } from "../../../sections/couts-section"
-import { AidesSection } from "../../../sections/aides-section"
-import { FinancementSection } from "../../../sections/financement-section"
-import { EvolutionsSection } from "../../../sections/evolutions-section"
+import { LogementFields } from "./sections/logement-fields"
+import { ChauffageActuelFields } from "./sections/chauffage-actuel-fields"
+import { ConsommationFields } from "./sections/consommation-fields"
+import { ProjetPacFields } from "./sections/projet-pac-fields"
+import { CoutsFields } from "./sections/couts-fields"
+import { AidesFields } from "./sections/aides-fields"
+import { FinancementFields } from "./sections/financement-fields"
+import { EvolutionsFields } from "./sections/evolutions-fields"
+import { Card, CardContent } from "@/components/ui/card"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
@@ -243,14 +244,18 @@ export default function WizardStepPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {step === "logement" && <LogementSection form={form} />}
-          {step === "chauffage-actuel" && <ChauffageActuelSection form={form} />}
-          {step === "consommation" && <ConsommationSection form={form} watchTypeChauffage={watchTypeChauffage} />}
-          {step === "projet-pac" && <ProjetPacSection form={form} watchBallonEcs={watchBallonEcs} />}
-          {step === "couts" && <CoutsSection form={form} />}
-          {step === "aides" && <AidesSection form={form} />}
-          {step === "financement" && <FinancementSection form={form} watchModeFinancement={watchModeFinancement} />}
-          {step === "evolutions" && <EvolutionsSection form={form} />}
+          <Card>
+            <CardContent className="pt-6">
+              {step === "logement" && <LogementFields form={form as any} />}
+              {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
+              {step === "consommation" && <ConsommationFields form={form as any} watchTypeChauffage={watchTypeChauffage as string} />}
+              {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
+              {step === "couts" && <CoutsFields form={form as any} />}
+              {step === "aides" && <AidesFields form={form as any} />}
+              {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} />}
+              {step === "evolutions" && <EvolutionsFields form={form as any} />}
+            </CardContent>
+          </Card>
 
           <div className="flex justify-between gap-4">
             <Button
