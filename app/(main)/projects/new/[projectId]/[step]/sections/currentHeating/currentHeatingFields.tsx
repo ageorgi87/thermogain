@@ -47,7 +47,6 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 <SelectItem value="PAC Air/Air">PAC Air/Air</SelectItem>
                 <SelectItem value="PAC Air/Eau">PAC Air/Eau</SelectItem>
                 <SelectItem value="PAC Eau/Eau">PAC Eau/Eau</SelectItem>
-                <SelectItem value="Autre">Autre</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

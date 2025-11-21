@@ -23,7 +23,6 @@ export const chauffageActuelSchema = z.object({
     "PAC Air/Air",
     "PAC Air/Eau",
     "PAC Eau/Eau",
-    "Autre",
   ]),
   age_installation: z.number().min(0),
   etat_installation: z.enum(["Bon", "Moyen", "Mauvais"]),

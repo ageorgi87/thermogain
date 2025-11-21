@@ -11,7 +11,6 @@ const baseSchema = z.object({
     "PAC Air/Air",
     "PAC Air/Eau",
     "PAC Eau/Eau",
-    "Autre",
   ]),
   age_installation: z
     .number()
@@ -158,9 +157,6 @@ export const currentHeatingSchema = baseSchema.superRefine((data, ctx) => {
           path: ["prix_elec_kwh"],
         })
       }
-      break
-    case "Autre":
-      // No specific validation for "Autre" type
       break
   }
 })
