@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
+import { SignOutButton } from "@/components/sign-out-button"
 
 export default async function MainLayout({
   children,
@@ -22,14 +23,7 @@ export default async function MainLayout({
               <span className="text-sm text-gray-600 dark:text-gray-300">
                 {session.user?.email}
               </span>
-              <form action="/api/auth/signout" method="POST">
-                <button
-                  type="submit"
-                  className="text-sm text-red-600 hover:text-red-700 dark:text-red-400"
-                >
-                  Sign Out
-                </button>
-              </form>
+              <SignOutButton />
             </div>
           </div>
         </div>
