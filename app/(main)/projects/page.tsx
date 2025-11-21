@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
+import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
 
 type Project = {
   id: string
@@ -95,10 +95,16 @@ export default function ProjectsPage() {
             Manage your client projects
           </p>
         </div>
-        <Button onClick={() => router.push("/projects/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Project
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => router.push("/projects/heating-calculator")}>
+            <Calculator className="mr-2 h-4 w-4" />
+            Calculateur PAC
+          </Button>
+          <Button onClick={() => router.push("/projects/new")}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Project
+          </Button>
+        </div>
       </div>
 
       {projects.length === 0 ? (
