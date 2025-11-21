@@ -224,8 +224,6 @@ model ProjectEvolutions {
   // Evolution prix électricité pour PAC (et aussi pour chauffage électrique actuel)
   evolution_prix_electricite  Float
 
-  duree_etude_annees          Int
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

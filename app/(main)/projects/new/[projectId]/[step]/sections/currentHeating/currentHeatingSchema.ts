@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const currentHeatingSchema = z.object({
+const baseSchema = z.object({
   type_chauffage: z.enum([
     "Fioul",
     "Gaz",
@@ -35,4 +35,131 @@ export const currentHeatingSchema = z.object({
   conso_pac_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
 })
 
-export type CurrentHeatingData = z.infer<typeof currentHeatingSchema>
+// Conditional validation based on heating type
+export const currentHeatingSchema = baseSchema.superRefine((data, ctx) => {
+  switch (data.type_chauffage) {
+    case "Fioul":
+      if (!data.conso_fioul_litres || data.conso_fioul_litres <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de fioul est requise",
+          path: ["conso_fioul_litres"],
+        })
+      }
+      if (!data.prix_fioul_litre || data.prix_fioul_litre <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix du fioul est requis",
+          path: ["prix_fioul_litre"],
+        })
+      }
+      break
+    case "Gaz":
+      if (!data.conso_gaz_kwh || data.conso_gaz_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de gaz est requise",
+          path: ["conso_gaz_kwh"],
+        })
+      }
+      if (!data.prix_gaz_kwh || data.prix_gaz_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix du gaz est requis",
+          path: ["prix_gaz_kwh"],
+        })
+      }
+      break
+    case "GPL":
+      if (!data.conso_gpl_kg || data.conso_gpl_kg <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de GPL est requise",
+          path: ["conso_gpl_kg"],
+        })
+      }
+      if (!data.prix_gpl_kg || data.prix_gpl_kg <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix du GPL est requis",
+          path: ["prix_gpl_kg"],
+        })
+      }
+      break
+    case "Pellets":
+      if (!data.conso_pellets_kg || data.conso_pellets_kg <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de pellets est requise",
+          path: ["conso_pellets_kg"],
+        })
+      }
+      if (!data.prix_pellets_kg || data.prix_pellets_kg <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix des pellets est requis",
+          path: ["prix_pellets_kg"],
+        })
+      }
+      break
+    case "Bois":
+      if (!data.conso_bois_steres || data.conso_bois_steres <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de bois est requise",
+          path: ["conso_bois_steres"],
+        })
+      }
+      if (!data.prix_bois_stere || data.prix_bois_stere <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix du bois est requis",
+          path: ["prix_bois_stere"],
+        })
+      }
+      break
+    case "Electrique":
+      if (!data.conso_elec_kwh || data.conso_elec_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation électrique est requise",
+          path: ["conso_elec_kwh"],
+        })
+      }
+      if (!data.prix_elec_kwh || data.prix_elec_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix de l'électricité est requis",
+          path: ["prix_elec_kwh"],
+        })
+      }
+      break
+    case "PAC Air/Air":
+    case "PAC Air/Eau":
+    case "PAC Eau/Eau":
+      if (!data.cop_actuel || data.cop_actuel <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le COP de la PAC actuelle est requis",
+          path: ["cop_actuel"],
+        })
+      }
+      if (!data.conso_pac_kwh || data.conso_pac_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La consommation de la PAC est requise",
+          path: ["conso_pac_kwh"],
+        })
+      }
+      if (!data.prix_elec_kwh || data.prix_elec_kwh <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Le prix de l'électricité est requis",
+          path: ["prix_elec_kwh"],
+        })
+      }
+      break
+  }
+})
+
+export type CurrentHeatingData = z.infer<typeof baseSchema>

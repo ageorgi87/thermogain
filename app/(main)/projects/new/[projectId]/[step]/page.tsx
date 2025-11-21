@@ -116,7 +116,6 @@ const DEFAULT_VALUES = {
     evolution_prix_gpl: 5,
     evolution_prix_bois: 5,
     evolution_prix_electricite: 3,
-    duree_etude_annees: 15,
   },
 }
 
@@ -192,10 +191,7 @@ export default function WizardStepPage() {
             // charger les taux d'évolution depuis l'API DIDO
             const evolutionsResult = await fetchEnergyPriceEvolutions()
             if (evolutionsResult.success) {
-              form.reset({
-                ...evolutionsResult.data,
-                duree_etude_annees: 15,
-              })
+              form.reset(evolutionsResult.data)
             }
           }
 

@@ -108,27 +108,6 @@ export function EvolutionsFields({ form, typeChauffage }: EvolutionsFieldsProps)
           </FormItem>
         )}
       />
-
-      <FormField
-        control={form.control}
-        name="duree_etude_annees"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Durée de l&apos;étude (années)</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
-              />
-            </FormControl>
-            <FormDescription>
-              Période sur laquelle analyser la rentabilité (généralement 10-20 ans)
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
     </div>
   )
 }
