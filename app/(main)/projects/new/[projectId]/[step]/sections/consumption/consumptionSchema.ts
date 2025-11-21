@@ -1,17 +1,6 @@
 import { z } from "zod"
 
 export const consumptionSchema = z.object({
-  type_chauffage: z.enum([
-    "Fioul",
-    "Gaz",
-    "GPL",
-    "Pellets",
-    "Bois",
-    "Electrique",
-    "PAC Air/Air",
-    "PAC Air/Eau",
-    "PAC Eau/Eau",
-  ]),
   // Fioul
   conso_fioul_litres: z.number().optional(),
   prix_fioul_litre: z.number().optional(),

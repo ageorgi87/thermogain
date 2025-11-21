@@ -24,36 +24,7 @@ interface ConsommationFieldsProps {
 export function ConsommationFields({ form, watchTypeChauffage }: ConsommationFieldsProps) {
   return (
     <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="type_chauffage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Type d&apos;énergie</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez un type" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="Fioul">Fioul</SelectItem>
-                <SelectItem value="Gaz">Gaz</SelectItem>
-                <SelectItem value="GPL">GPL</SelectItem>
-                <SelectItem value="Pellets">Pellets</SelectItem>
-                <SelectItem value="Bois">Bois</SelectItem>
-                <SelectItem value="Electrique">Électrique</SelectItem>
-                <SelectItem value="PAC Air/Air">PAC Air/Air</SelectItem>
-                <SelectItem value="PAC Air/Eau">PAC Air/Eau</SelectItem>
-                <SelectItem value="PAC Eau/Eau">PAC Eau/Eau</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Conditional fields based on type_chauffage */}
+      {/* Conditional fields based on type_chauffage from step 2 */}
       {watchTypeChauffage === "Fioul" && (
         <div className="grid grid-cols-2 gap-4">
           <FormField

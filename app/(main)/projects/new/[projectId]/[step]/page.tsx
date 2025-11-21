@@ -145,6 +145,7 @@ export default function WizardStepPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [typeChauffageFromStep2, setTypeChauffageFromStep2] = useState<string>("")
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -189,6 +190,11 @@ export default function WizardStepPage() {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
             form.reset(data)
+          }
+
+          // For consumption step, load type_chauffage from step 2
+          if (step === "consommation" && project.chauffageActuel) {
+            setTypeChauffageFromStep2(project.chauffageActuel.type_chauffage)
           }
         }
       } catch (error) {
@@ -297,7 +303,7 @@ export default function WizardStepPage() {
             <CardContent className="pt-6">
               {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
-              {step === "consommation" && <ConsommationFields form={form as any} watchTypeChauffage={watchTypeChauffage as string} />}
+              {step === "consommation" && <ConsommationFields form={form as any} watchTypeChauffage={typeChauffageFromStep2} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}
