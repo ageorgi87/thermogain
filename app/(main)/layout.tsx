@@ -27,7 +27,9 @@ export default async function MainLayout({
                 height={40}
                 className="object-contain"
               />
-              <h1 className="text-xl font-bold">ThermoGain</h1>
+              <h1 className="text-xl font-bold">
+                {session.user?.company || "ThermoGain"}
+              </h1>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-300">
