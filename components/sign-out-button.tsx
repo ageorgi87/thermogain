@@ -1,16 +1,35 @@
 "use client"
 
+import { useState } from "react"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
 
 export function SignOutButton() {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSignOut = async () => {
+    setIsLoading(true)
+    try {
+      await signOut({
+        redirect: true,
+        callbackUrl: "/login"
+      })
+    } catch (error) {
+      console.error("Sign out error:", error)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => signOut({ callbackUrl: "/login" })}
+      onClick={handleSignOut}
+      disabled={isLoading}
       className="text-red-600 hover:text-red-700 dark:text-red-400"
     >
+      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       Sign Out
     </Button>
   )
