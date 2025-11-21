@@ -46,11 +46,22 @@ NEXTAUTH_SECRET="your-generated-secret"
 ### 4. Run database migrations
 
 ```bash
-npx prisma generate
 npx prisma db push
 ```
 
-### 5. Start development server
+### 5. Seed the database with a test user
+
+```bash
+npm run db:seed
+```
+
+This will create a test user:
+- **Email**: `admin@thermogain.com`
+- **Password**: `admin123`
+
+⚠️ Change the password after first login!
+
+### 6. Start development server
 
 ```bash
 npm run dev
@@ -101,6 +112,7 @@ This structure provides:
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run db:seed` - Seed database with test user
 - `npx prisma studio` - Open Prisma Studio (database GUI)
 - `npx prisma generate` - Generate Prisma client
 - `npx prisma db push` - Push schema changes to database
@@ -112,16 +124,33 @@ The app uses NextAuth.js v5 with:
 - Prisma adapter for database sessions
 - JWT strategy
 
-To create a test user, you'll need to hash a password and insert it directly into the database or create a registration page.
+### Default Test User
+
+After running `npm run db:seed`, you can login with:
+- **Email**: admin@thermogain.com
+- **Password**: admin123
 
 ## Deploy on Vercel
 
 1. Push your code to GitHub
 2. Import your repository on [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
+3. Add environment variables in Vercel dashboard:
+   - `DATABASE_URL` - Your Neon pooled connection string
+   - `DIRECT_URL` - Your Neon direct connection string
+   - `NEXTAUTH_SECRET` - Generated secret (use `openssl rand -base64 32`)
+   - `NEXTAUTH_URL` - Your Vercel deployment URL (e.g., `https://your-app.vercel.app`)
 4. Deploy
 
-Vercel will automatically detect Next.js and configure the build.
+Vercel will automatically:
+- Detect Next.js and configure the build
+- Run `prisma generate` via postinstall script
+- Build with Turbopack
+
+After deployment, run the seed script to create a test user:
+```bash
+# In Vercel console or locally with production DATABASE_URL
+npm run db:seed
+```
 
 ## Learn More
 
