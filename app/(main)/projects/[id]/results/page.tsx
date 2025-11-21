@@ -20,7 +20,7 @@ function calculateAnnualCost(project: any) {
   let currentAnnualCost = 0
 
   // Calculate current energy cost based on type
-  switch (project.type_energie) {
+  switch (project.type_chauffage) {
     case "Fioul":
       currentAnnualCost = (project.conso_fioul_litres || 0) * (project.prix_fioul_litre || 0)
       break
@@ -54,7 +54,7 @@ function calculatePACCost(project: any) {
   // Get current energy consumption in kWh equivalent
   let currentEnergyKwh = 0
 
-  switch (project.type_energie) {
+  switch (project.type_chauffage) {
     case "Fioul":
       currentEnergyKwh = (project.conso_fioul_litres || 0) * 10 // 1L fioul ≈ 10 kWh
       break
@@ -128,7 +128,6 @@ export default async function HeatingResultsPage({ params }: PageProps) {
     include: {
       logement: true,
       chauffageActuel: true,
-      consommation: true,
       projetPac: true,
       couts: true,
       aides: true,
@@ -146,7 +145,6 @@ export default async function HeatingResultsPage({ params }: PageProps) {
     ...project,
     ...project.logement,
     ...project.chauffageActuel,
-    ...project.consommation,
     ...project.projetPac,
     ...project.couts,
     ...project.aides,

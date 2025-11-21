@@ -31,7 +31,7 @@ export async function saveEvolutionsData(projectId: string, data: EvolutionsData
   })
 
   // Mark project as completed (final step)
-  if (project.currentStep === 8) {
+  if (project.currentStep === 7) {
     await prisma.project.update({
       where: { id: projectId },
       data: { completed: true },

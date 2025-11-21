@@ -215,10 +215,36 @@ model ProjectEvolutions {
   projectId                   String   @unique
   project                     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  evolution_prix_energie      Float
+  // Evolution prix énergie actuelle (selon type_chauffage)
+  evolution_prix_fioul        Float?
+  evolution_prix_gaz          Float?
+  evolution_prix_gpl          Float?
+  evolution_prix_bois         Float?   // Pour bois et pellets
+
+  // Evolution prix électricité pour PAC (et aussi pour chauffage électrique actuel)
   evolution_prix_electricite  Float
+
   duree_etude_annees          Int
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Cache for DIDO API energy price evolution data
+// Stores multi-period evolution rates to avoid excessive API calls
+model EnergyPriceCache {
+  id              String   @id @default(cuid())
+  energyType      String   @unique // "fioul", "gaz", "gpl", "bois", "electricite"
+
+  // Evolution rates for different time periods (% per year)
+  evolution_1y    Float    // 1-year evolution
+  evolution_5y    Float    // 5-year evolution
+  evolution_10y   Float    // 10-year evolution
+
+  // Weighted average (50% 1y, 30% 5y, 15% 10y)
+  evolution_weighted Float
+
+  lastUpdated     DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

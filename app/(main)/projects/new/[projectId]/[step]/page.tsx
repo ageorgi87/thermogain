@@ -51,6 +51,7 @@ import { saveFinancialAidData } from "./sections/financialAid/financialAidAction
 import { saveFinancingData } from "./sections/financing/financingActions"
 import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
 import { getProject } from "@/lib/actions/projects"
+import { fetchEnergyPriceEvolutions } from "@/lib/actions/energyPrices"
 
 const STEPS = [
   { key: "logement", title: "Logement", description: "Informations sur votre logement" },
@@ -110,7 +111,10 @@ const DEFAULT_VALUES = {
     // mensualite is calculated automatically
   },
   evolutions: {
-    evolution_prix_energie: 5,
+    evolution_prix_fioul: 5,
+    evolution_prix_gaz: 5,
+    evolution_prix_gpl: 5,
+    evolution_prix_bois: 5,
     evolution_prix_electricite: 3,
     duree_etude_annees: 15,
   },
@@ -134,6 +138,7 @@ export default function WizardStepPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [typeChauffage, setTypeChauffage] = useState<string | undefined>(undefined)
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -159,6 +164,11 @@ export default function WizardStepPage() {
         const project = await getProject(projectId)
 
         if (project) {
+          // Store type_chauffage for evolutions step
+          if (project.chauffageActuel?.type_chauffage) {
+            setTypeChauffage(project.chauffageActuel.type_chauffage)
+          }
+
           // Map step key to database field name
           const sectionMap: Record<string, string> = {
             "logement": "logement",
@@ -177,6 +187,16 @@ export default function WizardStepPage() {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
             form.reset(data)
+          } else if (step === "evolutions" && !sectionData) {
+            // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
+            // charger les taux d'évolution depuis l'API DIDO
+            const evolutionsResult = await fetchEnergyPriceEvolutions()
+            if (evolutionsResult.success) {
+              form.reset({
+                ...evolutionsResult.data,
+                duree_etude_annees: 15,
+              })
+            }
           }
 
         }
@@ -287,7 +307,7 @@ export default function WizardStepPage() {
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}
               {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} />}
-              {step === "evolutions" && <EvolutionsFields form={form as any} />}
+              {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} />}
             </CardContent>
           </Card>
 

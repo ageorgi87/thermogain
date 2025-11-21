@@ -1,18 +1,20 @@
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import Image from "next/image"
-import { SignOutButton } from "@/components/signOutButton"
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Image from "next/image";
+import { SignOutButton } from "@/components/signOutButton";
 
 export default async function MainLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const session = await auth()
+  const session = await auth();
 
   if (!session) {
-    redirect("/login")
+    redirect("/login");
   }
+
+  console.log(session.user?.company);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -42,5 +44,5 @@ export default async function MainLayout({
       </nav>
       <main className="container mx-auto px-4 py-8">{children}</main>
     </div>
-  )
+  );
 }

@@ -36,7 +36,6 @@ export async function getProject(id: string) {
     include: {
       logement: true,
       chauffageActuel: true,
-      consommation: true,
       projetPac: true,
       couts: true,
       aides: true,
