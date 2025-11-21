@@ -1,12 +1,12 @@
-# Thermogain
+# ThermoGain
 
-A modern React application built with Next.js 15, TypeScript, Shadcn/ui, Prisma, and NextAuth.js.
+A modern React application for intelligent thermal management, built with Next.js 16, TypeScript, Shadcn/ui, Prisma, and NextAuth.js.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router with Turbopack)
 - **Language**: TypeScript
-- **UI**: Shadcn/ui + Tailwind CSS
+- **UI**: Shadcn/ui + Tailwind CSS v4
 - **Database**: Neon PostgreSQL (serverless)
 - **Authentication**: NextAuth.js v5
 - **ORM**: Prisma
@@ -62,20 +62,38 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 
 ```
 thermogain/
-├── app/                    # Next.js App Router pages
-│   ├── api/auth/          # NextAuth API routes
-│   ├── login/             # Login page
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   └── ui/               # Shadcn/ui components
-├── lib/                   # Utilities and configurations
-│   ├── auth.ts           # NextAuth configuration
-│   ├── prisma.ts         # Prisma client
-│   └── utils.ts          # Utility functions
+├── app/                        # Next.js 16 App Router
+│   ├── (auth)/                # Auth route group
+│   │   ├── login/             # Login page
+│   │   └── layout.tsx         # Auth layout
+│   ├── (main)/                # Protected routes group
+│   │   ├── page.tsx           # Dashboard/Home
+│   │   └── layout.tsx         # Main layout with nav
+│   ├── api/auth/              # NextAuth API routes
+│   ├── layout.tsx             # Root layout
+│   └── globals.css            # Global styles
+├── components/                 # React components
+│   └── ui/                    # Shadcn/ui components
+├── lib/                        # Utilities and configurations
+│   ├── auth.ts                # NextAuth configuration
+│   ├── prisma.ts              # Prisma client
+│   └── utils.ts               # Utility functions
 ├── prisma/
-│   └── schema.prisma     # Database schema
-└── .env                  # Environment variables
+│   └── schema.prisma          # Database schema
+└── .env                       # Environment variables
 ```
+
+### Route Groups Explained
+
+Next.js 16 uses **route groups** (folders in parentheses) to organize routes without affecting the URL:
+
+- `(auth)` - Contains authentication-related pages with custom styling
+- `(main)` - Contains protected pages with authentication check and navigation
+
+This structure provides:
+- Better code organization
+- Shared layouts per group
+- Cleaner URL structure (parentheses don't appear in URLs)
 
 ## Available Scripts
 
