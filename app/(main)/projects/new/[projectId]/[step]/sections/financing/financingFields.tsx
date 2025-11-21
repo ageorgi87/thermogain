@@ -133,27 +133,6 @@ export function FinancementFields({ form, watchModeFinancement }: FinancementFie
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="mensualite"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mensualité estimée (€)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...field}
-                    onChange={(e) =>
-                      field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </>
       )}
     </div>

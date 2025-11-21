@@ -107,7 +107,7 @@ const DEFAULT_VALUES = {
     montant_credit: 7000,
     taux_interet: 3.5,
     duree_credit_mois: 120,
-    mensualite: 70,
+    // mensualite is calculated automatically
   },
   evolutions: {
     evolution_prix_energie: 5,

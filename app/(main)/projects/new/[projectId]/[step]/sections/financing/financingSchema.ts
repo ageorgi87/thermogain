@@ -6,7 +6,7 @@ export const financingSchema = z.object({
   montant_credit: z.number().min(0).optional(),
   taux_interet: z.number().min(0).max(100).optional(),
   duree_credit_mois: z.number().min(1).max(360).optional(),
-  mensualite: z.number().min(0).optional(),
+  // mensualite will be calculated automatically in the action
 })
 
 export type FinancingData = z.infer<typeof financingSchema>

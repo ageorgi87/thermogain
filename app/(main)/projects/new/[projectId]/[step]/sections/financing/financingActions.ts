@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { calculateMensualite } from "@/lib/loanCalculations"
 import { financingSchema, type FinancingData } from "./financingSchema"
 
 export async function saveFinancingData(projectId: string, data: FinancingData) {
@@ -21,19 +22,37 @@ export async function saveFinancingData(projectId: string, data: FinancingData) 
     throw new Error("Projet non trouvé")
   }
 
+  // Calculate mensualite if credit information is provided
+  let mensualite: number | null = null
+  if (
+    validatedData.montant_credit &&
+    validatedData.taux_interet !== undefined &&
+    validatedData.duree_credit_mois
+  ) {
+    mensualite = calculateMensualite(
+      validatedData.montant_credit,
+      validatedData.taux_interet,
+      validatedData.duree_credit_mois
+    )
+  }
+
   const financement = await prisma.projectFinancement.upsert({
     where: { projectId },
     create: {
       ...validatedData,
+      mensualite,
       projectId,
     } as any,
-    update: validatedData as any,
+    update: {
+      ...validatedData,
+      mensualite,
+    } as any,
   })
 
-  if (project.currentStep === 7) {
+  if (project.currentStep === 6) {
     await prisma.project.update({
       where: { id: projectId },
-      data: { currentStep: 8 },
+      data: { currentStep: 7 },
     })
   }
 
