@@ -25,13 +25,13 @@ import {
   type FinancementData,
   type EvolutionsData,
 } from "@/lib/schemas/heating-form"
-import { LogementFields } from "./sections/logementFields"
+import { LogementFields } from "./sections/housingFields"
 import { ChauffageActuelFields } from "./sections/chauffageActuelFields"
 import { ConsommationFields } from "./sections/consommationFields"
-import { ProjetPacFields } from "./sections/projetPacFields"
+import { ProjetPacFields } from "./sections/heatPumpProjectFields"
 import { CoutsFields } from "./sections/coutsFields"
 import { AidesFields } from "./sections/aidesFields"
-import { FinancementFields } from "./sections/financementFields"
+import { FinancementFields } from "./sections/financingFields"
 import { EvolutionsFields } from "./sections/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
 
