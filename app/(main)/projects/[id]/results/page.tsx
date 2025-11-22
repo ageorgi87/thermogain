@@ -160,7 +160,32 @@ export default async function HeatingResultsPage({ params }: PageProps) {
   const currentAnnualCost = calculateAnnualCost(flatProject)
   const { pacConsumptionKwh, pacAnnualCost } = calculatePACCost(flatProject)
   const annualSavings = currentAnnualCost - pacAnnualCost
-  const priceEvolutionDiff = (flatProject.evolution_prix_energie || 0) - (flatProject.evolution_prix_electricite || 0)
+
+  // Get current energy price evolution based on heating type
+  let currentEnergyEvolution = 0
+  switch (flatProject.type_chauffage) {
+    case "Fioul":
+      currentEnergyEvolution = flatProject.evolution_prix_fioul || 0
+      break
+    case "Gaz":
+      currentEnergyEvolution = flatProject.evolution_prix_gaz || 0
+      break
+    case "GPL":
+      currentEnergyEvolution = flatProject.evolution_prix_gpl || 0
+      break
+    case "Pellets":
+    case "Bois":
+      currentEnergyEvolution = flatProject.evolution_prix_bois || 0
+      break
+    case "Electrique":
+    case "PAC Air/Air":
+    case "PAC Air/Eau":
+    case "PAC Eau/Eau":
+      currentEnergyEvolution = flatProject.evolution_prix_electricite || 0
+      break
+  }
+
+  const priceEvolutionDiff = currentEnergyEvolution - (flatProject.evolution_prix_electricite || 0)
   const paybackPeriod = calculatePaybackPeriod(
     flatProject.reste_a_charge || 0,
     annualSavings,
@@ -168,9 +193,10 @@ export default async function HeatingResultsPage({ params }: PageProps) {
   )
 
   // Calculate savings over study period
+  const STUDY_PERIOD_YEARS = 15
   let totalSavingsOverPeriod = 0
   let currentYearSavings = annualSavings
-  for (let year = 1; year <= (flatProject.duree_etude_annees || 15); year++) {
+  for (let year = 1; year <= STUDY_PERIOD_YEARS; year++) {
     totalSavingsOverPeriod += currentYearSavings
     currentYearSavings *= (1 + priceEvolutionDiff / 100)
   }
@@ -204,7 +230,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
         <AlertDescription className="mt-2">
           {netBenefit > 0 ? (
             <p>
-              Sur {flatProject.duree_etude_annees || 15} ans, ce projet vous permettra d&apos;économiser{" "}
+              Sur {STUDY_PERIOD_YEARS} ans, ce projet vous permettra d&apos;économiser{" "}
               <strong className="text-green-600">{totalSavingsOverPeriod.toFixed(0)} €</strong> avec un
               bénéfice net de <strong className="text-green-600">{netBenefit.toFixed(0)} €</strong>{" "}
               après déduction de l&apos;investissement.
@@ -212,7 +238,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             </p>
           ) : (
             <p>
-              Sur {flatProject.duree_etude_annees || 15} ans, les économies générées ({totalSavingsOverPeriod.toFixed(0)} €)
+              Sur {STUDY_PERIOD_YEARS} ans, les économies générées ({totalSavingsOverPeriod.toFixed(0)} €)
               ne couvrent pas entièrement l&apos;investissement. Déficit de{" "}
               <strong className="text-orange-600">{Math.abs(netBenefit).toFixed(0)} €</strong>.
               Envisagez d&apos;augmenter les aides ou de prolonger la durée d&apos;étude.
@@ -405,7 +431,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
               <Calendar className="h-5 w-5" />
               Rentabilité
             </CardTitle>
-            <CardDescription>Analyse sur {flatProject.duree_etude_annees} ans</CardDescription>
+            <CardDescription>Analyse sur {STUDY_PERIOD_YEARS} ans</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {paybackPeriod && (
@@ -443,7 +469,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Évolution prix énergie actuelle</span>
-                <span>+{flatProject.evolution_prix_energie}% /an</span>
+                <span>+{currentEnergyEvolution}% /an</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Évolution prix électricité</span>

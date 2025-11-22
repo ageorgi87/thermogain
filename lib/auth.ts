@@ -46,8 +46,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-          company: user.company,
+          name: user.name ?? undefined,
+          company: user.company ?? undefined,
         }
       }
     })

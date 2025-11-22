@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { SignOutButton } from "@/components/signOutButton";
 
 export default async function MainLayout({
@@ -21,7 +22,7 @@ export default async function MainLayout({
       <nav className="border-b bg-white dark:bg-gray-800 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <Link href="/projects" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="ThermoGain"
@@ -32,7 +33,7 @@ export default async function MainLayout({
               <h1 className="text-xl font-bold">
                 {session.user?.company || "ThermoGain"}
               </h1>
-            </div>
+            </Link>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-300">
                 {session.user?.email}

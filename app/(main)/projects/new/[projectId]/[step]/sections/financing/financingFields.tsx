@@ -14,10 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
-import { FinancementData } from "@/lib/schemas/heating-form"
+import { FinancingData } from "./financingSchema"
 
 interface FinancementFieldsProps {
-  form: UseFormReturn<FinancementData>
+  form: UseFormReturn<FinancingData>
   watchModeFinancement: string
 }
 

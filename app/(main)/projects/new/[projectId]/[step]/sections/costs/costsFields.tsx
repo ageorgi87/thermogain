@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { UseFormReturn } from "react-hook-form"
-import { CoutsData } from "@/lib/schemas/heating-form"
+import { CostsData } from "./costsSchema"
 
 interface CoutsFieldsProps {
-  form: UseFormReturn<CoutsData>
+  form: UseFormReturn<CostsData>
 }
 
 export function CoutsFields({ form }: CoutsFieldsProps) {

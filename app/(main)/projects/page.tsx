@@ -70,6 +70,27 @@ export default function ProjectsPage() {
     }
   }
 
+  const getProjectEditUrl = (project: Project) => {
+    const STEPS = [
+      "logement",
+      "chauffage-actuel",
+      "projet-pac",
+      "couts",
+      "aides",
+      "financement",
+      "evolutions"
+    ]
+
+    // Si toutes les étapes sont complétées ou currentStep >= 8, aller à la première étape
+    if (project.completed || project.currentStep >= 8) {
+      return `/projects/new/${project.id}/${STEPS[0]}`
+    }
+
+    // Sinon, aller à l'étape courante (currentStep est 1-indexed, donc on soustrait 1)
+    const stepIndex = project.currentStep > 0 ? project.currentStep - 1 : 0
+    return `/projects/new/${project.id}/${STEPS[stepIndex]}`
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -152,7 +173,7 @@ export default function ProjectsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push(`/projects/new/${project.id}/logement`)}
+                      onClick={() => router.push(getProjectEditUrl(project))}
                       title="Continuer le projet"
                     >
                       <Pencil className="h-4 w-4" />

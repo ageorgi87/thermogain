@@ -15,10 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
-import { ProjetPacData } from "@/lib/schemas/heating-form"
+import { HeatPumpProjectData } from "./heatPumpProjectSchema"
 
 interface ProjetPacFieldsProps {
-  form: UseFormReturn<ProjetPacData>
+  form: UseFormReturn<HeatPumpProjectData>
   watchBallonEcs: boolean
 }
 

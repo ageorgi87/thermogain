@@ -1,15 +1,20 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { createProject } from "@/lib/actions/projects"
 
 export default function NewProjectPage() {
   const router = useRouter()
+  const hasCreatedProject = useRef(false)
 
   useEffect(() => {
+    // Prevent double execution in React Strict Mode
+    if (hasCreatedProject.current) return
+
     const createNewProject = async () => {
+      hasCreatedProject.current = true
       try {
         const project = await createProject({ name: "Projet PAC" })
         router.push(`/projects/new/${project.id}/logement`)
@@ -20,7 +25,7 @@ export default function NewProjectPage() {
     }
 
     createNewProject()
-  }, [router])
+  }, [])
 
   return (
     <div className="container mx-auto py-8 max-w-4xl flex items-center justify-center min-h-[50vh]">

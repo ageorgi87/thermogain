@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { UseFormReturn } from "react-hook-form"
-import { AidesData } from "@/lib/schemas/heating-form"
+import { FinancialAidData } from "./financialAidSchema"
 
 interface AidesFieldsProps {
-  form: UseFormReturn<AidesData>
+  form: UseFormReturn<FinancialAidData>
 }
 
 export function AidesFields({ form }: AidesFieldsProps) {
