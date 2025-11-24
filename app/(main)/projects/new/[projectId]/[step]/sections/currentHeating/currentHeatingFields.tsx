@@ -19,9 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { UseFormReturn } from "react-hook-form"
 import { CurrentHeatingData } from "./currentHeatingSchema"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Info, HelpCircle, Gauge } from "lucide-react"
-import { useState, useEffect } from "react"
-import { calculateEstimatedEfficiency } from "./currentHeatingActions"
+import { Info, HelpCircle } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -67,39 +65,6 @@ function PriceLabelWithTooltip({ label, price, unit }: { label: string; price?: 
 export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFieldsProps) {
   const watchTypeChauffage = form.watch("type_chauffage")
   const watchConnaitConsommation = form.watch("connait_consommation")
-  const watchAgeInstallation = form.watch("age_installation")
-  const watchEtatInstallation = form.watch("etat_installation")
-
-  const [efficiencyInfo, setEfficiencyInfo] = useState<{
-    efficiencyPercent: number
-    explanation: string
-  } | null>(null)
-
-  // Calculate efficiency when relevant fields change
-  useEffect(() => {
-    const calculateEfficiency = async () => {
-      if (watchTypeChauffage && watchAgeInstallation !== undefined && watchEtatInstallation) {
-        try {
-          const result = await calculateEstimatedEfficiency(
-            watchTypeChauffage,
-            watchAgeInstallation,
-            watchEtatInstallation as "Bon" | "Moyen" | "Mauvais"
-          )
-          setEfficiencyInfo({
-            efficiencyPercent: result.efficiencyPercent,
-            explanation: result.explanation
-          })
-        } catch (error) {
-          console.error("Erreur calcul rendement:", error)
-          setEfficiencyInfo(null)
-        }
-      } else {
-        setEfficiencyInfo(null)
-      }
-    }
-
-    calculateEfficiency()
-  }, [watchTypeChauffage, watchAgeInstallation, watchEtatInstallation])
 
   return (
     <div className="space-y-6">
@@ -174,28 +139,6 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
           )}
         />
       </div>
-
-      {/* Affichage du rendement estimé */}
-      {efficiencyInfo && (
-        <Alert className={
-          efficiencyInfo.efficiencyPercent < 70 ? "border-orange-500 bg-orange-50" :
-          efficiencyInfo.efficiencyPercent < 80 ? "border-yellow-500 bg-yellow-50" :
-          efficiencyInfo.efficiencyPercent < 90 ? "border-blue-500 bg-blue-50" :
-          "border-green-500 bg-green-50"
-        }>
-          <Gauge className="h-4 w-4" />
-          <AlertDescription>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-lg">
-                Rendement estimé : {efficiencyInfo.efficiencyPercent}%
-              </span>
-            </div>
-            <p className="mt-2 text-sm">
-              {efficiencyInfo.explanation}
-            </p>
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Question: connaît sa consommation? */}
       <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
