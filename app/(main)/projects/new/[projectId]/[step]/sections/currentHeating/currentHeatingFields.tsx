@@ -51,7 +51,7 @@ function PriceLabelWithTooltip({ label, price, unit }: { label: string; price?: 
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[300px]">
               <p className="text-sm">
-                Le prix moyen national est de <span className="font-semibold">{price.toFixed(price < 1 ? 4 : 2)} {unit}</span>,
+                Le prix moyen national est de <span className="font-semibold">{price.toFixed(2)} {unit}</span>,
                 il a été mis à jour ce mois-ci.
               </p>
             </TooltipContent>
