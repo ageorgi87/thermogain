@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
 import { getProjects, deleteProject } from "@/lib/actions/projects"
+import { WIZARD_STEPS, getTotalSteps, getStepNumber, getProjectStatus, getStepKey } from "@/lib/wizardSteps"
 
 type Project = {
   id: string
@@ -71,24 +72,16 @@ export default function ProjectsPage() {
   }
 
   const getProjectEditUrl = (project: Project) => {
-    const STEPS = [
-      "logement",
-      "chauffage-actuel",
-      "projet-pac",
-      "couts",
-      "aides",
-      "financement",
-      "evolutions"
-    ]
+    const totalSteps = getTotalSteps()
 
-    // Si toutes les étapes sont complétées ou currentStep >= 8, aller à la première étape
-    if (project.completed || project.currentStep >= 8) {
-      return `/projects/new/${project.id}/${STEPS[0]}`
+    // Si toutes les étapes sont complétées, aller à la première étape
+    if (project.completed || project.currentStep > totalSteps) {
+      return `/projects/new/${project.id}/${WIZARD_STEPS[0].key}`
     }
 
-    // Sinon, aller à l'étape courante (currentStep est 1-indexed, donc on soustrait 1)
-    const stepIndex = project.currentStep > 0 ? project.currentStep - 1 : 0
-    return `/projects/new/${project.id}/${STEPS[stepIndex]}`
+    // Sinon, aller à l'étape courante (currentStep est 1-indexed)
+    const stepKey = getStepKey(project.currentStep) || WIZARD_STEPS[0].key
+    return `/projects/new/${project.id}/${stepKey}`
   }
 
   if (isLoading) {
@@ -144,11 +137,11 @@ export default function ProjectsPage() {
                   <TableCell className="font-medium">{project.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
-                      Étape {project.currentStep}/8
+                      Étape {getStepNumber(project.currentStep)}/{getTotalSteps()}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {project.completed ? (
+                    {getProjectStatus(project.currentStep) === "Terminé" ? (
                       <Badge variant="default" className="bg-green-600">
                         Terminé
                       </Badge>

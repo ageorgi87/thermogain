@@ -8,10 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react"
 import {
-  housingSchema as logementSchema,
-  type HousingData as LogementData,
-} from "./sections/housing/housingSchema"
-import {
   currentHeatingSchema as chauffageActuelSchema,
   type CurrentHeatingData as ChauffageActuelData,
 } from "./sections/currentHeating/currentHeatingSchema"
@@ -35,7 +31,6 @@ import {
   evolutionsSchema,
   type EvolutionsData,
 } from "./sections/evolutions/evolutionsSchema"
-import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
 import { CoutsFields } from "./sections/costs/costsFields"
@@ -43,7 +38,6 @@ import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
 import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
-import { saveHousingData } from "./sections/housing/housingActions"
 import { saveCurrentHeatingData } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
 import { saveCostsData } from "./sections/costs/costsActions"
@@ -53,31 +47,14 @@ import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
 import { getProject } from "@/lib/actions/projects"
 import { fetchEnergyPriceEvolutions } from "@/lib/actions/energyPrices"
 import { updateProjectStep } from "./updateProjectStep"
-
-const STEPS = [
-  { key: "logement", title: "Logement", description: "Informations sur votre logement" },
-  { key: "chauffage-actuel", title: "Chauffage actuel", description: "Votre système de chauffage actuel et consommation" },
-  { key: "projet-pac", title: "Projet PAC", description: "Caractéristiques de la pompe à chaleur" },
-  { key: "couts", title: "Coûts", description: "Coûts d'installation et travaux" },
-  { key: "aides", title: "Aides", description: "Aides financières disponibles" },
-  { key: "financement", title: "Financement", description: "Mode de financement du projet" },
-  { key: "evolutions", title: "Évolutions", description: "Évolution des prix de l'énergie" },
-]
+import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
 
 const DEFAULT_VALUES = {
-  logement: {
-    code_postal: "",
-    annee_construction: 2000,
-    surface_habitable: 100,
-    nombre_occupants: 2,
-    isolation_murs: false,
-    isolation_combles: false,
-    double_vitrage: false,
-  },
   "chauffage-actuel": {
     type_chauffage: "Gaz",
     age_installation: 10,
     etat_installation: "Moyen",
+    connait_consommation: true,
     conso_gaz_kwh: 12000,
     prix_gaz_kwh: 0.09,
   },
@@ -121,7 +98,6 @@ const DEFAULT_VALUES = {
 }
 
 const SCHEMAS = {
-  logement: logementSchema,
   "chauffage-actuel": chauffageActuelSchema,
   "projet-pac": projetPacSchema,
   couts: coutsSchema,
@@ -171,7 +147,6 @@ export default function WizardStepPage() {
 
           // Map step key to database field name
           const sectionMap: Record<string, string> = {
-            "logement": "logement",
             "chauffage-actuel": "chauffageActuel",
             "projet-pac": "projetPac",
             "couts": "couts",
@@ -216,9 +191,6 @@ export default function WizardStepPage() {
     try {
       // Call the appropriate Server Action based on current step
       switch (step) {
-        case "logement":
-          await saveHousingData(projectId, data)
-          break
         case "chauffage-actuel":
           await saveCurrentHeatingData(projectId, data)
           break
@@ -306,7 +278,6 @@ export default function WizardStepPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardContent className="pt-6">
-              {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
               {step === "couts" && <CoutsFields form={form as any} />}

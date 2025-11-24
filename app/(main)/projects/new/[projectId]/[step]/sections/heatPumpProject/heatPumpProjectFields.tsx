@@ -90,6 +90,25 @@ export function ProjetPacFields({ form, watchBallonEcs }: ProjetPacFieldsProps) 
 
       <FormField
         control={form.control}
+        name="duree_vie_pac"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Durée de vie estimée de la PAC (années)</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
+                placeholder="17"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
         name="temperature_depart"
         render={({ field }) => (
           <FormItem>

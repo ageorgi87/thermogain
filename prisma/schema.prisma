@@ -123,6 +123,10 @@ model ProjectChauffageActuel {
   age_installation     Int
   etat_installation    String
 
+  // Does user know their consumption? (determines which fields to collect)
+  connait_consommation Boolean @default(true)
+
+  // If user knows consumption: direct consumption data
   // Consumption fields - conditional based on type_chauffage
   conso_fioul_litres   Float?
   prix_fioul_litre     Float?
@@ -138,6 +142,15 @@ model ProjectChauffageActuel {
   prix_elec_kwh        Float?
   cop_actuel           Float?
   conso_pac_kwh        Float?
+
+  // If user doesn't know consumption: housing data for estimation
+  code_postal          String?
+  annee_construction   Int?
+  surface_habitable    Float?
+  nombre_occupants     Int?
+  isolation_murs       Boolean?
+  isolation_combles    Boolean?
+  isolation_fenetres   Boolean?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -156,6 +169,7 @@ model ProjectProjetPac {
   emetteurs            String
   ballon_ecs           Boolean
   volume_ballon        Int?
+  duree_vie_pac        Int      @default(17) // Durée de vie estimée de la PAC en années
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

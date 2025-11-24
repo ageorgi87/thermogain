@@ -17,7 +17,7 @@ export default function NewProjectPage() {
       hasCreatedProject.current = true
       try {
         const project = await createProject({ name: "Projet PAC" })
-        router.push(`/projects/new/${project.id}/logement`)
+        router.push(`/projects/new/${project.id}/chauffage-actuel`)
       } catch (error) {
         console.error("Error creating project:", error)
         router.push("/projects")

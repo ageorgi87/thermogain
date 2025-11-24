@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft, TrendingDown, TrendingUp, Calculator, Home, Zap, Euro, Calendar } from "lucide-react"
+import { ArrowLeft, TrendingDown, TrendingUp, Calculator, Zap, Euro, Calendar } from "lucide-react"
 
 interface PageProps {
   params: Promise<{
@@ -248,47 +248,6 @@ export default async function HeatingResultsPage({ params }: PageProps) {
       </Alert>
 
       <div className="grid gap-6 md:grid-cols-2 mt-8">
-        {/* Housing Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Home className="h-5 w-5" />
-              Logement
-            </CardTitle>
-            <CardDescription>Caractéristiques de votre habitation</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Code postal</span>
-              <Badge variant="outline">{flatProject.code_postal}</Badge>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Année de construction</span>
-              <span className="font-medium">{flatProject.annee_construction}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Surface habitable</span>
-              <span className="font-medium">{flatProject.surface_habitable} m²</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Occupants</span>
-              <span className="font-medium">{flatProject.nombre_occupants}</span>
-            </div>
-            <Separator className="my-3" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Isolation</p>
-              <div className="flex gap-2 flex-wrap">
-                {flatProject.isolation_murs && <Badge variant="secondary">Murs</Badge>}
-                {flatProject.isolation_combles && <Badge variant="secondary">Combles</Badge>}
-                {flatProject.double_vitrage && <Badge variant="secondary">Double vitrage</Badge>}
-                {!flatProject.isolation_murs && !flatProject.isolation_combles && !flatProject.double_vitrage && (
-                  <span className="text-sm text-muted-foreground">Aucune isolation déclarée</span>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Current vs Future Consumption */}
         <Card>
           <CardHeader>
@@ -479,43 +438,6 @@ export default async function HeatingResultsPage({ params }: PageProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Technical Details */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Détails techniques du projet PAC</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div>
-              <p className="text-sm text-muted-foreground">Type de PAC</p>
-              <p className="font-semibold">{flatProject.type_pac}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Puissance</p>
-              <p className="font-semibold">{flatProject.puissance_pac_kw} kW</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">COP estimé</p>
-              <p className="font-semibold">{flatProject.cop_estime}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Température de départ</p>
-              <p className="font-semibold">{flatProject.temperature_depart}°C</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Émetteurs</p>
-              <p className="font-semibold">{flatProject.emetteurs}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Ballon ECS</p>
-              <p className="font-semibold">
-                {flatProject.ballon_ecs ? `Oui (${flatProject.volume_ballon}L)` : "Non"}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="mt-8 flex gap-4">
         <Link href="/projects/heating-calculator">

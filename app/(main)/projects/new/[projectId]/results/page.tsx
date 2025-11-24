@@ -1,0 +1,205 @@
+import { getProject } from "@/lib/actions/projects"
+import { notFound, redirect } from "next/navigation"
+import { calculateAllResults, ProjectData } from "../calculations"
+import { calculatePacConsumptionKwh } from "../calculations/pacConsumption"
+import { ResultsHeader } from "./components/ResultsHeader"
+import { CumulativeCostChart } from "./components/CumulativeCostChart"
+import { ConsumptionCard } from "./components/ConsumptionCard"
+import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
+import { ProfitabilityCard } from "./components/ProfitabilityCard"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Calculator } from "lucide-react"
+import { getCurrentEnergyPrice } from "@/lib/didoApi"
+
+interface PageProps {
+  params: Promise<{
+    projectId: string
+  }>
+}
+
+// Helper function to format payback period
+function formatPaybackPeriod(period: number | null): string {
+  if (!period) return ""
+
+  const years = Math.floor(period)
+  const months = Math.round((period - years) * 12)
+
+  if (months === 0) {
+    return `${years} an${years > 1 ? 's' : ''}`
+  }
+
+  return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
+}
+
+export default async function ResultsPage({ params }: PageProps) {
+  const { projectId } = await params
+  const project = await getProject(projectId)
+
+  if (!project) {
+    notFound()
+  }
+
+  // Check if all required data is present
+  if (
+    !project.chauffageActuel ||
+    !project.projetPac ||
+    !project.couts ||
+    !project.aides ||
+    !project.evolutions
+  ) {
+    redirect(`/projects/new/${projectId}/logement`)
+  }
+
+  // Si le prix de l'électricité n'est pas renseigné, le récupérer depuis l'API
+  let prixElecKwh = project.chauffageActuel.prix_elec_kwh || 0
+  if (!prixElecKwh || prixElecKwh === 0) {
+    console.log("Prix électricité non renseigné, récupération depuis l'API DIDO...")
+    prixElecKwh = await getCurrentEnergyPrice("electricite")
+    console.log(`Prix électricité récupéré: ${prixElecKwh} €/kWh`)
+  }
+
+  // Prepare data for calculations
+  const projectData: ProjectData = {
+    type_chauffage: project.chauffageActuel.type_chauffage,
+    conso_fioul_litres: project.chauffageActuel.conso_fioul_litres || undefined,
+    prix_fioul_litre: project.chauffageActuel.prix_fioul_litre || undefined,
+    conso_gaz_kwh: project.chauffageActuel.conso_gaz_kwh || undefined,
+    prix_gaz_kwh: project.chauffageActuel.prix_gaz_kwh || undefined,
+    conso_gpl_kg: project.chauffageActuel.conso_gpl_kg || undefined,
+    prix_gpl_kg: project.chauffageActuel.prix_gpl_kg || undefined,
+    conso_pellets_kg: project.chauffageActuel.conso_pellets_kg || undefined,
+    prix_pellets_kg: project.chauffageActuel.prix_pellets_kg || undefined,
+    conso_bois_steres: project.chauffageActuel.conso_bois_steres || undefined,
+    prix_bois_stere: project.chauffageActuel.prix_bois_stere || undefined,
+    conso_elec_kwh: project.chauffageActuel.conso_elec_kwh || undefined,
+    prix_elec_kwh: prixElecKwh,
+    cop_actuel: project.chauffageActuel.cop_actuel || undefined,
+    conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
+    cop_estime: project.projetPac.cop_estime,
+    duree_vie_pac: project.projetPac.duree_vie_pac,
+    cout_total: project.couts.cout_total,
+    reste_a_charge: project.aides.reste_a_charge,
+    evolution_prix_fioul: project.evolutions.evolution_prix_fioul || undefined,
+    evolution_prix_gaz: project.evolutions.evolution_prix_gaz || undefined,
+    evolution_prix_gpl: project.evolutions.evolution_prix_gpl || undefined,
+    evolution_prix_bois: project.evolutions.evolution_prix_bois || undefined,
+    evolution_prix_electricite: project.evolutions.evolution_prix_electricite,
+    mode_financement: project.financement?.mode_financement || undefined,
+    montant_credit: project.financement?.montant_credit || undefined,
+    taux_interet: project.financement?.taux_interet || undefined,
+    duree_credit_mois: project.financement?.duree_credit_mois || undefined,
+    apport_personnel: project.financement?.apport_personnel || undefined,
+  }
+
+  // Calculate all results
+  const results = calculateAllResults(projectData)
+
+  // Calculate PAC consumption for ConsumptionCard
+  const pacConsumptionKwh = calculatePacConsumptionKwh(projectData)
+
+  // Get current energy price evolution based on heating type
+  let currentEnergyEvolution = 0
+  switch (projectData.type_chauffage) {
+    case "Fioul":
+      currentEnergyEvolution = projectData.evolution_prix_fioul || 0
+      break
+    case "Gaz":
+      currentEnergyEvolution = projectData.evolution_prix_gaz || 0
+      break
+    case "GPL":
+      currentEnergyEvolution = projectData.evolution_prix_gpl || 0
+      break
+    case "Pellets":
+    case "Bois":
+      currentEnergyEvolution = projectData.evolution_prix_bois || 0
+      break
+    case "Electrique":
+    case "PAC Air/Air":
+    case "PAC Air/Eau":
+    case "PAC Eau/Eau":
+      currentEnergyEvolution = projectData.evolution_prix_electricite || 0
+      break
+  }
+
+  return (
+    <div className="container mx-auto py-8 max-w-7xl space-y-8">
+      <ResultsHeader projectName={project.name} projectId={project.id} />
+
+      {/* Summary Alert */}
+      <Alert className={results.netBenefitLifetime > 0 ? "border-green-500" : "border-orange-500"}>
+        <Calculator className="h-4 w-4" />
+        <AlertTitle className="text-lg font-semibold">
+          {results.netBenefitLifetime > 0 ? "Projet rentable" : "Rentabilité limitée"}
+        </AlertTitle>
+        <AlertDescription className="mt-2">
+          {results.netBenefitLifetime > 0 ? (
+            <p>
+              {results.paybackPeriod && results.paybackYear ? (
+                <>
+                  Votre investissement sera rentabilisé en <strong className="text-green-600">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
+                  pour un bénéfice net de <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString()} €</strong> sur {projectData.duree_vie_pac} ans.
+                </>
+              ) : (
+                <>
+                  Bénéfice net sur {projectData.duree_vie_pac} ans : <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString()} €</strong>
+                </>
+              )}
+            </p>
+          ) : (
+            <p>
+              Les économies générées sur {projectData.duree_vie_pac} ans ne couvrent pas entièrement l&apos;investissement,
+              avec un déficit de <strong className="text-orange-600 text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString()} €</strong>.
+            </p>
+          )}
+        </AlertDescription>
+      </Alert>
+
+      {/* Cartes détaillées de l'ancienne version */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <ConsumptionCard
+          typeChauffage={projectData.type_chauffage}
+          typePac={project.projetPac.type_pac}
+          copEstime={projectData.cop_estime}
+          coutAnnuelActuel={results.coutAnnuelActuel}
+          coutAnnuelPac={results.coutAnnuelPac}
+          economiesAnnuelles={results.economiesAnnuelles}
+          pacConsumptionKwh={pacConsumptionKwh}
+          coutTotalActuelLifetime={results.coutTotalActuelLifetime}
+          coutTotalPacLifetime={results.coutTotalPacLifetime}
+          dureeVie={projectData.duree_vie_pac}
+        />
+        <FinancialSummaryCard
+          coutPac={project.couts.cout_pac}
+          coutInstallation={project.couts.cout_installation}
+          coutTravauxAnnexes={project.couts.cout_travaux_annexes || undefined}
+          coutTotal={project.couts.cout_total}
+          maPrimeRenov={project.aides.ma_prime_renov || undefined}
+          cee={project.aides.cee || undefined}
+          autresAides={project.aides.autres_aides || undefined}
+          totalAides={project.aides.total_aides}
+          resteACharge={project.aides.reste_a_charge}
+          modeFinancement={project.financement?.mode_financement || undefined}
+          mensualite={results.mensualiteCredit}
+        />
+        <ProfitabilityCard
+          paybackPeriod={results.paybackPeriod}
+          paybackYear={results.paybackYear}
+          totalSavingsLifetime={results.totalSavingsLifetime}
+          resteACharge={projectData.reste_a_charge}
+          netBenefit={results.netBenefitLifetime}
+          dureeVie={projectData.duree_vie_pac}
+          currentEnergyEvolution={currentEnergyEvolution}
+          electricityEvolution={projectData.evolution_prix_electricite}
+          tauxRentabilite={results.tauxRentabilite}
+        />
+      </div>
+
+      {/* Graphique principal des coûts cumulés */}
+      <CumulativeCostChart
+        yearlyData={results.yearlyData}
+        investmentCost={projectData.reste_a_charge}
+        paybackYear={results.paybackYear}
+      />
+    </div>
+  )
+}
