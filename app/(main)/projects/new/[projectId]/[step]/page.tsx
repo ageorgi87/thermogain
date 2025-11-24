@@ -38,6 +38,8 @@ import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
 import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Info } from "lucide-react"
 import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
 import { saveCostsData } from "./sections/costs/costsActions"
@@ -48,6 +50,15 @@ import { getProject } from "@/lib/actions/projects"
 import { fetchEnergyPriceEvolutions } from "@/lib/actions/energyPrices"
 import { updateProjectStep } from "./updateProjectStep"
 import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
+
+const STEP_EXPLANATIONS: Record<string, string> = {
+  "chauffage-actuel": "Ces informations nous permettent d'évaluer votre consommation énergétique actuelle, son coût annuel, et le rendement de votre installation. Cette analyse servira de référence pour comparer les économies potentielles avec une pompe à chaleur.",
+  "projet-pac": "Les caractéristiques de la pompe à chaleur (type, puissance, COP) déterminent son efficacité et sa compatibilité avec votre logement. Ces données sont essentielles pour estimer précisément vos futures consommations et économies.",
+  "couts": "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
+  "aides": "Les aides financières disponibles (MaPrimeRénov', CEE, etc.) réduisent significativement votre reste à charge. Nous les prenons en compte pour calculer le retour sur investissement réel de votre projet.",
+  "financement": "Votre mode de financement (comptant, crédit) impacte directement le coût total du projet et les mensualités. Ces informations permettent d'évaluer l'effort financier mensuel et le coût global incluant les intérêts.",
+  "evolutions": "L'évolution prévue des prix de l'énergie influence fortement vos économies futures. Ces projections permettent d'estimer le gain financier sur 10, 15 ou 20 ans et d'anticiper la rentabilité de votre investissement.",
+}
 
 const DEFAULT_VALUES = {
   "chauffage-actuel": {
@@ -336,6 +347,14 @@ export default function WizardStepPage() {
           />
         </div>
       </div>
+
+      {/* Step explanation */}
+      <Alert className="mb-6 bg-blue-50 border-blue-200">
+        <Info className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-900">
+          {STEP_EXPLANATIONS[step as string] || currentStep.description}
+        </AlertDescription>
+      </Alert>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
