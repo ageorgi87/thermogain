@@ -183,14 +183,6 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
       {/* If user KNOWS consumption: show consumption fields */}
       {watchConnaitConsommation === true && (
         <>
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Renseignez votre consommation énergétique annuelle et le prix que vous payez actuellement.
-              Ces informations se trouvent généralement sur vos factures.
-            </AlertDescription>
-          </Alert>
-
           {/* Consumption fields - conditional based on type_chauffage */}
           {watchTypeChauffage === "Fioul" && (
             <div className="grid grid-cols-2 gap-4">
