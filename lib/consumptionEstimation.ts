@@ -1,7 +1,11 @@
 /**
  * Estimation de la consommation énergétique annuelle basée sur les caractéristiques du logement
  * Méthode inspirée du DPE (Diagnostic de Performance Énergétique) et des coefficients de déperdition thermique
+ *
+ * Prise en compte des zones climatiques françaises (H1, H2, H3) selon DPE 3CL-DPE 2021
  */
+
+import { getConsumptionAdjustment } from "./climateZones"
 
 interface HousingCharacteristics {
   surface_habitable: number
@@ -10,6 +14,7 @@ interface HousingCharacteristics {
   isolation_combles: boolean
   isolation_fenetres: boolean
   nombre_occupants: number
+  code_postal?: string // Optionnel pour ajustement climatique
 }
 
 /**
@@ -69,6 +74,7 @@ function getOccupancyFactor(nombreOccupants: number): number {
 
 /**
  * Estime la consommation énergétique annuelle en kWh
+ * Prend en compte la zone climatique si le code postal est fourni
  */
 export function estimateAnnualConsumption(housing: HousingCharacteristics): number {
   const coefficientBase = getConsumptionCoefficient(
@@ -80,8 +86,15 @@ export function estimateAnnualConsumption(housing: HousingCharacteristics): numb
 
   const facteurOccupation = getOccupancyFactor(housing.nombre_occupants)
 
-  // Consommation estimée = Surface × Coefficient × Facteur occupation
-  const consommationEstimee = housing.surface_habitable * coefficientBase * facteurOccupation
+  // Ajustement selon la zone climatique (si code postal fourni)
+  let facteurClimatique = 1.0
+  if (housing.code_postal) {
+    facteurClimatique = getConsumptionAdjustment(housing.code_postal)
+    console.log(`🌡️ Ajustement climatique (${housing.code_postal}): ${(facteurClimatique * 100 - 100).toFixed(0)}%`)
+  }
+
+  // Consommation estimée = Surface × Coefficient × Facteur occupation × Facteur climatique
+  const consommationEstimee = housing.surface_habitable * coefficientBase * facteurOccupation * facteurClimatique
 
   return Math.round(consommationEstimee)
 }

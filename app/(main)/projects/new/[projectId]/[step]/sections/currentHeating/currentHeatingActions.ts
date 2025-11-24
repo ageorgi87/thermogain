@@ -173,9 +173,10 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
       isolation_combles: validatedData.isolation_combles!,
       isolation_fenetres: validatedData.isolation_fenetres!,
       nombre_occupants: validatedData.nombre_occupants!,
+      code_postal: validatedData.code_postal, // Ajout pour la zone climatique
     }
 
-    // Estimate consumption based on energy type
+    // Estimate consumption based on energy type (avec ajustement climatique)
     const estimationInitiale = estimateConsumptionByEnergyType(housingData, validatedData.type_chauffage)
 
     // Ajuster l'estimation selon le rendement réel de l'installation (âge + état)
