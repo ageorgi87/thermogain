@@ -181,16 +181,8 @@ export default function WizardStepPage() {
             form.reset(cleanedData)
           } else if (step === "chauffage-actuel" && !sectionData) {
             // Si on est sur l'étape chauffage-actuel et qu'il n'y a pas de données sauvegardées,
-            // charger les prix par défaut depuis le cache
-            const defaultPrices = await getDefaultEnergyPrices()
-            const defaultValues = { ...DEFAULT_VALUES["chauffage-actuel"] }
-
-            // Mettre à jour les prix selon le type de chauffage (arrondi à 2 décimales)
-            if (defaultValues.type_chauffage === "Gaz") {
-              defaultValues.prix_gaz_kwh = Math.round(defaultPrices.gaz * 100) / 100
-            }
-
-            form.reset(defaultValues)
+            // utiliser les valeurs par défaut (les prix seront mis à jour par le second useEffect)
+            form.reset(DEFAULT_VALUES["chauffage-actuel"])
           } else if (step === "evolutions" && !sectionData) {
             // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
             // charger les taux d'évolution depuis l'API DIDO
@@ -213,55 +205,49 @@ export default function WizardStepPage() {
 
   // Load default energy prices when user changes heating type (only on chauffage-actuel step)
   useEffect(() => {
-    if (step !== "chauffage-actuel" || !watchTypeChauffage || isLoading) {
+    if (step !== "chauffage-actuel" || !watchTypeChauffage || isLoading || !defaultPrices) {
       return
     }
 
-    const updateDefaultPrice = async () => {
-      const defaultPrices = await getDefaultEnergyPrices()
-
-      // Only update the price field if it's empty or zero
-      switch (watchTypeChauffage) {
-        case "Fioul":
-          if (!form.getValues("prix_fioul_litre") || form.getValues("prix_fioul_litre") === 0) {
-            form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 100) / 100)
-          }
-          break
-        case "Gaz":
-          if (!form.getValues("prix_gaz_kwh") || form.getValues("prix_gaz_kwh") === 0) {
-            form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 100) / 100)
-          }
-          break
-        case "GPL":
-          if (!form.getValues("prix_gpl_kg") || form.getValues("prix_gpl_kg") === 0) {
-            form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 100) / 100)
-          }
-          break
-        case "Pellets":
-          if (!form.getValues("prix_pellets_kg") || form.getValues("prix_pellets_kg") === 0) {
-            form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 100) / 100)
-          }
-          break
-        case "Bois":
-          // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
-          const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 100) / 100
-          if (!form.getValues("prix_bois_stere") || form.getValues("prix_bois_stere") === 0) {
-            form.setValue("prix_bois_stere", prixBoisStere)
-          }
-          break
-        case "Electrique":
-        case "PAC Air/Air":
-        case "PAC Air/Eau":
-        case "PAC Eau/Eau":
-          if (!form.getValues("prix_elec_kwh") || form.getValues("prix_elec_kwh") === 0) {
-            form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 100) / 100)
-          }
-          break
-      }
+    // Only update the price field if it's empty or zero
+    switch (watchTypeChauffage) {
+      case "Fioul":
+        if (!form.getValues("prix_fioul_litre") || form.getValues("prix_fioul_litre") === 0) {
+          form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 100) / 100)
+        }
+        break
+      case "Gaz":
+        if (!form.getValues("prix_gaz_kwh") || form.getValues("prix_gaz_kwh") === 0) {
+          form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 100) / 100)
+        }
+        break
+      case "GPL":
+        if (!form.getValues("prix_gpl_kg") || form.getValues("prix_gpl_kg") === 0) {
+          form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 100) / 100)
+        }
+        break
+      case "Pellets":
+        if (!form.getValues("prix_pellets_kg") || form.getValues("prix_pellets_kg") === 0) {
+          form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 100) / 100)
+        }
+        break
+      case "Bois":
+        // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
+        const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 100) / 100
+        if (!form.getValues("prix_bois_stere") || form.getValues("prix_bois_stere") === 0) {
+          form.setValue("prix_bois_stere", prixBoisStere)
+        }
+        break
+      case "Electrique":
+      case "PAC Air/Air":
+      case "PAC Air/Eau":
+      case "PAC Eau/Eau":
+        if (!form.getValues("prix_elec_kwh") || form.getValues("prix_elec_kwh") === 0) {
+          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 100) / 100)
+        }
+        break
     }
-
-    updateDefaultPrice()
-  }, [watchTypeChauffage, step, isLoading, form])
+  }, [watchTypeChauffage, step, isLoading, defaultPrices, form])
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true)
