@@ -185,9 +185,9 @@ export default function WizardStepPage() {
             const defaultPrices = await getDefaultEnergyPrices()
             const defaultValues = { ...DEFAULT_VALUES["chauffage-actuel"] }
 
-            // Mettre à jour les prix selon le type de chauffage
+            // Mettre à jour les prix selon le type de chauffage (arrondi à 2 décimales)
             if (defaultValues.type_chauffage === "Gaz") {
-              defaultValues.prix_gaz_kwh = defaultPrices.gaz
+              defaultValues.prix_gaz_kwh = Math.round(defaultPrices.gaz * 100) / 100
             }
 
             form.reset(defaultValues)
@@ -224,22 +224,22 @@ export default function WizardStepPage() {
       switch (watchTypeChauffage) {
         case "Fioul":
           if (!form.getValues("prix_fioul_litre") || form.getValues("prix_fioul_litre") === 0) {
-            form.setValue("prix_fioul_litre", defaultPrices.fioul)
+            form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 100) / 100)
           }
           break
         case "Gaz":
           if (!form.getValues("prix_gaz_kwh") || form.getValues("prix_gaz_kwh") === 0) {
-            form.setValue("prix_gaz_kwh", defaultPrices.gaz)
+            form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 100) / 100)
           }
           break
         case "GPL":
           if (!form.getValues("prix_gpl_kg") || form.getValues("prix_gpl_kg") === 0) {
-            form.setValue("prix_gpl_kg", defaultPrices.gpl)
+            form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 100) / 100)
           }
           break
         case "Pellets":
           if (!form.getValues("prix_pellets_kg") || form.getValues("prix_pellets_kg") === 0) {
-            form.setValue("prix_pellets_kg", defaultPrices.bois)
+            form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 100) / 100)
           }
           break
         case "Bois":
@@ -254,7 +254,7 @@ export default function WizardStepPage() {
         case "PAC Air/Eau":
         case "PAC Eau/Eau":
           if (!form.getValues("prix_elec_kwh") || form.getValues("prix_elec_kwh") === 0) {
-            form.setValue("prix_elec_kwh", defaultPrices.electricite)
+            form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 100) / 100)
           }
           break
       }
