@@ -20,9 +20,7 @@ export const housingSchema = z.object({
     .number()
     .min(1, "Il doit y avoir au moins 1 occupant")
     .max(20, "Le nombre d'occupants ne peut pas dépasser 20"),
-  isolation_murs: z.boolean(),
-  isolation_combles: z.boolean(),
-  double_vitrage: z.boolean(),
+  qualite_isolation: z.enum(["Mauvaise", "Moyenne", "Bonne"]),
 })
 
 export type HousingData = z.infer<typeof housingSchema>

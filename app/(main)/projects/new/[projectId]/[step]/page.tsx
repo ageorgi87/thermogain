@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react"
 import {
+  housingSchema as logementSchema,
+  type HousingData as LogementData,
+} from "./sections/housing/housingSchema"
+import {
   currentHeatingSchema as chauffageActuelSchema,
   type CurrentHeatingData as ChauffageActuelData,
 } from "./sections/currentHeating/currentHeatingSchema"
@@ -31,6 +35,7 @@ import {
   evolutionsSchema,
   type EvolutionsData,
 } from "./sections/evolutions/evolutionsSchema"
+import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
 import { CoutsFields } from "./sections/costs/costsFields"
@@ -40,18 +45,19 @@ import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Info } from "lucide-react"
+import { saveHousingData } from "./sections/housing/housingActions"
 import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
 import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
 import { saveFinancingData } from "./sections/financing/financingActions"
-import { saveEvolutionsData } from "./sections/evolutions/evolutionsActions"
+import { saveEvolutionsData, getDefaultEvolutions } from "./sections/evolutions/evolutionsActions"
 import { getProject } from "@/lib/actions/projects"
-import { fetchEnergyPriceEvolutions } from "@/lib/actions/energyPrices"
 import { updateProjectStep } from "./updateProjectStep"
 import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
 
 const STEP_EXPLANATIONS: Record<string, string> = {
+  "logement": "Les caractéristiques de votre logement (surface, isolation, année de construction) sont essentielles pour estimer avec précision vos besoins en chauffage, dimensionner correctement la pompe à chaleur, et calculer les économies potentielles.",
   "chauffage-actuel": "Ces informations nous permettent d'évaluer votre consommation énergétique actuelle, son coût annuel, et le rendement de votre installation. Cette analyse servira de référence pour comparer les économies potentielles avec une pompe à chaleur.",
   "projet-pac": "Les caractéristiques de la pompe à chaleur (type, puissance, COP) déterminent son efficacité et sa compatibilité avec votre logement. Ces données sont essentielles pour estimer précisément vos futures consommations et économies.",
   "couts": "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
@@ -61,11 +67,17 @@ const STEP_EXPLANATIONS: Record<string, string> = {
 }
 
 const DEFAULT_VALUES = {
+  "logement": {
+    code_postal: "75001",
+    annee_construction: 2000,
+    surface_habitable: 100,
+    nombre_occupants: 3,
+    qualite_isolation: "Moyenne",
+  },
   "chauffage-actuel": {
     type_chauffage: "Gaz",
     age_installation: 10,
     etat_installation: "Moyen",
-    code_postal: "75001",
     connait_consommation: true,
     conso_gaz_kwh: 12000,
     prix_gaz_kwh: 0.09,
@@ -76,8 +88,6 @@ const DEFAULT_VALUES = {
     cop_estime: 3.5,
     temperature_depart: 55,
     emetteurs: "Radiateurs basse température",
-    ballon_ecs: true,
-    volume_ballon: 200,
   },
   couts: {
     cout_pac: 8000,
@@ -110,6 +120,7 @@ const DEFAULT_VALUES = {
 }
 
 const SCHEMAS = {
+  "logement": logementSchema,
   "chauffage-actuel": chauffageActuelSchema,
   "projet-pac": projetPacSchema,
   couts: coutsSchema,
@@ -134,6 +145,7 @@ export default function WizardStepPage() {
     bois: number
     electricite: number
   } | undefined>(undefined)
+  const [evolutionsLastUpdated, setEvolutionsLastUpdated] = useState<Date | undefined>(undefined)
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -150,7 +162,6 @@ export default function WizardStepPage() {
 
   const watchTypeChauffage = form.watch("type_chauffage")
   const watchModeFinancement = form.watch("mode_financement")
-  const watchBallonEcs = form.watch("ballon_ecs")
 
   // Load existing data if any
   useEffect(() => {
@@ -172,6 +183,7 @@ export default function WizardStepPage() {
 
           // Map step key to database field name
           const sectionMap: Record<string, string> = {
+            "logement": "logement",
             "chauffage-actuel": "chauffageActuel",
             "projet-pac": "projetPac",
             "couts": "couts",
@@ -197,11 +209,10 @@ export default function WizardStepPage() {
             form.reset(DEFAULT_VALUES["chauffage-actuel"])
           } else if (step === "evolutions" && !sectionData) {
             // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
-            // charger les taux d'évolution depuis l'API DIDO
-            const evolutionsResult = await fetchEnergyPriceEvolutions()
-            if (evolutionsResult.success) {
-              form.reset(evolutionsResult.data)
-            }
+            // charger les taux d'évolution depuis le cache
+            const defaultEvolutions = await getDefaultEvolutions()
+            setEvolutionsLastUpdated(defaultEvolutions.lastUpdated)
+            form.reset(defaultEvolutions)
           }
 
         }
@@ -266,6 +277,9 @@ export default function WizardStepPage() {
     try {
       // Call the appropriate Server Action based on current step
       switch (step) {
+        case "logement":
+          await saveHousingData(projectId, data)
+          break
         case "chauffage-actuel":
           await saveCurrentHeatingData(projectId, data)
           break
@@ -361,12 +375,13 @@ export default function WizardStepPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardContent className="pt-6">
+              {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
-              {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
+              {step === "projet-pac" && <ProjetPacFields form={form as any} />}
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}
               {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} />}
-              {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} />}
+              {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
             </CardContent>
           </Card>
 

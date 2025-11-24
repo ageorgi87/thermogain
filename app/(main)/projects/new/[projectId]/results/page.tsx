@@ -2,13 +2,14 @@ import { getProject } from "@/lib/actions/projects"
 import { notFound, redirect } from "next/navigation"
 import { calculateAllResults, ProjectData } from "../calculations"
 import { calculatePacConsumptionKwh } from "../calculations/pacConsumption"
+import { validatePacPower } from "@/lib/copAdjustments"
 import { ResultsHeader } from "./components/ResultsHeader"
 import { CumulativeCostChart } from "./components/CumulativeCostChart"
 import { ConsumptionCard } from "./components/ConsumptionCard"
 import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
 import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Calculator } from "lucide-react"
+import { Calculator, AlertTriangle } from "lucide-react"
 import { getCurrentEnergyPrice } from "@/lib/didoApi"
 
 interface PageProps {
@@ -41,6 +42,7 @@ export default async function ResultsPage({ params }: PageProps) {
 
   // Check if all required data is present
   if (
+    !project.logement ||
     !project.chauffageActuel ||
     !project.projetPac ||
     !project.couts ||
@@ -49,6 +51,13 @@ export default async function ResultsPage({ params }: PageProps) {
   ) {
     redirect(`/projects/new/${projectId}/logement`)
   }
+
+  // Validate PAC power based on housing characteristics
+  const powerValidation = validatePacPower(
+    project.projetPac.puissance_pac_kw,
+    project.logement.surface_habitable,
+    project.logement.annee_construction
+  )
 
   // Si le prix de l'électricité n'est pas renseigné, le récupérer depuis l'API
   let prixElecKwh = project.chauffageActuel.prix_elec_kwh || 0
@@ -75,8 +84,13 @@ export default async function ResultsPage({ params }: PageProps) {
     prix_elec_kwh: prixElecKwh,
     cop_actuel: project.chauffageActuel.cop_actuel || undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
+    type_pac: project.projetPac.type_pac,
+    puissance_pac_kw: project.projetPac.puissance_pac_kw,
     cop_estime: project.projetPac.cop_estime,
+    temperature_depart: project.projetPac.temperature_depart,
+    emetteurs: project.projetPac.emetteurs,
     duree_vie_pac: project.projetPac.duree_vie_pac,
+    code_postal: project.logement.code_postal || undefined,
     cout_total: project.couts.cout_total,
     reste_a_charge: project.aides.reste_a_charge,
     evolution_prix_fioul: project.evolutions.evolution_prix_fioul || undefined,
@@ -124,6 +138,21 @@ export default async function ResultsPage({ params }: PageProps) {
   return (
     <div className="container mx-auto py-8 max-w-7xl space-y-8">
       <ResultsHeader projectName={project.name} projectId={project.id} />
+
+      {/* Power Validation Warning */}
+      {!powerValidation.isValid && (
+        <Alert variant="destructive" className="border-orange-500 bg-orange-50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Attention : Dimensionnement de la PAC</AlertTitle>
+          <AlertDescription>
+            <p className="mb-2">{powerValidation.message}</p>
+            <p className="text-sm">
+              Pour un logement de {project.logement.surface_habitable} m² construit en {project.logement.annee_construction},
+              une puissance de {powerValidation.recommendedPowerMin} à {powerValidation.recommendedPowerMax} kW est recommandée.
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Summary Alert */}
       <Alert className={results.netBenefitLifetime > 0 ? "border-green-500" : "border-orange-500"}>

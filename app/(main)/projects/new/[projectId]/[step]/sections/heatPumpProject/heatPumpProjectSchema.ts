@@ -11,8 +11,6 @@ export const heatPumpProjectSchema = z.object({
     "Plancher chauffant",
     "Ventilo-convecteurs",
   ]),
-  ballon_ecs: z.boolean(),
-  volume_ballon: z.number().optional(),
   duree_vie_pac: z.number().min(5).max(30).default(17),
 })
 

@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   FormControl,
   FormField,
@@ -14,15 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
 import { HeatPumpProjectData } from "./heatPumpProjectSchema"
 
 interface ProjetPacFieldsProps {
   form: UseFormReturn<HeatPumpProjectData>
-  watchBallonEcs: boolean
 }
 
-export function ProjetPacFields({ form, watchBallonEcs }: ProjetPacFieldsProps) {
+export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
   return (
     <div className="space-y-4">
       <FormField
@@ -73,7 +73,18 @@ export function ProjetPacFields({ form, watchBallonEcs }: ProjetPacFieldsProps) 
           name="cop_estime"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>COP estimé</FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                COP estimé
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Indiquez le COP fabricant (disponible sur la fiche technique).</p>
+                    <p className="mt-1">Un coefficient régional sera automatiquement appliqué selon votre zone climatique.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -156,46 +167,6 @@ export function ProjetPacFields({ form, watchBallonEcs }: ProjetPacFieldsProps) 
           </FormItem>
         )}
       />
-
-      <FormField
-        control={form.control}
-        name="ballon_ecs"
-        render={({ field }) => (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-            <div className="space-y-1 leading-none">
-              <FormLabel>
-                Ballon d&apos;eau chaude sanitaire (ECS)
-              </FormLabel>
-            </div>
-          </FormItem>
-        )}
-      />
-
-      {watchBallonEcs && (
-        <FormField
-          control={form.control}
-          name="volume_ballon"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Volume du ballon (litres)</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
     </div>
   )
 }

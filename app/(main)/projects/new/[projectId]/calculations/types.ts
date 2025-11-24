@@ -18,8 +18,15 @@ export interface ProjectData {
   conso_pac_kwh?: number
 
   // Projet PAC
+  type_pac: string
+  puissance_pac_kw: number
   cop_estime: number
+  temperature_depart: number
+  emetteurs: string
   duree_vie_pac: number
+
+  // Code postal pour ajustement climatique COP
+  code_postal?: string
 
   // Coûts
   cout_total: number

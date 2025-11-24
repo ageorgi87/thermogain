@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   FormControl,
   FormField,
@@ -8,6 +7,13 @@ import {
   FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
 import { HousingData } from "./housingSchema"
 
@@ -95,60 +101,34 @@ export function HousingFields({ form }: HousingFieldsProps) {
         )}
       />
 
-      <div className="space-y-3">
-        <FormLabel>Isolation et équipements</FormLabel>
-        <FormField
-          control={form.control}
-          name="isolation_murs"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+      <FormField
+        control={form.control}
+        name="qualite_isolation"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Qualité globale de l&apos;isolation</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez la qualité de l'isolation" />
+                </SelectTrigger>
               </FormControl>
-              <FormLabel className="font-normal">
-                Isolation des murs
-              </FormLabel>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="isolation_combles"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormLabel className="font-normal">
-                Isolation des combles
-              </FormLabel>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="double_vitrage"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormLabel className="font-normal">
-                Double vitrage
-              </FormLabel>
-            </FormItem>
-          )}
-        />
-      </div>
+              <SelectContent>
+                <SelectItem value="Mauvaise">
+                  Mauvaise - Aucune isolation ou isolation minimale
+                </SelectItem>
+                <SelectItem value="Moyenne">
+                  Moyenne - Isolation partielle (quelques éléments isolés)
+                </SelectItem>
+                <SelectItem value="Bonne">
+                  Bonne - Logement bien isolé (la plupart des éléments isolés)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   )
 }

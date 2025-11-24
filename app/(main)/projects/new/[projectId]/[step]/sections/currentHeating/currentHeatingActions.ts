@@ -165,15 +165,22 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
 
   // If user doesn't know consumption, estimate it based on housing characteristics
   if (!validatedData.connait_consommation) {
-    // Housing data is required for estimation (validated by schema)
+    // Récupérer les données du logement depuis l'étape 1 (ProjectLogement)
+    const logement = await prisma.projectLogement.findUnique({
+      where: { projectId }
+    })
+
+    if (!logement) {
+      throw new Error("Les informations du logement sont requises. Veuillez d'abord remplir l'étape Logement.")
+    }
+
+    // Housing data from Step 1
     const housingData = {
-      surface_habitable: validatedData.surface_habitable!,
-      annee_construction: validatedData.annee_construction!,
-      isolation_murs: validatedData.isolation_murs!,
-      isolation_combles: validatedData.isolation_combles!,
-      isolation_fenetres: validatedData.isolation_fenetres!,
-      nombre_occupants: validatedData.nombre_occupants!,
-      code_postal: validatedData.code_postal, // Ajout pour la zone climatique
+      surface_habitable: logement.surface_habitable,
+      annee_construction: logement.annee_construction,
+      qualite_isolation: logement.qualite_isolation,
+      nombre_occupants: logement.nombre_occupants,
+      code_postal: logement.code_postal, // Code postal pour zone climatique
     }
 
     // Estimate consumption based on energy type (avec ajustement climatique)

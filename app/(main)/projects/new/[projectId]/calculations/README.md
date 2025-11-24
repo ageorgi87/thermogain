@@ -633,10 +633,64 @@ COP = Énergie thermique fournie / Énergie électrique consommée
 
 **Source** : ADEME, Étude de performances réelles 2023-2024 sur 100 foyers
 
+### Ajustement du COP Fabricant
+
+Le COP fabricant est mesuré dans des conditions optimales (7°C extérieur / 35°C eau de chauffage). En réalité, le COP varie selon plusieurs facteurs :
+
+#### 1. Température de départ de l'eau
+
+Plus la température de départ est élevée, plus le COP diminue.
+
+**Référence** : Courbes de performance constructeurs PAC air/eau
+
+| Température | Type d'émetteurs | Coefficient d'ajustement |
+|-------------|------------------|-------------------------|
+| ≤ 35°C | Plancher chauffant | 1.00 (référence) |
+| ≤ 40°C | Plancher + radiateurs BT | 0.95 |
+| ≤ 45°C | Radiateurs basse température | 0.85 |
+| ≤ 50°C | Radiateurs moyenne température (début) | 0.80 |
+| ≤ 55°C | Radiateurs moyenne température | 0.75 |
+| ≤ 60°C | Radiateurs haute température (début) | 0.70 |
+| > 60°C | Radiateurs haute température | 0.65 |
+
+**Impact** : Une PAC avec radiateurs haute température (65°C) aura un COP réduit de 35% par rapport à un plancher chauffant (35°C).
+
+#### 2. Type d'émetteurs
+
+Le type d'émetteur influence la température nécessaire et donc le COP.
+
+| Type d'émetteurs | Température requise | Coefficient d'ajustement | Commentaire |
+|------------------|--------------------|-----------------------|-------------|
+| **Plancher chauffant** | 30-35°C | 1.00 | Optimal pour PAC |
+| **Ventilo-convecteurs** | 35-45°C | 0.95 | Excellent échange thermique |
+| **Radiateurs basse température** | 45-50°C | 0.90 | Bon compromis |
+| **Radiateurs haute température** | 60-70°C | 0.70 | COP fortement dégradé |
+
+#### 3. Zone climatique
+
+L'ajustement climatique est déjà documenté dans la section [Zones Climatiques Françaises](#zones-climatiques-françaises).
+
+#### 4. COP Ajusté Final
+
+```typescript
+COP_ajusté = COP_fabricant × Facteur_température × Facteur_émetteurs × Facteur_climatique
+```
+
+**Exemple concret** :
+- **COP fabricant** : 4.0
+- **Installation** : Radiateurs moyenne température (55°C) à Strasbourg
+- **Calcul** :
+  - Facteur température (55°C) : 0.75
+  - Facteur émetteurs (radiateurs MT) : non appliqué (déjà inclus dans la température)
+  - Facteur climatique (Strasbourg H1b) : 0.90
+  - **COP ajusté** : 4.0 × 0.75 × 0.90 = **2.70**
+
+**Impact** : Le COP réel est réduit de 32.5% par rapport au COP fabricant !
+
 ### Formule de Calcul
 
 ```
-Consommation_PAC (kWh élec) = Demande_chaleur (kWh) / COP
+Consommation_PAC (kWh élec) = Demande_chaleur (kWh) / COP_ajusté
 ```
 
 ### Exemple de Calcul Complet

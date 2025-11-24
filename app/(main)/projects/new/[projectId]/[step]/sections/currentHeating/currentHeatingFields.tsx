@@ -140,27 +140,6 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
         />
       </div>
 
-      <FormField
-        control={form.control}
-        name="code_postal"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Code postal</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="ex: 75001, 67000, 13001"
-                maxLength={5}
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>
-              Permet d&apos;ajuster les calculs selon votre zone climatique
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
       {/* Question: connaît sa consommation? */}
       <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
         <FormField
@@ -566,131 +545,15 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
         </>
       )}
 
-      {/* If user DOESN'T KNOW consumption: show housing fields for estimation */}
+      {/* If user DOESN'T KNOW consumption: inform that we'll use housing data from Step 1 */}
       {watchConnaitConsommation === false && (
-        <>
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Renseignez les caractéristiques de votre logement. Nous estimerons votre consommation
-              énergétique en nous basant sur la méthode DPE (Diagnostic de Performance Énergétique).
-            </AlertDescription>
-          </Alert>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="annee_construction"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Année de construction</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="surface_habitable"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Surface habitable (m²)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="nombre_occupants"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre d&apos;occupants</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="space-y-3">
-            <FormLabel>Isolation et équipements</FormLabel>
-            <FormField
-              control={form.control}
-              name="isolation_murs"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value ?? false}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    Isolation des murs
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isolation_combles"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value ?? false}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    Isolation des combles
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isolation_fenetres"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value ?? false}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    Double vitrage / fenêtres isolantes
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-          </div>
-        </>
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Nous utiliserons les caractéristiques de votre logement (renseignées à l&apos;étape précédente)
+            pour estimer votre consommation énergétique selon la méthode DPE (Diagnostic de Performance Énergétique).
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   )
