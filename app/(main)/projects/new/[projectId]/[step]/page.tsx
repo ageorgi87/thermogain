@@ -115,6 +115,13 @@ export default function WizardStepPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [typeChauffage, setTypeChauffage] = useState<string | undefined>(undefined)
+  const [defaultPrices, setDefaultPrices] = useState<{
+    fioul: number
+    gaz: number
+    gpl: number
+    bois: number
+    electricite: number
+  } | undefined>(undefined)
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -138,6 +145,12 @@ export default function WizardStepPage() {
     const loadData = async () => {
       try {
         const project = await getProject(projectId)
+
+        // Load default prices for chauffage-actuel step
+        if (step === "chauffage-actuel") {
+          const prices = await getDefaultEnergyPrices()
+          setDefaultPrices(prices)
+        }
 
         if (project) {
           // Store type_chauffage for evolutions step
@@ -342,7 +355,7 @@ export default function WizardStepPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardContent className="pt-6">
-              {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} />}
+              {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} watchBallonEcs={watchBallonEcs as boolean} />}
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}

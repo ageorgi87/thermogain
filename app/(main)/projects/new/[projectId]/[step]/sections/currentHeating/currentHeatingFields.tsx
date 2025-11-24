@@ -1,10 +1,10 @@
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
@@ -19,13 +19,50 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { UseFormReturn } from "react-hook-form"
 import { CurrentHeatingData } from "./currentHeatingSchema"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Info } from "lucide-react"
+import { Info, HelpCircle } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface ChauffageActuelFieldsProps {
   form: UseFormReturn<CurrentHeatingData>
+  defaultPrices?: {
+    fioul: number
+    gaz: number
+    gpl: number
+    bois: number
+    electricite: number
+  }
 }
 
-export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
+// Helper component for price label with tooltip
+function PriceLabelWithTooltip({ label, price, unit }: { label: string; price?: number; unit: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span>{label}</span>
+      {price && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[300px]">
+              <p className="text-sm">
+                Le prix moyen national est de <span className="font-semibold">{price.toFixed(price < 1 ? 4 : 2)} {unit}</span>,
+                il a été mis à jour ce mois-ci.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </div>
+  )
+}
+
+export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFieldsProps) {
   const watchTypeChauffage = form.watch("type_chauffage")
   const watchConnaitConsommation = form.watch("connait_consommation")
 
@@ -180,7 +217,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_fioul_litre"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/litre)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/litre)"
+                        price={defaultPrices?.fioul}
+                        unit="€/litre"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -222,7 +265,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_gaz_kwh"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/kWh)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/kWh)"
+                        price={defaultPrices?.gaz}
+                        unit="€/kWh"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -264,7 +313,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_gpl_kg"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/kg)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/kg)"
+                        price={defaultPrices?.gpl}
+                        unit="€/kg"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -306,7 +361,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_pellets_kg"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/kg)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/kg)"
+                        price={defaultPrices?.bois}
+                        unit="€/kg"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -348,7 +409,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_bois_stere"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/stère)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/stère)"
+                        price={defaultPrices?.bois ? defaultPrices.bois * 416.67 : undefined}
+                        unit="€/stère"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -390,7 +457,13 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                 name="prix_elec_kwh"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix (€/kWh)</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix (€/kWh)"
+                        price={defaultPrices?.electricite}
+                        unit="€/kWh"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -410,17 +483,62 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
           {(watchTypeChauffage === "PAC Air/Air" ||
             watchTypeChauffage === "PAC Air/Eau" ||
             watchTypeChauffage === "PAC Eau/Eau") && (
-            <div className="grid grid-cols-2 gap-4">
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="cop_actuel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>COP actuel</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="conso_pac_kwh"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Consommation (kWh/an)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="cop_actuel"
+                name="prix_elec_kwh"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>COP actuel</FormLabel>
+                    <FormLabel>
+                      <PriceLabelWithTooltip
+                        label="Prix de l'électricité (€/kWh)"
+                        price={defaultPrices?.electricite}
+                        unit="€/kWh"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.1"
+                        step="0.001"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -430,25 +548,7 @@ export function ChauffageActuelFields({ form }: ChauffageActuelFieldsProps) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="conso_pac_kwh"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Consommation (kWh/an)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            </>
           )}
         </>
       )}
