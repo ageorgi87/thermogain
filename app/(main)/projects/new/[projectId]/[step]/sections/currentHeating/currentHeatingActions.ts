@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { currentHeatingSchema, type CurrentHeatingData } from "./currentHeatingSchema"
 import { estimateConsumptionByEnergyType } from "@/lib/consumptionEstimation"
 import { getCachedEnergyPrice } from "@/lib/energyPriceCache"
+import { calculateBoilerEfficiency, FUEL_ENERGY_CONTENT, calculateHeatDemand } from "@/lib/boilerEfficiency"
 
 /**
  * Récupère les prix par défaut de l'énergie depuis le cache
@@ -41,6 +42,60 @@ export async function getDefaultEnergyPrices() {
   }
 }
 
+/**
+ * Calcule le rendement réel de l'installation actuelle et ajuste la consommation
+ * Cette fonction prend en compte l'âge et l'état de l'installation pour calculer
+ * le rendement réel, puis ajuste la consommation estimée en conséquence
+ */
+function adjustConsumptionForEfficiency(
+  typeChauffage: string,
+  ageInstallation: number,
+  etatInstallation: "Bon" | "Moyen" | "Mauvais",
+  consumptionValue: number
+): { adjustedConsumption: number; efficiency: number } {
+  // Calculer le rendement réel de la chaudière
+  const efficiency = calculateBoilerEfficiency(
+    typeChauffage,
+    ageInstallation,
+    etatInstallation
+  )
+
+  // Pour les systèmes à combustion, ajuster la consommation en fonction du rendement
+  // La consommation estimée est basée sur une installation "moyenne"
+  // On ajuste donc selon le rendement réel vs rendement moyen
+
+  // Rendement moyen de référence utilisé dans l'estimation initiale
+  // (correspond à une installation de ~10 ans en état moyen)
+  const REFERENCE_EFFICIENCY: Record<string, number> = {
+    "Gaz": 0.82,
+    "Fioul": 0.68,
+    "GPL": 0.82,
+    "Pellets": 0.80,
+    "Bois": 0.80,
+    "Electrique": 1.0,
+    "PAC Air/Air": 1.0,
+    "PAC Air/Eau": 1.0,
+    "PAC Eau/Eau": 1.0,
+  }
+
+  const refEfficiency = REFERENCE_EFFICIENCY[typeChauffage] || 0.75
+
+  // Si le rendement réel est inférieur au rendement de référence,
+  // la consommation réelle sera plus élevée (et vice versa)
+  const adjustedConsumption = consumptionValue * (refEfficiency / efficiency)
+
+  console.log(`⚙️ Ajustement pour rendement:`)
+  console.log(`   Type: ${typeChauffage}, Âge: ${ageInstallation} ans, État: ${etatInstallation}`)
+  console.log(`   Rendement calculé: ${(efficiency * 100).toFixed(1)}%`)
+  console.log(`   Consommation estimée initiale: ${consumptionValue.toFixed(0)}`)
+  console.log(`   Consommation ajustée: ${adjustedConsumption.toFixed(0)}`)
+
+  return {
+    adjustedConsumption: Math.round(adjustedConsumption),
+    efficiency
+  }
+}
+
 export async function saveCurrentHeatingData(projectId: string, data: CurrentHeatingData) {
   const session = await auth()
 
@@ -71,7 +126,21 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
     }
 
     // Estimate consumption based on energy type
-    const estimation = estimateConsumptionByEnergyType(housingData, validatedData.type_chauffage)
+    const estimationInitiale = estimateConsumptionByEnergyType(housingData, validatedData.type_chauffage)
+
+    // Ajuster l'estimation selon le rendement réel de l'installation (âge + état)
+    const { adjustedConsumption, efficiency } = adjustConsumptionForEfficiency(
+      validatedData.type_chauffage,
+      validatedData.age_installation,
+      validatedData.etat_installation as "Bon" | "Moyen" | "Mauvais",
+      estimationInitiale.value
+    )
+
+    // Utiliser la consommation ajustée
+    const estimation = {
+      ...estimationInitiale,
+      value: adjustedConsumption
+    }
 
     // Get current energy price from cache (monthly refresh)
     let energyPrice: number
@@ -119,8 +188,10 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
         break
     }
 
-    console.log(`Consommation estimée: ${estimation.value} ${estimation.unit}`)
-    console.log(`Prix énergétique: ${energyPrice} €`)
+    console.log(`📊 Résumé de l'estimation:`)
+    console.log(`   Consommation estimée (ajustée): ${estimation.value} ${estimation.unit}`)
+    console.log(`   Prix énergétique: ${energyPrice} €`)
+    console.log(`   Rendement installation: ${(efficiency * 100).toFixed(1)}%`)
   }
 
   const chauffageActuel = await prisma.projectChauffageActuel.upsert({
