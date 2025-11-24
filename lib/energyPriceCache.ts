@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getEnergyEvolutionDetails, getCurrentEnergyPrice as fetchFromApi } from "@/lib/didoApi"
+import { getEnergyEvolution10y, getCurrentEnergyPrice as fetchFromApi } from "@/lib/didoApi"
 
 /**
  * Vérifie si les données en cache sont du mois en cours
@@ -76,10 +76,7 @@ export async function getCachedEnergyPrice(energyType: string): Promise<number> 
       create: {
         energyType,
         currentPrice,
-        evolution_1y: 0,
-        evolution_5y: 0,
-        evolution_10y: 0,
-        evolution_weighted: 0,
+        evolution_10y: 0, // Sera mis à jour par getOrUpdateEnergyPrice
         lastUpdated: new Date(),
       },
       update: {
@@ -125,6 +122,7 @@ export async function getCachedEnergyPrice(energyType: string): Promise<number> 
 /**
  * Récupère ou met à jour les données d'évolution de prix pour un type d'énergie
  * Utilise le cache si les données datent du mois en cours, sinon interroge l'API
+ * Retourne uniquement l'évolution sur 10 ans (alignée avec l'horizon d'investissement de 17 ans)
  */
 export async function getOrUpdateEnergyPrice(energyType: string) {
   try {
@@ -137,35 +135,26 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
     if (cached && isCacheValid(cached.lastUpdated)) {
       console.log(`📦 Cache hit pour ${energyType} (dernière mise à jour: ${cached.lastUpdated.toLocaleDateString()})`)
       return {
-        evolution_1y: cached.evolution_1y,
-        evolution_5y: cached.evolution_5y,
         evolution_10y: cached.evolution_10y,
-        evolution_weighted: cached.evolution_weighted,
         fromCache: true,
       }
     }
 
     // Sinon, interroger l'API DIDO
     console.log(`🌐 Récupération depuis l'API DIDO pour ${energyType}...`)
-    const evolutionData = await getEnergyEvolutionDetails(energyType)
+    const evolution10y = await getEnergyEvolution10y(energyType)
 
     // Mettre à jour ou créer dans le cache
     const updated = await prisma.energyPriceCache.upsert({
       where: { energyType },
       update: {
-        evolution_1y: evolutionData.evolution_1y,
-        evolution_5y: evolutionData.evolution_5y,
-        evolution_10y: evolutionData.evolution_10y,
-        evolution_weighted: evolutionData.evolution_weighted,
+        evolution_10y: evolution10y,
         lastUpdated: new Date(),
       },
       create: {
         energyType,
         currentPrice: 0,
-        evolution_1y: evolutionData.evolution_1y,
-        evolution_5y: evolutionData.evolution_5y,
-        evolution_10y: evolutionData.evolution_10y,
-        evolution_weighted: evolutionData.evolution_weighted,
+        evolution_10y: evolution10y,
         lastUpdated: new Date(),
       }
     })
@@ -173,29 +162,42 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
     console.log(`✅ Cache mis à jour pour ${energyType}`)
 
     return {
-      evolution_1y: updated.evolution_1y,
-      evolution_5y: updated.evolution_5y,
       evolution_10y: updated.evolution_10y,
-      evolution_weighted: updated.evolution_weighted,
       fromCache: false,
     }
   } catch (error) {
     console.error(`Erreur lors de la récupération des données pour ${energyType}:`, error)
 
-    // En cas d'erreur, retourner des valeurs par défaut
+    // En cas d'erreur, essayer de récupérer la valeur la plus récente en DB
+    try {
+      const mostRecent = await prisma.energyPriceCache.findFirst({
+        where: { energyType },
+        orderBy: { lastUpdated: 'desc' }
+      })
+
+      if (mostRecent && mostRecent.evolution_10y > 0) {
+        console.log(`⚠️ Utilisation de l'évolution la plus récente en DB pour ${energyType}: ${mostRecent.evolution_10y}% (date: ${mostRecent.lastUpdated.toLocaleDateString()})`)
+        return {
+          evolution_10y: mostRecent.evolution_10y,
+          fromCache: true,
+        }
+      }
+    } catch (dbError) {
+      console.error(`Erreur lors de la lecture de la DB pour ${energyType}:`, dbError)
+    }
+
+    // Si la DB est vide ou inaccessible, utiliser des valeurs par défaut conservatrices
+    console.warn(`⚠️ Utilisation des valeurs par défaut pour ${energyType}`)
     const defaults: Record<string, number> = {
-      fioul: 3,
-      gaz: 4,
-      gpl: 3,
-      bois: 2,
-      electricite: 3,
+      fioul: 3,      // 3% par an (historique moyen)
+      gaz: 4,        // 4% par an (impact guerre Ukraine)
+      gpl: 3,        // 3% par an (suit le pétrole)
+      bois: 2,       // 2% par an (plus stable)
+      electricite: 3, // 3% par an (tarifs réglementés)
     }
 
     return {
-      evolution_1y: defaults[energyType] || 3,
-      evolution_5y: defaults[energyType] || 3,
       evolution_10y: defaults[energyType] || 3,
-      evolution_weighted: defaults[energyType] || 3,
       fromCache: false,
     }
   }
@@ -203,6 +205,7 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
 
 /**
  * Récupère toutes les évolutions de prix en utilisant le système de cache
+ * Retourne l'évolution sur 10 ans pour chaque type d'énergie
  */
 export async function getAllEnergyPrices() {
   const [fioul, gaz, gpl, bois, electricite] = await Promise.all([
@@ -214,11 +217,11 @@ export async function getAllEnergyPrices() {
   ])
 
   return {
-    evolution_prix_fioul: fioul.evolution_weighted,
-    evolution_prix_gaz: gaz.evolution_weighted,
-    evolution_prix_gpl: gpl.evolution_weighted,
-    evolution_prix_bois: bois.evolution_weighted,
-    evolution_prix_electricite: electricite.evolution_weighted,
+    evolution_prix_fioul: fioul.evolution_10y,
+    evolution_prix_gaz: gaz.evolution_10y,
+    evolution_prix_gpl: gpl.evolution_10y,
+    evolution_prix_bois: bois.evolution_10y,
+    evolution_prix_electricite: electricite.evolution_10y,
   }
 }
 

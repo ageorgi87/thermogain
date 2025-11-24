@@ -730,12 +730,14 @@ Pour des projections plus réalistes, on peut intégrer l'évolution des prix de
                             - Coût_PAC × (1 + Taux_évolution_électricité)^n
 ```
 
-**Taux d'évolution moyens** (basés sur l'API DIDO-SDES) :
+**Taux d'évolution moyens** (basés sur l'API DIDO-SDES sur 10 ans) :
 - Gaz : +4% par an
 - Fioul : +3% par an
 - Électricité : +3% par an
+- Bois (pellets) : +2% par an
+- GPL : +3% par an
 
-**Source** : Données historiques DIDO-SDES, moyennes pondérées (50% 1 an, 30% 5 ans, 20% 10 ans)
+**Source** : Données historiques DIDO-SDES 2014-2024 (10 ans), aligné avec l'horizon d'investissement PAC (17 ans)
 
 ---
 
@@ -816,45 +818,47 @@ En cas d'erreur lors de l'appel API, ThermoGain applique une stratégie de fallb
 
 ## Évolution des Prix
 
+### Méthodologie : Évolution sur 10 ans
+
+ThermoGain calcule le taux d'évolution annuel moyen sur **10 ans** uniquement.
+
+**Justification** :
+- **Investissement sur 17 ans** : Une PAC a une durée de vie de 17 ans (ADEME)
+- **Perspective long terme** : L'évolution sur 10 ans reflète mieux les tendances structurelles
+- **Lisse les crises** : Évite de surpondérer les variations récentes exceptionnelles (COVID, guerre Ukraine)
+- **Plus conservateur** : Donne des estimations plus réalistes et prudentes
+
 ### Méthode de Calcul
 
-ThermoGain calcule les taux d'évolution annuels moyens sur plusieurs périodes :
-
-1. **Évolution 1 an** : Comparaison des 12 derniers mois vs 12 mois précédents
-2. **Évolution 5 ans** : Comparaison moyennes glissantes (12 mois récents vs 12 mois il y a 5 ans), annualisée
-3. **Évolution 10 ans** : Comparaison moyennes glissantes (12 mois récents vs 12 mois il y a 10 ans), annualisée
-
-**Formule générale** :
+**Formule** :
 ```
-Taux_évolution_annuel (%) = ((Prix_récent - Prix_ancien) / Prix_ancien) × 100 / Nombre_années
+Taux_évolution_annuel (%) = ((Prix_récent_moyen - Prix_ancien_moyen) / Prix_ancien_moyen) × 100 / 10
 ```
 
-### Moyenne Pondérée
+Où :
+- **Prix_récent_moyen** = Moyenne des 12 derniers mois disponibles
+- **Prix_ancien_moyen** = Moyenne des 12 mois il y a 10 ans
 
-Pour obtenir un taux d'évolution représentatif, ThermoGain utilise une moyenne pondérée :
+**Implémentation** : [lib/didoApi.ts](../../../../lib/didoApi.ts#L141)
 
-```
-Évolution_pondérée = (50% × Évol_1an) + (30% × Évol_5ans) + (20% × Évol_10ans)
-```
+### Valeurs Typiques Observées (2014-2024)
 
-**Justification des poids** :
-- **50% sur 1 an** : Capture les tendances récentes (crises énergétiques, politiques tarifaires)
-- **30% sur 5 ans** : Lisse les variations court terme, capture les tendances moyen terme
-- **20% sur 10 ans** : Capture les tendances long terme (transition énergétique)
+| Énergie | Évolution sur 10 ans | Remarques |
+|---------|---------------------|-----------|
+| Fioul | +3% par an | Volatilité liée au prix du pétrole |
+| Gaz | +4% par an | Hausse significative depuis 2021 |
+| GPL | +3% par an | Suit les tendances du pétrole |
+| Bois/Pellets | +2% par an | Plus stable, demande croissante |
+| Électricité | +3% par an | Tarifs réglementés + marché |
 
-**Implémentation** : [lib/didoApi.ts](../../../../lib/didoApi.ts#L147)
+**Source** : Données historiques DIDO-SDES 2014-2024
 
-### Valeurs Typiques Observées (2000-2024)
+### Avantages de cette Approche
 
-| Énergie | Évolution Moyenne | Remarques |
-|---------|------------------|-----------|
-| Fioul | +3% par an | Forte volatilité (prix du pétrole) |
-| Gaz | +4% par an | Impact guerre Ukraine 2022 |
-| GPL | +3% par an | Suit le pétrole |
-| Bois/Pellets | +2% par an | Plus stable, mais augmentation demande |
-| Électricité | +3% par an | Tarifs réglementés vs marché |
-
-**Source** : Analyse des données DIDO-SDES sur 20 ans
+1. **Cohérence avec l'horizon d'investissement** : 10 ans < 17 ans (durée de vie PAC)
+2. **Stabilité** : Moins sensible aux variations conjoncturelles
+3. **Représentativité** : Capture les vraies tendances structurelles
+4. **Simplicité** : Un seul taux, plus facile à comprendre et à communiquer
 
 ---
 
