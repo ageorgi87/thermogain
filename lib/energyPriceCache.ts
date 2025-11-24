@@ -1,22 +1,114 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getEnergyEvolutionDetails } from "@/lib/didoApi"
+import { getEnergyEvolutionDetails, getCurrentEnergyPrice as fetchFromApi } from "@/lib/didoApi"
 
 /**
- * Vérifie si les données en cache sont encore fraîches (moins d'un mois)
+ * Vérifie si les données en cache sont du mois en cours
+ * Le cache est considéré comme valide si lastUpdated est dans le même mois et la même année
  */
-function isCacheFresh(lastUpdated: Date): boolean {
+function isCacheValid(lastUpdated: Date): boolean {
   const now = new Date()
-  const oneMonthAgo = new Date()
-  oneMonthAgo.setMonth(now.getMonth() - 1)
+  const cacheDate = new Date(lastUpdated)
 
-  return lastUpdated > oneMonthAgo
+  // Vérifie si l'année et le mois sont identiques
+  return (
+    cacheDate.getFullYear() === now.getFullYear() &&
+    cacheDate.getMonth() === now.getMonth()
+  )
+}
+
+/**
+ * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie
+ */
+function convertPriceToUnit(pricePerKwh: number, energyType: string): number {
+  switch (energyType) {
+    case "fioul":
+      // Fioul: 10 kWh/litre → prix en €/litre
+      return Math.round(pricePerKwh * 10 * 1000) / 1000 // Arrondir à 3 décimales
+    case "gaz":
+      // Gaz: prix en €/kWh
+      return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
+    case "gpl":
+      // GPL: 12.8 kWh/kg → prix en €/kg
+      return Math.round(pricePerKwh * 12.8 * 1000) / 1000 // Arrondir à 3 décimales
+    case "bois":
+      // Bois (granulés): 4.8 kWh/kg → prix en €/kg
+      return Math.round(pricePerKwh * 4.8 * 1000) / 1000 // Arrondir à 3 décimales
+    case "electricite":
+      // Électricité: prix en €/kWh
+      return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
+    default:
+      return pricePerKwh
+  }
+}
+
+/**
+ * Récupère le prix actuel d'une énergie depuis le cache ou l'API DIDO
+ * Le cache est valide pour le mois en cours, sinon l'API est appelée
+ *
+ * @param energyType - Type d'énergie: "fioul", "gaz", "gpl", "bois", "electricite"
+ * @returns Le prix dans l'unité appropriée (€/litre, €/kWh, €/kg, etc.)
+ */
+export async function getCachedEnergyPrice(energyType: string): Promise<number> {
+  try {
+    // Rechercher le prix en cache
+    const cached = await prisma.energyPriceCache.findUnique({
+      where: { energyType },
+    })
+
+    // Si le cache existe et est valide (du mois en cours), le retourner
+    if (cached && isCacheValid(cached.lastUpdated) && cached.currentPrice > 0) {
+      console.log(`📦 Prix ${energyType} trouvé en cache: ${cached.currentPrice}`)
+      return cached.currentPrice
+    }
+
+    // Sinon, récupérer le prix depuis l'API DIDO
+    console.log(`🌐 Prix ${energyType} non trouvé en cache ou périmé, appel API DIDO...`)
+    const pricePerKwh = await fetchFromApi(energyType)
+
+    // Convertir le prix vers l'unité appropriée
+    const currentPrice = convertPriceToUnit(pricePerKwh, energyType)
+
+    // Mettre à jour ou créer l'entrée en cache
+    await prisma.energyPriceCache.upsert({
+      where: { energyType },
+      create: {
+        energyType,
+        currentPrice,
+        evolution_1y: 0,
+        evolution_5y: 0,
+        evolution_10y: 0,
+        evolution_weighted: 0,
+        lastUpdated: new Date(),
+      },
+      update: {
+        currentPrice,
+        lastUpdated: new Date(),
+      },
+    })
+
+    console.log(`✅ Prix ${energyType} mis en cache: ${currentPrice}`)
+    return currentPrice
+  } catch (error) {
+    console.error(`Erreur lors de la récupération du prix pour ${energyType}:`, error)
+
+    // En cas d'erreur, retourner des valeurs par défaut
+    const defaultPrices: Record<string, number> = {
+      fioul: 1.15,       // €/litre
+      gaz: 0.10,         // €/kWh
+      gpl: 1.60,         // €/kg
+      bois: 0.26,        // €/kg (pellets)
+      electricite: 0.2516, // €/kWh
+    }
+
+    return defaultPrices[energyType] || 0.20
+  }
 }
 
 /**
  * Récupère ou met à jour les données d'évolution de prix pour un type d'énergie
- * Utilise le cache si les données datent de moins d'un mois, sinon interroge l'API
+ * Utilise le cache si les données datent du mois en cours, sinon interroge l'API
  */
 export async function getOrUpdateEnergyPrice(energyType: string) {
   try {
@@ -25,8 +117,8 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
       where: { energyType }
     })
 
-    // Si le cache existe et est frais, le retourner
-    if (cached && isCacheFresh(cached.lastUpdated)) {
+    // Si le cache existe et est valide (du mois en cours), le retourner
+    if (cached && isCacheValid(cached.lastUpdated)) {
       console.log(`📦 Cache hit pour ${energyType} (dernière mise à jour: ${cached.lastUpdated.toLocaleDateString()})`)
       return {
         evolution_1y: cached.evolution_1y,
@@ -53,6 +145,7 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
       },
       create: {
         energyType,
+        currentPrice: 0,
         evolution_1y: evolutionData.evolution_1y,
         evolution_5y: evolutionData.evolution_5y,
         evolution_10y: evolutionData.evolution_10y,

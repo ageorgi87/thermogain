@@ -38,7 +38,7 @@ import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
 import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
-import { saveCurrentHeatingData } from "./sections/currentHeating/currentHeatingActions"
+import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
 import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
@@ -166,6 +166,18 @@ export default function WizardStepPage() {
               Object.entries(data).map(([key, value]) => [key, value === null ? undefined : value])
             )
             form.reset(cleanedData)
+          } else if (step === "chauffage-actuel" && !sectionData) {
+            // Si on est sur l'étape chauffage-actuel et qu'il n'y a pas de données sauvegardées,
+            // charger les prix par défaut depuis le cache
+            const defaultPrices = await getDefaultEnergyPrices()
+            const defaultValues = { ...DEFAULT_VALUES["chauffage-actuel"] }
+
+            // Mettre à jour les prix selon le type de chauffage
+            if (defaultValues.type_chauffage === "Gaz") {
+              defaultValues.prix_gaz_kwh = defaultPrices.gaz
+            }
+
+            form.reset(defaultValues)
           } else if (step === "evolutions" && !sectionData) {
             // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
             // charger les taux d'évolution depuis l'API DIDO
@@ -185,6 +197,58 @@ export default function WizardStepPage() {
 
     loadData()
   }, [projectId, step, form])
+
+  // Load default energy prices when user changes heating type (only on chauffage-actuel step)
+  useEffect(() => {
+    if (step !== "chauffage-actuel" || !watchTypeChauffage || isLoading) {
+      return
+    }
+
+    const updateDefaultPrice = async () => {
+      const defaultPrices = await getDefaultEnergyPrices()
+
+      // Only update the price field if it's empty or zero
+      switch (watchTypeChauffage) {
+        case "Fioul":
+          if (!form.getValues("prix_fioul_litre") || form.getValues("prix_fioul_litre") === 0) {
+            form.setValue("prix_fioul_litre", defaultPrices.fioul)
+          }
+          break
+        case "Gaz":
+          if (!form.getValues("prix_gaz_kwh") || form.getValues("prix_gaz_kwh") === 0) {
+            form.setValue("prix_gaz_kwh", defaultPrices.gaz)
+          }
+          break
+        case "GPL":
+          if (!form.getValues("prix_gpl_kg") || form.getValues("prix_gpl_kg") === 0) {
+            form.setValue("prix_gpl_kg", defaultPrices.gpl)
+          }
+          break
+        case "Pellets":
+          if (!form.getValues("prix_pellets_kg") || form.getValues("prix_pellets_kg") === 0) {
+            form.setValue("prix_pellets_kg", defaultPrices.bois)
+          }
+          break
+        case "Bois":
+          // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
+          const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 100) / 100
+          if (!form.getValues("prix_bois_stere") || form.getValues("prix_bois_stere") === 0) {
+            form.setValue("prix_bois_stere", prixBoisStere)
+          }
+          break
+        case "Electrique":
+        case "PAC Air/Air":
+        case "PAC Air/Eau":
+        case "PAC Eau/Eau":
+          if (!form.getValues("prix_elec_kwh") || form.getValues("prix_elec_kwh") === 0) {
+            form.setValue("prix_elec_kwh", defaultPrices.electricite)
+          }
+          break
+      }
+    }
+
+    updateDefaultPrice()
+  }, [watchTypeChauffage, step, isLoading, form])
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true)

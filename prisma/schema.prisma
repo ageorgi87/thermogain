@@ -242,11 +242,15 @@ model ProjectEvolutions {
   updatedAt   DateTime @updatedAt
 }
 
-// Cache for DIDO API energy price evolution data
-// Stores multi-period evolution rates to avoid excessive API calls
+// Cache for DIDO API energy price data
+// Stores current prices and evolution rates to avoid excessive API calls
+// Data is cached per month and automatically refreshed when outdated
 model EnergyPriceCache {
   id              String   @id @default(cuid())
   energyType      String   @unique // "fioul", "gaz", "gpl", "bois", "electricite"
+
+  // Current price (average of last 12 months, in appropriate unit)
+  currentPrice    Float @default(0)    // €/kWh for most, €/litre for fioul, €/kg for gpl/pellets, €/stère for bois
 
   // Evolution rates for different time periods (% per year)
   evolution_1y    Float    // 1-year evolution
