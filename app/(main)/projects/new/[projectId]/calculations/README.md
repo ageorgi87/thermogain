@@ -6,15 +6,16 @@ Ce document détaille toutes les méthodes de calcul utilisées dans l'applicati
 
 1. [Introduction et Contexte](#introduction-et-contexte)
 2. [Standards et Normes Utilisés](#standards-et-normes-utilisés)
-3. [Calcul du Rendement des Chaudières](#calcul-du-rendement-des-chaudières)
-4. [Calcul de la Demande de Chaleur Réelle](#calcul-de-la-demande-de-chaleur-réelle)
-5. [Estimation de la Consommation](#estimation-de-la-consommation)
-6. [Calcul de la Consommation PAC](#calcul-de-la-consommation-pac)
-7. [Calcul des Économies](#calcul-des-économies)
-8. [Prix de l'Énergie](#prix-de-lénergie)
-9. [Évolution des Prix](#évolution-des-prix)
-10. [Exemples Concrets](#exemples-concrets)
-11. [Sources et Références](#sources-et-références)
+3. [Zones Climatiques Françaises](#zones-climatiques-françaises)
+4. [Calcul du Rendement des Chaudières](#calcul-du-rendement-des-chaudières)
+5. [Calcul de la Demande de Chaleur Réelle](#calcul-de-la-demande-de-chaleur-réelle)
+6. [Estimation de la Consommation](#estimation-de-la-consommation)
+7. [Calcul de la Consommation PAC](#calcul-de-la-consommation-pac)
+8. [Calcul des Économies](#calcul-des-économies)
+9. [Prix de l'Énergie](#prix-de-lénergie)
+10. [Évolution des Prix](#évolution-des-prix)
+11. [Exemples Concrets](#exemples-concrets)
+12. [Sources et Références](#sources-et-références)
 
 ---
 
@@ -114,6 +115,147 @@ Lorsqu'un particulier envisage de remplacer son système de chauffage actuel par
 **Sources** :
 - UK Energy Saving Trust, Field trial of condensing boilers (2012)
 - SEDBUK (Seasonal Efficiency of Domestic Boilers in UK) methodology
+
+---
+
+## Zones Climatiques Françaises
+
+### Principe et Objectif
+
+La France est divisée en **zones climatiques** définies par la réglementation thermique (RT2012) et le DPE 3CL-DPE 2021. Ces zones influencent directement :
+- **La consommation de chauffage** : Plus il fait froid, plus on consomme
+- **L'efficacité des PAC** : Les PAC sont moins efficaces par temps froid
+
+**Module implémenté** : `lib/climateZones.ts`
+
+### Les 8 Zones Climatiques
+
+| Zone | Nom | Régions principales | DJU* | Température hiver moyenne |
+|------|-----|---------------------|------|---------------------------|
+| **H1a** | Nord-Est (très froid) | Vosges, Jura, Alpes du Nord | 3000 | -2°C |
+| **H1b** | Est (froid) | Alsace, Lorraine, Bourgogne-FC | 2700 | 0°C |
+| **H1c** | Nord (froid) | Nord-Pas-de-Calais, Picardie | 2600 | 2°C |
+| **H2a** | Ouest (tempéré) | Bretagne, Pays de la Loire | 2200 | 5°C |
+| **H2b** | Centre-Ouest (tempéré) | Île-de-France, Centre-VdL | 2400 | 3°C |
+| **H2c** | Sud-Ouest (doux) | Nouvelle-Aquitaine | 2000 | 6°C |
+| **H2d** | Centre-Sud (tempéré) | Rhône-Alpes, Auvergne | 2500 | 2°C |
+| **H3** | Méditerranée (chaud) | PACA, Occitanie, Corse | 1600 | 8°C |
+
+*DJU = Degrés-Jours Unifiés (base 18°C), indicateur du besoin de chauffage
+
+### Mapping Code Postal → Zone Climatique
+
+Le code postal permet de déterminer automatiquement la zone climatique :
+
+```typescript
+// Exemple : Strasbourg (67000) → H1b
+const zone = getClimateZoneFromPostalCode("67000") // => "H1b"
+
+// Exemple : Marseille (13001) → H3
+const zone = getClimateZoneFromPostalCode("13001") // => "H3"
+
+// Exemple : Paris (75001) → H2b
+const zone = getClimateZoneFromPostalCode("75001") // => "H2b"
+```
+
+**Tous les départements français sont mappés**, y compris :
+- Corse (2A, 2B)
+- DOM-TOM (971-976)
+
+### Impact sur la Consommation
+
+La consommation de chauffage est **proportionnelle aux DJU** de la zone :
+
+```typescript
+Consommation réelle = Consommation de référence × (DJU zone / DJU référence)
+```
+
+**Zone de référence** : H2a (Bretagne, 2200 DJU)
+
+#### Exemples concrets
+
+Pour une même maison de 100m² mal isolée (coefficient 150 kWh/m²/an en zone H2a) :
+
+| Ville | Zone | DJU | Facteur | Consommation estimée | Écart vs Paris |
+|-------|------|-----|---------|---------------------|----------------|
+| **Strasbourg** | H1b | 2700 | 1.23 | **18 450 kWh/an** | +23% |
+| **Lille** | H1c | 2600 | 1.18 | **17 700 kWh/an** | +18% |
+| **Paris** | H2b | 2400 | 1.09 | **15 000 kWh/an** | Référence |
+| **Brest** | H2a | 2200 | 1.00 | **15 000 kWh/an** | 0% |
+| **Bordeaux** | H2c | 2000 | 0.91 | **13 650 kWh/an** | -9% |
+| **Marseille** | H3 | 1600 | 0.73 | **10 950 kWh/an** | -27% |
+
+**Impact majeur** : Une même maison consomme **68% de plus** à Strasbourg qu'à Marseille !
+
+### Impact sur le COP des PAC
+
+Les pompes à chaleur sont **plus efficaces en climat doux** (températures extérieures élevées).
+
+**Facteurs d'ajustement du COP** (par rapport au COP annoncé) :
+
+| Zone | Facteur COP | Impact sur efficacité |
+|------|-------------|----------------------|
+| H1a (très froid) | 0.85 | -15% d'efficacité |
+| H1b (froid) | 0.90 | -10% |
+| H1c (froid) | 0.92 | -8% |
+| H2a (tempéré) | 1.00 | Référence |
+| H2b (tempéré) | 0.95 | -5% |
+| H2c (doux) | 1.05 | +5% |
+| H2d (tempéré) | 0.93 | -7% |
+| H3 (chaud) | 1.10 | +10% d'efficacité |
+
+#### Exemple
+
+Une PAC Air/Eau avec un COP annoncé de **3.5** :
+
+| Ville | Zone | COP ajusté | Consommation électrique pour 13 000 kWh de chaleur |
+|-------|------|------------|---------------------------------------------------|
+| **Strasbourg** | H1b | 3.5 × 0.90 = **3.15** | 4 127 kWh/an |
+| **Paris** | H2b | 3.5 × 0.95 = **3.33** | 3 903 kWh/an |
+| **Marseille** | H3 | 3.5 × 1.10 = **3.85** | 3 377 kWh/an |
+
+**Économie supplémentaire** : Une PAC consomme **22% de moins** à Marseille qu'à Strasbourg pour la même quantité de chaleur !
+
+### Intégration dans les Calculs
+
+#### 1. Estimation de la consommation actuelle
+
+```typescript
+// Si le code postal est fourni, ajustement automatique
+const consommation = estimateAnnualConsumption({
+  surface_habitable: 100,
+  annee_construction: 1980,
+  isolation_murs: false,
+  isolation_combles: false,
+  isolation_fenetres: false,
+  nombre_occupants: 2,
+  code_postal: "67000" // Strasbourg
+})
+// Résultat : 18 450 kWh/an (vs 15 000 kWh sans ajustement climatique)
+```
+
+#### 2. Estimation de la consommation future PAC
+
+Le COP de la PAC sera ajusté selon la zone climatique dans les calculs futurs :
+
+```typescript
+const copAjuste = copAnnonce * getCOPAdjustment(codePostal)
+const consommationPAC = besoinChaleur / copAjuste
+```
+
+### Sources
+
+- **RT2012** : Réglementation Thermique 2012, Annexe 8 - Zonage climatique
+- **DPE 3CL-DPE 2021** : Annexe 2 - Zones climatiques et données météorologiques
+- **ADEME** : Données climatiques françaises 1991-2020
+- **Météo-France** : Normales climatiques par département
+
+### Bénéfices
+
+1. **Précision accrue** : Les estimations tiennent compte du climat local
+2. **Comparaisons équitables** : Pas de sous-estimation pour les régions froides
+3. **Dimensionnement adapté** : La puissance nécessaire de la PAC varie selon la zone
+4. **ROI réaliste** : Les économies prédites sont adaptées à chaque région
 
 ---
 
@@ -919,18 +1061,16 @@ ThermoGain utilise des coefficients et méthodes conformes au DPE 3CL-DPE 2021 p
 
 ### Limites Actuelles
 
-1. **Climat uniforme** : Pas de prise en compte des zones climatiques françaises (H1, H2, H3)
-2. **COP constant** : Pas de modélisation de la variation du COP selon la température extérieure
-3. **Eau chaude sanitaire** : Non prise en compte dans les calculs actuels
-4. **Émetteurs de chaleur** : Impact des radiateurs vs plancher chauffant non modélisé
+1. **COP constant** : Pas de modélisation de la variation du COP selon la température extérieure
+2. **Eau chaude sanitaire** : Non prise en compte dans les calculs actuels
+3. **Émetteurs de chaleur** : Impact des radiateurs vs plancher chauffant non modélisé
 
 ### Améliorations Envisagées
 
-1. **Zonage climatique** : Utilisation du code postal pour adapter les calculs (données météo)
-2. **COP dynamique** : Courbe de COP en fonction de la température extérieure
-3. **Dimensionnement de la PAC** : Calcul automatique de la puissance nécessaire
-4. **Simulation annuelle** : Calcul mois par mois avec températures réelles
-5. **Coût complet** : Intégration de l'abonnement électricité, maintenance, etc.
+1. **COP dynamique** : Courbe de COP en fonction de la température extérieure
+2. **Dimensionnement de la PAC** : Calcul automatique de la puissance nécessaire
+3. **Simulation annuelle** : Calcul mois par mois avec températures réelles
+4. **Coût complet** : Intégration de l'abonnement électricité, maintenance, etc.
 
 ---
 
