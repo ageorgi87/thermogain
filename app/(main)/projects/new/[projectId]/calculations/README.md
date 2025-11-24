@@ -790,7 +790,12 @@ Prix_électricité (€/kWh) = Prix_API (€/kWh)
 
 **Implémentation** : [lib/energyPriceCache.ts](../../../../lib/energyPriceCache.ts)
 
-### Valeurs par Défaut (en cas d'erreur API)
+### Stratégie de Fallback (en cas d'erreur API)
+
+En cas d'erreur lors de l'appel API, ThermoGain applique une stratégie de fallback en cascade :
+
+1. **Priorité 1** : Utiliser le prix le plus récent en base de données (même si périmé)
+2. **Priorité 2** : Utiliser les valeurs par défaut suivantes (seulement si DB vide)
 
 | Énergie | Prix par Défaut | Unité |
 |---------|---------------|-------|
@@ -799,6 +804,11 @@ Prix_électricité (€/kWh) = Prix_API (€/kWh)
 | GPL | 1.60 | €/kg |
 | Bois (pellets) | 0.26 | €/kg |
 | Électricité | 0.2516 | €/kWh |
+
+**Avantages** :
+- Continuité de service même en cas de panne API
+- Utilisation de données réelles récentes (priorité DB)
+- Valeurs par défaut réalistes uniquement en dernier recours
 
 **Source** : Prix moyens observés en France en 2024
 

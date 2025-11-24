@@ -93,7 +93,23 @@ export async function getCachedEnergyPrice(energyType: string): Promise<number> 
   } catch (error) {
     console.error(`Erreur lors de la récupération du prix pour ${energyType}:`, error)
 
-    // En cas d'erreur, retourner des valeurs par défaut
+    // En cas d'erreur, essayer de récupérer la donnée la plus récente en DB
+    try {
+      const mostRecent = await prisma.energyPriceCache.findFirst({
+        where: { energyType },
+        orderBy: { lastUpdated: 'desc' }
+      })
+
+      if (mostRecent && mostRecent.currentPrice > 0) {
+        console.log(`⚠️ Utilisation du prix le plus récent en DB pour ${energyType}: ${mostRecent.currentPrice} (date: ${mostRecent.lastUpdated.toLocaleDateString()})`)
+        return mostRecent.currentPrice
+      }
+    } catch (dbError) {
+      console.error(`Erreur lors de la lecture de la DB pour ${energyType}:`, dbError)
+    }
+
+    // Si la DB est vide ou inaccessible, utiliser les valeurs par défaut
+    console.warn(`⚠️ Utilisation des valeurs par défaut pour ${energyType}`)
     const defaultPrices: Record<string, number> = {
       fioul: 1.15,       // €/litre
       gaz: 0.10,         // €/kWh
