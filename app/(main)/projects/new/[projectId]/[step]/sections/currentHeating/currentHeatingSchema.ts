@@ -18,6 +18,9 @@ const baseSchema = z.object({
     .max(100, "L'âge ne peut pas dépasser 100 ans"),
   etat_installation: z.enum(["Bon", "Moyen", "Mauvais"]),
 
+  // Code postal always required (for climate zone adjustment)
+  code_postal: z.string().regex(/^(?:0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-6])\d{3}$/, "Code postal invalide"),
+
   // Does user know their consumption?
   connait_consommation: z.boolean(),
 
@@ -38,7 +41,6 @@ const baseSchema = z.object({
   conso_pac_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
 
   // If user doesn't know consumption: housing data for estimation
-  code_postal: z.string().regex(/^(?:0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-6])\d{3}$/, "Code postal invalide").optional(),
   annee_construction: z.number().min(1800, "L'année de construction semble invalide").max(new Date().getFullYear(), "L'année de construction ne peut pas être dans le futur").optional(),
   surface_habitable: z.number().min(1, "La surface doit être au moins de 1m²").max(10000, "La surface semble trop élevée").optional(),
   nombre_occupants: z.number().min(1, "Il doit y avoir au moins 1 occupant").max(50, "Le nombre d'occupants semble trop élevé").optional(),
@@ -176,13 +178,6 @@ export const currentHeatingSchema = baseSchema.superRefine((data, ctx) => {
     }
   } else {
     // If user doesn't know consumption: validate housing fields
-    if (!data.code_postal) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Le code postal est requis",
-        path: ["code_postal"],
-      })
-    }
     if (!data.annee_construction) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

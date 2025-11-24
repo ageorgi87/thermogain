@@ -65,6 +65,7 @@ const DEFAULT_VALUES = {
     type_chauffage: "Gaz",
     age_installation: 10,
     etat_installation: "Moyen",
+    code_postal: "75001",
     connait_consommation: true,
     conso_gaz_kwh: 12000,
     prix_gaz_kwh: 0.09,

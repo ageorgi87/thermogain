@@ -140,6 +140,27 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
         />
       </div>
 
+      <FormField
+        control={form.control}
+        name="code_postal"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Code postal</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="ex: 75001, 67000, 13001"
+                maxLength={5}
+                {...field}
+              />
+            </FormControl>
+            <FormDescription>
+              Permet d&apos;ajuster les calculs selon votre zone climatique
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       {/* Question: connaît sa consommation? */}
       <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
         <FormField
@@ -555,28 +576,6 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               énergétique en nous basant sur la méthode DPE (Diagnostic de Performance Énergétique).
             </AlertDescription>
           </Alert>
-
-          <FormField
-            control={form.control}
-            name="code_postal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Code postal</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="ex: 75001, 20000, 97400"
-                    maxLength={5}
-                    {...field}
-                    value={field.value ?? ""}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Code postal français (métropole, Corse, DOM-TOM)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
