@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Calculator, Check, X, ArrowRight } from "lucide-react"
+import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react"
 import { calculateMaPrimeRenov } from "@/lib/eligibilityMaPrimeRenov"
 import { calculateCEE } from "@/lib/eligibilityCEE"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -117,7 +117,17 @@ export function AidCalculator({
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DrawerHeader>
+          <DrawerHeader className="relative">
+            <DrawerClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Fermer</span>
+              </Button>
+            </DrawerClose>
             <DrawerTitle>Calculateur d'aides financières</DrawerTitle>
             <DrawerDescription>
               Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE en une seule fois. Ces aides sont cumulables.
@@ -292,16 +302,13 @@ export function AidCalculator({
             )}
           </div>
 
-          <DrawerFooter>
-            {hasCalculated && (mprResult?.eligible || ceeResult?.eligible) ? (
+          {hasCalculated && (mprResult?.eligible || ceeResult?.eligible) && (
+            <DrawerFooter>
               <Button onClick={handleUseAmounts} className="w-full" size="lg">
                 Compléter le formulaire avec ces aides
               </Button>
-            ) : null}
-            <DrawerClose asChild>
-              <Button variant="outline">Fermer</Button>
-            </DrawerClose>
-          </DrawerFooter>
+            </DrawerFooter>
+          )}
         </div>
       </DrawerContent>
     </Drawer>
