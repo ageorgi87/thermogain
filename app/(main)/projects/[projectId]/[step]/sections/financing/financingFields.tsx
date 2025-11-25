@@ -31,18 +31,20 @@ interface FinancementFieldsProps {
 export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, totalAides = 0 }: FinancementFieldsProps) {
   const montantAPayer = Math.max(0, totalCouts - totalAides)
 
-  // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
-  useEffect(() => {
-    if (watchModeFinancement === "Crédit") {
-      form.setValue("montant_credit", montantAPayer)
-    }
-  }, [watchModeFinancement, montantAPayer, form])
-
   // Watch form values for total cost calculation
   const montantCredit = form.watch("montant_credit")
   const apportPersonnel = form.watch("apport_personnel")
   const tauxInteret = form.watch("taux_interet")
   const dureeCreditMois = form.watch("duree_credit_mois")
+
+  // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
+  useEffect(() => {
+    if (watchModeFinancement === "Crédit") {
+      if (montantCredit !== montantAPayer) {
+        form.setValue("montant_credit", montantAPayer)
+      }
+    }
+  }, [watchModeFinancement, montantAPayer, montantCredit, form])
 
   // For Mixte mode: auto-adjust credit amount when personal contribution changes
   useEffect(() => {
@@ -140,14 +142,8 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       step="0.1"
                       min="0"
-                      value={field.value === 0 ? "" : field.value}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.onChange(value === "" ? 0 : Number(value))
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -165,14 +161,8 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                     <Input
                       type="number"
                       min="0"
-                      value={field.value === 0 ? "" : field.value}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.onChange(value === "" ? 0 : Number(value))
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

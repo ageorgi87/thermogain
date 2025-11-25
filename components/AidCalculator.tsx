@@ -112,7 +112,7 @@ export function AidCalculator({
       <DrawerTrigger asChild>
         <Button variant="outline" size="sm" className="w-full">
           <Calculator className="mr-2 h-4 w-4" />
-          Calculer mes aides (MaPrimeRénov' + CEE)
+          Calculer mes aides
         </Button>
       </DrawerTrigger>
       <DrawerContent>
