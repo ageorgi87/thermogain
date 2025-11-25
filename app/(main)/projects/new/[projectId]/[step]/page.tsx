@@ -90,17 +90,16 @@ const DEFAULT_VALUES = {
     emetteurs: "Radiateurs basse température",
   },
   couts: {
-    cout_pac: 8000,
-    cout_installation: 4000,
-    cout_travaux_annexes: 2000,
-    cout_total: 14000,
+    cout_pac: 0,
+    cout_installation: 0,
+    cout_travaux_annexes: 0,
+    cout_total: 0,
   },
   aides: {
     ma_prime_renov: 3000,
     cee: 2000,
     autres_aides: 0,
     total_aides: 5000,
-    reste_a_charge: 9000,
   },
   financement: {
     mode_financement: "Crédit",
@@ -198,9 +197,9 @@ export default function WizardStepPage() {
           if (sectionData && typeof sectionData === 'object') {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
-            // Convert null values to undefined for Zod optional fields
+            // Convert null values to 0 for number fields
             const cleanedData = Object.fromEntries(
-              Object.entries(data).map(([key, value]) => [key, value === null ? undefined : value])
+              Object.entries(data).map(([key, value]) => [key, value === null ? 0 : value])
             )
             form.reset(cleanedData)
           } else if (step === "chauffage-actuel" && !sectionData) {
@@ -224,7 +223,7 @@ export default function WizardStepPage() {
     }
 
     loadData()
-  }, [projectId, step, form])
+  }, [projectId, step])
 
   // Load default energy prices when user changes heating type (only on chauffage-actuel step)
   useEffect(() => {

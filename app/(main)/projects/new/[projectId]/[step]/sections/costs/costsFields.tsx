@@ -25,7 +25,8 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
   useEffect(() => {
     const total = (coutPac || 0) + (coutInstallation || 0) + (coutTravauxAnnexes || 0)
     form.setValue("cout_total", total)
-  }, [coutPac, coutInstallation, coutTravauxAnnexes, form])
+  }, [coutPac, coutInstallation, coutTravauxAnnexes])
+
   return (
     <div className="space-y-4">
       <FormField
@@ -69,18 +70,16 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
         name="cout_travaux_annexes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Travaux annexes (€)</FormLabel>
+            <FormLabel>Coûts annexes (€)</FormLabel>
             <FormControl>
               <Input
                 type="number"
                 {...field}
-                onChange={(e) =>
-                  field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                }
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
             <FormDescription>
-              Isolation, remplacement radiateurs, etc.
+              Peinture, coffrages, etc.
             </FormDescription>
             <FormMessage />
           </FormItem>
