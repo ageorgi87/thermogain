@@ -121,8 +121,6 @@ export function AidCalculator({
                   <li>• Type de PAC : {typePac || "Non renseigné"}</li>
                   <li>
                     • Âge du logement : {anneeConstruction ? `${new Date().getFullYear() - anneeConstruction} ans` : "Non renseigné"}
-                    {anneeConstruction && new Date().getFullYear() - anneeConstruction >= 15 ? " ✅ (15+ ans pour MPR)" : ""}
-                    {anneeConstruction && new Date().getFullYear() - anneeConstruction >= 2 ? " ✅ (2+ ans pour CEE)" : ""}
                   </li>
                   <li>• Code postal : {codePostal || "Non renseigné"}</li>
                   <li>• Surface habitable : {surfaceHabitable ? `${surfaceHabitable} m²` : "Non renseigné"}</li>
