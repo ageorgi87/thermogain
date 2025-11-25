@@ -94,9 +94,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -118,9 +116,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -152,9 +148,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       step="0.1"
                       min="0"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -173,9 +167,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
