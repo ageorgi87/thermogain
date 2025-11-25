@@ -153,8 +153,8 @@ model ProjectProjetPac {
   type_pac             String
   puissance_pac_kw     Float
   cop_estime           Float
-  temperature_depart   Int
-  emetteurs            String
+  temperature_depart   Int?     // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
+  emetteurs            String?  // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
   duree_vie_pac        Int      @default(17) // Durée de vie estimée de la PAC en années
 
   createdAt   DateTime @default(now())
@@ -185,8 +185,7 @@ model ProjectAides {
   ma_prime_renov       Float
   cee                  Float
   autres_aides         Float
-  total_aides          Float
-  reste_a_charge       Float
+  total_aides          Float    // Calculé automatiquement (somme des aides)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

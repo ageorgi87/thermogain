@@ -38,6 +38,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -56,6 +57,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -74,6 +76,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />

@@ -256,11 +256,88 @@ ThermoGain utilise la **méthode 3CL-DPE 2021** (Calcul des Consommations Conven
 - **Ajustement climatique** par zone H1/H2/H3 selon le code postal
 - **Facteur d'occupation** selon le nombre d'occupants
 
+### Types de Pompes à Chaleur (PAC)
+
+ThermoGain supporte trois types principaux de pompes à chaleur, chacun avec des caractéristiques techniques spécifiques:
+
+#### 1. PAC Air/Eau
+- **Principe**: Capte les calories de l'air extérieur et les transfère à un circuit d'eau
+- **Circuit d'eau**: OUI - système hydraulique complet
+- **Émetteurs compatibles**:
+  - Radiateurs haute température (60-65°C)
+  - Radiateurs basse température (45°C)
+  - Plancher chauffant (35°C)
+  - Ventilo-convecteurs
+- **Température de départ**: REQUISE (30-80°C selon les émetteurs)
+- **COP moyen**: 3.0 - 4.0 (conditions 7°C ext / 35°C eau)
+- **Avantages**: Installation simple, coût modéré, pas de capteurs enterrés
+- **Inconvénients**: Performance diminue quand température extérieure baisse
+
+#### 2. PAC Eau/Eau (Géothermique)
+- **Principe**: Capte les calories du sol ou d'une nappe phréatique
+- **Circuit d'eau**: OUI - système hydraulique avec capteurs enterrés
+- **Émetteurs compatibles**: Identiques à Air/Eau
+  - Radiateurs haute température
+  - Radiateurs basse température
+  - Plancher chauffant
+  - Ventilo-convecteurs
+- **Température de départ**: REQUISE (30-80°C selon les émetteurs)
+- **COP moyen**: 4.0 - 5.5 (source stable toute l'année)
+- **Avantages**: Très haute efficacité, performance stable toute l'année
+- **Inconvénients**: Coût d'installation élevé, nécessite un terrain adapté
+
+#### 3. PAC Air/Air
+- **Principe**: Capte les calories de l'air extérieur et les diffuse directement par air
+- **Circuit d'eau**: NON - diffusion directe de l'air chauffé/refroidi
+- **Émetteurs compatibles**: UNIQUEMENT unités intérieures (splits muraux, consoles, cassettes)
+- **Température de départ**: NON APPLICABLE (pas de circuit d'eau)
+- **COP moyen (chauffage)**: 3.0 - 4.0
+- **SEER moyen (climatisation)**: 6.0 - 8.0
+- **Avantages**: Réversible (chaud/froid), installation rapide, coût modéré
+- **Inconvénients**: Ne peut pas alimenter de radiateurs ou plancher chauffant
+
 ### Calcul du COP (Coefficient de Performance)
-Le COP de la PAC est ajusté selon:
-- **Température de départ** de l'eau de chauffage
-- **Zone climatique** (H1/H2/H3)
-- **Type d'émetteurs** (radiateurs haute/basse température, plancher chauffant, ventilo-convecteurs)
+
+Le COP de la PAC est ajusté différemment selon le type:
+
+#### Pour les PAC hydrauliques (Air/Eau et Eau/Eau):
+Le COP est ajusté selon TROIS facteurs:
+- **Température de départ** de l'eau de chauffage (35-65°C)
+  - Plus la température est élevée, plus le COP diminue
+  - Plancher chauffant (35°C): optimal (100% du COP)
+  - Radiateurs BT (45°C): -15% environ
+  - Radiateurs MT (55°C): -25% environ
+  - Radiateurs HT (65°C): -35% environ
+- **Type d'émetteurs** (impact indirect via température nécessaire)
+  - Plancher chauffant: 100% (température optimale 35°C)
+  - Ventilo-convecteurs: 95% (excellent échange thermique)
+  - Radiateurs basse température: 90%
+  - Radiateurs haute température: 70% (température élevée requise)
+- **Zone climatique** (H1/H2/H3) selon le code postal
+  - Température extérieure moyenne impacte le rendement
+  - H1 (Nord, Est): climat rigoureux (-5% à -10%)
+  - H2 (Centre, Ouest): climat tempéré (référence)
+  - H3 (Sud, Méditerranée): climat doux (+5% à +10%)
+
+#### Pour les PAC Air/Air:
+Le COP est ajusté selon UN SEUL facteur:
+- **Zone climatique** (H1/H2/H3) uniquement
+  - Pas de circuit d'eau donc pas d'ajustement température/émetteurs
+  - Le COP varie uniquement selon la température extérieure moyenne
+
+**Formule de calcul**:
+```
+COP ajusté = COP fabricant × facteur température × facteur émetteurs × facteur climatique
+
+Pour Air/Air:
+COP ajusté = COP fabricant × facteur climatique
+(facteurs température et émetteurs = 1.0)
+```
+
+**Note technique**: Le COP fabricant est mesuré en conditions normalisées:
+- **Air/Eau**: 7°C extérieur / 35°C eau (norme EN 14511)
+- **Eau/Eau**: 0°C source / 35°C eau (norme EN 14511)
+- **Air/Air**: 7°C extérieur / 20°C intérieur (norme EN 14511)
 
 ### Rendement des Installations Existantes
 Le rendement du chauffage actuel est ajusté selon:

@@ -92,7 +92,7 @@ export default async function ResultsPage({ params }: PageProps) {
     duree_vie_pac: project.projetPac.duree_vie_pac,
     code_postal: project.logement.code_postal || undefined,
     cout_total: project.couts.cout_total,
-    reste_a_charge: project.aides.reste_a_charge,
+    reste_a_charge: project.couts.cout_total - project.aides.total_aides,
     evolution_prix_fioul: project.evolutions.evolution_prix_fioul || undefined,
     evolution_prix_gaz: project.evolutions.evolution_prix_gaz || undefined,
     evolution_prix_gpl: project.evolutions.evolution_prix_gpl || undefined,
@@ -206,7 +206,7 @@ export default async function ResultsPage({ params }: PageProps) {
           cee={project.aides.cee || undefined}
           autresAides={project.aides.autres_aides || undefined}
           totalAides={project.aides.total_aides}
-          resteACharge={project.aides.reste_a_charge}
+          resteACharge={project.couts.cout_total - project.aides.total_aides}
           modeFinancement={project.financement?.mode_financement || undefined}
           mensualite={results.mensualiteCredit}
         />

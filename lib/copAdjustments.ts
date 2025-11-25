@@ -4,9 +4,12 @@
  *
  * Le COP fabricant est mesuré en conditions optimales (7°C extérieur / 35°C eau chauffage)
  * En réalité, le COP varie selon :
- * - La température de départ de l'eau (impacte directement l'efficacité)
- * - Le type d'émetteurs (détermine la température de départ nécessaire)
- * - La zone climatique (température extérieure moyenne)
+ * - La température de départ de l'eau (impacte directement l'efficacité) - UNIQUEMENT pour PAC hydrauliques
+ * - Le type d'émetteurs (détermine la température de départ nécessaire) - UNIQUEMENT pour PAC hydrauliques
+ * - La zone climatique (température extérieure moyenne) - TOUS types de PAC
+ *
+ * IMPORTANT: Les PAC Air/Air n'ont pas de circuit d'eau, donc les ajustements température/émetteurs
+ * ne s'appliquent PAS à ce type. Seul l'ajustement climatique est pertinent.
  */
 
 import { getCOPAdjustment as getClimateAdjustment } from "./climateZones"
@@ -14,6 +17,9 @@ import { getCOPAdjustment as getClimateAdjustment } from "./climateZones"
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
  * Plus la température est élevée, plus le COP diminue
+ *
+ * ⚠️ Ne s'applique QUE aux PAC avec circuit d'eau (Air/Eau, Eau/Eau)
+ * Les PAC Air/Air n'ont pas de circuit d'eau donc ce facteur = 1.0
  *
  * Référence : Courbes de performance des PAC air/eau
  * - 35°C (plancher chauffant) : référence (1.0)
@@ -34,6 +40,9 @@ export function getTemperatureAdjustment(temperatureDepart: number): number {
 /**
  * Calcule le coefficient d'ajustement selon le type d'émetteurs
  * Certains émetteurs nécessitent des températures plus élevées
+ *
+ * ⚠️ Ne s'applique QUE aux PAC avec circuit d'eau (Air/Eau, Eau/Eau)
+ * Les PAC Air/Air diffusent directement l'air donc ce facteur = 1.0
  *
  * Référence : DTU 65.14 et guides ADEME
  */
@@ -66,37 +75,49 @@ export function getEmitterAdjustment(typeEmetteurs: string): number {
  * Calcule le COP réel ajusté selon tous les facteurs
  *
  * @param copFabricant - COP nominal du fabricant (conditions 7°C/-35°C)
- * @param temperatureDepart - Température de départ eau chauffage (°C)
- * @param typeEmetteurs - Type d'émetteurs de chaleur
+ * @param temperatureDepart - Température de départ eau chauffage (°C) - ignoré pour Air/Air
+ * @param typeEmetteurs - Type d'émetteurs de chaleur - ignoré pour Air/Air
  * @param codePostal - Code postal pour ajustement climatique (optionnel)
+ * @param typePac - Type de PAC (Air/Eau, Eau/Eau, Air/Air) - détermine les ajustements applicables
  * @returns COP ajusté réel
  */
 export function calculateAdjustedCOP(
   copFabricant: number,
   temperatureDepart: number,
   typeEmetteurs: string,
-  codePostal?: string
+  codePostal?: string,
+  typePac?: string
 ): number {
-  // Facteur température
-  const facteurTemperature = getTemperatureAdjustment(temperatureDepart)
+  // Les PAC Air/Air n'ont pas de circuit d'eau
+  // Elles ne nécessitent pas d'ajustements température/émetteurs
+  const isAirToAir = typePac === "Air/Air"
 
-  // Facteur émetteurs
-  const facteurEmetteurs = getEmitterAdjustment(typeEmetteurs)
+  // Facteur température (uniquement pour PAC hydrauliques)
+  const facteurTemperature = isAirToAir ? 1.0 : getTemperatureAdjustment(temperatureDepart)
 
-  // Facteur climatique (si code postal fourni)
+  // Facteur émetteurs (uniquement pour PAC hydrauliques)
+  const facteurEmetteurs = isAirToAir ? 1.0 : getEmitterAdjustment(typeEmetteurs)
+
+  // Facteur climatique (s'applique à TOUS les types de PAC)
   let facteurClimatique = 1.0
   if (codePostal) {
     facteurClimatique = getClimateAdjustment(codePostal)
   }
 
-  // COP ajusté = COP fabricant × tous les facteurs
+  // COP ajusté = COP fabricant × tous les facteurs applicables
   const copAjuste = copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique
 
   // Log pour debug
-  console.log(`🔧 Ajustement COP:`)
+  console.log(`🔧 Ajustement COP (${typePac || "non spécifié"}):`)
   console.log(`   - COP fabricant: ${copFabricant.toFixed(2)}`)
-  console.log(`   - Température ${temperatureDepart}°C: ${(facteurTemperature * 100).toFixed(0)}%`)
-  console.log(`   - Émetteurs "${typeEmetteurs}": ${(facteurEmetteurs * 100).toFixed(0)}%`)
+
+  if (isAirToAir) {
+    console.log(`   ℹ️  PAC Air/Air : ajustements température/émetteurs non applicables (pas de circuit d'eau)`)
+  } else {
+    console.log(`   - Température ${temperatureDepart}°C: ${(facteurTemperature * 100).toFixed(0)}%`)
+    console.log(`   - Émetteurs "${typeEmetteurs}": ${(facteurEmetteurs * 100).toFixed(0)}%`)
+  }
+
   if (codePostal) {
     console.log(`   - Climat (${codePostal}): ${(facteurClimatique * 100).toFixed(0)}%`)
   }

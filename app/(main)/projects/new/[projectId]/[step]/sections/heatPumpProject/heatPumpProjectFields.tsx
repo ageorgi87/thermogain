@@ -23,6 +23,10 @@ interface ProjetPacFieldsProps {
 }
 
 export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
+  const typePac = form.watch("type_pac")
+  const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau"
+  const isAirToAir = typePac === "Air/Air"
+
   return (
     <div className="space-y-4">
       <FormField
@@ -121,31 +125,37 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="temperature_depart"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Température de départ (°C)</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Temperature departure: only for water-based systems (Air/Eau, Eau/Eau) */}
+      {isWaterBased && (
+        <FormField
+          control={form.control}
+          name="temperature_depart"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Température de départ (°C)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min="0"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
 
+      {/* Emitters: show all options for water-based, only splits for Air/Air */}
       <FormField
         control={form.control}
         name="emetteurs"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Type d&apos;émetteurs</FormLabel>
+            <FormLabel>
+              {isAirToAir ? "Type d'unités intérieures" : "Type d'émetteurs"}
+            </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -153,17 +163,21 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="Radiateurs haute température">
-                  Radiateurs haute température
-                </SelectItem>
-                <SelectItem value="Radiateurs basse température">
-                  Radiateurs basse température
-                </SelectItem>
-                <SelectItem value="Plancher chauffant">
-                  Plancher chauffant
-                </SelectItem>
+                {isWaterBased && (
+                  <>
+                    <SelectItem value="Radiateurs haute température">
+                      Radiateurs haute température
+                    </SelectItem>
+                    <SelectItem value="Radiateurs basse température">
+                      Radiateurs basse température
+                    </SelectItem>
+                    <SelectItem value="Plancher chauffant">
+                      Plancher chauffant
+                    </SelectItem>
+                  </>
+                )}
                 <SelectItem value="Ventilo-convecteurs">
-                  Ventilo-convecteurs
+                  {isAirToAir ? "Unités intérieures / Splits" : "Ventilo-convecteurs"}
                 </SelectItem>
               </SelectContent>
             </Select>

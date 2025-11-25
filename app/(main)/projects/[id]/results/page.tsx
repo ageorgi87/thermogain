@@ -185,9 +185,12 @@ export default async function HeatingResultsPage({ params }: PageProps) {
       break
   }
 
+  // Calculate reste à charge (not stored in DB anymore)
+  const resteACharge = (flatProject.cout_total || 0) - (flatProject.total_aides || 0)
+
   const priceEvolutionDiff = currentEnergyEvolution - (flatProject.evolution_prix_electricite || 0)
   const paybackPeriod = calculatePaybackPeriod(
-    flatProject.reste_a_charge || 0,
+    resteACharge,
     annualSavings,
     priceEvolutionDiff
   )
@@ -201,7 +204,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
     currentYearSavings *= (1 + priceEvolutionDiff / 100)
   }
 
-  const netBenefit = totalSavingsOverPeriod - (flatProject.reste_a_charge || 0)
+  const netBenefit = totalSavingsOverPeriod - resteACharge
 
   return (
     <div className="container mx-auto py-8 max-w-6xl">
@@ -368,7 +371,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
 
             <div className="flex justify-between">
               <span className="text-lg font-semibold">Reste à charge</span>
-              <span className="text-2xl font-bold">{(flatProject.reste_a_charge || 0).toFixed(0)} €</span>
+              <span className="text-2xl font-bold">{resteACharge.toFixed(0)} €</span>
             </div>
 
             {flatProject.mode_financement !== "Comptant" && flatProject.mensualite && (
@@ -410,7 +413,7 @@ export default async function HeatingResultsPage({ params }: PageProps) {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Investissement (reste à charge)</span>
               <span className="font-semibold text-red-600">
-                -{(flatProject.reste_a_charge || 0).toFixed(0)} €
+                -{resteACharge.toFixed(0)} €
               </span>
             </div>
 
