@@ -145,6 +145,8 @@ export default function WizardStepPage() {
     electricite: number
   } | undefined>(undefined)
   const [evolutionsLastUpdated, setEvolutionsLastUpdated] = useState<Date | undefined>(undefined)
+  const [totalCouts, setTotalCouts] = useState<number>(0)
+  const [totalAides, setTotalAides] = useState<number>(0)
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -178,6 +180,14 @@ export default function WizardStepPage() {
           // Store type_chauffage for evolutions step
           if (project.chauffageActuel?.type_chauffage) {
             setTypeChauffage(project.chauffageActuel.type_chauffage)
+          }
+
+          // Store total costs and aids for financing step
+          if (project.couts?.cout_total) {
+            setTotalCouts(project.couts.cout_total)
+          }
+          if (project.aides?.total_aides) {
+            setTotalAides(project.aides.total_aides)
           }
 
           // Map step key to database field name
@@ -379,7 +389,7 @@ export default function WizardStepPage() {
               {step === "projet-pac" && <ProjetPacFields form={form as any} />}
               {step === "couts" && <CoutsFields form={form as any} />}
               {step === "aides" && <AidesFields form={form as any} />}
-              {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} />}
+              {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
               {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
             </CardContent>
           </Card>
