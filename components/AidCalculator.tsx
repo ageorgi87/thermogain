@@ -288,16 +288,6 @@ export function AidCalculator({
                     )}
                   </div>
                 )}
-
-                {/* Total */}
-                {(mprResult?.eligible || ceeResult?.eligible) && (
-                  <div className="flex justify-between items-center py-4 px-4 bg-blue-50 border-2 border-blue-200 rounded-lg mt-6">
-                    <p className="text-sm font-medium text-blue-900">Total des aides cumulées</p>
-                    <p className="text-3xl font-bold text-blue-700">
-                      {totalAides.toLocaleString("fr-FR")} €
-                    </p>
-                  </div>
-                )}
               </div>
             )}
           </div>
