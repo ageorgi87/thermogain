@@ -93,8 +93,17 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
-                    <p>Indiquez le COP fabricant (disponible sur la fiche technique).</p>
-                    <p className="mt-1">Un coefficient régional sera automatiquement appliqué selon votre zone climatique.</p>
+                    <p className="font-semibold">Indiquez le COP fabricant (fiche technique)</p>
+                    <p className="mt-2 text-xs">Des ajustements seront automatiquement appliqués selon :</p>
+                    <ul className="mt-1 text-xs list-disc list-inside space-y-0.5">
+                      <li>Votre zone climatique (H1/H2/H3)</li>
+                      {isWaterBased && (
+                        <>
+                          <li>La température de départ</li>
+                          <li>Le type d&apos;émetteurs</li>
+                        </>
+                      )}
+                    </ul>
                   </TooltipContent>
                 </Tooltip>
               </FormLabel>
