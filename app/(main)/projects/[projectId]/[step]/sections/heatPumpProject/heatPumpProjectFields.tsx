@@ -73,7 +73,10 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                   step="0.1"
                   min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? 0 : Number(value))
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -113,7 +116,10 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                   step="0.1"
                   min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? 0 : Number(value))
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -133,8 +139,10 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 type="number"
                 min="0"
                 {...field}
-                value={field.value ?? 17}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? 0 : Number(value))
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -155,7 +163,10 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                   type="number"
                   min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? 0 : Number(value))
+                  }}
                 />
               </FormControl>
               <FormMessage />

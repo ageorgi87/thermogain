@@ -2,8 +2,8 @@ import { z } from "zod"
 
 export const heatPumpProjectSchema = z.object({
   type_pac: z.enum(["Air/Eau", "Eau/Eau", "Air/Air"]),
-  puissance_pac_kw: z.number().min(1),
-  cop_estime: z.number().min(1).max(10),
+  puissance_pac_kw: z.number().min(1).default(10),
+  cop_estime: z.number().min(1).max(10).default(3),
   temperature_depart: z.number().min(30).max(80).optional(),
   emetteurs: z.enum([
     "Radiateurs haute température",

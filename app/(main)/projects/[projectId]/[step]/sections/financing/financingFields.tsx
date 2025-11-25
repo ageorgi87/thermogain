@@ -29,18 +29,33 @@ interface FinancementFieldsProps {
 }
 
 export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, totalAides = 0 }: FinancementFieldsProps) {
+  const montantAPayer = Math.max(0, totalCouts - totalAides)
+
   // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
   useEffect(() => {
-    if (watchModeFinancement === "Crédit" && totalCouts > 0) {
-      const montantCredit = Math.max(0, totalCouts - totalAides)
-      form.setValue("montant_credit", montantCredit)
+    if (watchModeFinancement === "Crédit") {
+      form.setValue("montant_credit", montantAPayer)
     }
-  }, [watchModeFinancement, totalCouts, totalAides, form])
+  }, [watchModeFinancement, montantAPayer, form])
 
   // Watch form values for total cost calculation
   const montantCredit = form.watch("montant_credit")
+  const apportPersonnel = form.watch("apport_personnel")
   const tauxInteret = form.watch("taux_interet")
   const dureeCreditMois = form.watch("duree_credit_mois")
+
+  // For Mixte mode: auto-adjust credit amount when personal contribution changes
+  useEffect(() => {
+    if (watchModeFinancement === "Mixte") {
+      const apport = apportPersonnel || 0
+      // Credit = Amount to pay - Personal contribution (but not negative)
+      const newCredit = Math.max(0, montantAPayer - apport)
+      // Only update if different to avoid infinite loop
+      if (montantCredit !== newCredit) {
+        form.setValue("montant_credit", newCredit)
+      }
+    }
+  }, [watchModeFinancement, apportPersonnel, montantAPayer, montantCredit, form])
 
   // Calculate total cost of credit (principal + interests)
   const calculateTotalCreditCost = () => {
@@ -93,52 +108,22 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                     <Input
                       type="number"
                       min="0"
+                      max={montantAPayer}
                       {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        const numValue = value === "" ? 0 : Number(value)
+                        // Cap at montant à payer
+                        const cappedValue = Math.min(numValue, montantAPayer)
+                        field.onChange(cappedValue)
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
-
-          {/* Montant du crédit: only show for Mixte mode, auto-calculated for Crédit mode */}
-          {watchModeFinancement === "Mixte" && (
-            <FormField
-              control={form.control}
-              name="montant_credit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Montant du crédit (€)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-
-          {/* Display calculated credit amount for Crédit mode */}
-          {watchModeFinancement === "Crédit" && (
-            <div className="flex justify-between items-center py-4 px-4 bg-muted/50 rounded-lg">
-              <span className="text-sm font-medium">Montant du crédit (calculé automatiquement)</span>
-              <span className="text-lg font-bold">
-                {Math.max(0, totalCouts - totalAides).toLocaleString('fr-FR')} €
-              </span>
-            </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
@@ -154,10 +139,11 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       step="0.1"
                       min="0"
                       {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        field.onChange(value === "" ? 0 : Number(value))
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -176,10 +162,11 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
-                      }
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        field.onChange(value === "" ? 0 : Number(value))
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -189,7 +176,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
           </div>
 
           {/* Total cost of credit (capital + interests) */}
-          {montantCredit && tauxInteret !== undefined && dureeCreditMois && (
+          {(watchModeFinancement === "Crédit" || watchModeFinancement === "Mixte") && (
             <>
               <Separator />
 
@@ -205,7 +192,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                     <TooltipContent className="max-w-xs">
                       <p className="font-semibold mb-1">Montant total à rembourser</p>
                       <p className="text-xs mb-2">
-                        Capital emprunté + intérêts sur {dureeCreditMois} mois
+                        Capital emprunté + intérêts sur {dureeCreditMois || 0} mois
                       </p>
                       <p className="text-xs text-muted-foreground">
                         ⚠️ Ce montant peut légèrement varier selon les banques en fonction des assurances emprunteur, frais de dossier, frais de garantie, etc.

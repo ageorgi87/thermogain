@@ -73,11 +73,11 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
-                value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
+                {...field}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? 0 : Number(value))
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -95,11 +95,11 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
-                value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
+                {...field}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? 0 : Number(value))
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -117,11 +117,11 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
-                value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
+                {...field}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? 0 : Number(value))
+                }}
               />
             </FormControl>
             <FormDescription>

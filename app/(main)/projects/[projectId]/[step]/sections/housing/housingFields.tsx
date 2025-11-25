@@ -57,7 +57,10 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? 0 : Number(value))
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -76,7 +79,10 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? 0 : Number(value))
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -96,7 +102,10 @@ export function HousingFields({ form }: HousingFieldsProps) {
                 type="number"
                 min="0"
                 {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? 0 : Number(value))
+                }}
               />
             </FormControl>
             <FormMessage />

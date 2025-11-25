@@ -8,7 +8,7 @@ export const evolutionsSchema = z.object({
   evolution_prix_bois: z.number().min(-50, "L'évolution doit être entre -50% et +50%").max(50, "L'évolution doit être entre -50% et +50%").optional(),
 
   // Evolution prix électricité pour PAC (et aussi pour chauffage électrique actuel)
-  evolution_prix_electricite: z.number().min(-50, "L'évolution doit être entre -50% et +50%").max(50, "L'évolution doit être entre -50% et +50%"),
+  evolution_prix_electricite: z.number().min(-50, "L'évolution doit être entre -50% et +50%").max(50, "L'évolution doit être entre -50% et +50%").default(0),
 })
 
 export type EvolutionsData = z.infer<typeof evolutionsSchema>
