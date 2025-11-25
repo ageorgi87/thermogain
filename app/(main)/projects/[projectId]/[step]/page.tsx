@@ -241,32 +241,32 @@ export default function WizardStepPage() {
       return
     }
 
-    // Only update the price field if it's empty or zero
+    // Only update the price field if it's undefined (never set)
     switch (watchTypeChauffage) {
       case "Fioul":
-        if (!form.getValues("prix_fioul_litre") || form.getValues("prix_fioul_litre") === 0) {
+        if (form.getValues("prix_fioul_litre") === undefined) {
           form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 100) / 100)
         }
         break
       case "Gaz":
-        if (!form.getValues("prix_gaz_kwh") || form.getValues("prix_gaz_kwh") === 0) {
+        if (form.getValues("prix_gaz_kwh") === undefined) {
           form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 100) / 100)
         }
         break
       case "GPL":
-        if (!form.getValues("prix_gpl_kg") || form.getValues("prix_gpl_kg") === 0) {
+        if (form.getValues("prix_gpl_kg") === undefined) {
           form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 100) / 100)
         }
         break
       case "Pellets":
-        if (!form.getValues("prix_pellets_kg") || form.getValues("prix_pellets_kg") === 0) {
+        if (form.getValues("prix_pellets_kg") === undefined) {
           form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 100) / 100)
         }
         break
       case "Bois":
         // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
         const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 100) / 100
-        if (!form.getValues("prix_bois_stere") || form.getValues("prix_bois_stere") === 0) {
+        if (form.getValues("prix_bois_stere") === undefined) {
           form.setValue("prix_bois_stere", prixBoisStere)
         }
         break
@@ -274,7 +274,7 @@ export default function WizardStepPage() {
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        if (!form.getValues("prix_elec_kwh") || form.getValues("prix_elec_kwh") === 0) {
+        if (form.getValues("prix_elec_kwh") === undefined) {
           form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 100) / 100)
         }
         break
