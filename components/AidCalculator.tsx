@@ -155,33 +155,6 @@ export function AidCalculator({
                 />
               </div>
 
-              {/* Nombre de personnes */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="personnes">Nombre de personnes dans le foyer</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[300px]">
-                        <p className="text-sm">
-                          Vous + les personnes à charge (indiquées sur l'avis d'imposition)
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <Input
-                  id="personnes"
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={nombrePersonnes}
-                  onChange={(e) => setNombrePersonnes(e.target.value)}
-                />
-              </div>
-
               {/* Résidence principale */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
