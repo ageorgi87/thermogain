@@ -225,7 +225,7 @@ ThermoGain s'appuie sur des sources officielles françaises et européennes :
 
 ## ✅ Améliorations Récentes (Novembre 2024)
 
-### Validation du dimensionnement PAC améliorée
+### 1. Validation du dimensionnement PAC améliorée
 
 La fonction `validatePacPower()` du module `@/lib/copAdjustments` a été améliorée pour prendre en compte :
 
@@ -248,6 +248,63 @@ La fonction `validatePacPower()` du module `@/lib/copAdjustments` a été améli
 
 **Documentation complète :** Voir `lib/copAdjustments.README.md`
 
+### 2. Unification des inputs numériques du wizard
+
+Tous les champs numériques du wizard (étapes 1-7) utilisent désormais un **pattern unifié** pour une expérience utilisateur cohérente :
+
+**Changements appliqués :**
+1. **Pattern de field spreading** : `{...field}` + override du `onChange` avec `Number(e.target.value)`
+2. **Schémas Zod** : Remplacement de `.optional()` par `.default(0)` pour tous les champs numériques optionnels
+3. **Auto-calculs** : Placement correct des `form.watch()` AVANT les `useEffect` pour éviter les erreurs de dépendances
+4. **Validation conditionnelle** : Vérification de changement avant `setValue()` pour éviter les boucles infinies
+
+**Avantages utilisateur :**
+- ✅ Suppression complète des valeurs possible
+- ✅ Saisie de `0` explicite sans réinitialisation
+- ✅ Pas de "04" lors de la saisie dans un champ vide
+- ✅ Comportement cohérent dans toute l'application
+
+**Fichiers modifiés :**
+- `sections/costs/costsFields.tsx` - 3 champs (coût PAC, installation, travaux)
+- `sections/financialAid/financialAidFields.tsx` - 3 champs (MaPrimeRénov', CEE, autres aides)
+- `sections/financing/financingFields.tsx` - 2 champs + fix auto-calcul crédit
+- `sections/housing/housingFields.tsx` - 1 champ (nombre occupants)
+- `sections/heatPumpProject/heatPumpProjectFields.tsx` - 3 champs (puissance, COP, durée de vie)
+- `sections/evolutions/evolutionsFields.tsx` - 5 champs (évolutions prix énergies)
+- `sections/evolutions/evolutionsSchema.ts` - Tous les champs passés de `.optional()` à `.default(0)`
+
+**Exemple de code :**
+```typescript
+// Avant (problématique)
+<Input
+  type="number"
+  value={field.value === 0 ? "" : field.value}
+  onChange={(e) => {
+    const value = e.target.value === "" ? 0 : Number(e.target.value)
+    field.onChange(value)
+  }}
+  onBlur={field.onBlur}
+  name={field.name}
+  ref={field.ref}
+/>
+
+// Après (unifié et simple)
+<Input
+  type="number"
+  {...field}
+  onChange={(e) => field.onChange(Number(e.target.value))}
+/>
+```
+
+**Documentation complète :** Voir section "Patterns d'Implémentation" dans le README principal
+
+### 3. Amélioration du calculateur d'aides
+
+Le composant `AidCalculator` a été simplifié :
+- Suppression du texte explicatif "(MaPrimeRénov' + CEE)" du bouton déclencheur
+- Interface plus épurée et professionnelle
+- Logique de calcul inchangée (toujours basée sur les fonctions officielles)
+
 ## 📞 Support
 
 Pour toute question technique sur les calculs :
@@ -257,6 +314,6 @@ Pour toute question technique sur les calculs :
 
 ---
 
-**Dernière mise à jour** : Novembre 2024
-**Version** : 1.1
+**Dernière mise à jour** : 25 novembre 2024
+**Version** : 1.2
 **Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012

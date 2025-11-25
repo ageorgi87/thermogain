@@ -11,8 +11,8 @@ ThermoGain permet aux utilisateurs de créer des projets de remplacement de chau
 2. **Chauffage Actuel** - Type d'installation, consommation, coûts énergétiques
 3. **Projet PAC** - Configuration de la pompe à chaleur (type, puissance, COP, émetteurs)
 4. **Coûts** - Coûts de la PAC, installation et travaux annexes
-5. **Aides** - MaPrimeRénov', CEE, autres aides financières
-6. **Financement** - Mode de financement (comptant, crédit, location)
+5. **Aides** - MaPrimeRénov', CEE, autres aides financières (avec calculateur intégré)
+6. **Financement** - Mode de financement (comptant, crédit, mixte) avec calcul automatique des mensualités
 7. **Évolutions** - Taux d'évolution des prix des énergies sur 10 ans
 
 ### Calculs Intelligents
@@ -360,12 +360,103 @@ Le rendement du chauffage actuel est ajusté selon:
 - **Réglementations thermiques** - RT 1974, RT 2000, RT 2005, RT 2012
 - **Zones climatiques** - Classification H1/H2/H3 selon le code postal
 
+## Patterns d'Implémentation
+
+### Gestion des Inputs Numériques avec React Hook Form
+
+Tous les inputs numériques du wizard utilisent un **pattern unifié** pour garantir une expérience utilisateur cohérente.
+
+#### Pattern Standard (champs obligatoires et optionnels)
+
+```typescript
+// Dans le schéma Zod : utiliser .default(0) au lieu de .optional()
+const schema = z.object({
+  montant: z.number().min(0).default(0),
+  taux: z.number().min(0).max(100).default(0),
+})
+
+// Dans le composant : spreading de field + override du onChange
+<FormField
+  control={form.control}
+  name="montant"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Montant (€)</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          min="0"
+          {...field}
+          onChange={(e) => field.onChange(Number(e.target.value))}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+#### Avantages de ce Pattern
+
+1. **Suppression totale possible** : L'utilisateur peut supprimer complètement la valeur (champ vide)
+2. **Valeur zéro explicite** : L'utilisateur peut entrer `0` sans que le champ se réinitialise
+3. **Pas de "04" lors de la saisie** : Taper dans un champ vide donne "4" et non "04"
+4. **Cohérence** : Même comportement pour tous les champs numériques de l'application
+5. **Simplicité** : Pas de gestion manuelle complexe de `value`, `onBlur`, etc.
+
+#### Raisons Techniques
+
+- **`{...field}`** : Spread de toutes les props du field (value, onChange, onBlur, name, ref)
+- **`onChange` override** : Convertit la string en number avec `Number(e.target.value)`
+- **`Number("")`** : Retourne `0` automatiquement quand le champ est vide
+- **`.default(0)`** : Dans le schéma Zod, assure une valeur cohérente à `0` plutôt que `undefined`
+
+#### Auto-calculs avec useEffect
+
+Pour les champs calculés automatiquement (ex: montant du crédit en mode "Crédit"), utiliser `useEffect` avec vérification de changement :
+
+```typescript
+// Définir les watches AVANT les useEffect
+const montantCredit = form.watch("montant_credit")
+const totalCouts = form.watch("total_couts")
+
+// useEffect avec condition pour éviter les boucles infinies
+useEffect(() => {
+  if (watchModeFinancement === "Crédit") {
+    if (montantCredit !== montantAPayer) {
+      form.setValue("montant_credit", montantAPayer)
+    }
+  }
+}, [watchModeFinancement, montantAPayer, montantCredit, form])
+```
+
+**Important** :
+- Toujours appeler `form.watch()` AVANT les `useEffect`
+- Vérifier si la valeur a changé avant d'appeler `setValue` (évite les re-renders infinis)
+- Inclure toutes les dépendances dans le tableau de dépendances
+
+### Calculateur d'Aides Intégré
+
+Le composant `AidCalculator` (`components/AidCalculator.tsx`) permet de calculer MaPrimeRénov' et CEE en un clic :
+
+- **Formulaire simplifié** : RFR, résidence principale, remplacement complet
+- **Calculs réels** : Utilise les fonctions `calculateMaPrimeRenov()` et `calculateCEE()`
+- **Pré-remplissage** : Les données du logement (surface, code postal, etc.) sont pré-remplies
+- **Complétion automatique** : Bouton pour insérer les montants calculés dans le formulaire
+
 ## En Savoir Plus
+
+### Documentation
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Shadcn/ui Documentation](https://ui.shadcn.com)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [NextAuth.js Documentation](https://authjs.dev)
 - [Neon Documentation](https://neon.tech/docs)
-- [API DIDO](https://data.statistiques.developpement-durable.gouv.fr/)
-- [Méthode 3CL-DPE 2021](https://www.ecologie.gouv.fr/diagnostic-performance-energetique-dpe)
+- [React Hook Form Documentation](https://react-hook-form.com)
+- [Zod Documentation](https://zod.dev)
+
+### Sources de Données Officielles
+
+- [API DIDO](https://data.statistiques.developpement-durable.gouv.fr/) - Prix énergétiques gouvernementaux
+- [Méthode 3CL-DPE 2021](https://www.ecologie.gouv.fr/diagnostic-performance-energetique-dpe) - Calcul des besoins thermiques

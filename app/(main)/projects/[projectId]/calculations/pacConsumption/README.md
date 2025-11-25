@@ -391,6 +391,22 @@ calculateAdjustedCOP(
    - **Zone climatique** (déduite du `code_postal`) via les DJU pour ajuster les besoins selon le climat
    - Ces améliorations permettent une validation beaucoup plus précise du dimensionnement (voir `lib/copAdjustments.README.md`)
 
+## Améliorations récentes (Novembre 2024)
+
+### Unification des inputs numériques du wizard
+
+Tous les champs numériques permettant la saisie de consommations ont été standardisés avec un pattern unifié :
+- **Suppression complète possible** : L'utilisateur peut effacer complètement un champ
+- **Valeur zéro explicite** : Permet de saisir `0` sans réinitialisation
+- **Schémas Zod** : Utilisation de `.default(0)` au lieu de `.optional()` pour la cohérence
+
+**Impact sur pacConsumption :**
+- Les champs de consommation (fioul, gaz, GPL, etc.) dans l'étape "Chauffage Actuel" utilisent ce pattern
+- Amélioration de l'UX pour la saisie des données d'entrée du calcul
+- Réduction des erreurs de saisie et des valeurs manquantes
+
+Voir la section "Patterns d'Implémentation" dans le README principal pour plus de détails.
+
 ## Améliorations futures possibles
 
 1. **COP dynamique**: Modéliser le COP en fonction de la température extérieure heure par heure (simulation annuelle)
@@ -404,3 +420,7 @@ calculateAdjustedCOP(
 5. **Déshumidification**: Pour les PAC Air/Air, intégrer la consommation liée à la déshumidification en été
 
 6. **Logging structuré**: Remplacer console.log par un système de logging professionnel (Winston, Pino)
+
+---
+
+**Dernière mise à jour** : 25 novembre 2024
