@@ -1,5 +1,5 @@
-import { ProjectData } from "./types"
-import { calculateYearlyData } from "./savings"
+import { ProjectData } from "../types"
+import { calculateYearlyData } from "../savings/savings"
 
 /**
  * Calcule la période de retour sur investissement (ROI / Payback Period)

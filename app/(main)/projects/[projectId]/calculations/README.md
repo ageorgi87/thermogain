@@ -2,6 +2,42 @@
 
 Ce document détaille toutes les méthodes de calcul utilisées dans l'application ThermoGain pour l'estimation des consommations énergétiques, des coûts, et des économies potentielles lors du remplacement d'un système de chauffage par une pompe à chaleur (PAC).
 
+## Structure du module
+
+Les calculs sont organisés en modules spécialisés, chacun dans son propre sous-répertoire avec sa documentation détaillée:
+
+```
+calculations/
+├── README.md (ce fichier)
+├── types.ts (types partagés)
+├── index.ts (exports centralisés)
+├── currentCost/
+│   ├── currentCost.ts
+│   └── README.md
+├── pacConsumption/
+│   ├── pacConsumption.ts
+│   └── README.md
+├── pacCost/
+│   ├── pacCost.ts
+│   └── README.md
+├── savings/
+│   ├── savings.ts
+│   └── README.md
+└── roi/
+    ├── roi.ts
+    └── README.md
+```
+
+### Modules de calcul
+
+- **[currentCost/](./currentCost/README.md)** - Calcul du coût annuel du chauffage actuel
+- **[pacConsumption/](./pacConsumption/README.md)** - Calcul de la consommation électrique de la PAC avec ajustements COP
+- **[pacCost/](./pacCost/README.md)** - Calcul du coût annuel de la PAC
+- **[savings/](./savings/README.md)** - Calcul des économies et projections sur la durée de vie
+- **[roi/](./roi/README.md)** - Calcul du retour sur investissement et financement
+
+Consultez le README de chaque module pour une documentation détaillée des fonctions, formules, exemples d'utilisation, et raisons techniques.
+
 ## Table des Matières
 
 1. [Introduction et Contexte](#introduction-et-contexte)

@@ -1,4 +1,4 @@
-import { ProjectData } from "./types"
+import { ProjectData } from "../types"
 
 /**
  * Calcule le coût annuel du chauffage actuel

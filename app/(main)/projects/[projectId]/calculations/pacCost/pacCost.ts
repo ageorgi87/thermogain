@@ -1,5 +1,5 @@
-import { ProjectData } from "./types"
-import { calculateCurrentAnnualCost } from "./currentCost"
+import { ProjectData } from "../types"
+import { calculateCurrentAnnualCost } from "../currentCost/currentCost"
 
 /**
  * Calcule la consommation énergétique annuelle actuelle en kWh

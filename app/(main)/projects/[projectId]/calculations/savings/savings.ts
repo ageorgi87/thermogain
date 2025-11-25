@@ -1,6 +1,6 @@
-import { ProjectData, YearlyData } from "./types"
-import { calculateCurrentCostForYear } from "./currentCost"
-import { calculatePacCostForYear } from "./pacCost"
+import { ProjectData, YearlyData } from "../types"
+import { calculateCurrentCostForYear } from "../currentCost/currentCost"
+import { calculatePacCostForYear } from "../pacCost/pacCost"
 
 /**
  * Calcule les données année par année sur une période donnée

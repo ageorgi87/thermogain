@@ -1,21 +1,21 @@
 // Export all calculation functions
 export * from "./types"
-export * from "./currentCost"
-export * from "./pacCost"
-export * from "./savings"
-export * from "./roi"
+export * from "./currentCost/currentCost"
+export * from "./pacCost/pacCost"
+export * from "./savings/savings"
+export * from "./roi/roi"
 
 // Main calculation function that orchestrates all calculations
 import { ProjectData, CalculationResults } from "./types"
-import { calculateCurrentAnnualCost } from "./currentCost"
-import { calculatePacAnnualCost } from "./pacCost"
-import { calculateYearlyData, calculateTotalSavings, calculateNetBenefit } from "./savings"
+import { calculateCurrentAnnualCost } from "./currentCost/currentCost"
+import { calculatePacAnnualCost } from "./pacCost/pacCost"
+import { calculateYearlyData, calculateTotalSavings, calculateNetBenefit } from "./savings/savings"
 import {
   calculatePaybackPeriod,
   calculatePaybackYear,
   calculateMonthlyPayment,
   calculateTotalCreditCost,
-} from "./roi"
+} from "./roi/roi"
 
 /**
  * Fonction principale qui calcule tous les résultats du projet
