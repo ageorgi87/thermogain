@@ -28,6 +28,7 @@ interface AidCalculatorProps {
   anneeConstruction?: number
   codePostal?: string
   surfaceHabitable?: number
+  nombreOccupants?: number
   // Callback pour remplir les inputs
   onUseAmounts: (maPrimeRenov: number, cee: number) => void
 }
@@ -37,12 +38,14 @@ export function AidCalculator({
   anneeConstruction,
   codePostal,
   surfaceHabitable,
+  nombreOccupants,
   onUseAmounts,
 }: AidCalculatorProps) {
   const [open, setOpen] = useState(false)
   const [revenuFiscal, setRevenuFiscal] = useState<string>("")
-  const [nombrePersonnes, setNombrePersonnes] = useState<string>("2")
+  const [nombrePersonnes, setNombrePersonnes] = useState<string>(nombreOccupants?.toString() || "2")
   const [residencePrincipale, setResidencePrincipale] = useState<string>("oui")
+  const [remplacementComplet, setRemplacementComplet] = useState<string>("oui")
 
   const [mprResult, setMprResult] = useState<ReturnType<typeof calculateMaPrimeRenov> | null>(null)
   const [ceeResult, setCeeResult] = useState<ReturnType<typeof calculateCEE> | null>(null)
@@ -66,6 +69,7 @@ export function AidCalculator({
       typePac,
       logementPlusde15ans,
       residencePrincipale: residencePrincipale === "oui",
+      remplacementComplet: remplacementComplet === "oui",
     })
 
     // Calculer CEE
@@ -79,6 +83,7 @@ export function AidCalculator({
       surfaceHabitable,
       zoneClimatique,
       logementPlusde2ans,
+      remplacementComplet: remplacementComplet === "oui",
     })
 
     setMprResult(mprCalculation)
@@ -113,26 +118,6 @@ export function AidCalculator({
           </DrawerHeader>
 
           <div className="p-4 pb-0 space-y-6">
-            {/* Informations pré-remplies */}
-            <Alert>
-              <AlertDescription>
-                <strong>Informations déjà connues :</strong>
-                <ul className="mt-2 space-y-1 text-sm">
-                  <li>• Type de PAC : {typePac || "Non renseigné"}</li>
-                  <li>
-                    • Âge du logement : {anneeConstruction ? `${new Date().getFullYear() - anneeConstruction} ans` : "Non renseigné"}
-                  </li>
-                  <li>• Code postal : {codePostal || "Non renseigné"}</li>
-                  <li>• Surface habitable : {surfaceHabitable ? `${surfaceHabitable} m²` : "Non renseigné"}</li>
-                  <li>
-                    • Zone climatique : {codePostal ? getClimateZoneFromPostalCode(codePostal) : "Non renseigné"}
-                  </li>
-                </ul>
-              </AlertDescription>
-            </Alert>
-
-            <Separator />
-
             {/* Formulaire commun */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Informations complémentaires nécessaires</h3>
@@ -193,6 +178,35 @@ export function AidCalculator({
                 <p className="text-xs text-muted-foreground">
                   Requis pour MaPrimeRénov' uniquement
                 </p>
+              </div>
+
+              {/* Remplacement complet */}
+              <div className="space-y-2">
+                <Label>Souhaitez-vous remplacer complètement votre système de chauffage actuel ?</Label>
+                <RadioGroup value={remplacementComplet} onValueChange={setRemplacementComplet}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="oui" id="remp-oui" />
+                    <Label htmlFor="remp-oui" className="font-normal cursor-pointer">
+                      Oui, remplacement complet
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="non" id="remp-non" />
+                    <Label htmlFor="remp-non" className="font-normal cursor-pointer">
+                      Non, installation en complément (chauffage d&apos;appoint)
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <p className="text-xs text-muted-foreground">
+                  Le remplacement complet est requis pour bénéficier des aides MaPrimeRénov&apos; et CEE
+                </p>
+                {remplacementComplet === "non" && (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertDescription>
+                      <strong>⚠️ Attention :</strong> Une installation en complément ne vous rendra pas éligible aux aides MaPrimeRénov&apos; et CEE.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
 
               {/* Bouton calculer */}

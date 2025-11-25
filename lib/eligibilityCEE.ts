@@ -15,6 +15,7 @@ interface CEEInput {
   surfaceHabitable: number       // Surface pour calcul selon fiche CEE
   zoneClimatique: string         // H1, H2, H3 (déterminé par code postal)
   logementPlusde2ans: boolean    // Le logement a-t-il plus de 2 ans ?
+  remplacementComplet: boolean   // Le système de chauffage actuel sera-t-il complètement remplacé ?
 }
 
 interface CEEResult {
@@ -126,6 +127,18 @@ export function calculateCEE(input: CEEInput): CEEResult {
   const details: string[] = []
 
   // Vérification des conditions d'éligibilité de base
+  if (!input.remplacementComplet) {
+    return {
+      eligible: false,
+      montant: 0,
+      message: "❌ Non éligible : le remplacement complet du système de chauffage est requis.",
+      details: [
+        "Pour bénéficier des CEE (Coup de Pouce Chauffage), vous devez remplacer complètement votre système de chauffage actuel.",
+        "Une installation en complément n'est pas éligible.",
+      ],
+    }
+  }
+
   if (!input.logementPlusde2ans) {
     return {
       eligible: false,

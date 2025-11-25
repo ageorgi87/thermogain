@@ -14,6 +14,7 @@ interface MaPrimeRenovInput {
   typePac: string                // Type de PAC installée
   logementPlusde15ans: boolean   // Le logement a-t-il plus de 15 ans ?
   residencePrincipale: boolean   // Est-ce une résidence principale ?
+  remplacementComplet: boolean   // Le système de chauffage actuel sera-t-il complètement remplacé ?
 }
 
 interface MaPrimeRenovResult {
@@ -136,6 +137,18 @@ export function calculateMaPrimeRenov(input: MaPrimeRenovInput): MaPrimeRenovRes
   const details: string[] = []
 
   // Vérification des conditions d'éligibilité de base
+  if (!input.remplacementComplet) {
+    return {
+      eligible: false,
+      montant: 0,
+      message: "❌ Non éligible : le remplacement complet du système de chauffage est requis.",
+      details: [
+        "Pour bénéficier de MaPrimeRénov', vous devez remplacer complètement votre système de chauffage actuel.",
+        "Une installation en complément (chauffage d'appoint) n'est pas éligible.",
+      ],
+    }
+  }
+
   if (!input.logementPlusde15ans) {
     return {
       eligible: false,

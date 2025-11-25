@@ -20,6 +20,7 @@ interface AidesFieldsProps {
   anneeConstruction?: number
   codePostal?: string
   surfaceHabitable?: number
+  nombreOccupants?: number
 }
 
 export function AidesFields({
@@ -28,6 +29,7 @@ export function AidesFields({
   anneeConstruction,
   codePostal,
   surfaceHabitable,
+  nombreOccupants,
 }: AidesFieldsProps) {
   const maPrimeRenov = form.watch("ma_prime_renov")
   const cee = form.watch("cee")
@@ -51,6 +53,7 @@ export function AidesFields({
           anneeConstruction={anneeConstruction}
           codePostal={codePostal}
           surfaceHabitable={surfaceHabitable}
+          nombreOccupants={nombreOccupants}
           onUseAmounts={(maPrimeRenov, cee) => {
             form.setValue("ma_prime_renov", maPrimeRenov)
             form.setValue("cee", cee)

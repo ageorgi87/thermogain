@@ -153,6 +153,7 @@ export default function WizardStepPage() {
   const [anneeConstruction, setAnneeConstruction] = useState<number | undefined>(undefined)
   const [codePostal, setCodePostal] = useState<string | undefined>(undefined)
   const [surfaceHabitable, setSurfaceHabitable] = useState<number | undefined>(undefined)
+  const [nombreOccupants, setNombreOccupants] = useState<number | undefined>(undefined)
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
@@ -208,6 +209,9 @@ export default function WizardStepPage() {
           }
           if (project.logement?.surface_habitable) {
             setSurfaceHabitable(project.logement.surface_habitable)
+          }
+          if (project.logement?.nombre_occupants) {
+            setNombreOccupants(project.logement.nombre_occupants)
           }
 
           // Map step key to database field name
@@ -438,6 +442,7 @@ export default function WizardStepPage() {
                   anneeConstruction={anneeConstruction}
                   codePostal={codePostal}
                   surfaceHabitable={surfaceHabitable}
+                  nombreOccupants={nombreOccupants}
                 />
               )}
               {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
