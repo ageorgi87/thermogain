@@ -13,9 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
 import { FinancingData } from "./financingSchema"
 import { useEffect } from "react"
+import { calculateMensualite } from "@/lib/loanCalculations"
+import { Separator } from "@/components/ui/separator"
 
 interface FinancementFieldsProps {
   form: UseFormReturn<FinancingData>
@@ -32,6 +36,25 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
       form.setValue("montant_credit", montantCredit)
     }
   }, [watchModeFinancement, totalCouts, totalAides, form])
+
+  // Watch form values for total cost calculation
+  const montantCredit = form.watch("montant_credit")
+  const tauxInteret = form.watch("taux_interet")
+  const dureeCreditMois = form.watch("duree_credit_mois")
+
+  // Calculate total cost of credit (principal + interests)
+  const calculateTotalCreditCost = () => {
+    if (!montantCredit || !dureeCreditMois || tauxInteret === undefined) {
+      return 0
+    }
+
+    const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
+    const totalPaye = mensualite * dureeCreditMois
+    return Math.round(totalPaye * 100) / 100
+  }
+
+  const totalCreditCost = calculateTotalCreditCost()
+  const interetsPayes = totalCreditCost - (montantCredit || 0)
   return (
     <div className="space-y-4">
       <FormField
@@ -160,6 +183,43 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
               )}
             />
           </div>
+
+          {/* Total cost of credit (capital + interests) */}
+          {montantCredit && tauxInteret !== undefined && dureeCreditMois && (
+            <>
+              <Separator />
+
+              <div className="flex justify-between items-center py-4 px-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-blue-900">
+                    Coût total du crédit
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-blue-600 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="font-semibold mb-1">Montant total à rembourser</p>
+                      <p className="text-xs mb-2">
+                        Capital emprunté + intérêts sur {dureeCreditMois} mois
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ⚠️ Ce montant peut légèrement varier selon les banques en fonction des assurances emprunteur, frais de dossier, frais de garantie, etc.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-blue-900">
+                    {totalCreditCost.toLocaleString('fr-FR')} €
+                  </div>
+                  <div className="text-xs text-blue-700">
+                    dont {interetsPayes.toLocaleString('fr-FR')} € d&apos;intérêts
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
