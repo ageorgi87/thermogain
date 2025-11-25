@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input"
 import { UseFormReturn } from "react-hook-form"
 import { FinancialAidData } from "./financialAidSchema"
 import { useEffect } from "react"
-import { MaPrimeRenovCalculator } from "@/components/MaPrimeRenovCalculator"
-import { CEECalculator } from "@/components/CEECalculator"
+import { AidCalculator } from "@/components/AidCalculator"
 
 interface AidesFieldsProps {
   form: UseFormReturn<FinancialAidData>
@@ -42,6 +41,25 @@ export function AidesFields({
 
   return (
     <div className="space-y-4">
+      {/* Calculateur unifié pour les deux aides */}
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-900 mb-3">
+          💡 Utilisez le calculateur ci-dessous pour vérifier votre éligibilité et obtenir une estimation automatique des montants MaPrimeRénov' et CEE.
+        </p>
+        <AidCalculator
+          typePac={typePac}
+          anneeConstruction={anneeConstruction}
+          codePostal={codePostal}
+          surfaceHabitable={surfaceHabitable}
+          onUseAmounts={(maPrimeRenov, cee) => {
+            form.setValue("ma_prime_renov", maPrimeRenov)
+            form.setValue("cee", cee)
+          }}
+        />
+      </div>
+
+      <Separator />
+
       <FormField
         control={form.control}
         name="ma_prime_renov"
@@ -56,14 +74,6 @@ export function AidesFields({
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
-            <FormDescription className="mt-2">
-              <MaPrimeRenovCalculator
-                typePac={typePac}
-                anneeConstruction={anneeConstruction}
-                codePostal={codePostal}
-                onUseAmount={(amount) => form.setValue("ma_prime_renov", amount)}
-              />
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -83,15 +93,6 @@ export function AidesFields({
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
-            <FormDescription className="mt-2">
-              <CEECalculator
-                typePac={typePac}
-                anneeConstruction={anneeConstruction}
-                codePostal={codePostal}
-                surfaceHabitable={surfaceHabitable}
-                onUseAmount={(amount) => form.setValue("cee", amount)}
-              />
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
