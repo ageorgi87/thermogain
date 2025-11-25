@@ -127,8 +127,6 @@ export function AidCalculator({
           <div className="p-4 pb-0 space-y-6">
             {/* Formulaire commun */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Informations complémentaires nécessaires</h3>
-
               {/* Revenu Fiscal de Référence */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
