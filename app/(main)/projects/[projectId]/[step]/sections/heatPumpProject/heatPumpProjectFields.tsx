@@ -133,6 +133,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 type="number"
                 min="0"
                 {...field}
+                value={field.value ?? 17}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
