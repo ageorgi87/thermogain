@@ -1,7 +1,7 @@
 import { getProject } from "@/lib/actions/projects"
 import { notFound, redirect } from "next/navigation"
 import { calculateAllResults, ProjectData } from "../calculations"
-import { calculatePacConsumptionKwh } from "../calculations/pacConsumption"
+import { calculatePacConsumptionKwh } from "../calculations/pacConsumption/pacConsumption"
 import { validatePacPower } from "@/lib/copAdjustments"
 import { ResultsHeader } from "./components/ResultsHeader"
 import { CumulativeCostChart } from "./components/CumulativeCostChart"
