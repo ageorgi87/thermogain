@@ -56,7 +56,9 @@ export default async function ResultsPage({ params }: PageProps) {
   const powerValidation = validatePacPower(
     project.projetPac.puissance_pac_kw,
     project.logement.surface_habitable,
-    project.logement.annee_construction
+    project.logement.annee_construction,
+    project.logement.qualite_isolation,
+    project.logement.code_postal
   )
 
   // Si le prix de l'électricité n'est pas renseigné, le récupérer depuis l'API
@@ -87,8 +89,8 @@ export default async function ResultsPage({ params }: PageProps) {
     type_pac: project.projetPac.type_pac,
     puissance_pac_kw: project.projetPac.puissance_pac_kw,
     cop_estime: project.projetPac.cop_estime,
-    temperature_depart: project.projetPac.temperature_depart,
-    emetteurs: project.projetPac.emetteurs,
+    temperature_depart: project.projetPac.temperature_depart || 45, // Fallback si null
+    emetteurs: project.projetPac.emetteurs || "Radiateurs basse température", // Fallback si null
     duree_vie_pac: project.projetPac.duree_vie_pac,
     code_postal: project.logement.code_postal || undefined,
     cout_total: project.couts.cout_total,
@@ -145,11 +147,7 @@ export default async function ResultsPage({ params }: PageProps) {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Attention : Dimensionnement de la PAC</AlertTitle>
           <AlertDescription>
-            <p className="mb-2">{powerValidation.message}</p>
-            <p className="text-sm">
-              Pour un logement de {project.logement.surface_habitable} m² construit en {project.logement.annee_construction},
-              une puissance de {powerValidation.recommendedPowerMin} à {powerValidation.recommendedPowerMax} kW est recommandée.
-            </p>
+            {powerValidation.message}
           </AlertDescription>
         </Alert>
       )}

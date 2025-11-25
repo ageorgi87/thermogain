@@ -12,7 +12,7 @@
  * ne s'appliquent PAS à ce type. Seul l'ajustement climatique est pertinent.
  */
 
-import { getCOPAdjustment as getClimateAdjustment } from "./climateZones"
+import { getCOPAdjustment as getClimateAdjustment, getClimateInfoFromPostalCode } from "./climateZones"
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
@@ -129,56 +129,119 @@ export function calculateAdjustedCOP(
 
 /**
  * Valide que la puissance de la PAC est adaptée aux besoins
- * Règle générale : 50-80 W/m² selon isolation
+ * Règle générale : 40-80 W/m² selon isolation et zone climatique
  *
  * @param puissancePacKw - Puissance de la PAC en kW
  * @param surfaceHabitable - Surface habitable en m²
- * @param anneeConstruction - Année de construction (pour estimer isolation)
+ * @param anneeConstruction - Année de construction (fallback si qualiteIsolation non fournie)
+ * @param qualiteIsolation - Qualité d'isolation réelle ("Bonne" | "Moyenne" | "Mauvaise")
+ * @param codePostal - Code postal pour ajustement climatique (optionnel)
  * @returns { isValid: boolean, message: string, recommendedPower: number }
  */
 export function validatePacPower(
   puissancePacKw: number,
   surfaceHabitable: number,
-  anneeConstruction: number
+  anneeConstruction: number,
+  qualiteIsolation?: string,
+  codePostal?: string
 ): {
   isValid: boolean
   message: string
   recommendedPowerMin: number
   recommendedPowerMax: number
 } {
-  // Déterminer le coefficient selon l'époque de construction
+  // 1. Déterminer le coefficient de base selon la qualité d'isolation
+  // Pondération : 80% info utilisateur + 20% âge de la maison
   let coefficientWparM2: number
 
+  // Coefficient selon l'année de construction (baseline)
+  let coefficientAge: number
   if (anneeConstruction >= 2012) {
-    // RT 2012 et après : bien isolé
-    coefficientWparM2 = 50 // 50 W/m²
+    coefficientAge = 50 // RT 2012 et après : bien isolé
   } else if (anneeConstruction >= 2000) {
-    // RT 2000-2005 : isolation correcte
-    coefficientWparM2 = 60 // 60 W/m²
+    coefficientAge = 60 // RT 2000-2005 : isolation correcte
   } else if (anneeConstruction >= 1980) {
-    // Années 1980-2000 : isolation moyenne
-    coefficientWparM2 = 70 // 70 W/m²
+    coefficientAge = 70 // Années 1980-2000 : isolation moyenne
   } else {
-    // Avant 1980 : isolation faible
-    coefficientWparM2 = 80 // 80 W/m²
+    coefficientAge = 80 // Avant 1980 : isolation faible
   }
 
-  // Calculer la puissance recommandée (avec marge de 20%)
-  const puissanceRecommandeeMin = (surfaceHabitable * coefficientWparM2 * 0.9) / 1000 // kW
-  const puissanceRecommandeeMax = (surfaceHabitable * coefficientWparM2 * 1.2) / 1000 // kW
+  if (qualiteIsolation) {
+    // Coefficient selon la qualité d'isolation déclarée
+    let coefficientUtilisateur: number
+    switch (qualiteIsolation) {
+      case "Bonne":
+        coefficientUtilisateur = 45 // Bonne isolation (RT 2012+, ou rénovée BBC)
+        break
+      case "Moyenne":
+        coefficientUtilisateur = 60 // Isolation moyenne (RT 2000-2005)
+        break
+      case "Mauvaise":
+        coefficientUtilisateur = 80 // Mauvaise isolation (avant 1980, non rénovée)
+        break
+      default:
+        coefficientUtilisateur = 60 // Défaut conservateur
+    }
 
-  // Vérifier si la puissance est dans la fourchette
+    // Pondération : 80% utilisateur + 20% âge
+    coefficientWparM2 = coefficientUtilisateur * 0.8 + coefficientAge * 0.2
+
+    console.log(`🏠 Calcul coefficient isolation (pondéré):`)
+    console.log(`   - Info utilisateur (${qualiteIsolation}): ${coefficientUtilisateur} W/m² (80%)`)
+    console.log(`   - Âge construction (${anneeConstruction}): ${coefficientAge} W/m² (20%)`)
+    console.log(`   → Coefficient final: ${coefficientWparM2.toFixed(1)} W/m²`)
+  } else {
+    // Fallback sur l'année de construction uniquement si qualité non fournie
+    coefficientWparM2 = coefficientAge
+    console.log(`🏠 Calcul coefficient isolation (âge uniquement):`)
+    console.log(`   - Âge construction (${anneeConstruction}): ${coefficientAge} W/m²`)
+  }
+
+  // 2. Ajustement selon la zone climatique
+  let facteurClimatique = 1.0
+  let zoneClimatiqueInfo = ""
+
+  if (codePostal) {
+    const climateInfo = getClimateInfoFromPostalCode(codePostal)
+    // Plus il fait froid, plus la puissance doit être élevée
+    // On utilise les DJU pour ajuster : plus de DJU = plus de besoins
+    const djuReference = 2200 // H2a (zone tempérée de référence)
+    facteurClimatique = climateInfo.dju / djuReference
+
+    zoneClimatiqueInfo = `${climateInfo.zone} (${climateInfo.description})`
+
+    console.log(`🌡️ Ajustement climatique pour dimensionnement PAC:`)
+    console.log(`   - Zone: ${climateInfo.zone}`)
+    console.log(`   - DJU: ${climateInfo.dju} (référence: ${djuReference})`)
+    console.log(`   - Facteur: ${(facteurClimatique * 100).toFixed(0)}%`)
+  }
+
+  // 3. Calculer la puissance recommandée avec ajustement climatique
+  const coefficientAjuste = coefficientWparM2 * facteurClimatique
+  const puissanceRecommandeeMin = (surfaceHabitable * coefficientAjuste * 0.9) / 1000 // kW
+  const puissanceRecommandeeMax = (surfaceHabitable * coefficientAjuste * 1.2) / 1000 // kW
+
+  // 4. Vérifier si la puissance est dans la fourchette
   const isValid = puissancePacKw >= puissanceRecommandeeMin && puissancePacKw <= puissanceRecommandeeMax
 
+  // 5. Générer le message détaillé
   let message = ""
+  const isolationText = qualiteIsolation
+    ? `isolation ${qualiteIsolation.toLowerCase()}`
+    : `construction ${anneeConstruction}`
+
+  const climatText = codePostal
+    ? ` en zone ${zoneClimatiqueInfo}`
+    : ""
+
   if (!isValid) {
     if (puissancePacKw < puissanceRecommandeeMin) {
-      message = `⚠️ Puissance potentiellement insuffisante. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
+      message = `⚠️ Puissance potentiellement insuffisante pour ${surfaceHabitable} m² avec ${isolationText}${climatText}. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
     } else {
-      message = `⚠️ Puissance potentiellement surdimensionnée. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
+      message = `⚠️ Puissance potentiellement surdimensionnée pour ${surfaceHabitable} m² avec ${isolationText}${climatText}. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
     }
   } else {
-    message = `✅ Puissance adaptée (${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW)`
+    message = `✅ Puissance adaptée pour ${surfaceHabitable} m² avec ${isolationText}${climatText} (recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW)`
   }
 
   return {

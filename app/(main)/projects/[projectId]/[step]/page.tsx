@@ -207,9 +207,17 @@ export default function WizardStepPage() {
           if (sectionData && typeof sectionData === 'object') {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
-            // Convert null values to 0 for number fields
+            // Convert null values appropriately:
+            // - For number fields: convert to undefined (not 0, to allow optional validation)
+            // - For boolean fields: keep as null or undefined
+            // - For string fields: keep as is
             const cleanedData = Object.fromEntries(
-              Object.entries(data).map(([key, value]) => [key, value === null ? 0 : value])
+              Object.entries(data).map(([key, value]) => {
+                if (value === null) {
+                  return [key, undefined]
+                }
+                return [key, value]
+              })
             )
             form.reset(cleanedData)
           } else if (step === "chauffage-actuel" && !sectionData) {
@@ -282,6 +290,7 @@ export default function WizardStepPage() {
   }, [watchTypeChauffage, step, isLoading, defaultPrices, form])
 
   const onSubmit = async (data: any) => {
+    console.log("🚀 Form submission started", { step, data })
     setIsSubmitting(true)
     try {
       // Call the appropriate Server Action based on current step
@@ -290,6 +299,7 @@ export default function WizardStepPage() {
           await saveHousingData(projectId, data)
           break
         case "chauffage-actuel":
+          console.log("💾 Saving current heating data...")
           await saveCurrentHeatingData(projectId, data)
           break
         case "projet-pac":
@@ -311,9 +321,13 @@ export default function WizardStepPage() {
           throw new Error("Invalid step")
       }
 
+      console.log("✅ Data saved successfully")
+
       // Update project step to next step (step numbers start at 1)
       const nextStepNumber = currentStepIndex + 2 // +1 for array index, +1 for next step
       await updateProjectStep(projectId, nextStepNumber)
+
+      console.log("📍 Navigating to next step...")
 
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {
@@ -323,8 +337,8 @@ export default function WizardStepPage() {
         router.push(`/projects/${projectId}/results`)
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
-      // You could add toast notification here
+      console.error("❌ Error submitting form:", error)
+      alert(`Erreur lors de la sauvegarde: ${error instanceof Error ? error.message : "Erreur inconnue"}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -381,7 +395,16 @@ export default function WizardStepPage() {
       </Alert>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(
+            onSubmit,
+            (errors) => {
+              console.error("❌ Form validation errors:", errors)
+              alert(`Le formulaire contient des erreurs:\n${Object.entries(errors).map(([field, error]) => `- ${field}: ${error?.message}`).join('\n')}`)
+            }
+          )}
+          className="space-y-8"
+        >
           <Card>
             <CardContent className="pt-6">
               {step === "logement" && <HousingFields form={form as any} />}

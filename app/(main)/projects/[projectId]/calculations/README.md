@@ -220,8 +220,33 @@ ThermoGain s'appuie sur des sources officielles françaises et européennes :
 - [ ] COP dynamique selon température extérieure (courbe de performance)
 - [ ] Eau chaude sanitaire dans les calculs
 - [ ] Impact précis des émetteurs (radiateurs vs plancher chauffant)
-- [ ] Dimensionnement automatique de la puissance PAC
+- [x] ~~Dimensionnement automatique de la puissance PAC~~ → **Implémenté !** Voir `@/lib/copAdjustments`
 - [ ] Simulation mois par mois avec températures réelles
+
+## ✅ Améliorations Récentes (Novembre 2024)
+
+### Validation du dimensionnement PAC améliorée
+
+La fonction `validatePacPower()` du module `@/lib/copAdjustments` a été améliorée pour prendre en compte :
+
+1. **Qualité d'isolation réelle** (`qualiteIsolation`: Bonne/Moyenne/Mauvaise)
+   - Plus précis que l'année de construction seule
+   - Permet de valider correctement les maisons rénovées
+   - Coefficients : 45-80 W/m² selon qualité
+
+2. **Zone climatique** (déduite du `code_postal`)
+   - Ajustement selon les DJU (Degrés-Jours Unifiés)
+   - Variation de -27% (Marseille) à +36% (montagne) vs référence
+   - Évite sous/sur-dimensionnement selon climat
+
+3. **Message de validation détaillé**
+   - Mentionne explicitement l'isolation et la zone climatique
+   - Transparence et pédagogie pour l'utilisateur
+   - Exemple : "⚠️ Puissance potentiellement insuffisante pour 100 m² avec isolation moyenne en zone H1b (Alsace). Recommandé : 6.6-8.9 kW"
+
+**Impact :** Validation beaucoup plus précise du dimensionnement, évite surcoûts et inconfort.
+
+**Documentation complète :** Voir `lib/copAdjustments.README.md`
 
 ## 📞 Support
 
@@ -233,5 +258,5 @@ Pour toute question technique sur les calculs :
 ---
 
 **Dernière mise à jour** : Novembre 2024
-**Version** : 1.0
-**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316
+**Version** : 1.1
+**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012

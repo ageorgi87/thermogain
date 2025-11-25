@@ -386,6 +386,11 @@ calculateAdjustedCOP(
 
 5. **Précision**: La précision finale dépend de la qualité des données d'entrée (consommation réelle, COP fabricant, etc.)
 
+6. **Validation du dimensionnement PAC**: Le module `@/lib/copAdjustments` contient la fonction `validatePacPower()` qui valide la puissance de la PAC. Depuis la dernière mise à jour, cette fonction prend en compte:
+   - **Qualité d'isolation réelle** (`qualiteIsolation`: Bonne/Moyenne/Mauvaise) plutôt que seulement l'année de construction
+   - **Zone climatique** (déduite du `code_postal`) via les DJU pour ajuster les besoins selon le climat
+   - Ces améliorations permettent une validation beaucoup plus précise du dimensionnement (voir `lib/copAdjustments.README.md`)
+
 ## Améliorations futures possibles
 
 1. **COP dynamique**: Modéliser le COP en fonction de la température extérieure heure par heure (simulation annuelle)

@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { SignOutButton } from "@/components/signOutButton";
+import { UserMenu } from "@/components/UserMenu";
 
 export default async function MainLayout({
   children,
@@ -34,12 +34,10 @@ export default async function MainLayout({
                 {session.user?.company || "ThermoGain"}
               </h1>
             </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                {session.user?.email}
-              </span>
-              <SignOutButton />
-            </div>
+            <UserMenu
+              userName={session.user?.name}
+              userEmail={session.user?.email}
+            />
           </div>
         </div>
       </nav>
