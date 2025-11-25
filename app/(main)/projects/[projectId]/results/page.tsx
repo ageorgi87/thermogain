@@ -226,6 +226,11 @@ export default async function ResultsPage({ params }: PageProps) {
         yearlyData={results.yearlyData}
         investmentCost={projectData.reste_a_charge}
         paybackYear={results.paybackYear}
+        modeFinancement={project.financement?.mode_financement}
+        montantCredit={project.financement?.montant_credit || undefined}
+        tauxInteret={project.financement?.taux_interet || undefined}
+        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
+        apportPersonnel={project.financement?.apport_personnel || undefined}
       />
     </div>
   )
