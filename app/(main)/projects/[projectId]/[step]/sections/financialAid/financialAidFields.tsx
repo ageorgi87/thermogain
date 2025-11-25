@@ -74,7 +74,8 @@ export function AidesFields({
                 type="number"
                 min="0"
                 {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
               />
             </FormControl>
             <FormMessage />
@@ -93,7 +94,8 @@ export function AidesFields({
                 type="number"
                 min="0"
                 {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
               />
             </FormControl>
             <FormMessage />
@@ -112,7 +114,8 @@ export function AidesFields({
                 type="number"
                 min="0"
                 {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
               />
             </FormControl>
             <FormDescription>
