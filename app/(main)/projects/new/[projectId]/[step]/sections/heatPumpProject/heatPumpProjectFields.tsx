@@ -16,6 +16,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
+import { useEffect } from "react"
 import { HeatPumpProjectData } from "./heatPumpProjectSchema"
 
 interface ProjetPacFieldsProps {
@@ -26,6 +27,13 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
   const typePac = form.watch("type_pac")
   const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau"
   const isAirToAir = typePac === "Air/Air"
+
+  // Automatically set emetteurs to "Ventilo-convecteurs" for Air/Air PACs
+  useEffect(() => {
+    if (isAirToAir) {
+      form.setValue("emetteurs", "Ventilo-convecteurs")
+    }
+  }, [isAirToAir, form])
 
   return (
     <div className="space-y-4">
@@ -147,44 +155,41 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
         />
       )}
 
-      {/* Emitters: show all options for water-based, only splits for Air/Air */}
-      <FormField
-        control={form.control}
-        name="emetteurs"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {isAirToAir ? "Type d'unités intérieures" : "Type d'émetteurs"}
-            </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {isWaterBased && (
-                  <>
-                    <SelectItem value="Radiateurs haute température">
-                      Radiateurs haute température
-                    </SelectItem>
-                    <SelectItem value="Radiateurs basse température">
-                      Radiateurs basse température
-                    </SelectItem>
-                    <SelectItem value="Plancher chauffant">
-                      Plancher chauffant
-                    </SelectItem>
-                  </>
-                )}
-                <SelectItem value="Ventilo-convecteurs">
-                  {isAirToAir ? "Unités intérieures / Splits" : "Ventilo-convecteurs"}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Emitters: only show for water-based systems (Air/Eau, Eau/Eau) */}
+      {/* For Air/Air, the value is automatically set to "Ventilo-convecteurs" via useEffect */}
+      {isWaterBased && (
+        <FormField
+          control={form.control}
+          name="emetteurs"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type d'émetteurs</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Radiateurs haute température">
+                    Radiateurs haute température
+                  </SelectItem>
+                  <SelectItem value="Radiateurs basse température">
+                    Radiateurs basse température
+                  </SelectItem>
+                  <SelectItem value="Plancher chauffant">
+                    Plancher chauffant
+                  </SelectItem>
+                  <SelectItem value="Ventilo-convecteurs">
+                    Ventilo-convecteurs
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   )
 }
