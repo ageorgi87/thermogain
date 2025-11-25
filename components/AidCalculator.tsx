@@ -21,6 +21,13 @@ import { calculateCEE } from "@/lib/eligibilityCEE"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { getClimateZoneFromPostalCode } from "@/lib/climateZones"
 import { Separator } from "@/components/ui/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 interface AidCalculatorProps {
   // Données déjà connues depuis les étapes précédentes
@@ -124,12 +131,21 @@ export function AidCalculator({
 
               {/* Revenu Fiscal de Référence */}
               <div className="space-y-2">
-                <Label htmlFor="revenu">
-                  Revenu fiscal de référence (RFR)
-                  <span className="text-sm text-muted-foreground ml-2">
-                    (figurant sur votre avis d'imposition 2023)
-                  </span>
-                </Label>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="revenu">Revenu fiscal de référence (RFR)</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[300px]">
+                        <p className="text-sm">
+                          Figurant sur votre avis d'imposition 2023. Le RFR détermine votre catégorie pour les deux aides (MaPrimeRénov' et CEE).
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Input
                   id="revenu"
                   type="number"
@@ -137,14 +153,25 @@ export function AidCalculator({
                   value={revenuFiscal}
                   onChange={(e) => setRevenuFiscal(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Le RFR détermine votre catégorie pour les deux aides (MPR et CEE)
-                </p>
               </div>
 
               {/* Nombre de personnes */}
               <div className="space-y-2">
-                <Label htmlFor="personnes">Nombre de personnes dans le foyer</Label>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="personnes">Nombre de personnes dans le foyer</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[300px]">
+                        <p className="text-sm">
+                          Vous + les personnes à charge (indiquées sur l'avis d'imposition)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Input
                   id="personnes"
                   type="number"
@@ -153,53 +180,72 @@ export function AidCalculator({
                   value={nombrePersonnes}
                   onChange={(e) => setNombrePersonnes(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Vous + les personnes à charge (indiquées sur l'avis d'imposition)
-                </p>
               </div>
 
               {/* Résidence principale */}
               <div className="space-y-2">
-                <Label>Le logement est-il votre résidence principale ?</Label>
+                <div className="flex items-center gap-2">
+                  <Label>Le logement est-il votre résidence principale ?</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[300px]">
+                        <p className="text-sm">
+                          Résidence principale = occupée au moins 8 mois par an. Requis pour MaPrimeRénov' uniquement.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <RadioGroup value={residencePrincipale} onValueChange={setResidencePrincipale}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="oui" id="res-oui" />
                     <Label htmlFor="res-oui" className="font-normal cursor-pointer">
-                      Oui (occupée au moins 8 mois/an)
+                      Oui
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="non" id="res-non" />
                     <Label htmlFor="res-non" className="font-normal cursor-pointer">
-                      Non (résidence secondaire)
+                      Non
                     </Label>
                   </div>
                 </RadioGroup>
-                <p className="text-xs text-muted-foreground">
-                  Requis pour MaPrimeRénov' uniquement
-                </p>
               </div>
 
               {/* Remplacement complet */}
               <div className="space-y-2">
-                <Label>Souhaitez-vous remplacer complètement votre système de chauffage actuel ?</Label>
+                <div className="flex items-center gap-2">
+                  <Label>Souhaitez-vous remplacer complètement votre système de chauffage actuel ?</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[300px]">
+                        <p className="text-sm">
+                          Le remplacement complet est requis pour bénéficier des aides MaPrimeRénov' et CEE. Une installation en complément n'est pas éligible.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <RadioGroup value={remplacementComplet} onValueChange={setRemplacementComplet}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="oui" id="remp-oui" />
                     <Label htmlFor="remp-oui" className="font-normal cursor-pointer">
-                      Oui, remplacement complet
+                      Oui
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="non" id="remp-non" />
                     <Label htmlFor="remp-non" className="font-normal cursor-pointer">
-                      Non, installation en complément (chauffage d&apos;appoint)
+                      Non
                     </Label>
                   </div>
                 </RadioGroup>
-                <p className="text-xs text-muted-foreground">
-                  Le remplacement complet est requis pour bénéficier des aides MaPrimeRénov&apos; et CEE
-                </p>
                 {remplacementComplet === "non" && (
                   <Alert variant="destructive" className="mt-2">
                     <AlertDescription>
