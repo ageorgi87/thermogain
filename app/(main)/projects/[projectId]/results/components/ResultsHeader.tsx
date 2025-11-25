@@ -22,7 +22,7 @@ export function ResultsHeader({ projectName, projectId }: ResultsHeaderProps) {
           Analyse des économies et rentabilité de votre projet PAC
         </p>
       </div>
-      <Link href={`/projects/new/${projectId}/logement`}>
+      <Link href={`/projects/${projectId}/logement`}>
         <Button variant="outline">
           <Pencil className="mr-2 h-4 w-4" />
           Modifier le projet

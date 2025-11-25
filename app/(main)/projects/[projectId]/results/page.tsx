@@ -49,7 +49,7 @@ export default async function ResultsPage({ params }: PageProps) {
     !project.aides ||
     !project.evolutions
   ) {
-    redirect(`/projects/new/${projectId}/logement`)
+    redirect(`/projects/${projectId}/logement`)
   }
 
   // Validate PAC power based on housing characteristics

@@ -89,7 +89,7 @@ export async function updateProjectStep(
     data: { currentStep },
   })
 
-  revalidatePath(`/projects/new/${id}`)
+  revalidatePath(`/projects/${id}`)
   return updatedProject
 }
 

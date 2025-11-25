@@ -308,7 +308,7 @@ export default function WizardStepPage() {
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {
         const nextStep = STEPS[currentStepIndex + 1]
-        router.push(`/projects/new/${projectId}/${nextStep.key}`)
+        router.push(`/projects/${projectId}/${nextStep.key}`)
       } else {
         router.push(`/projects/${projectId}/results`)
       }
@@ -323,7 +323,7 @@ export default function WizardStepPage() {
   const goToPreviousStep = () => {
     if (currentStepIndex > 0) {
       const previousStep = STEPS[currentStepIndex - 1]
-      router.push(`/projects/new/${projectId}/${previousStep.key}`)
+      router.push(`/projects/${projectId}/${previousStep.key}`)
     } else {
       router.push("/projects")
     }

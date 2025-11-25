@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { createProject } from "@/lib/actions/projects"
 
-export default function NewProjectPage() {
+export default function CreateProjectPage() {
   const router = useRouter()
   const hasCreatedProject = useRef(false)
 
@@ -17,7 +17,7 @@ export default function NewProjectPage() {
       hasCreatedProject.current = true
       try {
         const project = await createProject({ name: "Projet PAC" })
-        router.push(`/projects/new/${project.id}/logement`)
+        router.push(`/projects/${project.id}/logement`)
       } catch (error) {
         console.error("Error creating project:", error)
         router.push("/projects")

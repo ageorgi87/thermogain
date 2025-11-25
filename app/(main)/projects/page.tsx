@@ -76,12 +76,12 @@ export default function ProjectsPage() {
 
     // Si toutes les étapes sont complétées, aller à la première étape
     if (project.completed || project.currentStep > totalSteps) {
-      return `/projects/new/${project.id}/${WIZARD_STEPS[0].key}`
+      return `/projects/${project.id}/${WIZARD_STEPS[0].key}`
     }
 
     // Sinon, aller à l'étape courante (currentStep est 1-indexed)
     const stepKey = getStepKey(project.currentStep) || WIZARD_STEPS[0].key
-    return `/projects/new/${project.id}/${stepKey}`
+    return `/projects/${project.id}/${stepKey}`
   }
 
   if (isLoading) {
@@ -101,7 +101,7 @@ export default function ProjectsPage() {
             Gérez vos projets clients
           </p>
         </div>
-        <Button onClick={() => router.push("/projects/new")}>
+        <Button onClick={() => router.push("/projects/create")}>
           <Plus className="mr-2 h-4 w-4" />
           Nouveau Projet PAC
         </Button>
@@ -113,7 +113,7 @@ export default function ProjectsPage() {
             <p className="text-muted-foreground mb-4">
               Aucun projet pour le moment. Créez votre premier projet pour commencer.
             </p>
-            <Button onClick={() => router.push("/projects/new")}>
+            <Button onClick={() => router.push("/projects/create")}>
               <Plus className="mr-2 h-4 w-4" />
               Créer un projet
             </Button>
