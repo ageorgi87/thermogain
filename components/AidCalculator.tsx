@@ -117,17 +117,7 @@ export function AidCalculator({
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DrawerHeader className="relative">
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-              >
-                <X className="h-6 w-6" />
-                <span className="sr-only">Fermer</span>
-              </Button>
-            </DrawerClose>
+          <DrawerHeader>
             <DrawerTitle>Calculateur d'aides financières</DrawerTitle>
             <DrawerDescription>
               Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE en une seule fois. Ces aides sont cumulables.
@@ -302,13 +292,16 @@ export function AidCalculator({
             )}
           </div>
 
-          {hasCalculated && (mprResult?.eligible || ceeResult?.eligible) && (
-            <DrawerFooter>
+          <DrawerFooter>
+            {hasCalculated && (mprResult?.eligible || ceeResult?.eligible) && (
               <Button onClick={handleUseAmounts} className="w-full" size="lg">
                 Compléter le formulaire avec ces aides
               </Button>
-            </DrawerFooter>
-          )}
+            )}
+            <DrawerClose asChild>
+              <Button variant="outline">Fermer</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </div>
       </DrawerContent>
     </Drawer>
