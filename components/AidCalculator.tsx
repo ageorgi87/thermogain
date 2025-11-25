@@ -125,9 +125,10 @@ export function AidCalculator({
           </DrawerHeader>
 
           <div className="p-4 pb-0 space-y-6">
-            {/* Formulaire commun */}
-            <div className="space-y-4">
-              {/* Revenu Fiscal de Référence */}
+            {!hasCalculated ? (
+              /* Formulaire */
+              <div className="space-y-4">
+                {/* Revenu Fiscal de Référence */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="revenu">Revenu fiscal de référence (RFR)</Label>
@@ -231,77 +232,73 @@ export function AidCalculator({
                 <Calculator className="mr-2 h-4 w-4" />
                 Calculer mes aides
               </Button>
-            </div>
-
-            {/* Résultats */}
-            {hasCalculated && (
-              <>
-                <Separator />
-                <div className="space-y-4">
+              </div>
+            ) : (
+              /* Résultats */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-lg">Résultats</h3>
-
-                  {/* MaPrimeRénov' */}
-                  {mprResult && (
-                    <Alert variant={mprResult.eligible ? "default" : "destructive"}>
-                      <div className="flex items-start gap-2">
-                        {mprResult.eligible ? (
-                          <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        ) : (
-                          <X className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        )}
-                        <div className="flex-1">
-                          <p className="font-semibold">MaPrimeRénov'</p>
-                          <p className="text-sm mt-1">{mprResult.message}</p>
-                          {mprResult.details && (
-                            <ul className="mt-2 space-y-1 text-xs">
-                              {mprResult.details.map((detail, index) => (
-                                <li key={index}>• {detail}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    </Alert>
-                  )}
-
-                  {/* CEE */}
-                  {ceeResult && (
-                    <Alert variant={ceeResult.eligible ? "default" : "destructive"}>
-                      <div className="flex items-start gap-2">
-                        {ceeResult.eligible ? (
-                          <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        ) : (
-                          <X className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        )}
-                        <div className="flex-1">
-                          <p className="font-semibold">CEE (Certificats d'Économies d'Énergie)</p>
-                          <p className="text-sm mt-1">{ceeResult.message}</p>
-                          {ceeResult.details && (
-                            <ul className="mt-2 space-y-1 text-xs">
-                              {ceeResult.details.map((detail, index) => (
-                                <li key={index}>• {detail}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    </Alert>
-                  )}
-
-                  {/* Total */}
-                  {(mprResult?.eligible || ceeResult?.eligible) && (
-                    <div className="flex justify-between items-center py-4 px-4 bg-green-50 border-2 border-green-200 rounded-lg">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total des aides cumulées</p>
-                        <p className="text-2xl font-bold text-green-700">
-                          {totalAides.toLocaleString("fr-FR")} €
-                        </p>
-                      </div>
-                      <ArrowRight className="h-6 w-6 text-green-600" />
-                    </div>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setHasCalculated(false)}
+                  >
+                    ← Retour
+                  </Button>
                 </div>
-              </>
+
+                {/* MaPrimeRénov' */}
+                {mprResult && (
+                  <div className={`p-4 rounded-lg border-2 ${mprResult.eligible ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {mprResult.eligible ? (
+                        <Check className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <X className="h-5 w-5 text-red-600" />
+                      )}
+                      <p className="font-semibold">MaPrimeRénov'</p>
+                    </div>
+                    {mprResult.eligible ? (
+                      <p className="text-2xl font-bold text-green-700">
+                        {mprResult.montant.toLocaleString("fr-FR")} €
+                      </p>
+                    ) : (
+                      <p className="text-sm text-red-700">{mprResult.message.replace(/❌ Non éligible : /g, '')}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* CEE */}
+                {ceeResult && (
+                  <div className={`p-4 rounded-lg border-2 ${ceeResult.eligible ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {ceeResult.eligible ? (
+                        <Check className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <X className="h-5 w-5 text-red-600" />
+                      )}
+                      <p className="font-semibold">CEE</p>
+                    </div>
+                    {ceeResult.eligible ? (
+                      <p className="text-2xl font-bold text-green-700">
+                        {ceeResult.montant.toLocaleString("fr-FR")} €
+                      </p>
+                    ) : (
+                      <p className="text-sm text-red-700">{ceeResult.message.replace(/❌ Non éligible : /g, '')}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Total */}
+                {(mprResult?.eligible || ceeResult?.eligible) && (
+                  <div className="flex justify-between items-center py-4 px-4 bg-blue-50 border-2 border-blue-200 rounded-lg mt-6">
+                    <p className="text-sm font-medium text-blue-900">Total des aides cumulées</p>
+                    <p className="text-3xl font-bold text-blue-700">
+                      {totalAides.toLocaleString("fr-FR")} €
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
