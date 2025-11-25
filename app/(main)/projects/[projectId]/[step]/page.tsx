@@ -148,6 +148,12 @@ export default function WizardStepPage() {
   const [totalCouts, setTotalCouts] = useState<number>(0)
   const [totalAides, setTotalAides] = useState<number>(0)
 
+  // Données pour les calculateurs d'aides
+  const [typePac, setTypePac] = useState<string | undefined>(undefined)
+  const [anneeConstruction, setAnneeConstruction] = useState<number | undefined>(undefined)
+  const [codePostal, setCodePostal] = useState<string | undefined>(undefined)
+  const [surfaceHabitable, setSurfaceHabitable] = useState<number | undefined>(undefined)
+
   const currentStepIndex = STEPS.findIndex((s) => s.key === step)
   const currentStep = STEPS[currentStepIndex]
 
@@ -188,6 +194,20 @@ export default function WizardStepPage() {
           }
           if (project.aides?.total_aides) {
             setTotalAides(project.aides.total_aides)
+          }
+
+          // Store data for aid calculators (aides step)
+          if (project.projetPac?.type_pac) {
+            setTypePac(project.projetPac.type_pac)
+          }
+          if (project.logement?.annee_construction) {
+            setAnneeConstruction(project.logement.annee_construction)
+          }
+          if (project.logement?.code_postal) {
+            setCodePostal(project.logement.code_postal)
+          }
+          if (project.logement?.surface_habitable) {
+            setSurfaceHabitable(project.logement.surface_habitable)
           }
 
           // Map step key to database field name
@@ -411,7 +431,15 @@ export default function WizardStepPage() {
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} />}
               {step === "couts" && <CoutsFields form={form as any} />}
-              {step === "aides" && <AidesFields form={form as any} />}
+              {step === "aides" && (
+                <AidesFields
+                  form={form as any}
+                  typePac={typePac}
+                  anneeConstruction={anneeConstruction}
+                  codePostal={codePostal}
+                  surfaceHabitable={surfaceHabitable}
+                />
+              )}
               {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
               {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
             </CardContent>

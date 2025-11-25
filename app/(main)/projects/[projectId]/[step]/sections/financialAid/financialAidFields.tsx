@@ -11,12 +11,25 @@ import { Input } from "@/components/ui/input"
 import { UseFormReturn } from "react-hook-form"
 import { FinancialAidData } from "./financialAidSchema"
 import { useEffect } from "react"
+import { MaPrimeRenovCalculator } from "@/components/MaPrimeRenovCalculator"
+import { CEECalculator } from "@/components/CEECalculator"
 
 interface AidesFieldsProps {
   form: UseFormReturn<FinancialAidData>
+  // Données des étapes précédentes
+  typePac?: string
+  anneeConstruction?: number
+  codePostal?: string
+  surfaceHabitable?: number
 }
 
-export function AidesFields({ form }: AidesFieldsProps) {
+export function AidesFields({
+  form,
+  typePac,
+  anneeConstruction,
+  codePostal,
+  surfaceHabitable,
+}: AidesFieldsProps) {
   const maPrimeRenov = form.watch("ma_prime_renov")
   const cee = form.watch("cee")
   const autresAides = form.watch("autres_aides")
@@ -43,6 +56,14 @@ export function AidesFields({ form }: AidesFieldsProps) {
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
+            <FormDescription className="mt-2">
+              <MaPrimeRenovCalculator
+                typePac={typePac}
+                anneeConstruction={anneeConstruction}
+                codePostal={codePostal}
+                onUseAmount={(amount) => form.setValue("ma_prime_renov", amount)}
+              />
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -62,6 +83,15 @@ export function AidesFields({ form }: AidesFieldsProps) {
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
+            <FormDescription className="mt-2">
+              <CEECalculator
+                typePac={typePac}
+                anneeConstruction={anneeConstruction}
+                codePostal={codePostal}
+                surfaceHabitable={surfaceHabitable}
+                onUseAmount={(amount) => form.setValue("cee", amount)}
+              />
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
