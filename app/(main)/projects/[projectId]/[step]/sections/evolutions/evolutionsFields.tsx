@@ -88,12 +88,14 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                 <Input
                   type="number"
                   step="0.1"
-                  {...field}
                   value={field.value ?? ""}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === "" ? undefined : Number(value))
                   }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
                 />
               </FormControl>
               <FormDescription>
@@ -135,12 +137,14 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
               <Input
                 type="number"
                 step="0.1"
-                {...field}
                 value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))
                 }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormDescription>

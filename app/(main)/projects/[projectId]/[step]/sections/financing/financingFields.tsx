@@ -109,7 +109,6 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       max={montantAPayer}
-                      {...field}
                       value={field.value === 0 ? "" : field.value}
                       onChange={(e) => {
                         const value = e.target.value
@@ -118,6 +117,9 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                         const cappedValue = Math.min(numValue, montantAPayer)
                         field.onChange(cappedValue)
                       }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
@@ -138,12 +140,14 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       step="0.1"
                       min="0"
-                      {...field}
                       value={field.value === 0 ? "" : field.value}
                       onChange={(e) => {
                         const value = e.target.value
                         field.onChange(value === "" ? 0 : Number(value))
                       }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
@@ -161,12 +165,14 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                     <Input
                       type="number"
                       min="0"
-                      {...field}
                       value={field.value === 0 ? "" : field.value}
                       onChange={(e) => {
                         const value = e.target.value
                         field.onChange(value === "" ? 0 : Number(value))
                       }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
