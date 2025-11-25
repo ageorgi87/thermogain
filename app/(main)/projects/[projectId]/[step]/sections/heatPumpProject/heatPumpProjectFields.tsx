@@ -134,7 +134,6 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
-                placeholder="17"
               />
             </FormControl>
             <FormMessage />
