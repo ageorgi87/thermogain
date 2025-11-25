@@ -39,11 +39,14 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
-                {...field}
+                value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))
                 }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormMessage />
@@ -61,11 +64,14 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
-                {...field}
+                value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))
                 }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormMessage />
@@ -83,11 +89,14 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
-                {...field}
+                value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))
                 }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormDescription>

@@ -136,6 +136,7 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                 type="number"
                 step="0.1"
                 {...field}
+                value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))

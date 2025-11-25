@@ -73,6 +73,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                   step="0.1"
                   min="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === "" ? 0 : Number(value))
@@ -116,6 +117,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                   step="0.1"
                   min="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === "" ? 0 : Number(value))
@@ -139,6 +141,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 type="number"
                 min="0"
                 {...field}
+                value={field.value === 0 ? "" : field.value}
                 onChange={(e) => {
                   const value = e.target.value
                   field.onChange(value === "" ? 0 : Number(value))

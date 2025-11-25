@@ -57,6 +57,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === "" ? 0 : Number(value))
@@ -79,6 +80,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   {...field}
+                  value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === "" ? 0 : Number(value))
