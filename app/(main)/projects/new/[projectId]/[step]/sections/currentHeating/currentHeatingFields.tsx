@@ -107,6 +107,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormControl>
                 <Input
                   type="number"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -195,6 +196,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -220,6 +222,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.01"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -243,6 +246,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -268,6 +272,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.001"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -291,6 +296,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -316,6 +322,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.01"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -339,6 +346,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -364,6 +372,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.01"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -387,6 +396,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -412,6 +422,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.01"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -435,6 +446,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -460,6 +472,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.001"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -487,6 +500,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         <Input
                           type="number"
                           step="0.1"
+                          min="0"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -505,6 +519,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <FormControl>
                         <Input
                           type="number"
+                          min="0"
                           {...field}
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -531,6 +546,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                       <Input
                         type="number"
                         step="0.001"
+                        min="0"
                         {...field}
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}

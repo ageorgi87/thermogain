@@ -59,6 +59,7 @@ export function FinancementFields({ form, watchModeFinancement }: FinancementFie
                   <FormControl>
                     <Input
                       type="number"
+                      min="0"
                       {...field}
                       onChange={(e) =>
                         field.onChange(e.target.value ? Number(e.target.value) : undefined)
@@ -80,6 +81,7 @@ export function FinancementFields({ form, watchModeFinancement }: FinancementFie
                 <FormControl>
                   <Input
                     type="number"
+                    min="0"
                     {...field}
                     onChange={(e) =>
                       field.onChange(e.target.value ? Number(e.target.value) : undefined)
@@ -102,6 +104,7 @@ export function FinancementFields({ form, watchModeFinancement }: FinancementFie
                     <Input
                       type="number"
                       step="0.1"
+                      min="0"
                       {...field}
                       onChange={(e) =>
                         field.onChange(e.target.value ? Number(e.target.value) : undefined)
@@ -122,6 +125,7 @@ export function FinancementFields({ form, watchModeFinancement }: FinancementFie
                   <FormControl>
                     <Input
                       type="number"
+                      min="0"
                       {...field}
                       onChange={(e) =>
                         field.onChange(e.target.value ? Number(e.target.value) : undefined)

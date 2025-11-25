@@ -55,6 +55,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
               <FormControl>
                 <Input
                   type="number"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -73,6 +74,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
               <FormControl>
                 <Input
                   type="number"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -92,6 +94,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />

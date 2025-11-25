@@ -59,6 +59,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 <Input
                   type="number"
                   step="0.1"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -89,6 +90,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
                 <Input
                   type="number"
                   step="0.1"
+                  min="0"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -108,6 +110,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
                 placeholder="17"
@@ -127,6 +130,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
             <FormControl>
               <Input
                 type="number"
+                min="0"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
