@@ -93,34 +93,46 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Projets</h1>
-          <p className="text-muted-foreground mt-1">
-            Gérez vos projets clients
+          <h1 className="text-4xl font-bold text-foreground">
+            Vos Projets
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Gérez vos études de rentabilité pompes à chaleur
           </p>
         </div>
-        <Button onClick={() => router.push("/projects/create")}>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button
+          onClick={() => router.push("/projects/create")}
+          size="lg"
+        >
+          <Plus className="mr-2 h-5 w-5" />
           Nouveau Projet PAC
         </Button>
       </div>
 
       {projects.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">
-              Aucun projet pour le moment. Créez votre premier projet pour commencer.
+        <Card className="shadow-2xl border-2">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-950 rounded-full">
+              <Calculator className="h-12 w-12 text-orange-600 dark:text-orange-400" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Aucun projet pour le moment</h3>
+            <p className="text-muted-foreground mb-6 text-center max-w-md">
+              Créez votre premier projet pour commencer à évaluer la rentabilité des pompes à chaleur pour vos clients
             </p>
-            <Button onClick={() => router.push("/projects/create")}>
-              <Plus className="mr-2 h-4 w-4" />
-              Créer un projet
+            <Button
+              onClick={() => router.push("/projects/create")}
+              size="lg"
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              Créer votre premier projet
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="shadow-2xl border-2">
           <Table>
             <TableHeader>
               <TableRow>
@@ -142,11 +154,11 @@ export default function ProjectsPage() {
                   </TableCell>
                   <TableCell>
                     {getProjectStatus(project.currentStep) === "Terminé" ? (
-                      <Badge variant="default" className="bg-green-600">
+                      <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0">
                         Terminé
                       </Badge>
                     ) : (
-                      <Badge variant="secondary">
+                      <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white border-0">
                         En cours
                       </Badge>
                     )}
@@ -160,6 +172,7 @@ export default function ProjectsPage() {
                       size="sm"
                       onClick={() => router.push(`/projects/${project.id}/results`)}
                       title="Voir les résultats"
+                      className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -168,6 +181,7 @@ export default function ProjectsPage() {
                       size="sm"
                       onClick={() => router.push(getProjectEditUrl(project))}
                       title="Continuer le projet"
+                      className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -176,6 +190,7 @@ export default function ProjectsPage() {
                       size="sm"
                       onClick={() => setDeleteId(project.id)}
                       title="Supprimer le projet"
+                      className="hover:bg-red-50 dark:hover:bg-red-950"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

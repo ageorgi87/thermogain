@@ -79,8 +79,8 @@ export function UserMenu({ userName, userEmail }: UserMenuProps) {
           aria-label="Menu utilisateur"
         >
           {/* Avatar avec initiales */}
-          <Avatar className="h-9 w-9 cursor-pointer border-2 border-gray-200 hover:border-gray-300 transition-colors">
-            <AvatarFallback className="bg-blue-600 text-white text-sm font-semibold">
+          <Avatar className="h-9 w-9 cursor-pointer border-2 border-orange-200 hover:border-orange-300 transition-colors">
+            <AvatarFallback className="bg-gradient-to-br from-orange-600 to-red-600 text-white text-sm font-semibold">
               {getInitials()}
             </AvatarFallback>
           </Avatar>

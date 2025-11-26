@@ -92,9 +92,6 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>
-                Augmentation annuelle estimée (ex: 5 pour +5%/an, -2 pour -2%/an)
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -135,11 +132,6 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
-            <FormDescription>
-              {typeChauffage === "Electrique" || typeChauffage?.startsWith("PAC")
-                ? "Évolution annuelle estimée du prix de l'électricité"
-                : "Évolution du prix de l'électricité pour alimenter la future pompe à chaleur"}
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

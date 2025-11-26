@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import { Loader2, ArrowLeft, ArrowRight } from "lucide-react"
+import { Loader2, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info } from "lucide-react"
 import {
   housingSchema as logementSchema,
   type HousingData as LogementData,
@@ -43,8 +43,6 @@ import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
 import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Info } from "lucide-react"
 import { saveHousingData } from "./sections/housing/housingActions"
 import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
@@ -136,6 +134,7 @@ export default function WizardStepPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showExplanation, setShowExplanation] = useState(false)
   const [typeChauffage, setTypeChauffage] = useState<string | undefined>(undefined)
   const [defaultPrices, setDefaultPrices] = useState<{
     fioul: number
@@ -390,33 +389,65 @@ export default function WizardStepPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-4xl">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold">{currentStep.title}</h1>
-            <p className="text-muted-foreground mt-2">{currentStep.description}</p>
+      <Card className="shadow-2xl border-2 mb-8">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold">{currentStep.title}</h1>
+              <p className="text-muted-foreground mt-2">{currentStep.description}</p>
+            </div>
+            <div className="text-sm text-muted-foreground ml-4 whitespace-nowrap">
+              Étape {currentStepIndex + 1} / {STEPS.length}
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Étape {currentStepIndex + 1} / {STEPS.length}
+
+          {/* Help button */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowExplanation(!showExplanation)}
+            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-950 mb-4 -ml-2"
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Pourquoi ces informations ?
+            {showExplanation ? (
+              <ChevronUp className="h-4 w-4 ml-2" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-2" />
+            )}
+          </Button>
+
+          {/* Collapsible explanation */}
+          {showExplanation && (
+            <div className="mb-4 p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg animate-in slide-in-from-top-2 duration-200">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-foreground flex-1">
+                  {STEP_EXPLANATIONS[step as string] || currentStep.description}
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowExplanation(false)}
+                  className="h-6 w-6 p-0 hover:bg-orange-100 dark:hover:bg-orange-900"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Progress bar */}
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div
+              className="bg-foreground h-2 rounded-full transition-all"
+              style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
+            />
           </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full bg-secondary rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all"
-            style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Step explanation */}
-      <Alert className="mb-6 bg-blue-50 border-blue-200">
-        <Info className="h-4 w-4 text-blue-600" />
-        <AlertDescription className="text-blue-900">
-          {STEP_EXPLANATIONS[step as string] || currentStep.description}
-        </AlertDescription>
-      </Alert>
+        </CardContent>
+      </Card>
 
       <Form {...form}>
         <form
@@ -429,7 +460,7 @@ export default function WizardStepPage() {
           )}
           className="space-y-8"
         >
-          <Card>
+          <Card className="shadow-2xl border-2">
             <CardContent className="pt-6">
               {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}

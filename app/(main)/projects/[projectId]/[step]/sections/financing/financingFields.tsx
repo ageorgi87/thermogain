@@ -176,14 +176,14 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
             <>
               <Separator />
 
-              <div className="flex justify-between items-center py-4 px-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex justify-between items-center py-4 px-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-blue-900">
+                  <span className="text-sm font-semibold text-foreground">
                     Coût total du crédit
                   </span>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-blue-600 cursor-help" />
+                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <p className="font-semibold mb-1">Montant total à rembourser</p>
@@ -197,10 +197,10 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                   </Tooltip>
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-blue-900">
+                  <div className="text-xl font-bold text-foreground">
                     {totalCreditCost.toLocaleString('fr-FR')} €
                   </div>
-                  <div className="text-xs text-blue-700">
+                  <div className="text-xs text-muted-foreground">
                     dont {interetsPayes.toLocaleString('fr-FR')} € d&apos;intérêts
                   </div>
                 </div>

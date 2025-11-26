@@ -18,21 +18,24 @@ export default async function MainLayout({
   console.log(session.user?.company);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="border-b bg-white dark:bg-gray-800 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 dark:from-gray-900 dark:to-gray-800">
+      <nav className="border-b bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/projects" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="ThermoGain"
-                width={40}
-                height={40}
+                width={48}
+                height={48}
                 className="object-contain"
               />
-              <h1 className="text-xl font-bold">
-                {session.user?.company || "ThermoGain"}
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  {session.user?.company || "ThermoGain"}
+                </h1>
+                <p className="text-xs text-muted-foreground">Études thermiques intelligentes</p>
+              </div>
             </Link>
             <UserMenu
               userName={session.user?.name}
