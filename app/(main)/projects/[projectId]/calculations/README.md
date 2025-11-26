@@ -305,6 +305,53 @@ Le composant `AidCalculator` a été simplifié :
 - Interface plus épurée et professionnelle
 - Logique de calcul inchangée (toujours basée sur les fonctions officielles)
 
+### 4. Correction du calcul du ROI avec prise en compte des intérêts du crédit
+
+Le calcul du ROI (Retour sur Investissement) a été corrigé pour refléter le coût réel selon le mode de financement :
+
+**Problème identifié :**
+- Auparavant, le ROI était toujours calculé avec le `reste_a_charge` (montant après aides)
+- Les intérêts du crédit n'étaient PAS pris en compte
+- → Le ROI était sous-estimé pour les modes "Crédit" et "Mixte"
+
+**Solution implémentée :**
+La fonction `calculateAllResults()` calcule maintenant l'investissement réel selon le mode :
+
+```typescript
+// Mode Comptant
+investissementReel = reste_a_charge
+
+// Mode Crédit
+investissementReel = montant_total_credit (capital + intérêts)
+
+// Mode Mixte
+investissementReel = apport_personnel + montant_total_credit (capital + intérêts)
+```
+
+**Impact :**
+- **ROI plus précis** : reflète le coût réel à rembourser
+- **Cohérence** : aligné avec le graphique des coûts cumulés qui affiche les mensualités
+- **Transparence** : l'utilisateur voit le vrai temps nécessaire pour rentabiliser
+
+**Exemple concret :**
+```
+Reste à charge : 12 000 €
+Mode : Crédit sur 5 ans à 3%
+
+Avant correction :
+- ROI calculé avec : 12 000 €
+- ROI affiché : ~7 ans (❌ sous-estimé)
+
+Après correction :
+- Coût total crédit : 12 957 € (capital + intérêts)
+- ROI calculé avec : 12 957 €
+- ROI affiché : ~7.5 ans (✅ correct)
+```
+
+**Modules impactés :**
+- `calculations/index.ts` - Ajustement de l'investissement selon le mode de financement
+- `calculations/roi/README.md` - Mise à jour de la documentation
+
 ## 📞 Support
 
 Pour toute question technique sur les calculs :

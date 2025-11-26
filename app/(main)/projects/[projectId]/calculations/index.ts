@@ -31,26 +31,46 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
   // Projections sur la durée de vie de la PAC
   const yearlyData = calculateYearlyData(data, data.duree_vie_pac)
 
-  // ROI
-  const paybackPeriod = calculatePaybackPeriod(data)
-  const paybackYear = calculatePaybackYear(data)
+  // Calculer l'investissement réel selon le mode de financement
+  // Mode Comptant : reste_a_charge
+  // Mode Crédit : reste_a_charge + intérêts du crédit
+  // Mode Mixte : apport_personnel + montant_credit + intérêts
+  let investissementReel = data.reste_a_charge
+
+  if (data.mode_financement === "Crédit" && data.montant_credit && data.taux_interet !== undefined && data.duree_credit_mois) {
+    const coutTotalCredit = calculateTotalCreditCost(data.montant_credit, data.taux_interet, data.duree_credit_mois)
+    investissementReel = coutTotalCredit
+  } else if (data.mode_financement === "Mixte" && data.montant_credit && data.taux_interet !== undefined && data.duree_credit_mois && data.apport_personnel) {
+    const coutTotalCredit = calculateTotalCreditCost(data.montant_credit, data.taux_interet, data.duree_credit_mois)
+    investissementReel = data.apport_personnel + coutTotalCredit
+  }
+
+  // Créer un objet ProjectData ajusté pour le calcul du ROI avec l'investissement réel
+  const dataAjusteeROI: ProjectData = {
+    ...data,
+    reste_a_charge: investissementReel
+  }
+
+  // ROI avec investissement réel (incluant intérêts du crédit)
+  const paybackPeriod = calculatePaybackPeriod(dataAjusteeROI)
+  const paybackYear = calculatePaybackYear(dataAjusteeROI)
 
   // Gains totaux sur la durée de vie de la PAC
   const totalSavingsLifetime = calculateTotalSavings(data, data.duree_vie_pac)
-  const netBenefitLifetime = calculateNetBenefit(data, data.duree_vie_pac)
+  const netBenefitLifetime = calculateNetBenefit(dataAjusteeROI, data.duree_vie_pac)
 
-  // Coûts totaux sur durée de vie
+  // Coûts totaux sur durée de vie (utiliser investissement réel)
   const coutTotalActuelLifetime = yearlyData.reduce((sum, y) => sum + y.coutActuel, 0)
-  const coutTotalPacLifetime = data.reste_a_charge + yearlyData.reduce((sum, y) => sum + y.coutPac, 0)
+  const coutTotalPacLifetime = investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0)
 
-  // Taux de rentabilité annuel moyen
+  // Taux de rentabilité annuel moyen (utiliser investissement réel)
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
   // Valeur finale = Investissement + Gain net
   let tauxRentabilite: number | null = null
-  if (data.reste_a_charge > 0 && data.duree_vie_pac > 0) {
-    const valeurFinale = data.reste_a_charge + netBenefitLifetime
+  if (investissementReel > 0 && data.duree_vie_pac > 0) {
+    const valeurFinale = investissementReel + netBenefitLifetime
     if (valeurFinale > 0) {
-      tauxRentabilite = (Math.pow(valeurFinale / data.reste_a_charge, 1 / data.duree_vie_pac) - 1) * 100
+      tauxRentabilite = (Math.pow(valeurFinale / investissementReel, 1 / data.duree_vie_pac) - 1) * 100
     }
   }
 

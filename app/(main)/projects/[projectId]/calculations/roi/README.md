@@ -570,7 +570,10 @@ Définit l'interface `ProjectData` avec tous les champs nécessaires.
 
 3. **Null vs 0**: `null` signifie "ROI non atteint", pas "ROI = 0 ans"
 
-4. **Intérêts de crédit**: Le calcul du ROI ne tient pas automatiquement compte des intérêts du crédit. Pour un calcul exact, il faut ajouter les intérêts au `reste_a_charge`
+4. **Intérêts de crédit**: ✅ **Depuis novembre 2024**, le calcul du ROI tient automatiquement compte des intérêts du crédit. La fonction `calculateAllResults()` ajuste l'investissement selon le mode de financement :
+   - **Comptant** : `reste_a_charge` (inchangé)
+   - **Crédit** : `montant_total_credit` (capital + intérêts)
+   - **Mixte** : `apport_personnel + montant_total_credit` (capital + intérêts)
 
 5. **Arrondis**: Les mensualités et coûts totaux sont arrondis à 2 décimales (centimes d'euro)
 
@@ -578,7 +581,7 @@ Définit l'interface `ProjectData` avec tous les champs nécessaires.
 
 ## Améliorations futures possibles
 
-1. **ROI ajusté**: Calculer automatiquement le ROI en incluant les intérêts du crédit si financé
+1. ~~**ROI ajusté**: Calculer automatiquement le ROI en incluant les intérêts du crédit si financé~~ → **✅ Implémenté en novembre 2024**
 
 2. **ROI actualisé**: Calculer le ROI en tenant compte de la valeur temps de l'argent (taux d'actualisation)
 
