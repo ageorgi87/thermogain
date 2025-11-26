@@ -151,13 +151,13 @@ export default function LoginPage() {
           {/* Professional Product Description */}
           <div className="space-y-4">
             <h2 className="text-2xl lg:text-3xl font-semibold text-foreground leading-tight">
-              Transformez vos prospects en clients convaincus
+              Simulez la rentabilité de vos projets de pompe à chaleur
             </h2>
             <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
               Investir aujourd'hui pour économiser demain peut freiner vos clients.
               ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet
-              de pompe à chaleur avec des chiffres clairs, personnalisés et visuels qui
-              rassurent et facilitent la décision.
+              avec des chiffres clairs, personnalisés et visuels qui rassurent et
+              facilitent la décision.
             </p>
           </div>
 
