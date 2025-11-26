@@ -139,7 +139,7 @@ export default function LoginPage() {
               className="object-contain"
             />
             <div>
-              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                 ThermoGain
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
@@ -164,8 +164,8 @@ export default function LoginPage() {
           {/* Key Features */}
           <div className="grid gap-4">
             <div className="flex items-start gap-3">
-              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                <Calculator className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg">
+                <Calculator className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">
@@ -179,8 +179,8 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg">
+                <BarChart3 className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">
@@ -194,8 +194,8 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                <TrendingDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg">
+                <TrendingDown className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">
