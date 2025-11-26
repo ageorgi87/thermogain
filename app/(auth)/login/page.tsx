@@ -156,8 +156,8 @@ export default function LoginPage() {
             <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
               Investir aujourd'hui pour économiser demain peut freiner vos clients.
               ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet
-              avec des chiffres clairs, personnalisés et visuels qui rassurent et
-              facilitent la décision.
+              de pompe à chaleur avec des chiffres clairs, personnalisés et visuels qui
+              rassurent et facilitent la décision.
             </p>
           </div>
 
