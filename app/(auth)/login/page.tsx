@@ -142,12 +142,12 @@ export default function LoginPage() {
           {/* Professional Product Description */}
           <div className="space-y-4">
             <h2 className="text-2xl lg:text-3xl font-semibold text-foreground leading-tight">
-              Optimisez la rentabilité de vos projets de pompes à chaleur
+              Transformez vos prospects en clients convaincus
             </h2>
             <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
-              ThermoGain est la plateforme SaaS de référence pour les professionnels du génie climatique.
-              Réalisez des études de rentabilité précises et détaillées pour vos installations de pompes à chaleur
-              en quelques minutes.
+              Un investissement de 15 000€ à 25 000€ dans une PAC peut freiner vos clients.
+              ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet avec des
+              chiffres clairs, personnalisés et visuels qui rassurent et accélèrent la décision.
             </p>
           </div>
 
@@ -158,9 +158,9 @@ export default function LoginPage() {
                 <Calculator className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Calculs précis et conformes</h3>
+                <h3 className="font-semibold text-foreground">Analyses personnalisées et précises</h3>
                 <p className="text-sm text-muted-foreground">
-                  Dimensionnement, consommations et COP ajustés selon les normes en vigueur
+                  Calculs adaptés au logement, à la zone climatique et au chauffage actuel de chaque client
                 </p>
               </div>
             </div>
@@ -170,9 +170,9 @@ export default function LoginPage() {
                 <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Analyses financières détaillées</h3>
+                <h3 className="font-semibold text-foreground">Visualisations parlantes</h3>
                 <p className="text-sm text-muted-foreground">
-                  ROI, périodes de retour, économies annuelles et projections sur la durée de vie
+                  Graphiques et tableaux clairs montrant les économies réelles année après année
                 </p>
               </div>
             </div>
@@ -182,9 +182,9 @@ export default function LoginPage() {
                 <TrendingDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Rapports professionnels instantanés</h3>
+                <h3 className="font-semibold text-foreground">Données centralisées et accessibles</h3>
                 <p className="text-sm text-muted-foreground">
-                  Générez des études complètes pour convaincre vos clients et accélérer vos ventes
+                  Tous les projets sauvegardés, partageables instantanément pour concrétiser vos ventes
                 </p>
               </div>
             </div>
