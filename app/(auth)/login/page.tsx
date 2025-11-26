@@ -1,79 +1,85 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, TrendingDown, BarChart3, Calculator } from "lucide-react"
-import { checkEmailExists, registerUser } from "@/lib/actions/auth"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, TrendingDown, BarChart3, Calculator } from "lucide-react";
+import { checkEmailExists, registerUser } from "@/lib/actions/auth";
 
-type Step = "email" | "login" | "register"
+type Step = "email" | "login" | "register";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [step, setStep] = useState<Step>("email")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [company, setCompany] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [company, setCompany] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const data = await checkEmailExists(email)
+      const data = await checkEmailExists(email);
 
       if (data.exists) {
-        setStep("login")
+        setStep("login");
       } else {
-        setStep("register")
+        setStep("register");
       }
     } catch (error) {
-      setError("Une erreur s'est produite. Veuillez réessayer.")
+      setError("Une erreur s'est produite. Veuillez réessayer.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError("Mot de passe invalide")
+        setError("Mot de passe invalide");
       } else {
-        router.push("/")
-        router.refresh()
+        router.push("/");
+        router.refresh();
       }
     } catch (error) {
-      setError("Une erreur s'est produite. Veuillez réessayer.")
+      setError("Une erreur s'est produite. Veuillez réessayer.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
       await registerUser({
@@ -82,41 +88,44 @@ export default function LoginPage() {
         firstName,
         lastName,
         company,
-      })
+      });
 
       // Auto login after registration
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError("Compte créé mais la connexion a échoué. Veuillez essayer de vous connecter.")
+        setError(
+          "Compte créé mais la connexion a échoué. Veuillez essayer de vous connecter."
+        );
       } else {
-        router.push("/")
-        router.refresh()
+        router.push("/");
+        router.refresh();
       }
     } catch (error: any) {
-      setError(error.message || "Une erreur s'est produite. Veuillez réessayer.")
+      setError(
+        error.message || "Une erreur s'est produite. Veuillez réessayer."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const resetToEmail = () => {
-    setStep("email")
-    setPassword("")
-    setFirstName("")
-    setLastName("")
-    setCompany("")
-    setError("")
-  }
+    setStep("email");
+    setPassword("");
+    setFirstName("");
+    setLastName("");
+    setCompany("");
+    setError("");
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
-
         {/* Left Section - Branding & Value Proposition */}
         <div className="space-y-8 text-center md:text-left order-2 md:order-1">
           {/* Logo & Brand Name */}
@@ -145,9 +154,10 @@ export default function LoginPage() {
               Transformez vos prospects en clients convaincus
             </h2>
             <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
-              Un investissement de 15 000€ à 25 000€ dans une PAC peut freiner vos clients.
-              ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet avec des
-              chiffres clairs, personnalisés et visuels qui rassurent et accélèrent la décision.
+              Investir aujourd'hui pour économiser demain peut freiner vos clients.
+              ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet
+              avec des chiffres clairs, personnalisés et visuels qui rassurent et
+              facilitent la décision.
             </p>
           </div>
 
@@ -158,9 +168,12 @@ export default function LoginPage() {
                 <Calculator className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Analyses personnalisées et précises</h3>
+                <h3 className="font-semibold text-foreground">
+                  Analyses personnalisées et précises
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Calculs adaptés au logement, à la zone climatique et au chauffage actuel de chaque client
+                  Calculs adaptés au logement, à la zone climatique et au
+                  chauffage actuel de chaque client
                 </p>
               </div>
             </div>
@@ -170,9 +183,12 @@ export default function LoginPage() {
                 <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Visualisations parlantes</h3>
+                <h3 className="font-semibold text-foreground">
+                  Visualisations parlantes
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Graphiques et tableaux clairs montrant les économies réelles année après année
+                  Graphiques et tableaux clairs montrant les économies réelles
+                  année après année
                 </p>
               </div>
             </div>
@@ -182,9 +198,12 @@ export default function LoginPage() {
                 <TrendingDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Données centralisées et accessibles</h3>
+                <h3 className="font-semibold text-foreground">
+                  Données centralisées et accessibles
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Tous les projets sauvegardés, partageables instantanément pour concrétiser vos ventes
+                  Tous les projets sauvegardés, partageables instantanément pour
+                  concrétiser vos ventes
                 </p>
               </div>
             </div>
@@ -200,9 +219,12 @@ export default function LoginPage() {
               {step === "register" && "Créez votre compte"}
             </CardTitle>
             <CardDescription className="text-center">
-              {step === "email" && "Entrez votre adresse e-mail professionnelle pour commencer"}
-              {step === "login" && "Entrez votre mot de passe pour accéder à votre espace"}
-              {step === "register" && "Complétez votre profil pour créer votre compte professionnel"}
+              {step === "email" &&
+                "Entrez votre adresse e-mail professionnelle pour commencer"}
+              {step === "login" &&
+                "Entrez votre mot de passe pour accéder à votre espace"}
+              {step === "register" &&
+                "Complétez votre profil pour créer votre compte professionnel"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -229,8 +251,14 @@ export default function LoginPage() {
                     className="h-11"
                   />
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  type="submit"
+                  className="w-full h-11"
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Continuer
                 </Button>
               </form>
@@ -266,8 +294,14 @@ export default function LoginPage() {
                     className="h-11"
                   />
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  type="submit"
+                  className="w-full h-11"
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Se connecter
                 </Button>
               </form>
@@ -348,8 +382,14 @@ export default function LoginPage() {
                     Au moins 6 caractères
                   </p>
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  type="submit"
+                  className="w-full h-11"
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Créer mon compte
                 </Button>
               </form>
@@ -358,5 +398,5 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
