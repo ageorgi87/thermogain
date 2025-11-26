@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2 } from "lucide-react"
+import { Loader2, TrendingDown, BarChart3, Calculator } from "lucide-react"
 import { checkEmailExists, registerUser } from "@/lib/actions/auth"
 
 type Step = "email" | "login" | "register"
@@ -114,10 +114,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-6">
-          <div className="flex items-center justify-center gap-4">
+    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4 md:p-8">
+      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+
+        {/* Left Section - Branding & Value Proposition */}
+        <div className="space-y-8 text-center md:text-left order-2 md:order-1">
+          {/* Logo & Brand Name */}
+          <div className="flex items-center justify-center md:justify-start gap-4">
             <Image
               src="/logo.png"
               alt="ThermoGain"
@@ -126,158 +129,234 @@ export default function LoginPage() {
               priority
               className="object-contain"
             />
-            <h1 className="text-4xl font-bold">ThermoGain</h1>
+            <div>
+              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                ThermoGain
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Études thermiques intelligentes
+              </p>
+            </div>
           </div>
-          <CardTitle className="text-center pt-2">
-            {step === "email" && "Bienvenue"}
-            {step === "login" && "Bon retour"}
-            {step === "register" && "Créez votre compte"}
-          </CardTitle>
-          <CardDescription>
-            {step === "email" && "Entrez votre email pour commencer"}
-            {step === "login" && "Entrez votre mot de passe pour continuer"}
-            {step === "register" && "Complétez votre profil pour créer un compte"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
 
-          {step === "email" && (
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="vous@exemple.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  autoFocus
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Continuer
-              </Button>
-            </form>
-          )}
+          {/* Professional Product Description */}
+          <div className="space-y-4">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-foreground leading-tight">
+              Optimisez la rentabilité de vos projets de pompes à chaleur
+            </h2>
+            <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
+              ThermoGain est la plateforme SaaS de référence pour les professionnels du génie climatique.
+              Réalisez des études de rentabilité précises et détaillées pour vos installations de pompes à chaleur
+              en quelques minutes.
+            </p>
+          </div>
 
-          {step === "login" && (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">{email}</p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetToEmail}
-                  >
-                    Modifier
-                  </Button>
-                </div>
+          {/* Key Features */}
+          <div className="grid gap-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <Calculator className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  autoFocus
-                />
+              <div>
+                <h3 className="font-semibold text-foreground">Calculs précis et conformes</h3>
+                <p className="text-sm text-muted-foreground">
+                  Dimensionnement, consommations et COP ajustés selon les normes en vigueur
+                </p>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Se connecter
-              </Button>
-            </form>
-          )}
+            </div>
 
-          {step === "register" && (
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">{email}</p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetToEmail}
-                  >
-                    Modifier
-                  </Button>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-semibold text-foreground">Analyses financières détaillées</h3>
+                <p className="text-sm text-muted-foreground">
+                  ROI, périodes de retour, économies annuelles et projections sur la durée de vie
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <TrendingDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Rapports professionnels instantanés</h3>
+                <p className="text-sm text-muted-foreground">
+                  Générez des études complètes pour convaincre vos clients et accélérer vos ventes
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section - Login Card */}
+        <Card className="w-full shadow-2xl border-2 order-1 md:order-2">
+          <CardHeader className="space-y-4">
+            <CardTitle className="text-2xl text-center">
+              {step === "email" && "Bienvenue"}
+              {step === "login" && "Bon retour"}
+              {step === "register" && "Créez votre compte"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {step === "email" && "Entrez votre adresse e-mail professionnelle pour commencer"}
+              {step === "login" && "Entrez votre mot de passe pour accéder à votre espace"}
+              {step === "register" && "Complétez votre profil pour créer votre compte professionnel"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {step === "email" && (
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">Prénom</Label>
+                  <Label htmlFor="email">Adresse e-mail professionnelle</Label>
                   <Input
-                    id="firstName"
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="vous@exemple.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
                     autoFocus
+                    autoComplete="email"
+                    className="h-11"
+                  />
+                </div>
+                <Button type="submit" className="w-full h-11" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Continuer
+                </Button>
+              </form>
+            )}
+
+            {step === "login" && (
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Adresse e-mail</Label>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">{email}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetToEmail}
+                    >
+                      Modifier
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    autoFocus
+                    autoComplete="current-password"
+                    className="h-11"
+                  />
+                </div>
+                <Button type="submit" className="w-full h-11" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Se connecter
+                </Button>
+              </form>
+            )}
+
+            {step === "register" && (
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Adresse e-mail</Label>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">{email}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetToEmail}
+                    >
+                      Modifier
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Prénom</Label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      autoFocus
+                      autoComplete="given-name"
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Nom</Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      autoComplete="family-name"
+                      className="h-11"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company">Entreprise (optionnel)</Label>
+                  <Input
+                    id="company"
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    disabled={isLoading}
+                    placeholder="Nom de votre entreprise"
+                    autoComplete="organization"
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Nom</Label>
+                  <Label htmlFor="registerPassword">Mot de passe</Label>
                   <Input
-                    id="lastName"
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    id="registerPassword"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="h-11"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Au moins 6 caractères
+                  </p>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="company">Entreprise (optionnel)</Label>
-                <Input
-                  id="company"
-                  type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  disabled={isLoading}
-                  placeholder="Nom de votre entreprise"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="registerPassword">Mot de passe</Label>
-                <Input
-                  id="registerPassword"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  minLength={6}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Au moins 6 caractères
-                </p>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Créer un compte
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
+                <Button type="submit" className="w-full h-11" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Créer mon compte
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
