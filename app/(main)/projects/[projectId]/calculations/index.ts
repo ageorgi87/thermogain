@@ -118,5 +118,6 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
     economieMensuelle: Math.round(economieMensuelle),
     mensualiteCredit: mensualiteCredit ? Math.round(mensualiteCredit) : undefined,
     coutTotalCredit: coutTotalCredit ? Math.round(coutTotalCredit) : undefined,
+    investissementReel: Math.round(investissementReel),
   }
 }

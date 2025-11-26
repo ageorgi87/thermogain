@@ -2,17 +2,18 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Label } from "recharts"
 import { YearlyData } from "../../calculations"
-import { calculateMensualite } from "@/lib/loanCalculations"
+import { Info } from "lucide-react"
 
 interface CumulativeCostChartProps {
   yearlyData: YearlyData[]
-  investmentCost: number
+  investmentCost: number  // Investissement réel incluant intérêts du crédit
   paybackYear: number | null
+  paybackPeriod: number | null  // Période de retour en années (avec fraction)
   modeFinancement?: string
   montantCredit?: number
-  tauxInteret?: number
   dureeCreditMois?: number
   apportPersonnel?: number
 }
@@ -21,9 +22,9 @@ export function CumulativeCostChart({
   yearlyData,
   investmentCost,
   paybackYear,
+  paybackPeriod,
   modeFinancement = "Comptant",
   montantCredit = 0,
-  tauxInteret = 0,
   dureeCreditMois = 0,
   apportPersonnel = 0,
 }: CumulativeCostChartProps) {
@@ -31,61 +32,18 @@ export function CumulativeCostChart({
   const data = yearlyData
   const nbYears = data.length
 
-  // Calculer le coût de financement par année selon le mode
-  const getFinancementCostPerYear = (yearIndex: number): number => {
-    const yearNumber = yearIndex + 1 // Année 1, 2, 3...
-
-    if (modeFinancement === "Comptant") {
-      // Tout payé en année 1
-      return yearNumber === 1 ? investmentCost : 0
-    }
-    else if (modeFinancement === "Crédit" && montantCredit && dureeCreditMois && tauxInteret !== undefined) {
-      // Mensualités réparties sur la durée du crédit
-      const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
-
-      if (yearNumber <= dureeCreditAnnees) {
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-
-        // Calculer combien de mois dans cette année
-        const moisRestants = dureeCreditMois - (yearNumber - 1) * 12
-        const moisCetteAnnee = Math.min(12, moisRestants)
-
-        return mensualite * moisCetteAnnee
-      }
-      return 0
-    }
-    else if (modeFinancement === "Mixte" && montantCredit && dureeCreditMois && tauxInteret !== undefined && apportPersonnel) {
-      // Apport personnel en année 1 + mensualités du crédit
-      const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
-
-      if (yearNumber === 1) {
-        // Année 1 : apport personnel + première année de mensualités
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-        const moisCetteAnnee = Math.min(12, dureeCreditMois)
-        return apportPersonnel + (mensualite * moisCetteAnnee)
-      } else if (yearNumber <= dureeCreditAnnees) {
-        // Années suivantes : mensualités uniquement
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-        const moisRestants = dureeCreditMois - (yearNumber - 1) * 12
-        const moisCetteAnnee = Math.min(12, moisRestants)
-        return mensualite * moisCetteAnnee
-      }
-      return 0
-    }
-
-    // Fallback: mode Comptant par défaut
-    return yearNumber === 1 ? investmentCost : 0
-  }
+  // investmentCost contient déjà l'investissement réel (incluant intérêts du crédit)
+  // calculé par calculateAllResults()
+  const investissementReel = investmentCost
 
   // Calculer les coûts cumulés
   const chartData = data.map((year, index) => {
     // Coût cumulé avec chauffage actuel (pas d'investissement initial)
     const coutCumuleActuel = data.slice(0, index + 1).reduce((sum, y) => sum + y.coutActuel, 0)
 
-    // Coût cumulé avec PAC (financement + coûts annuels d'électricité)
-    const coutFinancementCumule = data.slice(0, index + 1).reduce((sum, _, i) => sum + getFinancementCostPerYear(i), 0)
+    // Coût cumulé avec PAC (investissement réel en année 1 + coûts annuels d'électricité)
     const coutElectriciteCumule = data.slice(0, index + 1).reduce((sum, y) => sum + y.coutPac, 0)
-    const coutCumulePac = coutFinancementCumule + coutElectriciteCumule
+    const coutCumulePac = investissementReel + coutElectriciteCumule
 
     return {
       year: year.year,
@@ -105,66 +63,49 @@ export function CumulativeCostChart({
     },
   }
 
-  // Calculer le point exact de croisement des courbes (interpolation linéaire)
-  let breakEvenYear: number | null = null
+  // Calculer l'année exacte du break-even avec la fraction
+  // pour placer la ligne verticale exactement au croisement des courbes
+  const currentYear = new Date().getFullYear()
+  const breakEvenYear = paybackPeriod ? currentYear + paybackPeriod : paybackYear
 
-  console.log('=== DEBUG BREAK EVEN ===')
-  console.log('Total data points:', chartData.length)
-  console.log('First 3 data points:', chartData.slice(0, 3))
-  console.log('Last 3 data points:', chartData.slice(-3))
-
-  for (let i = 1; i < chartData.length; i++) {
-    const prev = chartData[i - 1]
-    const curr = chartData[i]
-
-    const prevDiff = prev.coutCumulePac - prev.coutCumuleActuel
-    const currDiff = curr.coutCumulePac - curr.coutCumuleActuel
-
-    // Log tous les points pour debug
-    if (i <= 5 || (prevDiff > 0 && currDiff < 0)) {
-      console.log(`Year ${curr.year}: prevDiff=${prevDiff}, currDiff=${currDiff}`)
-    }
-
-    // Vérifier si les courbes se croisent entre prev et curr
-    // Le croisement se produit quand le signe de la différence change
-    if (prevDiff > 0 && currDiff <= 0) {
-      // Interpolation linéaire pour trouver l'année exacte du croisement
-      const diff1 = prevDiff
-      const diff2 = -currDiff
-
-      if (diff1 + diff2 !== 0) {
-        const fraction = diff1 / (diff1 + diff2)
-        breakEvenYear = prev.year + fraction
-      } else {
-        breakEvenYear = curr.year
-      }
-      console.log('✅ Break even found at year:', breakEvenYear)
-      console.log('  Between years:', prev.year, 'and', curr.year)
-      console.log('  Interpolation fraction:', diff1 / (diff1 + diff2))
-      break
-    }
-  }
-
-  console.log('Final breakEvenYear:', breakEvenYear)
+  // Debug
+  console.log('=== DEBUG CHART ROI ===')
+  console.log('paybackYear:', paybackYear)
+  console.log('paybackPeriod:', paybackPeriod)
+  console.log('breakEvenYear (avec fraction):', breakEvenYear)
+  console.log('investissementReel:', investissementReel)
+  console.log('Data range:', chartData[0]?.year, 'to', chartData[chartData.length - 1]?.year)
 
   // Description selon le mode de financement
   const getFinancementDescription = () => {
     if (modeFinancement === "Comptant") {
-      return `Investissement total payé en année 1 (${investmentCost.toLocaleString()} €)`
+      return `Investissement total en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
     } else if (modeFinancement === "Crédit" && dureeCreditMois) {
       const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
-      return `Financement par crédit sur ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''} (mensualités + intérêts inclus)`
+      return `Investissement total (crédit ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''} + intérêts) en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
     } else if (modeFinancement === "Mixte" && apportPersonnel && dureeCreditMois) {
       const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
-      return `Financement mixte : ${apportPersonnel.toLocaleString()} € comptant + crédit sur ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''}`
+      return `Investissement total (apport + crédit ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''} + intérêts) en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
     }
-    return "Comparaison incluant l'investissement initial de la PAC (durée de vie estimée)"
+    return `Investissement total en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Coûts cumulés sur {nbYears} ans</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          Coûts cumulés sur {nbYears} ans
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>L'investissement total (incluant les intérêts) est placé en année 1 pour conserver la pertinence du seuil de rentabilité économique.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </CardTitle>
         <CardDescription>
           {getFinancementDescription()}
         </CardDescription>
@@ -205,7 +146,7 @@ export function CumulativeCostChart({
                               {entry.name}
                             </span>
                             <span className="font-bold" style={{ color: entry.color }}>
-                              {entry.value.toLocaleString()} €
+                              {entry.value.toLocaleString("fr-FR")} €
                             </span>
                           </div>
                         ))}
@@ -216,7 +157,7 @@ export function CumulativeCostChart({
               />
 
               {/* Ligne verticale au point de croisement */}
-              {breakEvenYear && (
+              {breakEvenYear && paybackYear && (
                 <ReferenceLine
                   x={breakEvenYear}
                   stroke="#22c55e"
@@ -224,7 +165,7 @@ export function CumulativeCostChart({
                   strokeWidth={2}
                 >
                   <Label
-                    value={`ROI: ${Math.floor(breakEvenYear)}`}
+                    value={`ROI: ${paybackYear}`}
                     position="top"
                     fill="#22c55e"
                     fontSize={12}

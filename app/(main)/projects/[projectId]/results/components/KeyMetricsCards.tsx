@@ -49,21 +49,21 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-600 mb-1">
-            {results.netBenefitLifetime.toLocaleString()} €
+            {results.netBenefitLifetime.toLocaleString("fr-FR")} €
           </div>
           <p className="text-xs text-muted-foreground mb-3">Sur toute la durée de vie</p>
           <div className="space-y-1 text-xs text-muted-foreground border-t pt-2">
             <div className="flex justify-between">
               <span>Coûts sans PAC:</span>
-              <span className="font-medium">{results.coutTotalActuelLifetime.toLocaleString()} €</span>
+              <span className="font-medium">{results.coutTotalActuelLifetime.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between">
               <span>Coûts avec PAC:</span>
-              <span className="font-medium text-blue-600">{results.coutTotalPacLifetime.toLocaleString()} €</span>
+              <span className="font-medium text-blue-600">{results.coutTotalPacLifetime.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between border-t pt-1">
               <span className="font-medium">Gain net:</span>
-              <span className="font-medium text-green-600">{results.netBenefitLifetime.toLocaleString()} €</span>
+              <span className="font-medium text-green-600">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</span>
             </div>
           </div>
         </CardContent>
@@ -80,13 +80,13 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
             <div>
               <p className="text-xs text-muted-foreground">Chauffage actuel</p>
               <div className="text-lg font-bold text-red-600">
-                {results.coutTotalActuelLifetime.toLocaleString()} €
+                {results.coutTotalActuelLifetime.toLocaleString("fr-FR")} €
               </div>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Avec PAC</p>
               <div className="text-lg font-bold text-blue-600">
-                {results.coutTotalPacLifetime.toLocaleString()} €
+                {results.coutTotalPacLifetime.toLocaleString("fr-FR")} €
               </div>
             </div>
           </div>
@@ -107,11 +107,11 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
           <div className="space-y-1 text-xs text-muted-foreground border-t pt-2">
             <div className="flex justify-between">
               <span>Investissement:</span>
-              <span className="font-medium">{investissement.toLocaleString()} €</span>
+              <span className="font-medium">{investissement.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between">
               <span>Gain:</span>
-              <span className="font-medium text-green-600">+{results.netBenefitLifetime.toLocaleString()} €</span>
+              <span className="font-medium text-green-600">+{results.netBenefitLifetime.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between">
               <span>Durée:</span>

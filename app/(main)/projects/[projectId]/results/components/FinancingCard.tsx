@@ -30,7 +30,7 @@ export function FinancingCard({
           <div>
             <p className="text-sm text-muted-foreground mb-1">Mensualité</p>
             <p className="text-3xl font-bold text-primary">
-              {mensualite.toLocaleString()} €
+              {mensualite.toLocaleString("fr-FR")} €
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Sur {dureeMois} mois ({Math.floor(dureeMois / 12)} ans)
@@ -40,15 +40,15 @@ export function FinancingCard({
           <div className="pt-4 border-t space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Montant emprunté</span>
-              <span className="font-medium">{montantCredit.toLocaleString()} €</span>
+              <span className="font-medium">{montantCredit.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Intérêts</span>
-              <span className="font-medium">{interets.toLocaleString()} €</span>
+              <span className="font-medium">{interets.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between text-sm font-semibold pt-2 border-t">
               <span>Coût total</span>
-              <span>{coutTotal.toLocaleString()} €</span>
+              <span>{coutTotal.toLocaleString("fr-FR")} €</span>
             </div>
           </div>
         </div>

@@ -38,7 +38,7 @@ export function ROICard({ paybackPeriod, paybackYear, resteACharge, dureeViePac 
           <div>
             <p className="text-sm text-muted-foreground mb-1">Investissement</p>
             <p className="text-lg font-semibold">
-              {resteACharge.toLocaleString()} €
+              {resteACharge.toLocaleString("fr-FR")} €
             </p>
           </div>
 

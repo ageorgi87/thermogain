@@ -62,14 +62,14 @@ export function ProfitabilityCard({
         <div className="flex justify-between">
           <span className="text-muted-foreground">Économies totales sur la période</span>
           <span className="font-semibold text-green-600">
-            {totalSavingsLifetime.toLocaleString()} €
+            {totalSavingsLifetime.toLocaleString("fr-FR")} €
           </span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-muted-foreground">Investissement (reste à charge)</span>
           <span className="font-semibold text-red-600">
-            -{resteACharge.toLocaleString()} €
+            -{resteACharge.toLocaleString("fr-FR")} €
           </span>
         </div>
 
@@ -78,7 +78,7 @@ export function ProfitabilityCard({
         <div className="flex justify-between items-center">
           <span className="text-lg font-semibold">Bénéfice net</span>
           <span className={`text-2xl font-bold ${netBenefit > 0 ? "text-green-600" : "text-orange-600"}`}>
-            {netBenefit > 0 ? "+" : ""}{netBenefit.toLocaleString()} €
+            {netBenefit > 0 ? "+" : ""}{netBenefit.toLocaleString("fr-FR")} €
           </span>
         </div>
 

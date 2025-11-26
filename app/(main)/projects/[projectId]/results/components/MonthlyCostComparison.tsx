@@ -24,14 +24,14 @@ export function MonthlyCostComparison({
             <div>
               <p className="text-sm text-muted-foreground">Chauffage actuel</p>
               <p className="text-2xl font-bold text-destructive">
-                {coutMensuelActuel.toLocaleString()} €
+                {coutMensuelActuel.toLocaleString("fr-FR")} €
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Avec PAC</p>
               <p className="text-2xl font-bold text-primary">
-                {coutMensuelPac.toLocaleString()} €
+                {coutMensuelPac.toLocaleString("fr-FR")} €
               </p>
             </div>
           </div>
@@ -40,7 +40,7 @@ export function MonthlyCostComparison({
             <div className="flex items-baseline justify-between">
               <p className="text-sm font-medium">Économie mensuelle</p>
               <p className="text-xl font-bold text-green-600">
-                - {economieMensuelle.toLocaleString()} €
+                - {economieMensuelle.toLocaleString("fr-FR")} €
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-1">

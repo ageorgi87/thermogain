@@ -27,7 +27,9 @@ export function calculatePaybackPeriod(
       const yearSavings = currentYear.economie
 
       const fractionOfYear = remainingAmount / yearSavings
-      return Math.round((i + fractionOfYear) * 10) / 10 // Arrondi à 1 décimale
+      // Le croisement se produit PENDANT l'année i, donc on part de l'index i-1
+      // et on ajoute la fraction. Cela donne le nombre d'années depuis l'année 0.
+      return Math.round(((i - 1) + fractionOfYear) * 10) / 10 // Arrondi à 1 décimale
     }
   }
 
@@ -47,7 +49,9 @@ export function calculatePaybackYear(
   const paybackPeriod = calculatePaybackPeriod(data, maxYears)
   if (!paybackPeriod) return null
 
-  return new Date().getFullYear() + Math.ceil(paybackPeriod)
+  // Utiliser Math.floor() pour avoir l'année où le ROI commence à être atteint
+  // (correspond à l'année où les courbes se croisent visuellement sur le graphique)
+  return new Date().getFullYear() + Math.floor(paybackPeriod)
 }
 
 /**

@@ -8,6 +8,7 @@ import { CumulativeCostChart } from "./components/CumulativeCostChart"
 import { ConsumptionCard } from "./components/ConsumptionCard"
 import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
 import { ProfitabilityCard } from "./components/ProfitabilityCard"
+import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Calculator, AlertTriangle } from "lucide-react"
 import { getCurrentEnergyPrice } from "@/lib/didoApi"
@@ -164,24 +165,47 @@ export default async function ResultsPage({ params }: PageProps) {
               {results.paybackPeriod && results.paybackYear ? (
                 <>
                   Votre investissement sera rentabilisé en <strong className="text-green-600">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
-                  pour un bénéfice net de <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString()} €</strong> sur {projectData.duree_vie_pac} ans.
+                  pour un bénéfice net de <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur {projectData.duree_vie_pac} ans.
                 </>
               ) : (
                 <>
-                  Bénéfice net sur {projectData.duree_vie_pac} ans : <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString()} €</strong>
+                  Bénéfice net sur {projectData.duree_vie_pac} ans : <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
                 </>
               )}
             </p>
           ) : (
             <p>
               Les économies générées sur {projectData.duree_vie_pac} ans ne couvrent pas entièrement l&apos;investissement,
-              avec un déficit de <strong className="text-orange-600 text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString()} €</strong>.
+              avec un déficit de <strong className="text-orange-600 text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>.
             </p>
           )}
         </AlertDescription>
       </Alert>
 
-      {/* Cartes détaillées de l'ancienne version */}
+      {/* Graphique principal des coûts cumulés */}
+      <CumulativeCostChart
+        yearlyData={results.yearlyData}
+        investmentCost={results.investissementReel}
+        paybackYear={results.paybackYear}
+        paybackPeriod={results.paybackPeriod}
+        modeFinancement={project.financement?.mode_financement}
+        montantCredit={project.financement?.montant_credit || undefined}
+        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
+        apportPersonnel={project.financement?.apport_personnel || undefined}
+      />
+
+      {/* Tableau détaillé année par année */}
+      <YearlyBreakdownTable
+        yearlyData={results.yearlyData}
+        projectData={projectData}
+        modeFinancement={project.financement?.mode_financement}
+        montantCredit={project.financement?.montant_credit || undefined}
+        tauxInteret={project.financement?.taux_interet || undefined}
+        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
+        apportPersonnel={project.financement?.apport_personnel || undefined}
+      />
+
+      {/* Cartes détaillées */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <ConsumptionCard
           typeChauffage={projectData.type_chauffage}
@@ -220,18 +244,6 @@ export default async function ResultsPage({ params }: PageProps) {
           tauxRentabilite={results.tauxRentabilite}
         />
       </div>
-
-      {/* Graphique principal des coûts cumulés */}
-      <CumulativeCostChart
-        yearlyData={results.yearlyData}
-        investmentCost={projectData.reste_a_charge}
-        paybackYear={results.paybackYear}
-        modeFinancement={project.financement?.mode_financement}
-        montantCredit={project.financement?.montant_credit || undefined}
-        tauxInteret={project.financement?.taux_interet || undefined}
-        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
-        apportPersonnel={project.financement?.apport_personnel || undefined}
-      />
     </div>
   )
 }

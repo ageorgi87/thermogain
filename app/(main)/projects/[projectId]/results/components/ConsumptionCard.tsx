@@ -46,7 +46,7 @@ export function ConsumptionCard({
           <div className="flex justify-between items-center">
             <span className="font-semibold">Coût annuel actuel</span>
             <span className="text-2xl font-bold text-red-600">
-              {coutAnnuelActuel.toLocaleString()} €
+              {coutAnnuelActuel.toLocaleString("fr-FR")} €
             </span>
           </div>
         </div>
@@ -60,12 +60,12 @@ export function ConsumptionCard({
           </div>
           <div className="flex justify-between items-center mb-1">
             <span className="text-sm text-muted-foreground">Consommation</span>
-            <span className="text-sm font-medium">{pacConsumptionKwh.toLocaleString()} kWh/an</span>
+            <span className="text-sm font-medium">{pacConsumptionKwh.toLocaleString("fr-FR")} kWh/an</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="font-semibold">Coût annuel PAC</span>
             <span className="text-2xl font-bold text-green-600">
-              {coutAnnuelPac.toLocaleString()} €
+              {coutAnnuelPac.toLocaleString("fr-FR")} €
             </span>
           </div>
         </div>
@@ -81,7 +81,7 @@ export function ConsumptionCard({
               <TrendingUp className="h-5 w-5 text-red-600" />
             )}
             <span className={`text-2xl font-bold ${economiesAnnuelles > 0 ? "text-green-600" : "text-red-600"}`}>
-              {economiesAnnuelles.toLocaleString()} €
+              {economiesAnnuelles.toLocaleString("fr-FR")} €
             </span>
           </div>
         </div>
@@ -94,13 +94,13 @@ export function ConsumptionCard({
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Chauffage actuel</span>
               <span className="font-bold text-red-600">
-                {coutTotalActuelLifetime.toLocaleString()} €
+                {coutTotalActuelLifetime.toLocaleString("fr-FR")} €
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Avec PAC</span>
               <span className="font-bold text-blue-600">
-                {coutTotalPacLifetime.toLocaleString()} €
+                {coutTotalPacLifetime.toLocaleString("fr-FR")} €
               </span>
             </div>
           </div>

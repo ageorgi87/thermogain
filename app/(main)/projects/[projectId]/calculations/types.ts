@@ -87,4 +87,5 @@ export interface CalculationResults {
   // Financement
   mensualiteCredit?: number
   coutTotalCredit?: number
+  investissementReel: number // Investissement réel incluant les intérêts du crédit
 }

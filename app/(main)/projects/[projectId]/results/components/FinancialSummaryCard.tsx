@@ -41,22 +41,22 @@ export function FinancialSummaryCard({
       <CardContent className="space-y-3">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Coût PAC</span>
-          <span className="font-medium">{coutPac.toLocaleString()} €</span>
+          <span className="font-medium">{coutPac.toLocaleString("fr-FR")} €</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Installation</span>
-          <span className="font-medium">{coutInstallation.toLocaleString()} €</span>
+          <span className="font-medium">{coutInstallation.toLocaleString("fr-FR")} €</span>
         </div>
         {coutTravauxAnnexes && coutTravauxAnnexes > 0 && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Travaux annexes</span>
-            <span className="font-medium">{coutTravauxAnnexes.toLocaleString()} €</span>
+            <span className="font-medium">{coutTravauxAnnexes.toLocaleString("fr-FR")} €</span>
           </div>
         )}
         <Separator />
         <div className="flex justify-between">
           <span className="font-semibold">Coût total</span>
-          <span className="font-bold">{coutTotal.toLocaleString()} €</span>
+          <span className="font-bold">{coutTotal.toLocaleString("fr-FR")} €</span>
         </div>
 
         <Separator className="my-3" />
@@ -64,32 +64,32 @@ export function FinancialSummaryCard({
         {maPrimeRenov && maPrimeRenov > 0 && (
           <div className="flex justify-between text-green-600">
             <span>MaPrimeRénov'</span>
-            <span className="font-medium">-{maPrimeRenov.toLocaleString()} €</span>
+            <span className="font-medium">-{maPrimeRenov.toLocaleString("fr-FR")} €</span>
           </div>
         )}
         {cee && cee > 0 && (
           <div className="flex justify-between text-green-600">
             <span>CEE</span>
-            <span className="font-medium">-{cee.toLocaleString()} €</span>
+            <span className="font-medium">-{cee.toLocaleString("fr-FR")} €</span>
           </div>
         )}
         {autresAides && autresAides > 0 && (
           <div className="flex justify-between text-green-600">
             <span>Autres aides</span>
-            <span className="font-medium">-{autresAides.toLocaleString()} €</span>
+            <span className="font-medium">-{autresAides.toLocaleString("fr-FR")} €</span>
           </div>
         )}
         <Separator />
         <div className="flex justify-between">
           <span className="font-semibold">Total des aides</span>
-          <span className="font-bold text-green-600">-{totalAides.toLocaleString()} €</span>
+          <span className="font-bold text-green-600">-{totalAides.toLocaleString("fr-FR")} €</span>
         </div>
 
         <Separator className="my-3" />
 
         <div className="flex justify-between">
           <span className="text-lg font-semibold">Reste à charge</span>
-          <span className="text-2xl font-bold">{resteACharge.toLocaleString()} €</span>
+          <span className="text-2xl font-bold">{resteACharge.toLocaleString("fr-FR")} €</span>
         </div>
 
         {modeFinancement && modeFinancement !== "Comptant" && mensualite && (
@@ -97,7 +97,7 @@ export function FinancialSummaryCard({
             <Separator className="my-3" />
             <div className="flex justify-between">
               <span className="text-muted-foreground">Mensualité ({modeFinancement})</span>
-              <span className="font-semibold">{mensualite.toLocaleString()} €/mois</span>
+              <span className="font-semibold">{mensualite.toLocaleString("fr-FR")} €/mois</span>
             </div>
           </>
         )}
