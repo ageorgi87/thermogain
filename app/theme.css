@@ -1,0 +1,316 @@
+/**
+ * ThermoGain Theme Configuration
+ *
+ * This file defines the complete design system for ThermoGain including:
+ * - Brand colors (orange/terracotta palette)
+ * - Typography system
+ * - Spacing & sizing
+ * - Border radius values
+ * - Dark mode variants
+ *
+ * Based on shadcn/ui theming conventions with Tailwind CSS v4
+ */
+
+/* ============================================================================
+   BRAND COLORS
+   ============================================================================ */
+
+/**
+ * Primary brand colors - Orange/Terracotta palette
+ * Used for: CTAs, accents, interactive elements
+ */
+:root {
+  /* Primary orange shades */
+  --brand-orange-50: oklch(0.97 0.02 45);    /* Very light orange background */
+  --brand-orange-100: oklch(0.94 0.04 45);   /* Light orange background */
+  --brand-orange-200: oklch(0.88 0.08 45);   /* Border/divider orange */
+  --brand-orange-300: oklch(0.82 0.12 45);   /* Hover state */
+  --brand-orange-400: oklch(0.76 0.16 45);   /* Medium orange */
+  --brand-orange-500: oklch(0.70 0.20 45);   /* Default orange */
+  --brand-orange-600: oklch(0.60 0.18 45);   /* Primary brand color */
+  --brand-orange-700: oklch(0.50 0.16 45);   /* Dark orange */
+  --brand-orange-800: oklch(0.40 0.14 45);   /* Darker orange */
+  --brand-orange-900: oklch(0.30 0.12 45);   /* Darkest orange */
+
+  /* Red shades (for gradients with orange) */
+  --brand-red-600: oklch(0.58 0.22 27);      /* Primary red for gradients */
+  --brand-red-700: oklch(0.48 0.20 27);      /* Darker red */
+}
+
+.dark {
+  /* Adjusted for dark mode visibility */
+  --brand-orange-50: oklch(0.25 0.08 45);
+  --brand-orange-100: oklch(0.30 0.10 45);
+  --brand-orange-200: oklch(0.35 0.12 45);
+  --brand-orange-300: oklch(0.40 0.14 45);
+  --brand-orange-400: oklch(0.50 0.16 45);
+  --brand-orange-500: oklch(0.60 0.18 45);
+  --brand-orange-600: oklch(0.70 0.20 45);
+  --brand-orange-700: oklch(0.76 0.16 45);
+  --brand-orange-800: oklch(0.82 0.12 45);
+  --brand-orange-900: oklch(0.88 0.08 45);
+
+  --brand-red-600: oklch(0.68 0.22 27);
+  --brand-red-700: oklch(0.78 0.20 27);
+}
+
+/* ============================================================================
+   SEMANTIC COLORS
+   ============================================================================ */
+
+/**
+ * Semantic color tokens
+ * These map to specific UI purposes and reference brand colors
+ */
+:root {
+  /* Radius for rounded corners */
+  --radius: 0.625rem; /* 10px - slightly rounded for modern look */
+
+  /* Base surfaces */
+  --background: oklch(1 0 0);                /* Pure white */
+  --foreground: oklch(0.145 0 0);            /* Near black text */
+
+  /* Cards and elevated surfaces */
+  --card: oklch(1 0 0);                      /* White cards */
+  --card-foreground: oklch(0.145 0 0);       /* Black text on cards */
+
+  /* Popovers and floating elements */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  /* Primary actions (uses black instead of brand orange for accessibility) */
+  --primary: oklch(0.205 0 0);               /* Black for CTAs */
+  --primary-foreground: oklch(0.985 0 0);    /* White text on primary */
+
+  /* Secondary actions */
+  --secondary: oklch(0.97 0 0);              /* Light gray */
+  --secondary-foreground: oklch(0.205 0 0);  /* Black text */
+
+  /* Muted/disabled states */
+  --muted: oklch(0.97 0 0);                  /* Very light gray */
+  --muted-foreground: oklch(0.556 0 0);      /* Medium gray text */
+
+  /* Accent colors (subtle highlights) */
+  --accent: oklch(0.97 0 0);                 /* Light gray */
+  --accent-foreground: oklch(0.205 0 0);     /* Black text */
+
+  /* Destructive/danger actions */
+  --destructive: oklch(0.577 0.245 27.325);  /* Red */
+  --destructive-foreground: oklch(0.985 0 0); /* White text */
+
+  /* Borders and inputs */
+  --border: oklch(0.922 0 0);                /* Light gray border */
+  --input: oklch(0.922 0 0);                 /* Input border */
+  --ring: oklch(0.708 0 0);                  /* Focus ring */
+
+  /* Chart colors */
+  --chart-1: oklch(0.646 0.222 41.116);      /* Chart orange */
+  --chart-2: oklch(0.6 0.118 184.704);       /* Chart blue */
+  --chart-3: oklch(0.398 0.07 227.392);      /* Chart dark blue */
+  --chart-4: oklch(0.828 0.189 84.429);      /* Chart yellow */
+  --chart-5: oklch(0.769 0.188 70.08);       /* Chart green */
+
+  /* Sidebar (if needed) */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ============================================================================
+   TYPOGRAPHY
+   ============================================================================ */
+
+/**
+ * Font family definitions
+ * Using Geist Sans and Geist Mono (loaded in layout.tsx via next/font)
+ */
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/**
+ * Font size scale
+ * Following a modular scale for consistent typography
+ */
+:root {
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+}
+
+/**
+ * Font weight scale
+ */
+:root {
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/**
+ * Line height scale
+ */
+:root {
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+}
+
+/* ============================================================================
+   SPACING SCALE
+   ============================================================================ */
+
+/**
+ * Spacing scale based on 4px grid
+ * Used for margins, padding, gaps
+ */
+:root {
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;    /* 4px */
+  --spacing-2: 0.5rem;     /* 8px */
+  --spacing-3: 0.75rem;    /* 12px */
+  --spacing-4: 1rem;       /* 16px */
+  --spacing-5: 1.25rem;    /* 20px */
+  --spacing-6: 1.5rem;     /* 24px */
+  --spacing-8: 2rem;       /* 32px */
+  --spacing-10: 2.5rem;    /* 40px */
+  --spacing-12: 3rem;      /* 48px */
+  --spacing-16: 4rem;      /* 64px */
+  --spacing-20: 5rem;      /* 80px */
+  --spacing-24: 6rem;      /* 96px */
+}
+
+/* ============================================================================
+   BORDER RADIUS
+   ============================================================================ */
+
+/**
+ * Border radius scale
+ * Consistent rounding for UI elements
+ */
+:root {
+  --radius-none: 0;
+  --radius-sm: calc(var(--radius) - 4px);   /* 6px */
+  --radius-md: calc(var(--radius) - 2px);   /* 8px */
+  --radius-lg: var(--radius);               /* 10px - default */
+  --radius-xl: calc(var(--radius) + 4px);   /* 14px */
+  --radius-2xl: 1rem;                       /* 16px */
+  --radius-3xl: 1.5rem;                     /* 24px */
+  --radius-full: 9999px;                    /* Perfect circle */
+}
+
+/* ============================================================================
+   SHADOWS
+   ============================================================================ */
+
+/**
+ * Shadow scale for elevation
+ */
+:root {
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+/* ============================================================================
+   TRANSITIONS
+   ============================================================================ */
+
+/**
+ * Animation durations and easing
+ */
+:root {
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   GRADIENTS
+   ============================================================================ */
+
+/**
+ * Brand gradients
+ * Reusable gradient definitions for consistent visual language
+ */
+:root {
+  /* Main brand gradient (orange to red) */
+  --gradient-brand: linear-gradient(to right, var(--brand-orange-600), var(--brand-red-600));
+
+  /* Subtle background gradient */
+  --gradient-background: linear-gradient(to bottom right, var(--brand-orange-50), oklch(0.96 0.04 27));
+
+  /* Text gradient for emphasis */
+  --gradient-text: linear-gradient(to right, var(--brand-orange-600), var(--brand-red-600));
+}
+
+.dark {
+  --gradient-background: linear-gradient(to bottom right, oklch(0.145 0 0), oklch(0.17 0.02 27));
+}
