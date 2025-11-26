@@ -151,7 +151,7 @@ export default function LoginPage() {
           {/* Professional Product Description */}
           <div className="space-y-4">
             <h2 className="text-2xl lg:text-3xl font-semibold text-foreground leading-tight">
-              Simulez la rentabilité de vos projets de pompe à chaleur
+              Simulez la rentabilité des projets de pompe à chaleur de vos clients
             </h2>
             <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
               Investir aujourd'hui pour économiser demain peut freiner vos clients.
