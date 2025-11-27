@@ -142,7 +142,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
       </div>
 
       {/* Question: connaît sa consommation? */}
-      <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+      <div className="space-y-4 p-4 border border-brand-orange-300 rounded-lg bg-brand-orange-100/50 dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <FormField
           control={form.control}
           name="connait_consommation"

@@ -91,7 +91,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
 
       <Separator />
 
-      <div className="flex justify-between items-center py-4 px-4 bg-muted/50 rounded-lg">
+      <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <span className="text-lg font-semibold">Coût total</span>
         <span className="text-2xl font-bold">
           {((coutPac || 0) + (coutInstallation || 0) + (coutTravauxAnnexes || 0)).toLocaleString('fr-FR')} €

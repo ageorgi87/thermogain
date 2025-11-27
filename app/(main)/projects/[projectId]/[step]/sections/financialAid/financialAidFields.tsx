@@ -44,8 +44,8 @@ export function AidesFields({
   return (
     <div className="space-y-4">
       {/* Calculateur unifié pour les deux aides */}
-      <div className="p-4 bg-muted/50 border border-border rounded-lg">
-        <p className="text-sm text-muted-foreground mb-3">
+      <div className="p-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
+        <p className="text-sm mb-3">
           💡 Utilisez le calculateur ci-dessous pour vérifier votre éligibilité et obtenir une estimation automatique des montants MaPrimeRénov' et CEE.
         </p>
         <AidCalculator
@@ -125,7 +125,7 @@ export function AidesFields({
 
       <Separator />
 
-      <div className="flex justify-between items-center py-4 px-4 bg-muted/50 rounded-lg">
+      <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <span className="text-lg font-semibold">Total des aides</span>
         <span className="text-2xl font-bold">
           {((maPrimeRenov || 0) + (cee || 0) + (autresAides || 0)).toLocaleString('fr-FR')} €

@@ -176,7 +176,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
             <>
               <Separator />
 
-              <div className="flex justify-between items-center py-4 px-4 bg-muted/50 rounded-lg">
+              <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-foreground">
                     Coût total du crédit
