@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Zap, TrendingDown, TrendingUp } from "lucide-react"
+import { TrendingDown } from "lucide-react"
 
 interface ConsumptionCardProps {
   typeChauffage: string
@@ -18,91 +17,62 @@ interface ConsumptionCardProps {
 
 export function ConsumptionCard({
   typeChauffage,
-  typePac,
-  copEstime,
   coutAnnuelActuel,
   coutAnnuelPac,
   economiesAnnuelles,
-  pacConsumptionKwh,
   coutTotalActuelLifetime,
   coutTotalPacLifetime,
   dureeVie,
 }: ConsumptionCardProps) {
+  const totalSavings = coutTotalActuelLifetime - coutTotalPacLifetime
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
-          Consommation
+          <TrendingDown className="h-5 w-5 text-brand-teal-600" />
+          Économies
         </CardTitle>
-        <CardDescription>Comparaison actuel vs PAC</CardDescription>
+        <CardDescription>Comparaison des coûts</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Chauffage actuel</span>
-            <Badge>{typeChauffage}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-semibold">Coût annuel actuel</span>
-            <span className="text-2xl font-bold text-red-600">
-              {coutAnnuelActuel.toLocaleString("fr-FR")} €
+      <CardContent className="space-y-6">
+        {/* Coûts annuels - Section principale */}
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <span className="text-sm text-muted-foreground">{typeChauffage}</span>
+            <span className="text-lg font-semibold">
+              {coutAnnuelActuel.toLocaleString("fr-FR")} €<span className="text-sm text-muted-foreground">/an</span>
             </span>
           </div>
-        </div>
 
-        <Separator />
-
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">PAC {typePac || "Air/Eau"}</span>
-            <Badge variant="secondary">COP {copEstime}</Badge>
-          </div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm text-muted-foreground">Consommation</span>
-            <span className="text-sm font-medium">{pacConsumptionKwh.toLocaleString("fr-FR")} kWh/an</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="font-semibold">Coût annuel PAC</span>
-            <span className="text-2xl font-bold text-green-600">
-              {coutAnnuelPac.toLocaleString("fr-FR")} €
+          <div className="flex items-baseline justify-between">
+            <span className="text-sm text-muted-foreground">Avec PAC</span>
+            <span className="text-lg font-semibold text-brand-teal-600">
+              {coutAnnuelPac.toLocaleString("fr-FR")} €<span className="text-sm text-muted-foreground">/an</span>
             </span>
           </div>
-        </div>
 
-        <Separator />
+          <Separator />
 
-        <div className="flex justify-between items-center">
-          <span className="font-semibold">Économies annuelles</span>
-          <div className="flex items-center gap-2">
-            {economiesAnnuelles > 0 ? (
-              <TrendingDown className="h-5 w-5 text-green-600" />
-            ) : (
-              <TrendingUp className="h-5 w-5 text-red-600" />
-            )}
-            <span className={`text-2xl font-bold ${economiesAnnuelles > 0 ? "text-green-600" : "text-red-600"}`}>
-              {economiesAnnuelles.toLocaleString("fr-FR")} €
-            </span>
-          </div>
-        </div>
-
-        <Separator />
-
-        <div>
-          <p className="text-sm font-semibold text-muted-foreground mb-2">Coûts totaux sur {dureeVie} ans</p>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Chauffage actuel</span>
-              <span className="font-bold text-red-600">
-                {coutTotalActuelLifetime.toLocaleString("fr-FR")} €
+          {/* Économies annuelles - Métrique hero */}
+          <div className="pt-2">
+            <p className="text-sm text-muted-foreground mb-2">Économies annuelles</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-bold text-brand-teal-600">
+                {economiesAnnuelles.toLocaleString("fr-FR")} €
               </span>
+              <span className="text-lg text-muted-foreground">/an</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Avec PAC</span>
-              <span className="font-bold text-blue-600">
-                {coutTotalPacLifetime.toLocaleString("fr-FR")} €
-              </span>
-            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Économies totales sur durée de vie */}
+        <div className="bg-brand-teal-50 dark:bg-brand-teal-950 rounded-lg p-4">
+          <p className="text-sm text-muted-foreground mb-1">Économies totales sur {dureeVie} ans</p>
+          <div className="text-3xl font-bold text-brand-teal-600">
+            {totalSavings.toLocaleString("fr-FR")} €
           </div>
         </div>
       </CardContent>

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Euro } from "lucide-react"
+import { Wallet } from "lucide-react"
 
 interface FinancialSummaryCardProps {
   coutPac: number
@@ -17,87 +17,55 @@ interface FinancialSummaryCardProps {
 }
 
 export function FinancialSummaryCard({
-  coutPac,
-  coutInstallation,
-  coutTravauxAnnexes,
-  coutTotal,
-  maPrimeRenov,
-  cee,
-  autresAides,
-  totalAides,
   resteACharge,
   modeFinancement,
   mensualite,
 }: FinancialSummaryCardProps) {
+  const isCredit = modeFinancement && modeFinancement !== "Comptant" && mensualite
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Euro className="h-5 w-5" />
-          Financement
+          <Wallet className="h-5 w-5 text-brand-orange-600" />
+          Investissement
         </CardTitle>
-        <CardDescription>Coûts et aides</CardDescription>
+        <CardDescription>Votre financement</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Coût PAC</span>
-          <span className="font-medium">{coutPac.toLocaleString("fr-FR")} €</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Installation</span>
-          <span className="font-medium">{coutInstallation.toLocaleString("fr-FR")} €</span>
-        </div>
-        {coutTravauxAnnexes && coutTravauxAnnexes > 0 && (
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Travaux annexes</span>
-            <span className="font-medium">{coutTravauxAnnexes.toLocaleString("fr-FR")} €</span>
+      <CardContent className="space-y-6">
+        {/* Reste à charge - Métrique hero */}
+        <div>
+          <p className="text-sm text-muted-foreground mb-2">
+            {isCredit ? "Montant à financer" : "Montant total"}
+          </p>
+          <div className="text-4xl font-bold text-foreground">
+            {resteACharge.toLocaleString("fr-FR")} €
           </div>
-        )}
-        <Separator />
-        <div className="flex justify-between">
-          <span className="font-semibold">Coût total</span>
-          <span className="font-bold">{coutTotal.toLocaleString("fr-FR")} €</span>
         </div>
 
-        <Separator className="my-3" />
-
-        {maPrimeRenov && maPrimeRenov > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>MaPrimeRénov'</span>
-            <span className="font-medium">-{maPrimeRenov.toLocaleString("fr-FR")} €</span>
-          </div>
-        )}
-        {cee && cee > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>CEE</span>
-            <span className="font-medium">-{cee.toLocaleString("fr-FR")} €</span>
-          </div>
-        )}
-        {autresAides && autresAides > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>Autres aides</span>
-            <span className="font-medium">-{autresAides.toLocaleString("fr-FR")} €</span>
-          </div>
-        )}
-        <Separator />
-        <div className="flex justify-between">
-          <span className="font-semibold">Total des aides</span>
-          <span className="font-bold text-green-600">-{totalAides.toLocaleString("fr-FR")} €</span>
-        </div>
-
-        <Separator className="my-3" />
-
-        <div className="flex justify-between">
-          <span className="text-lg font-semibold">Reste à charge</span>
-          <span className="text-2xl font-bold">{resteACharge.toLocaleString("fr-FR")} €</span>
-        </div>
-
-        {modeFinancement && modeFinancement !== "Comptant" && mensualite && (
+        {/* Mensualité si crédit */}
+        {isCredit && (
           <>
-            <Separator className="my-3" />
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Mensualité ({modeFinancement})</span>
-              <span className="font-semibold">{mensualite.toLocaleString("fr-FR")} €/mois</span>
+            <Separator />
+            <div className="bg-brand-orange-50 dark:bg-brand-orange-950 rounded-lg p-4">
+              <p className="text-sm text-muted-foreground mb-1">Mensualité sur {modeFinancement}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-brand-orange-600">
+                  {mensualite.toLocaleString("fr-FR")} €
+                </span>
+                <span className="text-lg text-muted-foreground">/mois</span>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Mode de paiement */}
+        {!isCredit && (
+          <>
+            <Separator />
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Mode de paiement</span>
+              <span className="font-medium">Comptant</span>
             </div>
           </>
         )}

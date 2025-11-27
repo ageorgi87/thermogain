@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Calendar } from "lucide-react"
+import { TrendingUp } from "lucide-react"
 
 interface ProfitabilityCardProps {
   paybackPeriod: number | null
@@ -17,12 +17,8 @@ interface ProfitabilityCardProps {
 export function ProfitabilityCard({
   paybackPeriod,
   paybackYear,
-  totalSavingsLifetime,
-  resteACharge,
   netBenefit,
   dureeVie,
-  currentEnergyEvolution,
-  electricityEvolution,
   tauxRentabilite,
 }: ProfitabilityCardProps) {
   // Convertir la période de retour en années et mois
@@ -39,68 +35,54 @@ export function ProfitabilityCard({
     return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
   }
 
+  const isRentable = netBenefit > 0
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
+          <TrendingUp className="h-5 w-5 text-brand-teal-600" />
           Rentabilité
         </CardTitle>
         <CardDescription>Analyse sur {dureeVie} ans</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {paybackPeriod && (
-          <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Retour sur investissement</div>
-            <div className="text-3xl font-bold text-green-600">{formatPaybackPeriod(paybackPeriod)}</div>
-            {paybackYear && (
-              <div className="text-sm text-muted-foreground mt-1">En {paybackYear}</div>
-            )}
+      <CardContent className="space-y-6">
+        {/* Payback Period - Métrique LEAD */}
+        {paybackPeriod && paybackYear ? (
+          <div className="bg-brand-teal-50 dark:bg-brand-teal-950 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground mb-1">Retour sur investissement</p>
+            <div className="text-4xl font-bold text-brand-teal-600 mb-1">
+              {formatPaybackPeriod(paybackPeriod)}
+            </div>
+            <p className="text-sm text-muted-foreground">En {paybackYear}</p>
+          </div>
+        ) : (
+          <div className="bg-orange-50 dark:bg-orange-950 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground mb-1">Retour sur investissement</p>
+            <div className="text-2xl font-bold text-orange-600">
+              Non rentabilisé
+            </div>
+            <p className="text-sm text-muted-foreground">Sur {dureeVie} ans</p>
           </div>
         )}
 
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Économies totales sur la période</span>
-          <span className="font-semibold text-green-600">
-            {totalSavingsLifetime.toLocaleString("fr-FR")} €
-          </span>
-        </div>
-
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Investissement (reste à charge)</span>
-          <span className="font-semibold text-red-600">
-            -{resteACharge.toLocaleString("fr-FR")} €
-          </span>
-        </div>
-
         <Separator />
 
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold">Bénéfice net</span>
-          <span className={`text-2xl font-bold ${netBenefit > 0 ? "text-green-600" : "text-orange-600"}`}>
-            {netBenefit > 0 ? "+" : ""}{netBenefit.toLocaleString("fr-FR")} €
-          </span>
-        </div>
-
-        <Separator className="my-3" />
-
+        {/* Taux de rentabilité annuel */}
         <div>
-          <div className="text-sm text-muted-foreground mb-2">Taux de rentabilité annuel (moyenne)</div>
-          <div className="text-3xl font-bold text-purple-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-2">Taux de rentabilité annuel</p>
+          <div className="text-3xl font-bold text-brand-teal-600">
             {tauxRentabilite !== null ? `${tauxRentabilite}%` : "N/A"}
           </div>
         </div>
 
-        <Separator className="my-3" />
+        <Separator />
 
-        <div className="text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Évolution prix énergie actuelle</span>
-            <span>+{currentEnergyEvolution}% /an</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Évolution prix électricité</span>
-            <span>+{electricityEvolution}% /an</span>
+        {/* Bénéfice net sur durée de vie */}
+        <div>
+          <p className="text-sm text-muted-foreground mb-2">Bénéfice net sur {dureeVie} ans</p>
+          <div className={`text-3xl font-bold ${isRentable ? "text-brand-teal-600" : "text-orange-600"}`}>
+            {isRentable ? "+" : ""}{netBenefit.toLocaleString("fr-FR")} €
           </div>
         </div>
       </CardContent>
