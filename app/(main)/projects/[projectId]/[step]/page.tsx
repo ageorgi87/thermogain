@@ -289,27 +289,27 @@ export default function WizardStepPage() {
     switch (watchTypeChauffage) {
       case "Fioul":
         if (form.getValues("prix_fioul_litre") === undefined) {
-          form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 100) / 100)
+          form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 1000) / 1000)
         }
         break
       case "Gaz":
         if (form.getValues("prix_gaz_kwh") === undefined) {
-          form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 100) / 100)
+          form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 1000) / 1000)
         }
         break
       case "GPL":
         if (form.getValues("prix_gpl_kg") === undefined) {
-          form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 100) / 100)
+          form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 1000) / 1000)
         }
         break
       case "Pellets":
         if (form.getValues("prix_pellets_kg") === undefined) {
-          form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 100) / 100)
+          form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 1000) / 1000)
         }
         break
       case "Bois":
         // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
-        const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 100) / 100
+        const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
         if (form.getValues("prix_bois_stere") === undefined) {
           form.setValue("prix_bois_stere", prixBoisStere)
         }
@@ -319,7 +319,7 @@ export default function WizardStepPage() {
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
         if (form.getValues("prix_elec_kwh") === undefined) {
-          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 100) / 100)
+          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
         }
         break
     }

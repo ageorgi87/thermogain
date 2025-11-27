@@ -33,7 +33,7 @@ export default async function MainLayout({
               />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                  {session.user?.company || "ThermoGain"}
+                  ThermoGain
                 </h1>
                 <p className="text-xs text-muted-foreground">Études thermiques intelligentes</p>
               </div>

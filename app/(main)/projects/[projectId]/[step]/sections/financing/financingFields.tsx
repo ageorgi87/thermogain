@@ -105,7 +105,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
               name="apport_personnel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Apport personnel (€)</FormLabel>
+                  <FormLabel>Apport personnel (€) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -136,7 +136,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
               name="taux_interet"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Taux d&apos;intérêt (%)</FormLabel>
+                  <FormLabel>Taux d&apos;intérêt (%) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -156,7 +156,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
               name="duree_credit_mois"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Durée (mois)</FormLabel>
+                  <FormLabel>Durée (mois) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
