@@ -71,18 +71,8 @@ export function ProfitabilityCard({
         {/* Taux de rentabilité annuel */}
         <div>
           <p className="text-sm text-muted-foreground mb-2">Taux de rentabilité annuel</p>
-          <div className="text-3xl font-bold text-brand-teal-600">
+          <div className="text-4xl font-bold text-brand-teal-600">
             {tauxRentabilite !== null ? `${tauxRentabilite}%` : "N/A"}
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Bénéfice net sur durée de vie */}
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Bénéfice net sur {dureeVie} ans</p>
-          <div className={`text-3xl font-bold ${isRentable ? "text-brand-teal-600" : "text-orange-600"}`}>
-            {isRentable ? "+" : ""}{netBenefit.toLocaleString("fr-FR")} €
           </div>
         </div>
       </CardContent>
