@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
+import { ConditionalFooter } from "@/components/ConditionalFooter";
 
 export default async function MainLayout({
   children,
@@ -18,7 +19,7 @@ export default async function MainLayout({
   console.log(session.user?.company);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
       <nav className="border-b bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -44,7 +45,8 @@ export default async function MainLayout({
           </div>
         </div>
       </nav>
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+      <ConditionalFooter />
     </div>
   );
 }
