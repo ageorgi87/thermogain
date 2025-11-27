@@ -91,7 +91,10 @@ export function YearlyBreakdownTable({
                   Coût actuel
                 </TableHead>
                 <TableHead className="text-right font-semibold min-w-[140px]">
-                  Coût PAC
+                  Énergie PAC
+                </TableHead>
+                <TableHead className="text-right font-semibold min-w-[140px]">
+                  Coût total PAC
                 </TableHead>
                 <TableHead className="text-right font-semibold min-w-[140px]">
                   Économies
@@ -131,8 +134,16 @@ export function YearlyBreakdownTable({
                       })} €
                     </TableCell>
 
-                    {/* Coût PAC */}
-                    <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
+                    {/* Coût énergie PAC seul */}
+                    <TableCell className="text-right tabular-nums bg-brand-teal-50/20 dark:bg-brand-teal-950/20">
+                      {year.coutPac.toLocaleString("fr-FR", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })} €
+                    </TableCell>
+
+                    {/* Coût total PAC (énergie + financement) */}
+                    <TableCell className="text-right tabular-nums bg-brand-teal-50/40 dark:bg-brand-teal-950/40 font-medium">
                       {year.coutTotalPacAnnee.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
@@ -175,7 +186,13 @@ export function YearlyBreakdownTable({
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
-                <TableCell className="text-right tabular-nums bg-brand-teal-50/50 dark:bg-brand-teal-950/50">
+                <TableCell className="text-right tabular-nums bg-brand-teal-50/20 dark:bg-brand-teal-950/20">
+                  {totalCoutPac.toLocaleString("fr-FR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })} €
+                </TableCell>
+                <TableCell className="text-right tabular-nums bg-brand-teal-50/40 dark:bg-brand-teal-950/40">
                   {(totalCoutPac + projectData.reste_a_charge).toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
