@@ -8,6 +8,7 @@ import { YearlyData, ProjectData } from "../../calculations"
 interface YearlyBreakdownTableProps {
   yearlyData: YearlyData[]
   projectData: ProjectData
+  investissementReel: number
   modeFinancement?: string
   montantCredit?: number
   tauxInteret?: number
@@ -18,6 +19,7 @@ interface YearlyBreakdownTableProps {
 export function YearlyBreakdownTable({
   yearlyData,
   projectData,
+  investissementReel,
   modeFinancement = "Comptant",
   montantCredit = 0,
   tauxInteret = 0,
@@ -35,26 +37,20 @@ export function YearlyBreakdownTable({
 
   // Calcul des positions cumulées pour chaque année
   type YearlyDataWithCumulative = YearlyData & {
-    coutTotalPacAnnee: number
     positionCumulee: number
   }
 
   const yearlyDataWithCumulative: YearlyDataWithCumulative[] = []
 
   yearlyData.forEach((yearData, index) => {
-    // Calculer le coût total PAC pour l'année (énergie + financement)
-    const mensualitesAnnuelles = isCredit && index < (dureeCreditMois || 0) / 12 ? mensualiteCredit * 12 : 0
-    const payeComptantAnnee = index === 0 ? apportPersonnel : 0
-    const coutTotalPacAnnee = yearData.coutPac + mensualitesAnnuelles + payeComptantAnnee
-
-    // Position cumulée = somme des économies - investissement initial (année 1)
-    const investissement = index === 0 ? projectData.reste_a_charge : 0
+    // Position cumulée = somme des économies - investissement réel (année 1)
+    // investissementReel inclut déjà le coût total du crédit si applicable
+    const investissement = index === 0 ? investissementReel : 0
     const cumulePrecedent = index > 0 ? yearlyDataWithCumulative[index - 1].positionCumulee : 0
     const positionCumulee = cumulePrecedent + yearData.economie - investissement
 
     yearlyDataWithCumulative.push({
       ...yearData,
-      coutTotalPacAnnee,
       positionCumulee,
     })
   })
@@ -91,10 +87,7 @@ export function YearlyBreakdownTable({
                   Coût actuel
                 </TableHead>
                 <TableHead className="text-right font-semibold min-w-[140px]">
-                  Énergie PAC
-                </TableHead>
-                <TableHead className="text-right font-semibold min-w-[140px]">
-                  Coût total PAC
+                  Coût PAC
                 </TableHead>
                 <TableHead className="text-right font-semibold min-w-[140px]">
                   Économies
@@ -134,17 +127,9 @@ export function YearlyBreakdownTable({
                       })} €
                     </TableCell>
 
-                    {/* Coût énergie PAC seul */}
-                    <TableCell className="text-right tabular-nums bg-brand-teal-50/20 dark:bg-brand-teal-950/20">
+                    {/* Coût PAC (énergie annuelle) */}
+                    <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
                       {year.coutPac.toLocaleString("fr-FR", {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })} €
-                    </TableCell>
-
-                    {/* Coût total PAC (énergie + financement) */}
-                    <TableCell className="text-right tabular-nums bg-brand-teal-50/40 dark:bg-brand-teal-950/40 font-medium">
-                      {year.coutTotalPacAnnee.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })} €
@@ -186,14 +171,8 @@ export function YearlyBreakdownTable({
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
-                <TableCell className="text-right tabular-nums bg-brand-teal-50/20 dark:bg-brand-teal-950/20">
-                  {totalCoutPac.toLocaleString("fr-FR", {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  })} €
-                </TableCell>
-                <TableCell className="text-right tabular-nums bg-brand-teal-50/40 dark:bg-brand-teal-950/40">
-                  {(totalCoutPac + projectData.reste_a_charge).toLocaleString("fr-FR", {
+                <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
+                  {(totalCoutPac + investissementReel).toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })} €

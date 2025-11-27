@@ -198,6 +198,7 @@ export default async function ResultsPage({ params }: PageProps) {
       <YearlyBreakdownTable
         yearlyData={results.yearlyData}
         projectData={projectData}
+        investissementReel={results.investissementReel}
         modeFinancement={project.financement?.mode_financement}
         montantCredit={project.financement?.montant_credit || undefined}
         tauxInteret={project.financement?.taux_interet || undefined}
