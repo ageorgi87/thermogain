@@ -154,7 +154,7 @@ export default async function ResultsPage({ params }: PageProps) {
       )}
 
       {/* Summary Alert */}
-      <Alert className={results.netBenefitLifetime > 0 ? "border-green-500" : "border-orange-500"}>
+      <Alert className={results.netBenefitLifetime > 0 ? "border-brand-teal-500" : "border-orange-500"}>
         <Calculator className="h-4 w-4" />
         <AlertTitle className="text-lg font-semibold">
           {results.netBenefitLifetime > 0 ? "Projet rentable" : "Rentabilité limitée"}
@@ -164,18 +164,18 @@ export default async function ResultsPage({ params }: PageProps) {
             <p>
               {results.paybackPeriod && results.paybackYear ? (
                 <>
-                  Votre investissement sera rentabilisé en <strong className="text-green-600">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
-                  pour un bénéfice net de <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur {projectData.duree_vie_pac} ans.
+                  Votre investissement sera rentabilisé en <strong className="text-brand-teal-600 text-lg">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
+                  pour un bénéfice net de <strong className="text-brand-teal-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur <strong className="text-brand-teal-600 text-lg">{projectData.duree_vie_pac} ans</strong>.
                 </>
               ) : (
                 <>
-                  Bénéfice net sur {projectData.duree_vie_pac} ans : <strong className="text-green-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
+                  Bénéfice net sur <strong className="text-brand-teal-600 text-lg">{projectData.duree_vie_pac} ans</strong> : <strong className="text-brand-teal-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
                 </>
               )}
             </p>
           ) : (
             <p>
-              Les économies générées sur {projectData.duree_vie_pac} ans ne couvrent pas entièrement l&apos;investissement,
+              Les économies générées sur <strong className="text-orange-600 text-lg">{projectData.duree_vie_pac} ans</strong> ne couvrent pas entièrement l&apos;investissement,
               avec un déficit de <strong className="text-orange-600 text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>.
             </p>
           )}

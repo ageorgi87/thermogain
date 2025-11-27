@@ -35,6 +35,18 @@
   /* Red shades (for gradients with orange) */
   --brand-red-600: oklch(0.58 0.22 27);      /* Primary red for gradients */
   --brand-red-700: oklch(0.48 0.20 27);      /* Darker red */
+
+  /* Teal shades (for profit/ROI indicators) */
+  --brand-teal-50: oklch(0.96 0.03 150);     /* Very light teal background */
+  --brand-teal-100: oklch(0.92 0.05 150);    /* Light teal background */
+  --brand-teal-200: oklch(0.85 0.08 150);    /* Border teal */
+  --brand-teal-300: oklch(0.78 0.10 150);    /* Hover state */
+  --brand-teal-400: oklch(0.70 0.12 150);    /* Medium teal */
+  --brand-teal-500: oklch(0.60 0.15 150);    /* Default teal - profit color */
+  --brand-teal-600: oklch(0.50 0.16 150);    /* Primary teal */
+  --brand-teal-700: oklch(0.42 0.14 150);    /* Dark teal */
+  --brand-teal-800: oklch(0.35 0.12 150);    /* Darker teal */
+  --brand-teal-900: oklch(0.28 0.10 150);    /* Darkest teal */
 }
 
 .dark {
@@ -52,6 +64,18 @@
 
   --brand-red-600: oklch(0.68 0.22 27);
   --brand-red-700: oklch(0.78 0.20 27);
+
+  /* Teal - adjusted for dark mode */
+  --brand-teal-50: oklch(0.28 0.10 150);
+  --brand-teal-100: oklch(0.32 0.11 150);
+  --brand-teal-200: oklch(0.38 0.12 150);
+  --brand-teal-300: oklch(0.45 0.13 150);
+  --brand-teal-400: oklch(0.52 0.14 150);
+  --brand-teal-500: oklch(0.62 0.15 150);
+  --brand-teal-600: oklch(0.70 0.16 150);
+  --brand-teal-700: oklch(0.78 0.14 150);
+  --brand-teal-800: oklch(0.85 0.12 150);
+  --brand-teal-900: oklch(0.90 0.10 150);
 }
 
 /* ============================================================================
