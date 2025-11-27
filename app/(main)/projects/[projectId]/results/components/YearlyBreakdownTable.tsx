@@ -2,10 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Calculator } from "lucide-react"
 import { YearlyData, ProjectData } from "../../calculations"
-import { calculateMensualite } from "@/lib/loanCalculations"
-import { Info } from "lucide-react"
 
 interface YearlyBreakdownTableProps {
   yearlyData: YearlyData[]
@@ -26,261 +24,207 @@ export function YearlyBreakdownTable({
   dureeCreditMois = 0,
   apportPersonnel = 0,
 }: YearlyBreakdownTableProps) {
+  // Calcul de la mensualité si crédit
+  const mensualiteCredit =
+    modeFinancement && modeFinancement !== "Comptant" && montantCredit && tauxInteret && dureeCreditMois
+      ? (montantCredit * (tauxInteret / 100 / 12) * Math.pow(1 + tauxInteret / 100 / 12, dureeCreditMois)) /
+        (Math.pow(1 + tauxInteret / 100 / 12, dureeCreditMois) - 1)
+      : 0
 
-  // Calculer le prix de l'énergie actuelle pour chaque année
-  const getCurrentEnergyPrice = (yearIndex: number): number => {
-    let basePrice = 0
-    let evolution = 0
+  const isCredit = modeFinancement && modeFinancement !== "Comptant" && mensualiteCredit > 0
 
-    switch (projectData.type_chauffage) {
-      case "Fioul":
-        basePrice = projectData.prix_fioul_litre || 0
-        evolution = projectData.evolution_prix_fioul || 0
-        break
-      case "Gaz":
-        basePrice = projectData.prix_gaz_kwh || 0
-        evolution = projectData.evolution_prix_gaz || 0
-        break
-      case "GPL":
-        basePrice = projectData.prix_gpl_kg || 0
-        evolution = projectData.evolution_prix_gpl || 0
-        break
-      case "Pellets":
-      case "Bois":
-        basePrice = projectData.prix_pellets_kg || projectData.prix_bois_stere || 0
-        evolution = projectData.evolution_prix_bois || 0
-        break
-      case "Electrique":
-      case "PAC Air/Air":
-      case "PAC Air/Eau":
-      case "PAC Eau/Eau":
-        basePrice = projectData.prix_elec_kwh || 0
-        evolution = projectData.evolution_prix_electricite || 0
-        break
-    }
-
-    return basePrice * Math.pow(1 + evolution / 100, yearIndex)
+  // Calcul des positions cumulées pour chaque année
+  type YearlyDataWithCumulative = YearlyData & {
+    coutTotalPacAnnee: number
+    positionCumulee: number
   }
 
-  // Calculer le prix de l'électricité pour la PAC pour chaque année
-  const getPacElectricityPrice = (yearIndex: number): number => {
-    const basePrice = projectData.prix_elec_kwh || 0
-    const evolution = projectData.evolution_prix_electricite || 0
-    return basePrice * Math.pow(1 + evolution / 100, yearIndex)
-  }
+  const yearlyDataWithCumulative: YearlyDataWithCumulative[] = []
 
-  // Calculer les coûts de financement pour une année donnée
-  const getFinancingCosts = (yearIndex: number): { comptant: number; mensualites: number } => {
-    const yearNumber = yearIndex + 1
+  yearlyData.forEach((yearData, index) => {
+    // Calculer le coût total PAC pour l'année (énergie + financement)
+    const mensualitesAnnuelles = isCredit && index < (dureeCreditMois || 0) / 12 ? mensualiteCredit * 12 : 0
+    const payeComptantAnnee = index === 0 ? apportPersonnel : 0
+    const coutTotalPacAnnee = yearData.coutPac + mensualitesAnnuelles + payeComptantAnnee
 
-    if (modeFinancement === "Comptant") {
-      return {
-        comptant: yearNumber === 1 ? projectData.reste_a_charge : 0,
-        mensualites: 0
-      }
-    }
-    else if (modeFinancement === "Crédit" && montantCredit && dureeCreditMois && tauxInteret !== undefined) {
-      const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
+    // Position cumulée = somme des économies - investissement initial (année 1)
+    const investissement = index === 0 ? projectData.reste_a_charge : 0
+    const cumulePrecedent = index > 0 ? yearlyDataWithCumulative[index - 1].positionCumulee : 0
+    const positionCumulee = cumulePrecedent + yearData.economie - investissement
 
-      if (yearNumber <= dureeCreditAnnees) {
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-        const moisRestants = dureeCreditMois - (yearNumber - 1) * 12
-        const moisCetteAnnee = Math.min(12, moisRestants)
+    yearlyDataWithCumulative.push({
+      ...yearData,
+      coutTotalPacAnnee,
+      positionCumulee,
+    })
+  })
 
-        return {
-          comptant: 0,
-          mensualites: mensualite * moisCetteAnnee
-        }
-      }
-      return { comptant: 0, mensualites: 0 }
-    }
-    else if (modeFinancement === "Mixte" && montantCredit && dureeCreditMois && tauxInteret !== undefined && apportPersonnel) {
-      const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
+  // Trouver l'année de retour sur investissement (si elle existe)
+  const paybackYearIndex = yearlyDataWithCumulative.findIndex((year) => year.positionCumulee >= 0)
 
-      if (yearNumber === 1) {
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-        const moisCetteAnnee = Math.min(12, dureeCreditMois)
-
-        return {
-          comptant: apportPersonnel,
-          mensualites: mensualite * moisCetteAnnee
-        }
-      } else if (yearNumber <= dureeCreditAnnees) {
-        const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-        const moisRestants = dureeCreditMois - (yearNumber - 1) * 12
-        const moisCetteAnnee = Math.min(12, moisRestants)
-
-        return {
-          comptant: 0,
-          mensualites: mensualite * moisCetteAnnee
-        }
-      }
-      return { comptant: 0, mensualites: 0 }
-    }
-
-    return {
-      comptant: yearNumber === 1 ? projectData.reste_a_charge : 0,
-      mensualites: 0
-    }
-  }
-
-  // Obtenir l'unité de l'énergie actuelle
-  const getCurrentEnergyUnit = (): string => {
-    switch (projectData.type_chauffage) {
-      case "Fioul":
-        return "€/L"
-      case "Gaz":
-        return "€/kWh"
-      case "GPL":
-        return "€/kg"
-      case "Pellets":
-        return "€/kg"
-      case "Bois":
-        return "€/stère"
-      case "Electrique":
-      case "PAC Air/Air":
-      case "PAC Air/Eau":
-      case "PAC Eau/Eau":
-        return "€/kWh"
-      default:
-        return "€"
-    }
-  }
-
-  // Calculer les totaux
-  const totals = yearlyData.reduce(
-    (acc, year, index) => {
-      const financingCosts = getFinancingCosts(index)
-      const totalAnnuel = year.coutPac + financingCosts.comptant + financingCosts.mensualites
-      return {
-        coutActuelTotal: acc.coutActuelTotal + year.coutActuel,
-        coutPacTotal: acc.coutPacTotal + year.coutPac,
-        comptantTotal: acc.comptantTotal + financingCosts.comptant,
-        mensualitesTotal: acc.mensualitesTotal + financingCosts.mensualites,
-        totalAnnuelTotal: acc.totalAnnuelTotal + totalAnnuel,
-      }
-    },
-    { coutActuelTotal: 0, coutPacTotal: 0, comptantTotal: 0, mensualitesTotal: 0, totalAnnuelTotal: 0 }
-  )
-
-  // Calculer les totaux globaux par cas
-  const totalSansPac = totals.coutActuelTotal
-  const totalAvecPac = totals.totalAnnuelTotal
+  // Calcul des totaux
+  const totalCoutActuel = yearlyData.reduce((sum, year) => sum + year.coutActuel, 0)
+  const totalCoutPac = yearlyData.reduce((sum, year) => sum + year.coutPac, 0)
+  const totalEconomies = yearlyDataWithCumulative.reduce((sum, year) => sum + year.economie, 0)
+  const positionFinale = yearlyDataWithCumulative[yearlyDataWithCumulative.length - 1].positionCumulee
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
+          <Calculator className="h-5 w-5 text-brand-teal-600" />
           Détail année par année
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>Les montants affichés sont arrondis à l'euro près pour faciliter la lecture. Les totaux sont calculés à partir des valeurs exactes, ce qui peut entraîner de légères différences dues aux arrondis intermédiaires.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </CardTitle>
         <CardDescription>
-          Comparaison des coûts de chauffage actuels et avec la PAC sur {yearlyData.length} ans
+          Évolution des coûts et économies sur {projectData.duree_vie_pac} ans
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="rounded-md border border-border overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[80px] border-r font-bold">Année</TableHead>
-                <TableHead className="text-center bg-red-50 border-r font-bold" colSpan={2}>Sans changement (chauffage actuel)</TableHead>
-                <TableHead className="text-center bg-blue-50 font-bold" colSpan={5}>Avec PAC</TableHead>
-              </TableRow>
-              <TableRow>
-                <TableHead className="border-r"></TableHead>
-                <TableHead className="text-right bg-red-50 font-bold">Prix énergie</TableHead>
-                <TableHead className="text-right bg-red-50 border-r font-bold">Coût annuel</TableHead>
-                <TableHead className="text-right bg-blue-50 font-bold">Prix élec.</TableHead>
-                <TableHead className="text-right bg-blue-50 font-bold">Coût annuel</TableHead>
-                <TableHead className="text-right bg-blue-50 font-bold">Payé comptant</TableHead>
-                <TableHead className="text-right bg-blue-50 font-bold">Mensualités</TableHead>
-                <TableHead className="text-right bg-blue-50 font-bold">Total annuel</TableHead>
+              <TableRow className="bg-muted/30 hover:bg-muted/30">
+                <TableHead className="text-center font-semibold w-20 sticky left-0 bg-muted/30">
+                  Année
+                </TableHead>
+                <TableHead className="text-right font-semibold min-w-[140px]">
+                  Coût actuel
+                </TableHead>
+                <TableHead className="text-right font-semibold min-w-[140px]">
+                  Coût PAC
+                </TableHead>
+                <TableHead className="text-right font-semibold min-w-[140px]">
+                  Économies
+                </TableHead>
+                <TableHead className="text-right font-semibold min-w-[140px]">
+                  Position cumulée
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {yearlyData.map((year, index) => {
-                const currentEnergyPrice = getCurrentEnergyPrice(index)
-                const pacElectricityPrice = getPacElectricityPrice(index)
-                const financingCosts = getFinancingCosts(index)
-                // Garder la valeur précise pour le calcul du total
-                const totalAnnuel = year.coutPac + financingCosts.comptant + financingCosts.mensualites
+              {yearlyDataWithCumulative.map((year, index) => {
+                const isPaybackYear = index === paybackYearIndex
+                const isPositive = year.positionCumulee >= 0
 
                 return (
-                  <TableRow key={year.year}>
-                    <TableCell className="font-medium border-r">{year.year}</TableCell>
+                  <TableRow
+                    key={year.year}
+                    className={`
+                      ${index % 2 === 0 ? "bg-background" : "bg-muted/20"}
+                      ${isPaybackYear ? "border-l-4 border-l-brand-teal-500" : ""}
+                      hover:bg-muted/40 transition-colors
+                    `}
+                  >
+                    {/* Année */}
+                    <TableCell className="text-center font-medium sticky left-0 bg-inherit">
+                      {year.year}
+                      {isPaybackYear && (
+                        <span className="ml-2 text-xs text-brand-teal-600 font-semibold">ROI</span>
+                      )}
+                    </TableCell>
 
-                    {/* Chauffage actuel */}
-                    <TableCell className="text-right text-sm bg-red-50/50">
-                      {currentEnergyPrice.toFixed(3)} {getCurrentEnergyUnit()}
-                    </TableCell>
-                    <TableCell className="text-right font-medium bg-red-50/50 border-r">
-                      {Math.round(year.coutActuel).toLocaleString("fr-FR")} €
+                    {/* Coût actuel */}
+                    <TableCell className="text-right tabular-nums text-muted-foreground">
+                      {year.coutActuel.toLocaleString("fr-FR", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })} €
                     </TableCell>
 
-                    {/* PAC */}
-                    <TableCell className="text-right text-sm bg-blue-50/50">
-                      {pacElectricityPrice.toFixed(3)} €/kWh
+                    {/* Coût PAC */}
+                    <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
+                      {year.coutTotalPacAnnee.toLocaleString("fr-FR", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })} €
                     </TableCell>
-                    <TableCell className="text-right font-medium bg-blue-50/50">
-                      {Math.round(year.coutPac).toLocaleString("fr-FR")} €
+
+                    {/* Économies */}
+                    <TableCell className="text-right tabular-nums font-medium text-brand-teal-600">
+                      {year.economie > 0 ? "+" : ""}
+                      {year.economie.toLocaleString("fr-FR", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })} €
                     </TableCell>
-                    <TableCell className="text-right text-sm bg-blue-50/50">
-                      {financingCosts.comptant > 0 ? `${Math.round(financingCosts.comptant).toLocaleString("fr-FR")} €` : "-"}
-                    </TableCell>
-                    <TableCell className="text-right text-sm bg-blue-50/50">
-                      {financingCosts.mensualites > 0 ? `${Math.round(financingCosts.mensualites).toLocaleString("fr-FR")} €` : "-"}
-                    </TableCell>
-                    <TableCell className="text-right font-bold bg-blue-50/50">
-                      {Math.round(totalAnnuel).toLocaleString("fr-FR")} €
+
+                    {/* Position cumulée */}
+                    <TableCell
+                      className={`text-right tabular-nums font-semibold ${
+                        isPositive
+                          ? "text-brand-teal-600 bg-brand-teal-50/50 dark:bg-brand-teal-950/50"
+                          : "text-orange-600 bg-orange-50/50 dark:bg-orange-950/50"
+                      }`}
+                    >
+                      {year.positionCumulee > 0 ? "+" : ""}
+                      {year.positionCumulee.toLocaleString("fr-FR", {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })} €
                     </TableCell>
                   </TableRow>
                 )
               })}
 
-              {/* Ligne de totaux par colonne */}
-              <TableRow className="border-t-2 font-bold">
-                <TableCell className="border-r">TOTAL</TableCell>
-                <TableCell className="bg-red-50/50"></TableCell>
-                <TableCell className="text-right bg-red-50/50 border-r">
-                  {Math.round(totals.coutActuelTotal).toLocaleString("fr-FR")} €
+              {/* Ligne de totaux */}
+              <TableRow className="bg-muted/50 font-bold border-t-2 border-border hover:bg-muted/50">
+                <TableCell className="text-center sticky left-0 bg-muted/50">Total</TableCell>
+                <TableCell className="text-right tabular-nums text-muted-foreground">
+                  {totalCoutActuel.toLocaleString("fr-FR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })} €
                 </TableCell>
-                <TableCell className="bg-blue-50/50"></TableCell>
-                <TableCell className="text-right bg-blue-50/50">
-                  {Math.round(totals.coutPacTotal).toLocaleString("fr-FR")} €
+                <TableCell className="text-right tabular-nums bg-brand-teal-50/50 dark:bg-brand-teal-950/50">
+                  {(totalCoutPac + projectData.reste_a_charge).toLocaleString("fr-FR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })} €
                 </TableCell>
-                <TableCell className="text-right bg-blue-50/50">
-                  {totals.comptantTotal > 0 ? `${Math.round(totals.comptantTotal).toLocaleString("fr-FR")} €` : "-"}
+                <TableCell className="text-right tabular-nums text-brand-teal-600">
+                  +{totalEconomies.toLocaleString("fr-FR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })} €
                 </TableCell>
-                <TableCell className="text-right bg-blue-50/50">
-                  {totals.mensualitesTotal > 0 ? `${Math.round(totals.mensualitesTotal).toLocaleString("fr-FR")} €` : "-"}
-                </TableCell>
-                <TableCell className="text-right bg-blue-50/50">
-                  {Math.round(totals.totalAnnuelTotal).toLocaleString("fr-FR")} €
-                </TableCell>
-              </TableRow>
-
-              {/* Ligne de total global par cas */}
-              <TableRow className="border-t-2 font-bold bg-muted">
-                <TableCell className="border-r">TOTAL GLOBAL</TableCell>
-                <TableCell className="text-center bg-red-100 border-r" colSpan={2}>
-                  <span className="text-lg">{Math.round(totalSansPac).toLocaleString("fr-FR")} €</span>
-                </TableCell>
-                <TableCell className="text-center bg-blue-100" colSpan={5}>
-                  <span className="text-lg">{Math.round(totalAvecPac).toLocaleString("fr-FR")} €</span>
+                <TableCell
+                  className={`text-right tabular-nums ${
+                    positionFinale >= 0
+                      ? "text-brand-teal-600 bg-brand-teal-100 dark:bg-brand-teal-900"
+                      : "text-orange-600 bg-orange-100 dark:bg-orange-900"
+                  }`}
+                >
+                  {positionFinale > 0 ? "+" : ""}
+                  {positionFinale.toLocaleString("fr-FR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })} €
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
+        </div>
+
+        {/* Légende */}
+        <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded bg-brand-teal-50 dark:bg-brand-teal-950 border border-brand-teal-200 dark:border-brand-teal-800"></div>
+            <span>Coûts avec PAC</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded bg-brand-teal-100 dark:bg-brand-teal-900 border border-brand-teal-300 dark:border-brand-teal-700"></div>
+            <span>Position positive (bénéfices)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded bg-orange-100 dark:bg-orange-900 border border-orange-300 dark:border-orange-700"></div>
+            <span>Position négative (investissement non amorti)</span>
+          </div>
+          {paybackYearIndex >= 0 && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded bg-background border-l-4 border-l-brand-teal-500"></div>
+              <span>Année de retour sur investissement (ROI)</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
