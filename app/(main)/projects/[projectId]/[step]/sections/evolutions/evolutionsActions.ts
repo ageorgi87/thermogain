@@ -3,32 +3,30 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { evolutionsSchema, type EvolutionsData } from "./evolutionsSchema"
+import { getAllEnergyPrices } from "@/lib/energyPriceCache"
 
 /**
- * Récupère les évolutions de prix par défaut depuis le cache
+ * Récupère les évolutions de prix par défaut depuis le cache (ou l'API si besoin)
+ * Cette fonction va automatiquement peupler le cache si nécessaire
  */
 export async function getDefaultEvolutions() {
   try {
-    const energyPrices = await prisma.energyPriceCache.findMany({
-      select: {
-        energyType: true,
-        evolution_10y: true,
-        lastUpdated: true,
-      }
-    })
+    // Utiliser getAllEnergyPrices qui va automatiquement peupler/mettre à jour le cache
+    const evolutions = await getAllEnergyPrices()
 
-    const evolutionsMap: Record<string, number> = {}
-    energyPrices.forEach(price => {
-      evolutionsMap[price.energyType] = price.evolution_10y
+    // Récupérer la date de dernière mise à jour depuis le cache
+    const firstCachedEntry = await prisma.energyPriceCache.findFirst({
+      select: {
+        lastUpdated: true,
+      },
+      orderBy: {
+        lastUpdated: 'desc',
+      },
     })
 
     return {
-      evolution_prix_fioul: evolutionsMap['fioul'] || 5,
-      evolution_prix_gaz: evolutionsMap['gaz'] || 5,
-      evolution_prix_gpl: evolutionsMap['gpl'] || 5,
-      evolution_prix_bois: evolutionsMap['bois'] || 5,
-      evolution_prix_electricite: evolutionsMap['electricite'] || 3,
-      lastUpdated: energyPrices[0]?.lastUpdated || new Date(),
+      ...evolutions,
+      lastUpdated: firstCachedEntry?.lastUpdated || new Date(),
     }
   } catch (error) {
     console.error("Erreur lors de la récupération des évolutions par défaut:", error)

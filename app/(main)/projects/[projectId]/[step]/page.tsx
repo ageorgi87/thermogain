@@ -156,6 +156,13 @@ export default function WizardStepPage() {
     electricite: number
   } | undefined>(undefined)
   const [evolutionsLastUpdated, setEvolutionsLastUpdated] = useState<Date | undefined>(undefined)
+  const [apiEvolutions, setApiEvolutions] = useState<{
+    evolution_prix_fioul: number
+    evolution_prix_gaz: number
+    evolution_prix_gpl: number
+    evolution_prix_bois: number
+    evolution_prix_electricite: number
+  } | undefined>(undefined)
   const [totalCouts, setTotalCouts] = useState<number>(0)
   const [totalAides, setTotalAides] = useState<number>(0)
 
@@ -240,6 +247,19 @@ export default function WizardStepPage() {
           const sectionKey = sectionMap[step]
           const sectionData = project[sectionKey as keyof typeof project]
 
+          // Charger les valeurs de l'API pour l'étape evolutions dans tous les cas (pour les tooltips)
+          if (step === "evolutions") {
+            const defaultEvolutions = await getDefaultEvolutions()
+            setEvolutionsLastUpdated(defaultEvolutions.lastUpdated)
+            setApiEvolutions({
+              evolution_prix_fioul: defaultEvolutions.evolution_prix_fioul,
+              evolution_prix_gaz: defaultEvolutions.evolution_prix_gaz,
+              evolution_prix_gpl: defaultEvolutions.evolution_prix_gpl,
+              evolution_prix_bois: defaultEvolutions.evolution_prix_bois,
+              evolution_prix_electricite: defaultEvolutions.evolution_prix_electricite,
+            })
+          }
+
           if (sectionData && typeof sectionData === 'object') {
             // Remove the ID, projectId, and timestamp fields before resetting
             const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
@@ -262,9 +282,8 @@ export default function WizardStepPage() {
             form.reset(DEFAULT_VALUES["chauffage-actuel"])
           } else if (step === "evolutions" && !sectionData) {
             // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
-            // charger les taux d'évolution depuis le cache
+            // charger les taux d'évolution depuis le cache (déjà chargé ci-dessus)
             const defaultEvolutions = await getDefaultEvolutions()
-            setEvolutionsLastUpdated(defaultEvolutions.lastUpdated)
             form.reset(defaultEvolutions)
           }
 
@@ -495,7 +514,7 @@ export default function WizardStepPage() {
                   />
                 )}
                 {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
-                {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
+                {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} apiEvolutions={apiEvolutions} />}
               </CardContent>
             </Card>
 

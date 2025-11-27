@@ -16,9 +16,16 @@ interface EvolutionsFieldsProps {
   form: UseFormReturn<EvolutionsData>
   typeChauffage?: string
   lastUpdated?: Date
+  apiEvolutions?: {
+    evolution_prix_fioul: number
+    evolution_prix_gaz: number
+    evolution_prix_gpl: number
+    evolution_prix_bois: number
+    evolution_prix_electricite: number
+  }
 }
 
-export function EvolutionsFields({ form, typeChauffage, lastUpdated }: EvolutionsFieldsProps) {
+export function EvolutionsFields({ form, typeChauffage, lastUpdated, apiEvolutions }: EvolutionsFieldsProps) {
   // Déterminer quel champ afficher selon le type de chauffage actuel
   // Si c'est déjà électrique ou PAC, on ne demande pas l'évolution car c'est la même que pour la PAC
   const getEnergyFieldConfig = () => {
@@ -57,6 +64,12 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
 
   const energyFieldConfig = getEnergyFieldConfig()
 
+  // Fonction helper pour obtenir la valeur de l'API correspondant au champ
+  const getApiValue = (fieldName: string): number | undefined => {
+    if (!apiEvolutions) return undefined
+    return apiEvolutions[fieldName as keyof typeof apiEvolutions]
+  }
+
   return (
     <div className="space-y-4">
       {energyFieldConfig && (
@@ -73,7 +86,10 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p>
-                      Évolution moyenne sur 10 ans : <strong>{field.value ? `${field.value > 0 ? '+' : ''}${field.value}%/an` : 'Non définie'}</strong>
+                      Évolution moyenne sur 10 ans : <strong>{(() => {
+                        const apiValue = getApiValue(energyFieldConfig.name)
+                        return apiValue !== undefined ? `${apiValue > 0 ? '+' : ''}${apiValue.toFixed(2)}%/an` : 'Non définie'
+                      })()}</strong>
                     </p>
                     <p className="mt-1">Fournie par les données publiques du ministère de la Transition Écologique.</p>
                     {lastUpdated && (
@@ -87,7 +103,7 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
               <FormControl>
                 <Input
                   type="number"
-                  step="0.1"
+                  step="0.01"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -113,7 +129,10 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
                   <p>
-                    Évolution moyenne sur 10 ans : <strong>{field.value ? `${field.value > 0 ? '+' : ''}${field.value}%/an` : 'Non définie'}</strong>
+                    Évolution moyenne sur 10 ans : <strong>{(() => {
+                      const apiValue = getApiValue('evolution_prix_electricite')
+                      return apiValue !== undefined ? `${apiValue > 0 ? '+' : ''}${apiValue.toFixed(2)}%/an` : 'Non définie'
+                    })()}</strong>
                   </p>
                   <p className="mt-1">Fournie par les données publiques du ministère de la Transition Écologique.</p>
                   {lastUpdated && (
@@ -127,7 +146,7 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
             <FormControl>
               <Input
                 type="number"
-                step="0.1"
+                step="0.01"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />

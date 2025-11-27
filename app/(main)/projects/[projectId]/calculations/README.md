@@ -156,7 +156,8 @@ ThermoGain s'appuie sur des sources officielles françaises et européennes :
 
 3. **API DIDO-SDES** (Ministère de la Transition Écologique)
    - Prix de l'énergie actualisés mensuellement
-   - Évolutions historiques sur 10 ans pour projections
+   - Évolutions historiques calculées sur toutes les données disponibles (jusqu'à 42 ans)
+   - Pondération 70% sur les 10 dernières années, 30% sur l'historique complet
    - Source : https://data.statistiques.developpement-durable.gouv.fr/
 
 4. **Normes européennes EN 15316**
@@ -168,7 +169,12 @@ ThermoGain s'appuie sur des sources officielles françaises et européennes :
 1. **Rendement réel des chaudières** : Prise en compte de l'âge et de l'entretien (58-92% selon cas)
 2. **COP ajusté** : Ajustement selon température départ, émetteurs, et zone climatique
 3. **Zones climatiques** : 8 zones H1a à H3 (±30% de variation Nord ↔ Sud)
-4. **Évolution des prix** : Projections sur 10 ans (gaz +4%/an, élec +3%/an)
+4. **Évolution des prix** : Projections calculées sur données historiques réelles de l'API DIDO-SDES
+   - Fioul : +7.2%/an (42 ans de données)
+   - Gaz : +8.7%/an (18 ans de données)
+   - GPL : +7.2%/an (42 ans de données)
+   - Bois : +3.4%/an (18 ans de données)
+   - Électricité : +6.9%/an (18 ans de données)
 
 ### Coefficients de Conversion Énergétique
 
@@ -298,6 +304,69 @@ Tous les champs numériques du wizard (étapes 1-7) utilisent désormais un **pa
 
 **Documentation complète :** Voir section "Patterns d'Implémentation" dans le README principal
 
+### 5. Amélioration du système d'évolution des prix énergétiques (Novembre 2024)
+
+Le calcul des taux d'évolution des prix de l'énergie a été entièrement revu pour utiliser les données historiques réelles de l'API DIDO-SDES :
+
+**Changements majeurs :**
+
+1. **Utilisation maximale des données disponibles**
+   - Avant : Calcul fixe sur 10 ans (ou échec si <120 mois de données)
+   - Après : Utilisation de TOUTES les données disponibles (jusqu'à 42 ans pour le fioul)
+   - Minimum : 24 mois (2 ans) pour avoir des moyennes glissantes valides
+
+2. **Pondération 70/30 sur 10 dernières années**
+   - 70% du poids sur l'évolution des 10 dernières années
+   - 30% du poids sur l'évolution long terme (toute la période disponible)
+   - Raison : Donner plus d'importance aux tendances récentes tout en lissant les variations
+
+3. **Calcul avec moyennes glissantes**
+   - Prix récent = moyenne des 12 derniers mois
+   - Prix ancien = moyenne des 12 premiers mois de la période
+   - Évolution annualisée = (évolution totale / nombre d'années)
+
+4. **Résultats réels actuels :**
+   ```
+   Fioul : 7.2%/an (514 mois = 42.8 ans de données)
+   Gaz : 8.7%/an (222 mois = 18.5 ans)
+   GPL : 7.2%/an (514 mois = 42.8 ans, même source que fioul)
+   Bois : 3.4%/an (222 mois = 18.5 ans)
+   Électricité : 6.9%/an (222 mois = 18.5 ans)
+   ```
+
+5. **Affichage dans l'interface**
+   - Tooltips affichent les valeurs de l'API avec 2 décimales (ex: +7.20%/an)
+   - Les valeurs sont distinctes des champs de formulaire (valeur API vs valeur utilisateur)
+   - Date de dernière mise à jour affichée dans le tooltip
+
+6. **Système de cache mensuel**
+   - Les valeurs sont mises en cache dans la table `energyPriceCache`
+   - Validation automatique : cache valide pendant le mois en cours
+   - Rechargement automatique depuis l'API si cache expiré
+   - Transparence : logs détaillés du calcul (période, moyennes, évolutions)
+
+**Impact :**
+- ✅ Projections plus réalistes basées sur l'historique complet
+- ✅ Prise en compte des tendances récentes (pondération 70%)
+- ✅ Évite les biais liés aux périodes courtes
+- ✅ Mise à jour automatique mensuelle depuis l'API
+
+**Modules impactés :**
+- `lib/didoApi.ts` - Calcul pondéré avec toutes les données disponibles
+- `lib/energyPriceCache.ts` - Système de cache avec validation mensuelle
+- `app/(main)/projects/[projectId]/[step]/sections/evolutions/evolutionsActions.ts` - Récupération des valeurs de l'API
+- `app/(main)/projects/[projectId]/[step]/sections/evolutions/evolutionsFields.tsx` - Affichage des valeurs dans les tooltips avec 2 décimales
+
+**Exemple de calcul (Fioul) :**
+```
+📊 Données disponibles : 514 mois (42.8 ans)
+📈 Évolution long terme : 4.38%/an
+📈 Évolution 10 dernières années : 8.45%/an
+🎯 Évolution pondérée finale : (4.38 × 0.3) + (8.45 × 0.7) = 7.23%/an → 7.2%/an
+   Prix en 1982 : 3.99 €/100kWh
+   Prix en 2024 : 11.47 €/100kWh
+```
+
 ### 3. Amélioration du calculateur d'aides
 
 Le composant `AidCalculator` a été simplifié :
@@ -361,6 +430,6 @@ Pour toute question technique sur les calculs :
 
 ---
 
-**Dernière mise à jour** : 25 novembre 2024
-**Version** : 1.2
-**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012
+**Dernière mise à jour** : 27 novembre 2024
+**Version** : 1.3
+**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012, API DIDO-SDES
