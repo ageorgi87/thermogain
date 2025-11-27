@@ -26,11 +26,11 @@ export function FinancialSummaryCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Wallet className="h-5 w-5 text-brand-orange-600" />
           Investissement
         </CardTitle>
-        <CardDescription>Votre financement</CardDescription>
+        <CardDescription className="mt-1.5">Votre financement</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Reste à charge - Métrique hero */}

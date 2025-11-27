@@ -5,7 +5,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Label } from "recharts"
 import { YearlyData } from "../../calculations"
-import { Info } from "lucide-react"
+import { Info, TrendingUp } from "lucide-react"
 
 interface CumulativeCostChartProps {
   yearlyData: YearlyData[]
@@ -93,22 +93,27 @@ export function CumulativeCostChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          Coûts cumulés sur {nbYears} ans
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <TrendingUp className="h-5 w-5 text-brand-teal-600" />
+              Coûts cumulés sur {nbYears} ans
+            </CardTitle>
+            <CardDescription className="mt-1.5">
+              {getFinancementDescription()}
+            </CardDescription>
+          </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                <Info className="h-4 w-4 text-muted-foreground cursor-help mt-1" />
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
                 <p>L'investissement total (incluant les intérêts) est placé en année 1 pour conserver la pertinence du seuil de rentabilité économique.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </CardTitle>
-        <CardDescription>
-          {getFinancementDescription()}
-        </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[400px]">

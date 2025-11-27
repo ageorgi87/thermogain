@@ -10,7 +10,7 @@ import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
 import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Calculator, AlertTriangle } from "lucide-react"
+import { Calculator, AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
 import { getCurrentEnergyPrice } from "@/lib/didoApi"
 
 interface PageProps {
@@ -144,42 +144,56 @@ export default async function ResultsPage({ params }: PageProps) {
 
       {/* Power Validation Warning */}
       {!powerValidation.isValid && (
-        <Alert variant="destructive" className="border-orange-500 bg-orange-50">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Attention : Dimensionnement de la PAC</AlertTitle>
-          <AlertDescription>
+        <Alert className="border-2 bg-white text-foreground relative md:pr-24">
+          <AlertTriangle className="h-5 w-5 !text-red-600" />
+          <AlertTitle className="text-lg font-semibold">Attention : Dimensionnement de la PAC</AlertTitle>
+          <AlertDescription className="mt-1.5 text-foreground whitespace-pre-line">
             {powerValidation.message}
           </AlertDescription>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
+            <AlertTriangle className="h-16 w-16 text-red-600 opacity-60" />
+          </div>
         </Alert>
       )}
 
       {/* Summary Alert */}
-      <Alert className={results.netBenefitLifetime > 0 ? "border-brand-teal-500" : "border-orange-500"}>
-        <Calculator className="h-4 w-4" />
+      <Alert className="border-2 bg-white text-foreground relative md:pr-24">
+        {results.netBenefitLifetime > 0 ? (
+          <CheckCircle2 className="h-5 w-5 !text-brand-teal-600" />
+        ) : (
+          <XCircle className="h-5 w-5 !text-red-600" />
+        )}
         <AlertTitle className="text-lg font-semibold">
           {results.netBenefitLifetime > 0 ? "Projet rentable" : "Rentabilité limitée"}
         </AlertTitle>
-        <AlertDescription className="mt-2">
+        <AlertDescription className="mt-1.5 text-foreground">
           {results.netBenefitLifetime > 0 ? (
             <p>
               {results.paybackPeriod && results.paybackYear ? (
                 <>
-                  Votre investissement sera rentabilisé en <strong className="text-brand-teal-600 text-lg">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
-                  pour un bénéfice net de <strong className="text-brand-teal-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur <strong className="text-brand-teal-600 text-lg">{projectData.duree_vie_pac} ans</strong>.
+                  Votre investissement sera rentabilisé en <strong className="text-lg">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
+                  pour un bénéfice net de <strong className="text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong>.
                 </>
               ) : (
                 <>
-                  Bénéfice net sur <strong className="text-brand-teal-600 text-lg">{projectData.duree_vie_pac} ans</strong> : <strong className="text-brand-teal-600 text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
+                  Bénéfice net sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong> : <strong className="text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
                 </>
               )}
             </p>
           ) : (
             <p>
-              Les économies générées sur <strong className="text-orange-600 text-lg">{projectData.duree_vie_pac} ans</strong> ne couvrent pas entièrement l&apos;investissement,
-              avec un déficit de <strong className="text-orange-600 text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>.
+              Les économies générées sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong> ne couvrent pas entièrement l&apos;investissement,
+              avec un déficit de <strong className="text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>.
             </p>
           )}
         </AlertDescription>
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
+          {results.netBenefitLifetime > 0 ? (
+            <CheckCircle2 className="h-16 w-16 text-brand-teal-600 opacity-60" />
+          ) : (
+            <XCircle className="h-16 w-16 text-red-600 opacity-60" />
+          )}
+        </div>
       </Alert>
 
       {/* Graphique principal des coûts cumulés */}

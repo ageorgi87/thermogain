@@ -146,7 +146,7 @@ export default function ProjectsPage() {
             <TableBody>
               {projects.map((project) => (
                 <TableRow key={project.id}>
-                  <TableCell className="font-medium">{project.name}</TableCell>
+                  <TableCell className="font-bold">{project.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
                       Étape {getStepNumber(project.currentStep)}/{getTotalSteps()}

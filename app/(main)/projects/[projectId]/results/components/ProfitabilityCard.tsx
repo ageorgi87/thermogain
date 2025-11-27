@@ -40,11 +40,11 @@ export function ProfitabilityCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <LineChart className="h-5 w-5 text-brand-teal-600" />
           Rentabilité
         </CardTitle>
-        <CardDescription>Analyse sur {dureeVie} ans</CardDescription>
+        <CardDescription className="mt-1.5">Analyse sur {dureeVie} ans</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Payback Period - Métrique LEAD */}

@@ -21,10 +21,10 @@ export function calculateYearlyData(data: ProjectData, years: number): YearlyDat
 
     yearlyData.push({
       year: currentYear + i,
-      coutActuel: Math.round(coutActuel),
-      coutPac: Math.round(coutPac),
-      economie: Math.round(economie),
-      economiesCumulees: Math.round(economiesCumulees),
+      coutActuel: coutActuel,
+      coutPac: coutPac,
+      economie: economie,
+      economiesCumulees: economiesCumulees,
     })
   }
 
@@ -100,8 +100,8 @@ export function calculateGainsAfterROI(data: ProjectData, years: number): number
   console.log(`Total économies après ROI (de l'année ${roiYearIndex + 1} à ${yearlyData.length - 1}):`, gainsAfterROI)
   console.log(`Années prises en compte: ${yearlyData[roiYearIndex + 1]?.year || 'N/A'} à ${yearlyData[yearlyData.length - 1]?.year || 'N/A'}`)
 
-  console.log('Gains nets après ROI:', Math.round(gainsAfterROI))
+  console.log('Gains nets après ROI:', gainsAfterROI)
   console.log('=== FIN DEBUG ===')
 
-  return Math.round(gainsAfterROI)
+  return gainsAfterROI
 }

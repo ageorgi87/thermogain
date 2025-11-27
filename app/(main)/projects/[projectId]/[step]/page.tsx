@@ -392,19 +392,9 @@ export default function WizardStepPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8 max-w-4xl flex items-center justify-center min-h-[50vh]">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Chargement...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="container mx-auto py-8 max-w-4xl">
+      {/* Section titre - toujours visible immédiatement */}
       <Card className="shadow-2xl border-2 mb-8">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-4">
@@ -465,62 +455,74 @@ export default function WizardStepPage() {
         </CardContent>
       </Card>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(
-            onSubmit,
-            (errors) => {
-              console.error("❌ Form validation errors:", errors)
-              alert(`Le formulaire contient des erreurs:\n${Object.entries(errors).map(([field, error]) => `- ${field}: ${error?.message}`).join('\n')}`)
-            }
-          )}
-          className="space-y-8"
-        >
-          <Card className="shadow-2xl border-2">
-            <CardContent className="pt-6">
-              {step === "informations" && <InformationsFields form={form as any} />}
-              {step === "logement" && <HousingFields form={form as any} />}
-              {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
-              {step === "projet-pac" && <ProjetPacFields form={form as any} />}
-              {step === "couts" && <CoutsFields form={form as any} />}
-              {step === "aides" && (
-                <AidesFields
-                  form={form as any}
-                  typePac={typePac}
-                  anneeConstruction={anneeConstruction}
-                  codePostal={codePostal}
-                  surfaceHabitable={surfaceHabitable}
-                  nombreOccupants={nombreOccupants}
-                />
-              )}
-              {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
-              {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
-            </CardContent>
-          </Card>
+      {/* Section questions - avec loader si données en chargement */}
+      {isLoading ? (
+        <Card className="shadow-2xl border-2">
+          <CardContent className="pt-6 flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-orange-600" />
+              <p className="text-muted-foreground">Chargement des données...</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(
+              onSubmit,
+              (errors) => {
+                console.error("❌ Form validation errors:", errors)
+                alert(`Le formulaire contient des erreurs:\n${Object.entries(errors).map(([field, error]) => `- ${field}: ${error?.message}`).join('\n')}`)
+              }
+            )}
+            className="space-y-8"
+          >
+            <Card className="shadow-2xl border-2">
+              <CardContent className="pt-6">
+                {step === "informations" && <InformationsFields form={form as any} />}
+                {step === "logement" && <HousingFields form={form as any} />}
+                {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
+                {step === "projet-pac" && <ProjetPacFields form={form as any} />}
+                {step === "couts" && <CoutsFields form={form as any} />}
+                {step === "aides" && (
+                  <AidesFields
+                    form={form as any}
+                    typePac={typePac}
+                    anneeConstruction={anneeConstruction}
+                    codePostal={codePostal}
+                    surfaceHabitable={surfaceHabitable}
+                    nombreOccupants={nombreOccupants}
+                  />
+                )}
+                {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
+                {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} />}
+              </CardContent>
+            </Card>
 
-          <div className="flex justify-between gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goToPreviousStep}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {currentStepIndex === 0 ? "Annuler" : "Précédent"}
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {currentStepIndex < STEPS.length - 1 ? (
-                <>
-                  Suivant
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                "Calculer les résultats"
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            <div className="flex justify-between gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goToPreviousStep}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {currentStepIndex === 0 ? "Annuler" : "Précédent"}
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {currentStepIndex < STEPS.length - 1 ? (
+                  <>
+                    Suivant
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                ) : (
+                  "Calculer les résultats"
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
     </div>
   )
 }

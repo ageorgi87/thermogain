@@ -236,12 +236,12 @@ export function validatePacPower(
 
   if (!isValid) {
     if (puissancePacKw < puissanceRecommandeeMin) {
-      message = `⚠️ Puissance potentiellement insuffisante pour ${surfaceHabitable} m² avec ${isolationText}${climatText}. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
+      message = `Puissance potentiellement insuffisante pour ${surfaceHabitable} m² avec ${isolationText}${climatText}.\nRecommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
     } else {
-      message = `⚠️ Puissance potentiellement surdimensionnée pour ${surfaceHabitable} m² avec ${isolationText}${climatText}. Recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
+      message = `Puissance potentiellement surdimensionnée pour ${surfaceHabitable} m² avec ${isolationText}${climatText}.\nRecommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
     }
   } else {
-    message = `✅ Puissance adaptée pour ${surfaceHabitable} m² avec ${isolationText}${climatText} (recommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW)`
+    message = `Puissance adaptée pour ${surfaceHabitable} m² avec ${isolationText}${climatText}.\nRecommandé : ${puissanceRecommandeeMin.toFixed(1)}-${puissanceRecommandeeMax.toFixed(1)} kW`
   }
 
   return {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
+import { BackToProjectsButton } from "@/components/BackToProjectsButton";
 
 export default async function MainLayout({
   children,
@@ -38,10 +39,13 @@ export default async function MainLayout({
                 <p className="text-xs text-muted-foreground">Études thermiques intelligentes</p>
               </div>
             </Link>
-            <UserMenu
-              userName={session.user?.name}
-              userEmail={session.user?.email}
-            />
+            <div className="flex items-center gap-4">
+              <BackToProjectsButton />
+              <UserMenu
+                userName={session.user?.name}
+                userEmail={session.user?.email}
+              />
+            </div>
           </div>
         </div>
       </nav>

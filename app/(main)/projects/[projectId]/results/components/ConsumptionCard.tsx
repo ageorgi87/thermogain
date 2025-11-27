@@ -26,11 +26,11 @@ export function ConsumptionCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <PiggyBank className="h-5 w-5 text-brand-teal-600" />
           Économies
         </CardTitle>
-        <CardDescription>Gains annuels et sur durée de vie</CardDescription>
+        <CardDescription className="mt-1.5">Gains annuels et sur durée de vie</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Économies annuelles - Métrique hero */}

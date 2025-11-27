@@ -67,11 +67,11 @@ export function YearlyBreakdownTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Calculator className="h-5 w-5 text-brand-teal-600" />
           Détail année par année
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="mt-1.5">
           Évolution des coûts et économies sur {projectData.duree_vie_pac} ans
         </CardDescription>
       </CardHeader>

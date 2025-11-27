@@ -49,6 +49,14 @@ export function getStepKey(currentStep: number): string | undefined {
 }
 
 /**
+ * Retourne la clé de la première étape du wizard
+ * @returns La clé de la première étape
+ */
+export function getFirstStepKey(): string {
+  return WIZARD_STEPS[0].key
+}
+
+/**
  * Type pour les clés d'étapes
  */
 export type WizardStepKey = typeof WIZARD_STEPS[number]["key"]
