@@ -3,6 +3,7 @@
  */
 
 export const WIZARD_STEPS = [
+  { key: "informations", title: "Informations", description: "Nom du projet et destinataires" },
   { key: "logement", title: "Logement", description: "Caractéristiques de votre logement" },
   { key: "chauffage-actuel", title: "Chauffage actuel", description: "Votre système de chauffage actuel et consommation" },
   { key: "projet-pac", title: "Projet PAC", description: "Caractéristiques de la pompe à chaleur" },

@@ -76,13 +76,15 @@ model VerificationToken {
 model Project {
   id          String   @id @default(cuid())
   name        String   @default("Projet PAC")
-  currentStep Int      @default(1) // Track wizard progress (1-7)
+  recipientEmails String[] @default([]) // Emails to send results to
+  currentStep Int      @default(1) // Track wizard progress (1-8)
   completed   Boolean  @default(false) // All steps completed
 
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations to section tables
+  informations     ProjectInformations?
   logement         ProjectLogement?
   chauffageActuel  ProjectChauffageActuel?
   projetPac        ProjectProjetPac?
@@ -90,6 +92,19 @@ model Project {
   aides            ProjectAides?
   financement      ProjectFinancement?
   evolutions       ProjectEvolutions?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Section 0: Informations (Project Information)
+model ProjectInformations {
+  id                   String   @id @default(cuid())
+  projectId            String   @unique
+  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  project_name         String   @default("Projet PAC")
+  recipient_emails     String[] @default([]) // Emails to send results to
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Loader2, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info } from "lucide-react"
 import {
+  informationsSchema,
+  type InformationsData,
+} from "./sections/informations/informationsSchema"
+import {
   housingSchema as logementSchema,
   type HousingData as LogementData,
 } from "./sections/housing/housingSchema"
@@ -35,6 +39,7 @@ import {
   evolutionsSchema,
   type EvolutionsData,
 } from "./sections/evolutions/evolutionsSchema"
+import { InformationsFields } from "./sections/informations/informationsFields"
 import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
@@ -43,6 +48,7 @@ import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
 import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
+import { saveInformationsData } from "./sections/informations/informationsActions"
 import { saveHousingData } from "./sections/housing/housingActions"
 import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
@@ -55,6 +61,7 @@ import { updateProjectStep } from "./updateProjectStep"
 import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
 
 const STEP_EXPLANATIONS: Record<string, string> = {
+  "informations": "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",
   "logement": "Les caractéristiques de votre logement (surface, isolation, année de construction) sont essentielles pour estimer avec précision vos besoins en chauffage, dimensionner correctement la pompe à chaleur, et calculer les économies potentielles.",
   "chauffage-actuel": "Ces informations nous permettent d'évaluer votre consommation énergétique actuelle, son coût annuel, et le rendement de votre installation. Cette analyse servira de référence pour comparer les économies potentielles avec une pompe à chaleur.",
   "projet-pac": "Les caractéristiques de la pompe à chaleur (type, puissance, COP) déterminent son efficacité et sa compatibilité avec votre logement. Ces données sont essentielles pour estimer précisément vos futures consommations et économies.",
@@ -65,6 +72,10 @@ const STEP_EXPLANATIONS: Record<string, string> = {
 }
 
 const DEFAULT_VALUES = {
+  "informations": {
+    project_name: "Projet PAC",
+    recipient_emails: [],
+  },
   "logement": {
     code_postal: "75001",
     annee_construction: 2000,
@@ -117,6 +128,7 @@ const DEFAULT_VALUES = {
 }
 
 const SCHEMAS = {
+  "informations": informationsSchema,
   "logement": logementSchema,
   "chauffage-actuel": chauffageActuelSchema,
   "projet-pac": projetPacSchema,
@@ -215,6 +227,7 @@ export default function WizardStepPage() {
 
           // Map step key to database field name
           const sectionMap: Record<string, string> = {
+            "informations": "informations",
             "logement": "logement",
             "chauffage-actuel": "chauffageActuel",
             "projet-pac": "projetPac",
@@ -318,6 +331,9 @@ export default function WizardStepPage() {
     try {
       // Call the appropriate Server Action based on current step
       switch (step) {
+        case "informations":
+          await saveInformationsData(projectId, data)
+          break
         case "logement":
           await saveHousingData(projectId, data)
           break
@@ -462,6 +478,7 @@ export default function WizardStepPage() {
         >
           <Card className="shadow-2xl border-2">
             <CardContent className="pt-6">
+              {step === "informations" && <InformationsFields form={form as any} />}
               {step === "logement" && <HousingFields form={form as any} />}
               {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
               {step === "projet-pac" && <ProjetPacFields form={form as any} />}
