@@ -29,7 +29,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
         name="code_postal"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Code postal</FormLabel>
+            <FormLabel>Code postal *</FormLabel>
             <FormControl>
               <Input
                 placeholder="ex: 75001, 20000, 97400"
@@ -51,7 +51,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
           name="annee_construction"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Année de construction</FormLabel>
+              <FormLabel>Année de construction *</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -76,7 +76,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
           name="surface_habitable"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Surface habitable (m²)</FormLabel>
+              <FormLabel>Surface habitable (m²) *</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -102,7 +102,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
         name="nombre_occupants"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre d&apos;occupants</FormLabel>
+            <FormLabel>Nombre d&apos;occupants *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -121,7 +121,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
         name="qualite_isolation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Qualité globale de l&apos;isolation</FormLabel>
+            <FormLabel>Qualité globale de l&apos;isolation *</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>

@@ -79,7 +79,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
         name="mode_financement"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Mode de financement</FormLabel>
+            <FormLabel>Mode de financement *</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>

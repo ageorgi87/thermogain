@@ -34,7 +34,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
         name="cout_pac"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Coût de la PAC (€)</FormLabel>
+            <FormLabel>Coût de la PAC (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -53,7 +53,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
         name="cout_installation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Coût d&apos;installation (€)</FormLabel>
+            <FormLabel>Coût d&apos;installation (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -72,7 +72,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
         name="cout_travaux_annexes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Coûts annexes (€)</FormLabel>
+            <FormLabel>Coûts annexes (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"

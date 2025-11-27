@@ -42,7 +42,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
         name="type_pac"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Type de PAC</FormLabel>
+            <FormLabel>Type de PAC *</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -66,7 +66,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
           name="puissance_pac_kw"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Puissance (kW)</FormLabel>
+              <FormLabel>Puissance (kW) *</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -87,7 +87,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                COP estimé
+                COP estimé *
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
@@ -127,7 +127,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
         name="duree_vie_pac"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Durée de vie estimée de la PAC (années)</FormLabel>
+            <FormLabel>Durée de vie estimée de la PAC (années) *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -148,7 +148,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
           name="temperature_depart"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Température de départ (°C)</FormLabel>
+              <FormLabel>Température de départ (°C) *</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -174,7 +174,7 @@ export function ProjetPacFields({ form }: ProjetPacFieldsProps) {
           name="emetteurs"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type d'émetteurs</FormLabel>
+              <FormLabel>Type d'émetteurs *</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>

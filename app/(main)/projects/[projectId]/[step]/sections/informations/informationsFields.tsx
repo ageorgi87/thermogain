@@ -67,7 +67,7 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
         name="project_name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nom du projet</FormLabel>
+            <FormLabel>Nom du projet *</FormLabel>
             <FormControl>
               <Input
                 placeholder="ex: Installation PAC - Maison Dupont"

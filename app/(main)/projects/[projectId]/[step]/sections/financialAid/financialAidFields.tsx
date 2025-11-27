@@ -68,7 +68,7 @@ export function AidesFields({
         name="ma_prime_renov"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>MaPrimeRénov&apos; (€)</FormLabel>
+            <FormLabel>MaPrimeRénov&apos; (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -87,7 +87,7 @@ export function AidesFields({
         name="cee"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>CEE (Certificats d&apos;Économies d&apos;Énergie) (€)</FormLabel>
+            <FormLabel>CEE (Certificats d&apos;Économies d&apos;Énergie) (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -106,7 +106,7 @@ export function AidesFields({
         name="autres_aides"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Autres aides (€)</FormLabel>
+            <FormLabel>Autres aides (€) *</FormLabel>
             <FormControl>
               <Input
                 type="number"

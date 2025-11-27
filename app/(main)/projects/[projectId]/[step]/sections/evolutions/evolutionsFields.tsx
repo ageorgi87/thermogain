@@ -26,23 +26,23 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
       case "Fioul":
         return {
           name: "evolution_prix_fioul" as const,
-          label: "Évolution du prix du fioul (%/an)",
+          label: "Évolution du prix du fioul (%/an) *",
         }
       case "Gaz":
         return {
           name: "evolution_prix_gaz" as const,
-          label: "Évolution du prix du gaz (%/an)",
+          label: "Évolution du prix du gaz (%/an) *",
         }
       case "GPL":
         return {
           name: "evolution_prix_gpl" as const,
-          label: "Évolution du prix du GPL (%/an)",
+          label: "Évolution du prix du GPL (%/an) *",
         }
       case "Pellets":
       case "Bois":
         return {
           name: "evolution_prix_bois" as const,
-          label: "Évolution du prix du bois/pellets (%/an)",
+          label: "Évolution du prix du bois/pellets (%/an) *",
         }
       case "Electrique":
       case "PAC Air/Air":
@@ -105,8 +105,8 @@ export function EvolutionsFields({ form, typeChauffage, lastUpdated }: Evolution
           <FormItem>
             <FormLabel className="flex items-center gap-2">
               {typeChauffage === "Electrique" || typeChauffage?.startsWith("PAC")
-                ? "Évolution du prix de l'électricité (%/an)"
-                : "Évolution du prix de l'électricité pour la PAC (%/an)"}
+                ? "Évolution du prix de l'électricité (%/an) *"
+                : "Évolution du prix de l'électricité pour la PAC (%/an) *"}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />

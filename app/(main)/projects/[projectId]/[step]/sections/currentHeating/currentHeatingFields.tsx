@@ -73,7 +73,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
         name="type_chauffage"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Type de chauffage</FormLabel>
+            <FormLabel>Type de chauffage *</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -103,7 +103,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
           name="age_installation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Âge de l&apos;installation (années)</FormLabel>
+              <FormLabel>Âge de l&apos;installation (années) *</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -122,7 +122,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
           name="etat_installation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>État de l&apos;installation</FormLabel>
+              <FormLabel>État de l&apos;installation *</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -149,7 +149,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
           render={({ field }) => (
             <FormItem className="space-y-3">
               <FormLabel className="text-base font-semibold">
-                Connaissez-vous votre consommation énergétique actuelle ?
+                Connaissez-vous votre consommation énergétique actuelle ? *
               </FormLabel>
               <FormControl>
                 <RadioGroup
