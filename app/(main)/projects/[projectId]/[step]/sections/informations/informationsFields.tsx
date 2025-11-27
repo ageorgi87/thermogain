@@ -86,22 +86,22 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Email(s) pour recevoir les résultats</FormLabel>
+            {/* Hidden input to register the field with react-hook-form */}
+            <input type="hidden" {...field} value={JSON.stringify(field.value || [])} />
 
             <div className="space-y-3">
               {/* Email input */}
               <div className="flex gap-2">
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="exemple@email.com"
-                    value={emailInput}
-                    onChange={(e) => {
-                      setEmailInput(e.target.value)
-                      setEmailError("")
-                    }}
-                    onKeyDown={handleKeyDown}
-                  />
-                </FormControl>
+                <Input
+                  type="email"
+                  placeholder="exemple@email.com"
+                  value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value)
+                    setEmailError("")
+                  }}
+                  onKeyDown={handleKeyDown}
+                />
                 <Button
                   type="button"
                   variant="outline"
