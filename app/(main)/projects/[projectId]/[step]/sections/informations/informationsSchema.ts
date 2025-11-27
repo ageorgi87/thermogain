@@ -12,7 +12,6 @@ export const informationsSchema = z.object({
         .string()
         .email("Email invalide")
     )
-    .min(1, "Au moins un email est requis")
     .default([]),
 })
 
