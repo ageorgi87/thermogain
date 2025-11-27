@@ -7,7 +7,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -76,9 +75,6 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
                 {...field}
               />
             </FormControl>
-            <FormDescription>
-              Donnez un nom explicite à votre projet pour le retrouver facilement
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -90,9 +86,6 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Email(s) pour recevoir les résultats</FormLabel>
-            <FormDescription>
-              Saisissez les adresses email qui recevront le rapport de simulation
-            </FormDescription>
 
             <div className="space-y-3">
               {/* Email input */}
