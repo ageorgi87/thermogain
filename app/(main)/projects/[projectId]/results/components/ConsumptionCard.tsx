@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { TrendingDown } from "lucide-react"
+import { PiggyBank } from "lucide-react"
 
 interface ConsumptionCardProps {
   typeChauffage: string
@@ -27,7 +27,7 @@ export function ConsumptionCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TrendingDown className="h-5 w-5 text-brand-teal-600" />
+          <PiggyBank className="h-5 w-5 text-brand-teal-600" />
           Économies
         </CardTitle>
         <CardDescription>Gains annuels et sur durée de vie</CardDescription>

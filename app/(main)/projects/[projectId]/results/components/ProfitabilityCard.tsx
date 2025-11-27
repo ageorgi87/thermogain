@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { TrendingUp } from "lucide-react"
+import { LineChart } from "lucide-react"
 
 interface ProfitabilityCardProps {
   paybackPeriod: number | null
@@ -41,7 +41,7 @@ export function ProfitabilityCard({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-brand-teal-600" />
+          <LineChart className="h-5 w-5 text-brand-teal-600" />
           Rentabilité
         </CardTitle>
         <CardDescription>Analyse sur {dureeVie} ans</CardDescription>
