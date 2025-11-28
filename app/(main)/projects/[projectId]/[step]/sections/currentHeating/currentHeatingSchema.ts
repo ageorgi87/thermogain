@@ -26,27 +26,27 @@ const baseSchema = z.object({
   connait_consommation: z.boolean(),
 
   // If user knows consumption: direct consumption data
-  conso_fioul_litres: z.number().min(0, "La consommation ne peut pas être négative").max(50000, "La consommation semble trop élevée").optional(),
-  prix_fioul_litre: z.number().min(0, "Le prix ne peut pas être négatif").max(10, "Le prix semble trop élevé").optional(),
-  conso_gaz_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
-  prix_gaz_kwh: z.number().min(0, "Le prix ne peut pas être négatif").max(1, "Le prix semble trop élevé").optional(),
-  conso_gpl_kg: z.number().min(0, "La consommation ne peut pas être négative").max(10000, "La consommation semble trop élevée").optional(),
-  prix_gpl_kg: z.number().min(0, "Le prix ne peut pas être négatif").max(10, "Le prix semble trop élevé").optional(),
-  conso_pellets_kg: z.number().min(0, "La consommation ne peut pas être négative").max(20000, "La consommation semble trop élevée").optional(),
-  prix_pellets_kg: z.number().min(0, "Le prix ne peut pas être négatif").max(2, "Le prix semble trop élevé").optional(),
-  conso_bois_steres: z.number().min(0, "La consommation ne peut pas être négative").max(100, "La consommation semble trop élevée").optional(),
-  prix_bois_stere: z.number().min(0, "Le prix ne peut pas être négatif").max(500, "Le prix semble trop élevé").optional(),
-  conso_elec_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
-  prix_elec_kwh: z.number().min(0, "Le prix ne peut pas être négatif").max(1, "Le prix semble trop élevé").optional(),
-  cop_actuel: z.number().min(1, "Le COP doit être au moins de 1").max(10, "Le COP ne peut pas dépasser 10").optional(),
-  conso_pac_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
+  conso_fioul_litres: z.number({ message: "La consommation de fioul est requise" }).min(0, "La consommation ne peut pas être négative").max(50000, "La consommation semble trop élevée").optional(),
+  prix_fioul_litre: z.number({ message: "Le prix du fioul est requis" }).min(0, "Le prix ne peut pas être négatif").max(10, "Le prix semble trop élevé").optional(),
+  conso_gaz_kwh: z.number({ message: "La consommation de gaz est requise" }).min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
+  prix_gaz_kwh: z.number({ message: "Le prix du gaz est requis" }).min(0, "Le prix ne peut pas être négatif").max(1, "Le prix semble trop élevé").optional(),
+  conso_gpl_kg: z.number({ message: "La consommation de GPL est requise" }).min(0, "La consommation ne peut pas être négative").max(10000, "La consommation semble trop élevée").optional(),
+  prix_gpl_kg: z.number({ message: "Le prix du GPL est requis" }).min(0, "Le prix ne peut pas être négatif").max(10, "Le prix semble trop élevé").optional(),
+  conso_pellets_kg: z.number({ message: "La consommation de pellets est requise" }).min(0, "La consommation ne peut pas être négative").max(20000, "La consommation semble trop élevée").optional(),
+  prix_pellets_kg: z.number({ message: "Le prix des pellets est requis" }).min(0, "Le prix ne peut pas être négatif").max(2, "Le prix semble trop élevé").optional(),
+  conso_bois_steres: z.number({ message: "La consommation de bois est requise" }).min(0, "La consommation ne peut pas être négative").max(100, "La consommation semble trop élevée").optional(),
+  prix_bois_stere: z.number({ message: "Le prix du bois est requis" }).min(0, "Le prix ne peut pas être négatif").max(500, "Le prix semble trop élevé").optional(),
+  conso_elec_kwh: z.number({ message: "La consommation électrique est requise" }).min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
+  prix_elec_kwh: z.number({ message: "Le prix de l'électricité est requis" }).min(0, "Le prix ne peut pas être négatif").max(1, "Le prix semble trop élevé").optional(),
+  cop_actuel: z.number({ message: "Le COP actuel est requis" }).min(1, "Le COP doit être au moins de 1").max(10, "Le COP ne peut pas dépasser 10").optional(),
+  conso_pac_kwh: z.number({ message: "La consommation de la PAC est requise" }).min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
 
   // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
   // Abonnement gaz annuel (€/an) - seulement pour type_chauffage = "Gaz"
-  abonnement_gaz: z.number().min(0).max(1000).optional(),
+  abonnement_gaz: z.number({ message: "L'abonnement gaz est requis" }).min(0).max(1000).optional(),
 
   // Coût d'entretien annuel du système actuel (€/an)
-  entretien_annuel: z.number().min(0).max(500).optional(),
+  entretien_annuel: z.number({ message: "Le coût d'entretien annuel est requis" }).min(0).max(500).optional(),
 })
 
 // Conditional validation based on heating type and consumption knowledge

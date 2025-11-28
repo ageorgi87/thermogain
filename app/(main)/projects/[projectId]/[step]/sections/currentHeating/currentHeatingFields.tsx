@@ -133,7 +133,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Sélectionnez l'état" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
