@@ -1,20 +1,14 @@
 import { Separator } from "@/components/ui/separator"
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { UseFormReturn } from "react-hook-form"
+import { FormField } from "@/components/form/FormField"
 import { FinancialAidData } from "./financialAidSchema"
 import { useEffect } from "react"
 import { AidCalculator } from "@/components/AidCalculator"
 
 interface AidesFieldsProps {
-  form: UseFormReturn<FinancialAidData>
+  formData: Partial<FinancialAidData>
+  errors: Partial<Record<keyof FinancialAidData, string>>
+  onChange: (name: keyof FinancialAidData, value: any) => void
   // Données des étapes précédentes
   typePac?: string
   anneeConstruction?: number
@@ -24,22 +18,28 @@ interface AidesFieldsProps {
 }
 
 export function AidesFields({
-  form,
+  formData,
+  errors,
+  onChange,
   typePac,
   anneeConstruction,
   codePostal,
   surfaceHabitable,
   nombreOccupants,
 }: AidesFieldsProps) {
-  const maPrimeRenov = form.watch("ma_prime_renov")
-  const cee = form.watch("cee")
-  const autresAides = form.watch("autres_aides")
+  const maPrimeRenov = formData.ma_prime_renov
+  const cee = formData.cee
+  const autresAides = formData.autres_aides
 
-  // Auto-calculate total_aides when any of the aids change
+  // Calculate total (computed value, no need for useEffect)
+  const totalAides = (maPrimeRenov || 0) + (cee || 0) + (autresAides || 0)
+
+  // Update form data with calculated total when any aid changes
   useEffect(() => {
-    const total = (maPrimeRenov || 0) + (cee || 0) + (autresAides || 0)
-    form.setValue("total_aides", total)
-  }, [maPrimeRenov, cee, autresAides])
+    if (formData.total_aides !== totalAides) {
+      onChange("total_aides", totalAides)
+    }
+  }, [totalAides, formData.total_aides, onChange])
 
   return (
     <div className="space-y-4">
@@ -55,8 +55,8 @@ export function AidesFields({
           surfaceHabitable={surfaceHabitable}
           nombreOccupants={nombreOccupants}
           onUseAmounts={(maPrimeRenov, cee) => {
-            form.setValue("ma_prime_renov", maPrimeRenov)
-            form.setValue("cee", cee)
+            onChange("ma_prime_renov", maPrimeRenov)
+            onChange("cee", cee)
           }}
         />
       </div>
@@ -64,74 +64,75 @@ export function AidesFields({
       <Separator />
 
       <FormField
-        control={form.control}
-        name="ma_prime_renov"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>MaPrimeRénov&apos; (€)</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                placeholder="ex: 4000"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="MaPrimeRénov' (€)"
+        error={errors.ma_prime_renov}
+      >
+        <Input
+          type="number"
+          min="0"
+          placeholder="ex: 4000"
+          value={formData.ma_prime_renov ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            if (value === "") {
+              onChange("ma_prime_renov", undefined)
+            } else {
+              const num = parseFloat(value)
+              onChange("ma_prime_renov", isNaN(num) ? undefined : num)
+            }
+          }}
+        />
+      </FormField>
 
       <FormField
-        control={form.control}
-        name="cee"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>CEE (Certificats d&apos;Économies d&apos;Énergie) (€)</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                placeholder="ex: 2500"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="CEE (Certificats d'Économies d'Énergie) (€)"
+        error={errors.cee}
+      >
+        <Input
+          type="number"
+          min="0"
+          placeholder="ex: 2500"
+          value={formData.cee ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            if (value === "") {
+              onChange("cee", undefined)
+            } else {
+              const num = parseFloat(value)
+              onChange("cee", isNaN(num) ? undefined : num)
+            }
+          }}
+        />
+      </FormField>
 
       <FormField
-        control={form.control}
-        name="autres_aides"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Autres aides (€)</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                placeholder="ex: 1000"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
-              />
-            </FormControl>
-            <FormDescription>
-              Aides locales, régionales, etc.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Autres aides (€)"
+        error={errors.autres_aides}
+        description="Aides locales, régionales, etc."
+      >
+        <Input
+          type="number"
+          min="0"
+          placeholder="ex: 1000"
+          value={formData.autres_aides ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            if (value === "") {
+              onChange("autres_aides", undefined)
+            } else {
+              const num = parseFloat(value)
+              onChange("autres_aides", isNaN(num) ? undefined : num)
+            }
+          }}
+        />
+      </FormField>
 
       <Separator />
 
       <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <span className="text-lg font-semibold">Total des aides</span>
         <span className="text-2xl font-bold">
-          {((maPrimeRenov || 0) + (cee || 0) + (autresAides || 0)).toLocaleString('fr-FR')} €
+          {totalAides.toLocaleString('fr-FR')} €
         </span>
       </div>
     </div>

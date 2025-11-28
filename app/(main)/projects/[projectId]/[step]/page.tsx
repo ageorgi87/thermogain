@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
 import { Loader2, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info } from "lucide-react"
 import {
   informationsSchema,
@@ -151,13 +148,20 @@ export default function WizardStepPage() {
     return null
   }
 
-  const form = useForm({
-    resolver: zodResolver(SCHEMAS[step as keyof typeof SCHEMAS]) as any,
-    defaultValues: DEFAULT_VALUES[step as keyof typeof DEFAULT_VALUES] as any,
-  })
+  // State pour le formulaire
+  const [formData, setFormData] = useState<any>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const watchTypeChauffage = form.watch("type_chauffage")
-  const watchModeFinancement = form.watch("mode_financement")
+  // Helper pour mettre à jour un champ dans le state
+  const updateField = (name: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [name]: value }))
+    // Clear error for this field
+    setErrors((prev) => {
+      const newErrors = { ...prev }
+      delete newErrors[name]
+      return newErrors
+    })
+  }
 
   // Load existing data if any
   useEffect(() => {
@@ -238,20 +242,11 @@ export default function WizardStepPage() {
               })
             )
 
-            // For projet-pac step, merge with default values to ensure new fields have defaults
-            if (step === "projet-pac") {
-              const mergedData = {
-                ...DEFAULT_VALUES["projet-pac"],
-                ...cleanedData,
-              }
-              form.reset(mergedData)
-            } else {
-              form.reset(cleanedData)
+            // For refactored steps, use custom state management
+            const refactoredSteps = ["informations", "logement", "chauffage-actuel", "projet-pac", "couts", "aides", "financement"]
+            if (refactoredSteps.includes(step)) {
+              setFormData(cleanedData)
             }
-          } else if (step === "chauffage-actuel" && !sectionData) {
-            // Si on est sur l'étape chauffage-actuel et qu'il n'y a pas de données sauvegardées,
-            // utiliser les valeurs par défaut (les prix seront mis à jour par le second useEffect)
-            form.reset(DEFAULT_VALUES["chauffage-actuel"])
           }
 
         }
@@ -267,49 +262,50 @@ export default function WizardStepPage() {
 
   // Load default energy prices when user changes heating type (only on chauffage-actuel step)
   useEffect(() => {
-    if (step !== "chauffage-actuel" || !watchTypeChauffage || isLoading || !defaultPrices) {
+    if (step !== "chauffage-actuel" || !formData.type_chauffage || isLoading || !defaultPrices) {
       return
     }
 
     // Only update the price field if it's undefined or null (never set)
-    switch (watchTypeChauffage) {
+    const typeChauffage = formData.type_chauffage
+    switch (typeChauffage) {
       case "Fioul":
-        if (form.getValues("prix_fioul_litre") === undefined || form.getValues("prix_fioul_litre") === null) {
-          form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 1000) / 1000)
+        if (formData.prix_fioul_litre === undefined || formData.prix_fioul_litre === null) {
+          updateField("prix_fioul_litre", Math.round(defaultPrices.fioul * 1000) / 1000)
         }
         break
       case "Gaz":
-        if (form.getValues("prix_gaz_kwh") === undefined || form.getValues("prix_gaz_kwh") === null) {
-          form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 1000) / 1000)
+        if (formData.prix_gaz_kwh === undefined || formData.prix_gaz_kwh === null) {
+          updateField("prix_gaz_kwh", Math.round(defaultPrices.gaz * 1000) / 1000)
         }
         break
       case "GPL":
-        if (form.getValues("prix_gpl_kg") === undefined || form.getValues("prix_gpl_kg") === null) {
-          form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 1000) / 1000)
+        if (formData.prix_gpl_kg === undefined || formData.prix_gpl_kg === null) {
+          updateField("prix_gpl_kg", Math.round(defaultPrices.gpl * 1000) / 1000)
         }
         break
       case "Pellets":
-        if (form.getValues("prix_pellets_kg") === undefined || form.getValues("prix_pellets_kg") === null) {
-          form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 1000) / 1000)
+        if (formData.prix_pellets_kg === undefined || formData.prix_pellets_kg === null) {
+          updateField("prix_pellets_kg", Math.round(defaultPrices.bois * 1000) / 1000)
         }
         break
       case "Bois":
         // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
         const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
-        if (form.getValues("prix_bois_stere") === undefined || form.getValues("prix_bois_stere") === null) {
-          form.setValue("prix_bois_stere", prixBoisStere)
+        if (formData.prix_bois_stere === undefined || formData.prix_bois_stere === null) {
+          updateField("prix_bois_stere", prixBoisStere)
         }
         break
       case "Electrique":
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        if (form.getValues("prix_elec_kwh") === undefined || form.getValues("prix_elec_kwh") === null) {
-          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+        if (formData.prix_elec_kwh === undefined || formData.prix_elec_kwh === null) {
+          updateField("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
         }
         break
     }
-  }, [watchTypeChauffage, step, isLoading, defaultPrices, form])
+  }, [formData.type_chauffage, step, isLoading, defaultPrices])
 
   // Auto-fill prix_elec_kwh on projet-pac step
   useEffect(() => {
@@ -318,38 +314,85 @@ export default function WizardStepPage() {
     }
 
     // Only update if it's undefined (never set)
-    if (form.getValues("prix_elec_kwh") === undefined) {
-      form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+    if (formData.prix_elec_kwh === undefined) {
+      updateField("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
     }
-  }, [step, defaultPrices, isLoading, form])
+  }, [step, defaultPrices, isLoading, formData.prix_elec_kwh])
 
   const onSubmit = async (data: any) => {
     console.log("🚀 Form submission started", { step, data })
     setIsSubmitting(true)
     try {
+      let validatedData = data
+
+      // Manual validation for refactored steps
+      const refactoredSteps = ["informations", "logement", "chauffage-actuel", "projet-pac", "couts", "aides", "financement"]
+      if (refactoredSteps.includes(step)) {
+        const schema = SCHEMAS[step as keyof typeof SCHEMAS]
+        const result = schema.safeParse(formData)
+
+        const errorMap: Record<string, string> = {}
+
+        // Collect Zod validation errors
+        if (!result.success) {
+          result.error.issues.forEach((issue) => {
+            if (issue.path.length > 0) {
+              const fieldName = issue.path[0].toString()
+              if (!errorMap[fieldName]) {
+                errorMap[fieldName] = issue.message
+              }
+            }
+          })
+        }
+
+        // For projet-pac step, add manual validation for conditional fields
+        if (step === "projet-pac") {
+          const typePac = formData.type_pac
+          const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau"
+
+          if (isWaterBased) {
+            if (formData.temperature_depart === undefined) {
+              errorMap.temperature_depart = "La température de départ est requise pour les PAC hydrauliques"
+            }
+            if (formData.emetteurs === undefined) {
+              errorMap.emetteurs = "Le type d'émetteurs est requis pour les PAC hydrauliques"
+            }
+          }
+        }
+
+        // If there are any errors (from Zod or manual), show them
+        if (Object.keys(errorMap).length > 0) {
+          setErrors(errorMap)
+          setIsSubmitting(false)
+          return
+        }
+
+        validatedData = result.data
+      }
+
       // Call the appropriate Server Action based on current step
       switch (step) {
         case "informations":
-          await saveInformationsData(projectId, data)
+          await saveInformationsData(projectId, validatedData)
           break
         case "logement":
-          await saveHousingData(projectId, data)
+          await saveHousingData(projectId, validatedData)
           break
         case "chauffage-actuel":
           console.log("💾 Saving current heating data...")
-          await saveCurrentHeatingData(projectId, data)
+          await saveCurrentHeatingData(projectId, validatedData)
           break
         case "projet-pac":
-          await saveHeatPumpProjectData(projectId, data)
+          await saveHeatPumpProjectData(projectId, validatedData)
           break
         case "couts":
-          await saveCostsData(projectId, data)
+          await saveCostsData(projectId, validatedData)
           break
         case "aides":
-          await saveFinancialAidData(projectId, data)
+          await saveFinancialAidData(projectId, validatedData)
           break
         case "financement":
-          await saveFinancingData(projectId, data)
+          await saveFinancingData(projectId, validatedData)
           break
         default:
           throw new Error("Invalid step")
@@ -461,63 +504,102 @@ export default function WizardStepPage() {
           </CardContent>
         </Card>
       ) : (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8"
-          >
-            <Card className="shadow-2xl border-2">
-              <CardContent className="pt-6">
-                {step === "informations" && <InformationsFields form={form as any} />}
-                {step === "logement" && <HousingFields form={form as any} />}
-                {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
-                {step === "projet-pac" && (
-                  <ProjetPacFields
-                    form={form as any}
-                    currentElectricPower={puissanceSouscriteActuelle}
-                    defaultElectricityPrice={defaultPrices?.electricite}
-                    prixElecKwhActuel={prixElecKwhActuel}
-                    typeChauffageActuel={typeChauffage}
-                  />
-                )}
-                {step === "couts" && <CoutsFields form={form as any} />}
-                {step === "aides" && (
-                  <AidesFields
-                    form={form as any}
-                    typePac={typePac}
-                    anneeConstruction={anneeConstruction}
-                    codePostal={codePostal}
-                    surfaceHabitable={surfaceHabitable}
-                    nombreOccupants={nombreOccupants}
-                  />
-                )}
-                {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
-              </CardContent>
-            </Card>
+        // All steps now use custom state management without React Hook Form
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            onSubmit({})
+          }}
+          className="space-y-8"
+        >
+          <Card className="shadow-2xl border-2">
+            <CardContent className="pt-6">
+              {step === "informations" && (
+                <InformationsFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                />
+              )}
+              {step === "logement" && (
+                <HousingFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                />
+              )}
+              {step === "chauffage-actuel" && (
+                <ChauffageActuelFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                  defaultPrices={defaultPrices}
+                />
+              )}
+              {step === "projet-pac" && (
+                <ProjetPacFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                  currentElectricPower={puissanceSouscriteActuelle}
+                  defaultElectricityPrice={defaultPrices?.electricite}
+                  prixElecKwhActuel={prixElecKwhActuel}
+                  typeChauffageActuel={typeChauffage}
+                />
+              )}
+              {step === "couts" && (
+                <CoutsFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                />
+              )}
+              {step === "aides" && (
+                <AidesFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                  typePac={typePac}
+                  anneeConstruction={anneeConstruction}
+                  codePostal={codePostal}
+                  surfaceHabitable={surfaceHabitable}
+                  nombreOccupants={nombreOccupants}
+                />
+              )}
+              {step === "financement" && (
+                <FinancementFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={updateField}
+                  totalCouts={totalCouts}
+                  totalAides={totalAides}
+                />
+              )}
+            </CardContent>
+          </Card>
 
-            <div className="flex justify-between gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={goToPreviousStep}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {currentStepIndex === 0 ? "Annuler" : "Précédent"}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {currentStepIndex < STEPS.length - 1 ? (
-                  <>
-                    Suivant
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                ) : (
-                  "Calculer les résultats"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
+          <div className="flex justify-between gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={goToPreviousStep}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {currentStepIndex === 0 ? "Annuler" : "Précédent"}
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {currentStepIndex < STEPS.length - 1 ? (
+                <>
+                  Suivant
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              ) : (
+                "Calculer les résultats"
+              )}
+            </Button>
+          </div>
+        </form>
       )}
     </div>
   )

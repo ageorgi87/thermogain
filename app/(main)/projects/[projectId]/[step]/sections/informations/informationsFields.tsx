@@ -1,29 +1,24 @@
 "use client"
 
 import { useState } from "react"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
-import { UseFormReturn } from "react-hook-form"
+import { FormField } from "@/components/form/FormField"
 import { InformationsData } from "./informationsSchema"
 
 interface InformationsFieldsProps {
-  form: UseFormReturn<InformationsData>
+  formData: Partial<InformationsData>
+  errors: Partial<Record<keyof InformationsData, string>>
+  onChange: (name: keyof InformationsData, value: any) => void
 }
 
-export function InformationsFields({ form }: InformationsFieldsProps) {
+export function InformationsFields({ formData, errors, onChange }: InformationsFieldsProps) {
   const [emailInput, setEmailInput] = useState("")
   const [emailError, setEmailError] = useState("")
 
-  const currentEmails = form.watch("recipient_emails") || []
+  const currentEmails = formData.recipient_emails || []
 
   const addEmail = () => {
     setEmailError("")
@@ -42,12 +37,12 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
     }
 
     // Add email to the list
-    form.setValue("recipient_emails", [...currentEmails, emailInput])
+    onChange("recipient_emails", [...currentEmails, emailInput])
     setEmailInput("")
   }
 
   const removeEmail = (emailToRemove: string) => {
-    form.setValue(
+    onChange(
       "recipient_emails",
       currentEmails.filter((email) => email !== emailToRemove)
     )
@@ -63,89 +58,78 @@ export function InformationsFields({ form }: InformationsFieldsProps) {
   return (
     <div className="space-y-6">
       <FormField
-        control={form.control}
-        name="project_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nom du projet *</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="ex: Installation PAC - Maison Dupont"
-                maxLength={100}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Nom du projet"
+        required
+        error={errors.project_name}
+      >
+        <Input
+          placeholder="ex: Installation PAC - Maison Dupont"
+          maxLength={100}
+          value={formData.project_name ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            onChange("project_name", value === "" ? undefined : value)
+          }}
+        />
+      </FormField>
 
       <FormField
-        control={form.control}
-        name="recipient_emails"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email(s) pour recevoir les résultats</FormLabel>
-            {/* Hidden input to register the field with react-hook-form */}
-            <input type="hidden" {...field} value={JSON.stringify(field.value || [])} />
+        label="Email(s) pour recevoir les résultats"
+        error={errors.recipient_emails}
+      >
+        <div className="space-y-3">
+          {/* Email input */}
+          <div className="flex gap-2">
+            <Input
+              type="email"
+              placeholder="exemple@email.com"
+              value={emailInput}
+              onChange={(e) => {
+                setEmailInput(e.target.value)
+                setEmailError("")
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addEmail}
+              disabled={!emailInput}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
 
-            <div className="space-y-3">
-              {/* Email input */}
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="exemple@email.com"
-                  value={emailInput}
-                  onChange={(e) => {
-                    setEmailInput(e.target.value)
-                    setEmailError("")
-                  }}
-                  onKeyDown={handleKeyDown}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addEmail}
-                  disabled={!emailInput}
+          {/* Email error */}
+          {emailError && (
+            <p className="text-sm text-destructive">{emailError}</p>
+          )}
+
+          {/* Email list */}
+          {currentEmails.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
+              {currentEmails.map((email) => (
+                <Badge
+                  key={email}
+                  variant="secondary"
+                  className="pl-3 pr-2 py-1.5 text-sm"
                 >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {/* Email error */}
-              {emailError && (
-                <p className="text-sm text-destructive">{emailError}</p>
-              )}
-
-              {/* Email list */}
-              {currentEmails.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
-                  {currentEmails.map((email) => (
-                    <Badge
-                      key={email}
-                      variant="secondary"
-                      className="pl-3 pr-2 py-1.5 text-sm"
-                    >
-                      {email}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 ml-2 hover:bg-destructive/20"
-                        onClick={() => removeEmail(email)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
+                  {email}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-4 w-4 p-0 ml-2 hover:bg-destructive/20"
+                    onClick={() => removeEmail(email)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ))}
             </div>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+          )}
+        </div>
+      </FormField>
     </div>
   )
 }

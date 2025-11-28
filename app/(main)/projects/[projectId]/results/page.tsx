@@ -143,7 +143,7 @@ export default async function ResultsPage({ params }: PageProps) {
           <XCircle className="h-5 w-5 !text-red-600" />
         )}
         <AlertTitle className="text-lg font-semibold">
-          {results.netBenefitLifetime > 0 ? "Projet rentable" : "Rentabilité limitée"}
+          {results.netBenefitLifetime > 0 ? "Projet rentable" : "Projet non rentable"}
         </AlertTitle>
         <AlertDescription className="mt-1.5 text-foreground">
           {results.netBenefitLifetime > 0 ? (

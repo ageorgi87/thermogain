@@ -1,10 +1,3 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -15,49 +8,51 @@ import {
 } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
-import { UseFormReturn } from "react-hook-form"
+import { FormField } from "@/components/form/FormField"
 import { FinancingData } from "./financingSchema"
 import { useEffect } from "react"
 import { calculateMensualite } from "@/lib/loanCalculations"
 import { Separator } from "@/components/ui/separator"
 
 interface FinancementFieldsProps {
-  form: UseFormReturn<FinancingData>
-  watchModeFinancement: string
+  formData: Partial<FinancingData>
+  errors: Partial<Record<keyof FinancingData, string>>
+  onChange: (name: keyof FinancingData, value: any) => void
   totalCouts?: number
   totalAides?: number
 }
 
-export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, totalAides = 0 }: FinancementFieldsProps) {
+export function FinancementFields({ formData, errors, onChange, totalCouts = 0, totalAides = 0 }: FinancementFieldsProps) {
   const montantAPayer = Math.max(0, totalCouts - totalAides)
+  const modeFinancement = formData.mode_financement
 
   // Watch form values for total cost calculation
-  const montantCredit = form.watch("montant_credit")
-  const apportPersonnel = form.watch("apport_personnel")
-  const tauxInteret = form.watch("taux_interet")
-  const dureeCreditMois = form.watch("duree_credit_mois")
+  const montantCredit = formData.montant_credit
+  const apportPersonnel = formData.apport_personnel
+  const tauxInteret = formData.taux_interet
+  const dureeCreditMois = formData.duree_credit_mois
 
   // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
   useEffect(() => {
-    if (watchModeFinancement === "Crédit") {
+    if (modeFinancement === "Crédit") {
       if (montantCredit !== montantAPayer) {
-        form.setValue("montant_credit", montantAPayer)
+        onChange("montant_credit", montantAPayer)
       }
     }
-  }, [watchModeFinancement, montantAPayer, montantCredit, form])
+  }, [modeFinancement, montantAPayer, montantCredit, onChange])
 
   // For Mixte mode: auto-adjust credit amount when personal contribution changes
   useEffect(() => {
-    if (watchModeFinancement === "Mixte") {
+    if (modeFinancement === "Mixte") {
       const apport = apportPersonnel || 0
       // Credit = Amount to pay - Personal contribution (but not negative)
       const newCredit = Math.max(0, montantAPayer - apport)
       // Only update if different to avoid infinite loop
       if (montantCredit !== newCredit) {
-        form.setValue("montant_credit", newCredit)
+        onChange("montant_credit", newCredit)
       }
     }
-  }, [watchModeFinancement, apportPersonnel, montantAPayer, montantCredit, form])
+  }, [modeFinancement, apportPersonnel, montantAPayer, montantCredit, onChange])
 
   // Calculate total cost of credit (principal + interests)
   const calculateTotalCreditCost = () => {
@@ -72,110 +67,107 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
 
   const totalCreditCost = calculateTotalCreditCost()
   const interetsPayes = totalCreditCost - (montantCredit || 0)
+
   return (
     <div className="space-y-4">
       <FormField
-        control={form.control}
-        name="mode_financement"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Mode de financement *</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="Comptant">Comptant</SelectItem>
-                <SelectItem value="Crédit">Crédit</SelectItem>
-                <SelectItem value="Mixte">Mixte</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Mode de financement"
+        required
+        error={errors.mode_financement}
+      >
+        <Select
+          onValueChange={(value) => onChange("mode_financement", value as FinancingData["mode_financement"])}
+          value={formData.mode_financement}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez le mode de financement" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Comptant">Comptant</SelectItem>
+            <SelectItem value="Crédit">Crédit</SelectItem>
+            <SelectItem value="Mixte">Mixte</SelectItem>
+          </SelectContent>
+        </Select>
+      </FormField>
 
-      {(watchModeFinancement === "Crédit" || watchModeFinancement === "Mixte") && (
+      {(modeFinancement === "Crédit" || modeFinancement === "Mixte") && (
         <>
-          {watchModeFinancement === "Mixte" && (
+          {modeFinancement === "Mixte" && (
             <FormField
-              control={form.control}
-              name="apport_personnel"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apport personnel (€) *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      max={montantAPayer}
-                      placeholder="ex: 3000"
-                      value={field.value === 0 ? "" : field.value}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        const numValue = value === "" ? 0 : Number(value)
-                        // Cap at montant à payer
-                        const cappedValue = Math.min(numValue, montantAPayer)
-                        field.onChange(cappedValue)
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              label="Apport personnel (€)"
+              required
+              error={errors.apport_personnel}
+            >
+              <Input
+                type="number"
+                min="0"
+                max={montantAPayer}
+                placeholder="ex: 3000"
+                value={formData.apport_personnel ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value === "") {
+                    onChange("apport_personnel", undefined)
+                  } else {
+                    const numValue = Number(value)
+                    // Cap at montant à payer
+                    const cappedValue = Math.min(numValue, montantAPayer)
+                    onChange("apport_personnel", cappedValue)
+                  }
+                }}
+              />
+            </FormField>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
-              control={form.control}
-              name="taux_interet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Taux d&apos;intérêt (%) *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      placeholder="ex: 3.5"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              label="Taux d'intérêt (%)"
+              required
+              error={errors.taux_interet}
+            >
+              <Input
+                type="number"
+                step="0.1"
+                min="0"
+                placeholder="ex: 3.5"
+                value={formData.taux_interet ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value === "") {
+                    onChange("taux_interet", undefined)
+                  } else {
+                    const num = parseFloat(value)
+                    onChange("taux_interet", isNaN(num) ? undefined : num)
+                  }
+                }}
+              />
+            </FormField>
 
             <FormField
-              control={form.control}
-              name="duree_credit_mois"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Durée (mois) *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="ex: 120"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              label="Durée (mois)"
+              required
+              error={errors.duree_credit_mois}
+            >
+              <Input
+                type="number"
+                min="0"
+                placeholder="ex: 120"
+                value={formData.duree_credit_mois ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value === "") {
+                    onChange("duree_credit_mois", undefined)
+                  } else {
+                    const num = parseFloat(value)
+                    onChange("duree_credit_mois", isNaN(num) ? undefined : num)
+                  }
+                }}
+              />
+            </FormField>
           </div>
 
           {/* Total cost of credit (capital + interests) */}
-          {(watchModeFinancement === "Crédit" || watchModeFinancement === "Mixte") && (
+          {(modeFinancement === "Crédit" || modeFinancement === "Mixte") && (
             <>
               <Separator />
 

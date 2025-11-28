@@ -21,13 +21,21 @@ export async function saveFinancialAidData(projectId: string, data: FinancialAid
     throw new Error("Projet non trouvé")
   }
 
+  // Convert undefined values to 0 for Prisma (which doesn't accept undefined for Float fields)
+  const prismaData = {
+    ma_prime_renov: validatedData.ma_prime_renov ?? 0,
+    cee: validatedData.cee ?? 0,
+    autres_aides: validatedData.autres_aides ?? 0,
+    total_aides: validatedData.total_aides ?? 0,
+  }
+
   const aides = await prisma.projectAides.upsert({
     where: { projectId },
     create: {
-      ...validatedData,
+      ...prismaData,
       projectId,
-    } as any,
-    update: validatedData as any,
+    },
+    update: prismaData,
   })
 
   if (project.currentStep === 6) {

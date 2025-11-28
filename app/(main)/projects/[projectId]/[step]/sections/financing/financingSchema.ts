@@ -1,15 +1,14 @@
 import { z } from "zod"
 
-const baseSchema = z.object({
-  mode_financement: z.enum(["Comptant", "Crédit", "Mixte"]),
-  apport_personnel: z.number().min(0).default(0),
-  montant_credit: z.number().min(0).default(0),
-  taux_interet: z.number().min(0).max(100).default(0),
-  duree_credit_mois: z.number().min(1).max(360).default(1),
-  // mensualite will be calculated automatically in the action
-})
-
-export const financingSchema = baseSchema.superRefine((data, ctx) => {
+export const financingSchema = z.object({
+  mode_financement: z.enum(["Comptant", "Crédit", "Mixte"], {
+    message: "Le mode de financement est requis",
+  }),
+  apport_personnel: z.number().min(0).optional(),
+  montant_credit: z.number().min(0).optional(),
+  taux_interet: z.number().min(0).max(100).optional(),
+  duree_credit_mois: z.number().min(1).max(360).optional(),
+}).superRefine((data, ctx) => {
   // Si mode = "Crédit" : taux_interet et duree_credit_mois sont obligatoires
   if (data.mode_financement === "Crédit") {
     if (data.taux_interet === undefined || data.taux_interet <= 0) {

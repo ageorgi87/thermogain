@@ -1,11 +1,3 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -14,152 +6,128 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { UseFormReturn } from "react-hook-form"
+import { FormField } from "@/components/form/FormField"
 import { HousingData } from "./housingSchema"
 
 interface HousingFieldsProps {
-  form: UseFormReturn<HousingData>
+  formData: Partial<HousingData>
+  errors: Partial<Record<keyof HousingData, string>>
+  onChange: (name: keyof HousingData, value: any) => void
 }
 
-export function HousingFields({ form }: HousingFieldsProps) {
+export function HousingFields({ formData, errors, onChange }: HousingFieldsProps) {
   return (
     <div className="space-y-4">
       <FormField
-        control={form.control}
-        name="code_postal"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Code postal *</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="ex: 75001, 20000, 97400"
-                maxLength={5}
-                value={field.value ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value
-                  field.onChange(value === "" ? undefined : value)
-                }}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
-              />
-            </FormControl>
-            <FormDescription>
-              Code postal français (métropole, Corse, DOM-TOM)
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Code postal"
+        required
+        error={errors.code_postal}
+        description="Code postal français (métropole, Corse, DOM-TOM)"
+      >
+        <Input
+          placeholder="ex: 75001, 20000, 97400"
+          maxLength={5}
+          value={formData.code_postal ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            onChange("code_postal", value === "" ? undefined : value)
+          }}
+        />
+      </FormField>
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          control={form.control}
-          name="annee_construction"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Année de construction *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min="0"
-                  placeholder="ex: 1990, 2010"
-                  value={field.value ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === "" ? undefined : Number(value))
-                  }}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          label="Année de construction"
+          required
+          error={errors.annee_construction}
+        >
+          <Input
+            type="number"
+            min="0"
+            placeholder="ex: 1990, 2010"
+            value={formData.annee_construction ?? ""}
+            onChange={(e) => {
+              const value = e.target.value
+              if (value === "") {
+                onChange("annee_construction", undefined)
+              } else {
+                const num = parseFloat(value)
+                onChange("annee_construction", isNaN(num) ? undefined : num)
+              }
+            }}
+          />
+        </FormField>
 
         <FormField
-          control={form.control}
-          name="surface_habitable"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Surface habitable (m²) *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min="0"
-                  placeholder="ex: 100"
-                  value={field.value ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === "" ? undefined : Number(value))
-                  }}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          label="Surface habitable (m²)"
+          required
+          error={errors.surface_habitable}
+        >
+          <Input
+            type="number"
+            min="0"
+            placeholder="ex: 100"
+            value={formData.surface_habitable ?? ""}
+            onChange={(e) => {
+              const value = e.target.value
+              if (value === "") {
+                onChange("surface_habitable", undefined)
+              } else {
+                const num = parseFloat(value)
+                onChange("surface_habitable", isNaN(num) ? undefined : num)
+              }
+            }}
+          />
+        </FormField>
       </div>
 
       <FormField
-        control={form.control}
-        name="nombre_occupants"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nombre d&apos;occupants *</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                placeholder="ex: 3"
-                value={field.value ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value
-                  field.onChange(value === "" ? undefined : Number(value))
-                }}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Nombre d'occupants"
+        required
+        error={errors.nombre_occupants}
+      >
+        <Input
+          type="number"
+          min="0"
+          placeholder="ex: 3"
+          value={formData.nombre_occupants ?? ""}
+          onChange={(e) => {
+            const value = e.target.value
+            if (value === "") {
+              onChange("nombre_occupants", undefined)
+            } else {
+              const num = parseFloat(value)
+              onChange("nombre_occupants", isNaN(num) ? undefined : num)
+            }
+          }}
+        />
+      </FormField>
 
       <FormField
-        control={form.control}
-        name="qualite_isolation"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Qualité globale de l&apos;isolation *</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez la qualité de l'isolation" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="Mauvaise">
-                  Mauvaise - Aucune isolation ou isolation minimale
-                </SelectItem>
-                <SelectItem value="Moyenne">
-                  Moyenne - Isolation partielle (quelques éléments isolés)
-                </SelectItem>
-                <SelectItem value="Bonne">
-                  Bonne - Logement bien isolé (la plupart des éléments isolés)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        label="Qualité globale de l'isolation"
+        required
+        error={errors.qualite_isolation}
+      >
+        <Select
+          onValueChange={(value) => onChange("qualite_isolation", value as HousingData["qualite_isolation"])}
+          value={formData.qualite_isolation}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez la qualité de l'isolation" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Mauvaise">
+              Mauvaise - Aucune isolation ou isolation minimale
+            </SelectItem>
+            <SelectItem value="Moyenne">
+              Moyenne - Isolation partielle (quelques éléments isolés)
+            </SelectItem>
+            <SelectItem value="Bonne">
+              Bonne - Logement bien isolé (la plupart des éléments isolés)
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </FormField>
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import { z } from "zod"
 
-// Champs communs à tous les types de PAC
-const baseFields = {
+export const heatPumpProjectSchema = z.object({
   type_pac: z.enum(["Air/Eau", "Eau/Eau", "Air/Air"], {
     message: "Le type de PAC est requis",
   }),
@@ -54,42 +53,37 @@ const baseFields = {
       return !decimalPart || decimalPart.length <= 3
     }, "Le prix ne peut pas avoir plus de 3 décimales")
     .optional(),
-}
 
-// Schéma pour PAC hydrauliques (Air/Eau et Eau/Eau) - température et émetteurs REQUIS
-const waterBasedPacSchema = z.object({
-  ...baseFields,
-  temperature_depart: z
-    .number({ message: "La température de départ est requise" })
-    .min(30, "La température doit être d'au moins 30°C")
-    .max(80, "La température ne peut pas dépasser 80°C"),
-  emetteurs: z.enum([
-    "Radiateurs haute température",
-    "Radiateurs basse température",
-    "Plancher chauffant",
-    "Ventilo-convecteurs",
-  ], {
-    message: "Le type d'émetteurs est requis",
-  }),
-})
-
-// Schéma pour PAC Air/Air - température et émetteurs optionnels (auto-remplis)
-const airToAirPacSchema = z.object({
-  ...baseFields,
-  temperature_depart: z.number().optional(),
+  // Température et émetteurs - optionnels de base mais requis pour PAC hydrauliques
+  temperature_depart: z.number().min(30, "La température doit être d'au moins 30°C").max(80, "La température ne peut pas dépasser 80°C").optional(),
   emetteurs: z.enum([
     "Radiateurs haute température",
     "Radiateurs basse température",
     "Plancher chauffant",
     "Ventilo-convecteurs",
   ]).optional(),
-})
+}).superRefine((data, ctx) => {
+  // Pour les PAC hydrauliques (Air/Eau et Eau/Eau), température et émetteurs sont REQUIS
+  // Note: Cette validation n'est jamais exécutée si d'autres champs obligatoires sont invalides
+  // La validation réelle de ces champs est gérée manuellement dans page.tsx
+  const isWaterBased = data.type_pac === "Air/Eau" || data.type_pac === "Eau/Eau"
 
-// Union discriminée basée sur type_pac
-export const heatPumpProjectSchema = z.discriminatedUnion("type_pac", [
-  waterBasedPacSchema.extend({ type_pac: z.literal("Air/Eau") }),
-  waterBasedPacSchema.extend({ type_pac: z.literal("Eau/Eau") }),
-  airToAirPacSchema.extend({ type_pac: z.literal("Air/Air") }),
-])
+  if (isWaterBased) {
+    if (data.temperature_depart === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "La température de départ est requise pour les PAC hydrauliques",
+        path: ["temperature_depart"],
+      })
+    }
+    if (data.emetteurs === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Le type d'émetteurs est requis pour les PAC hydrauliques",
+        path: ["emetteurs"],
+      })
+    }
+  }
+})
 
 export type HeatPumpProjectData = z.infer<typeof heatPumpProjectSchema>
