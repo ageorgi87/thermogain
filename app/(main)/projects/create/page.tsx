@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { createProject } from "@/lib/actions/projects"
+import { WIZARD_STEPS } from "@/lib/wizardSteps"
 
 export default function CreateProjectPage() {
   const router = useRouter()
@@ -17,7 +18,9 @@ export default function CreateProjectPage() {
       hasCreatedProject.current = true
       try {
         const project = await createProject({ name: "Projet PAC" })
-        router.push(`/projects/${project.id}/logement`)
+        // Toujours rediriger vers la première étape du wizard
+        const firstStep = WIZARD_STEPS[0].key
+        router.push(`/projects/${project.id}/${firstStep}`)
       } catch (error) {
         console.error("Error creating project:", error)
         router.push("/projects")
