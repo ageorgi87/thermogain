@@ -225,6 +225,7 @@ export default async function ResultsPage({ params }: PageProps) {
           resteACharge={project.couts.cout_total - project.aides.total_aides}
           modeFinancement={project.financement?.mode_financement || undefined}
           mensualite={results.mensualiteCredit}
+          dureeCreditMois={project.financement?.duree_credit_mois || undefined}
         />
         <ProfitabilityCard
           paybackPeriod={results.paybackPeriod}

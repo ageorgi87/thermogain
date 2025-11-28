@@ -14,12 +14,14 @@ interface FinancialSummaryCardProps {
   resteACharge: number
   modeFinancement?: string
   mensualite?: number
+  dureeCreditMois?: number
 }
 
 export function FinancialSummaryCard({
   resteACharge,
   modeFinancement,
   mensualite,
+  dureeCreditMois,
 }: FinancialSummaryCardProps) {
   const isCredit = modeFinancement && modeFinancement !== "Comptant" && mensualite
 
@@ -48,13 +50,18 @@ export function FinancialSummaryCard({
           <>
             <Separator />
             <div className="bg-brand-orange-50 dark:bg-brand-orange-950 rounded-lg p-4">
-              <p className="text-sm text-muted-foreground mb-1">Mensualité sur {modeFinancement}</p>
-              <div className="flex items-baseline gap-2">
+              <p className="text-sm text-muted-foreground mb-1">Mensualité sur Crédit</p>
+              <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-3xl font-bold text-brand-orange-600">
                   {mensualite.toLocaleString("fr-FR")} €
                 </span>
                 <span className="text-lg text-muted-foreground">/mois</span>
               </div>
+              {dureeCreditMois && (
+                <div className="text-sm font-medium text-foreground">
+                  sur {dureeCreditMois} mois ({Math.round(dureeCreditMois / 12)} an{Math.round(dureeCreditMois / 12) > 1 ? 's' : ''})
+                </div>
+              )}
             </div>
           </>
         )}

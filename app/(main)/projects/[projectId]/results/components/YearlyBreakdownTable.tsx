@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calculator } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Calculator, Info } from "lucide-react"
 import { YearlyData, ProjectData } from "../../calculations"
 
 interface YearlyBreakdownTableProps {
@@ -67,13 +68,39 @@ export function YearlyBreakdownTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Calculator className="h-5 w-5 text-brand-teal-600" />
-          Détail année par année
-        </CardTitle>
-        <CardDescription className="mt-1.5">
-          Évolution des coûts et économies sur {projectData.duree_vie_pac} ans
-        </CardDescription>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calculator className="h-5 w-5 text-brand-teal-600" />
+              Détail année par année
+            </CardTitle>
+            <CardDescription className="mt-1.5">
+              Évolution des coûts et économies sur {projectData.duree_vie_pac} ans
+            </CardDescription>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-4 w-4 text-muted-foreground cursor-help mt-1" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-sm">
+                <div className="space-y-2">
+                  <p className="font-semibold">Évolution des prix de l'énergie</p>
+                  <p className="text-sm">
+                    Les projections utilisent un modèle de <strong>retour à la moyenne</strong> qui tient compte :
+                  </p>
+                  <ul className="text-sm list-disc pl-4 space-y-1">
+                    <li>Des hausses récentes liées aux crises énergétiques</li>
+                    <li>D'un retour progressif vers des taux d'évolution historiques sur 5 ans</li>
+                  </ul>
+                  <p className="text-sm text-muted-foreground">
+                    Source : Ministère de la Transition Écologique - 18 à 42 ans de données historiques selon l'énergie
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border border-border overflow-x-auto">
