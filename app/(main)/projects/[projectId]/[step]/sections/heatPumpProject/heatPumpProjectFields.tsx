@@ -1,6 +1,5 @@
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -107,7 +106,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionnez le type de PAC" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -138,8 +137,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     step="0.1"
                     min="0"
                     placeholder="ex: 8"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === "" ? undefined : Number(value))
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
                   />
                 </FormControl>
                 <FormMessage />
@@ -179,8 +184,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     step="0.1"
                     min="0"
                     placeholder="ex: 3.5"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === "" ? undefined : Number(value))
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
                   />
                 </FormControl>
                 <FormMessage />
@@ -200,8 +211,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   type="number"
                   min="0"
                   placeholder="ex: 15"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? undefined : Number(value))
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
                 />
               </FormControl>
               <FormMessage />
@@ -227,11 +244,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                       type="number"
                       min="0"
                       placeholder="ex: 45"
-                      {...field}
+                      value={field.value ?? ""}
                       onChange={(e) => {
                         const value = e.target.value
-                        field.onChange(value === "" ? 0 : Number(value))
+                        field.onChange(value === "" ? undefined : Number(value))
                       }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
@@ -248,7 +268,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Sélectionnez le type d'émetteurs" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -275,10 +295,10 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
       )}
 
       {/* Section 4: Électricité et abonnements */}
-      <div className="space-y-4 pt-2">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Électricité et abonnements</h3>
+      {(!shouldHideElectricityPrice || (puissancePacKw && puissancePacKw > 0)) && (
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Électricité et abonnements</h3>
 
-        <div className="grid grid-cols-2 gap-4">
           {!shouldHideElectricityPrice && (
             <FormField
               control={form.control}
@@ -309,68 +329,16 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
             />
           )}
 
-          <FormField
-            control={form.control}
-            name="puissance_souscrite_actuelle"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <div className="flex items-center gap-2">
-                    <span>Abonnement actuel (kVA) *</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-[300px]">
-                          <p className="text-sm">
-                            Puissance de votre abonnement électrique actuel (visible sur votre facture).
-                            <br /><br />
-                            <span className="font-semibold">Valeur moyenne : 6 kVA</span>
-                            <br /><br />
-                            Puissances courantes : 3, 6, 9, 12, 15, 18 kVA
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  defaultValue={field.value?.toString()}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="3">3 kVA</SelectItem>
-                    <SelectItem value="6">6 kVA (standard)</SelectItem>
-                    <SelectItem value="9">9 kVA</SelectItem>
-                    <SelectItem value="12">12 kVA</SelectItem>
-                    <SelectItem value="15">15 kVA</SelectItem>
-                    <SelectItem value="18">18 kVA</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="puissance_souscrite_pac"
-            render={({ field }) => {
-              const recommendedPower = puissancePacKw
-                ? getPuissanceSouscritePacRecommandee(puissancePacKw, currentElectricPower)
-                : 9
-
-              return (
+          {puissancePacKw && puissancePacKw > 0 && (
+            <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="puissance_souscrite_actuelle"
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>
                     <div className="flex items-center gap-2">
-                      <span>Abonnement avec PAC (kVA) *</span>
+                      <span>Abonnement actuel (kVA) *</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -378,15 +346,11 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                           </TooltipTrigger>
                           <TooltipContent side="top" className="max-w-[300px]">
                             <p className="text-sm">
-                              Puissance électrique recommandée pour alimenter la PAC et vos équipements existants.
+                              Puissance de votre abonnement électrique actuel (visible sur votre facture).
                               <br /><br />
-                              <span className="font-semibold">
-                                Recommandation : {recommendedPower} kVA
-                              </span>
+                              <span className="font-semibold">Valeur moyenne : 6 kVA</span>
                               <br /><br />
-                              Calculée selon la formule : Puissance actuelle ({currentElectricPower} kVA) + Puissance PAC ({puissancePacKw || 0} kW)
-                              <br /><br />
-                              Le coefficient de foisonnement est pris en compte (tous vos appareils ne fonctionnent pas simultanément au maximum).
+                              Puissances courantes : 3, 6, 9, 12, 15, 18 kVA
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -399,25 +363,85 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Sélectionnez la puissance" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="3">3 kVA{recommendedPower === 3 ? " (recommandé)" : ""}</SelectItem>
-                      <SelectItem value="6">6 kVA{recommendedPower === 6 ? " (recommandé)" : ""}</SelectItem>
-                      <SelectItem value="9">9 kVA{recommendedPower === 9 ? " (recommandé)" : ""}</SelectItem>
-                      <SelectItem value="12">12 kVA{recommendedPower === 12 ? " (recommandé)" : ""}</SelectItem>
-                      <SelectItem value="15">15 kVA{recommendedPower === 15 ? " (recommandé)" : ""}</SelectItem>
-                      <SelectItem value="18">18 kVA{recommendedPower === 18 ? " (recommandé)" : ""}</SelectItem>
+                      <SelectItem value="3">3 kVA</SelectItem>
+                      <SelectItem value="6">6 kVA (standard)</SelectItem>
+                      <SelectItem value="9">9 kVA</SelectItem>
+                      <SelectItem value="12">12 kVA</SelectItem>
+                      <SelectItem value="15">15 kVA</SelectItem>
+                      <SelectItem value="18">18 kVA</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
-              )
-            }}
-          />
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="puissance_souscrite_pac"
+              render={({ field }) => {
+                const recommendedPower = puissancePacKw
+                  ? getPuissanceSouscritePacRecommandee(puissancePacKw, currentElectricPower)
+                  : 9
+
+                return (
+                  <FormItem>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span>Abonnement avec PAC (kVA) *</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[300px]">
+                              <p className="text-sm">
+                                Puissance électrique recommandée pour alimenter la PAC et vos équipements existants.
+                                <br /><br />
+                                <span className="font-semibold">
+                                  Recommandation : {recommendedPower} kVA
+                                </span>
+                                <br /><br />
+                                Calculée selon la formule : Puissance actuelle ({currentElectricPower} kVA) + Puissance PAC ({puissancePacKw || 0} kW)
+                                <br /><br />
+                                Le coefficient de foisonnement est pris en compte (tous vos appareils ne fonctionnent pas simultanément au maximum).
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez la puissance" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="3">3 kVA{recommendedPower === 3 ? " (recommandé)" : ""}</SelectItem>
+                        <SelectItem value="6">6 kVA{recommendedPower === 6 ? " (recommandé)" : ""}</SelectItem>
+                        <SelectItem value="9">9 kVA{recommendedPower === 9 ? " (recommandé)" : ""}</SelectItem>
+                        <SelectItem value="12">12 kVA{recommendedPower === 12 ? " (recommandé)" : ""}</SelectItem>
+                        <SelectItem value="15">15 kVA{recommendedPower === 15 ? " (recommandé)" : ""}</SelectItem>
+                        <SelectItem value="18">18 kVA{recommendedPower === 18 ? " (recommandé)" : ""}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
+            />
+          </div>
+        )}
         </div>
-      </div>
+      )}
 
       {/* Section 5: Coûts d'exploitation */}
       <div className="space-y-4 pt-2">
@@ -458,8 +482,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   step="1"
                   min="0"
                   placeholder="ex: 120"
-                  {...field}
-                  onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? undefined : Number(value))
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
                 />
               </FormControl>
               <FormMessage />
