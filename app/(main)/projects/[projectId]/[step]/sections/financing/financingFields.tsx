@@ -111,6 +111,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       min="0"
                       max={montantAPayer}
+                      placeholder="ex: 3000"
                       value={field.value === 0 ? "" : field.value}
                       onChange={(e) => {
                         const value = e.target.value
@@ -142,6 +143,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                       type="number"
                       step="0.1"
                       min="0"
+                      placeholder="ex: 3.5"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -161,6 +163,7 @@ export function FinancementFields({ form, watchModeFinancement, totalCouts = 0, 
                     <Input
                       type="number"
                       min="0"
+                      placeholder="ex: 120"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />

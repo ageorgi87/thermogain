@@ -39,6 +39,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 8000"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -58,6 +59,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 5000"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -77,6 +79,7 @@ export function CoutsFields({ form }: CoutsFieldsProps) {
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 1500"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />

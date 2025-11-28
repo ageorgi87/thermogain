@@ -73,6 +73,7 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 4000"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -92,6 +93,7 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 2500"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
@@ -111,6 +113,7 @@ export function AidesFields({
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 1000"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />

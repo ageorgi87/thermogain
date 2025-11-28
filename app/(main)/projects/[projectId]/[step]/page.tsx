@@ -66,35 +66,21 @@ const STEP_EXPLANATIONS: Record<string, string> = {
 
 const DEFAULT_VALUES = {
   "informations": {
-    project_name: "Projet PAC",
+    project_name: "",
     recipient_emails: [],
   },
   "logement": {
-    code_postal: "75001",
-    annee_construction: 2000,
-    surface_habitable: 100,
-    nombre_occupants: 3,
-    qualite_isolation: "Moyenne",
+    // No defaults - all values must be entered by user
   },
   "chauffage-actuel": {
-    type_chauffage: "Gaz",
-    age_installation: 10,
-    etat_installation: "Moyen",
     connait_consommation: true,
-    conso_gaz_kwh: 12000,
-    // prix_gaz_kwh will be set by useEffect from API defaults
+    // All other values must be entered by user
+    // prix_*_kwh will be set by useEffect from API defaults if not in DB
   },
   "projet-pac": {
-    type_pac: "Air/Eau",
-    puissance_pac_kw: 8,
-    cop_estime: 3.5,
-    temperature_depart: 55,
-    emetteurs: "Radiateurs basse température",
-    puissance_souscrite_actuelle: 6,
-    puissance_souscrite_pac: 9,
-    duree_vie_pac: 17,
-    entretien_pac_annuel: 120,
-    // prix_elec_kwh will be set by useEffect from API defaults
+    duree_vie_pac: 17, // Technical default based on ADEME studies
+    // All other values must be entered by user
+    // prix_elec_kwh will be set by useEffect from API defaults if not in DB
   },
   couts: {
     cout_pac: 0,
@@ -103,17 +89,17 @@ const DEFAULT_VALUES = {
     cout_total: 0,
   },
   aides: {
-    ma_prime_renov: 3000,
-    cee: 2000,
+    ma_prime_renov: 0,
+    cee: 0,
     autres_aides: 0,
-    total_aides: 5000,
+    total_aides: 0,
   },
   financement: {
-    mode_financement: "Crédit",
-    apport_personnel: 2000,
-    montant_credit: 7000,
-    taux_interet: 3.5,
-    duree_credit_mois: 120,
+    mode_financement: "Comptant", // Most common default
+    apport_personnel: 0,
+    montant_credit: 0,
+    taux_interet: 0,
+    duree_credit_mois: 0,
     // mensualite is calculated automatically
   },
 }

@@ -137,6 +137,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     type="number"
                     step="0.1"
                     min="0"
+                    placeholder="ex: 8"
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
@@ -177,6 +178,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     type="number"
                     step="0.1"
                     min="0"
+                    placeholder="ex: 3.5"
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
@@ -197,6 +199,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                 <Input
                   type="number"
                   min="0"
+                  placeholder="ex: 15"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -223,6 +226,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     <Input
                       type="number"
                       min="0"
+                      placeholder="ex: 45"
                       {...field}
                       onChange={(e) => {
                         const value = e.target.value
@@ -293,6 +297,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                       type="number"
                       step="0.001"
                       min="0"
+                      placeholder="ex: 0.23"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
@@ -452,6 +457,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   type="number"
                   step="1"
                   min="0"
+                  placeholder="ex: 120"
                   {...field}
                   onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                 />

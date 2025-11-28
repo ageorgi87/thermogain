@@ -56,6 +56,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
                 <Input
                   type="number"
                   min="0"
+                  placeholder="ex: 1990, 2010"
                   value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
@@ -81,6 +82,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
                 <Input
                   type="number"
                   min="0"
+                  placeholder="ex: 100"
                   value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value = e.target.value
@@ -107,6 +109,7 @@ export function HousingFields({ form }: HousingFieldsProps) {
               <Input
                 type="number"
                 min="0"
+                placeholder="ex: 3"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
