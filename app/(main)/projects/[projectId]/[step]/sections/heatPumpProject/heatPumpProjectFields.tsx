@@ -73,15 +73,10 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
   }, [isAirToAir, form])
 
   // Automatically calculate recommended subscription power when PAC power changes
+  // Note: We calculate the recommendation but don't auto-fill the field
+  // The recommendation is displayed in the tooltip instead
   useEffect(() => {
-    if (puissancePacKw && puissancePacKw > 0) {
-      const recommendedPower = getPuissanceSouscritePacRecommandee(puissancePacKw, currentElectricPower)
-      // Only update if the field hasn't been manually set or if it's the default value
-      const currentValue = form.getValues("puissance_souscrite_pac")
-      if (currentValue === undefined || currentValue === 9) {
-        form.setValue("puissance_souscrite_pac", recommendedPower)
-      }
-    }
+    // Removed auto-fill logic - user must manually select the power
   }, [puissancePacKw, currentElectricPower, form])
 
   // Auto-fill prix_elec_kwh if already provided in chauffage actuel (for electric heating types)
@@ -103,7 +98,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
         render={({ field }) => (
           <FormItem>
             <FormLabel>Type de pompe à chaleur *</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de PAC" />
@@ -265,7 +260,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type d'émetteurs *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionnez le type d'émetteurs" />
@@ -318,9 +313,14 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                       step="0.001"
                       min="0"
                       placeholder="ex: 0.23"
-                      {...field}
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        field.onChange(value === "" ? undefined : Number(value))
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
@@ -359,7 +359,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                   </FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(Number(value))}
-                    defaultValue={field.value?.toString()}
+                    value={field.value?.toString() ?? ""}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -417,7 +417,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={field.value?.toString()}
+                      value={field.value?.toString() ?? ""}
                     >
                       <FormControl>
                         <SelectTrigger>

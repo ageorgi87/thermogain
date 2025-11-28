@@ -185,7 +185,7 @@ export function MyForm() {
         )}
       />
 
-      {/* Select */}
+      {/* Select (enum string) */}
       <FormField
         control={form.control}
         name="pays"
@@ -208,6 +208,33 @@ export function MyForm() {
           </FormItem>
         )}
       />
+
+      {/* Select (numeric - converti en string) */}
+      <FormField
+        control={form.control}
+        name="puissance"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Puissance (kVA) *</FormLabel>
+            <Select
+              onValueChange={(value) => field.onChange(Number(value))}
+              value={field.value?.toString() ?? ""}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez la puissance" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="3">3 kVA</SelectItem>
+                <SelectItem value="6">6 kVA</SelectItem>
+                <SelectItem value="9">9 kVA</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </Form>
   )
 }
@@ -219,9 +246,34 @@ Pour chaque champ obligatoire :
 
 - [ ] ❌ Supprimer `.default()` du schéma Zod
 - [ ] ✅ Ajouter `{ message: "..." }` dans la définition du type
-- [ ] ✅ Utiliser `value={field.value ?? ""}` dans l'input
-- [ ] ✅ Convertir `""` → `undefined` dans le `onChange`
+- [ ] ✅ **Input** : Utiliser `value={field.value ?? ""}` et convertir `""` → `undefined` dans le `onChange`
+- [ ] ✅ **Select string** : Utiliser `value={field.value}` directement
+- [ ] ✅ **Select numérique** : Utiliser le spread conditionnel `{...(field.value !== undefined && { value: String(field.value) })}`
 - [ ] ✅ Déstructurer manuellement les props du field au lieu d'utiliser `{...field}`
+
+### Note importante sur les Selects numériques
+
+Pour les Selects qui stockent des nombres mais affichent des strings (comme les puissances en kVA), il est crucial de **ne pas passer la prop `value` du tout** quand elle est `undefined` :
+
+```typescript
+// ✅ MEILLEURE APPROCHE : Utiliser le spread conditionnel
+<Select
+  onValueChange={(value) => field.onChange(Number(value))}
+  {...(field.value !== undefined && { value: String(field.value) })}
+>
+```
+
+**Approches qui NE FONCTIONNENT PAS** :
+
+```typescript
+// ❌ Ne fonctionne pas : value={undefined} n'est pas supporté par Radix UI
+value={field.value !== undefined ? String(field.value) : undefined}
+
+// ❌ Ne fonctionne pas : "" est considéré comme une valeur valide
+value={field.value !== undefined ? String(field.value) : ""}
+```
+
+**Raison** : Radix UI Select n'affiche le placeholder que si la prop `value` n'est **pas définie** (omise complètement). Passer `value={undefined}` ou `value=""` ne fonctionne pas correctement sur toutes les versions. Le spread conditionnel `{...(condition && { value: ... })}` est la solution la plus fiable.
 
 ## Quand utiliser `.default()`
 
@@ -303,6 +355,197 @@ prix: z.number({ message: "Le prix est requis" }).min(0.01)
   }}
 />
 ```
+
+### Champs conditionnellement requis - Unions discriminées
+
+**⚠️ IMPORTANT : `superRefine` NE FONCTIONNE PAS avec React Hook Form !**
+
+#### Problème rencontré
+
+Dans l'étape 4 "Projet PAC", le champ `temperature_depart` était affiché mais ne montrait **aucun message d'erreur** lorsqu'il était laissé vide, alors qu'il devait être obligatoire pour les PAC hydrauliques (Air/Eau et Eau/Eau).
+
+**Symptômes** :
+- Le champ est visible à l'écran avec une astérisque `*` (requis)
+- L'utilisateur laisse le champ vide
+- Aucun message d'erreur rouge ne s'affiche sous le champ
+- La validation semble "passer" alors qu'elle ne devrait pas
+
+**Contexte** :
+- Le champ `temperature_depart` doit être **requis** pour les PAC Air/Eau et Eau/Eau (systèmes hydrauliques)
+- Le champ doit être **optionnel** pour les PAC Air/Air (pas de circuit hydraulique)
+- Le champ est masqué dans l'UI pour les PAC Air/Air via un `{isWaterBased && ...}`
+
+#### ❌ Tentatives de solution qui n'ont PAS fonctionné
+
+##### Tentative 1 : Supprimer `.default()` uniquement
+
+```typescript
+// ❌ N'a pas résolu le problème
+temperature_depart: z
+  .number({ message: "La température de départ est requise" })
+  .min(30)
+  .max(80)
+  .optional(),  // Toujours .optional() donc pas d'erreur affichée
+```
+
+**Résultat** : Aucune erreur n'apparaît car le champ est marqué `.optional()`.
+
+##### Tentative 2 : Rendre le champ non-optional
+
+```typescript
+// ❌ Problème : Le champ devient requis même pour Air/Air
+temperature_depart: z
+  .number({ message: "La température de départ est requise" })
+  .min(30)
+  .max(80),  // Plus de .optional()
+```
+
+**Résultat** : La validation échoue pour les PAC Air/Air (même si le champ n'est pas affiché).
+
+##### Tentative 3 : Utiliser `.or(z.undefined())`
+
+```typescript
+// ❌ Problème : Accepte undefined, donc pas de validation
+temperature_depart: z
+  .number({ message: "La température de départ est requise" })
+  .min(30)
+  .max(80)
+  .or(z.undefined()),
+```
+
+**Résultat** : Zod accepte `undefined` comme valeur valide, donc aucune erreur.
+
+##### Tentative 4 : Utiliser `.superRefine()` pour validation conditionnelle
+
+```typescript
+// ❌ NE FONCTIONNE PAS : Les erreurs ne s'affichent pas !
+export const schema = z.object({
+  type_pac: z.enum(["Air/Eau", "Eau/Eau", "Air/Air"]),
+  temperature_depart: z.number().optional(),
+  emetteurs: z.enum([...]).optional(),
+}).superRefine((data, ctx) => {
+  // ⚠️ Cette validation ne fonctionne pas avec React Hook Form !
+  const isWaterBased = data.type_pac === "Air/Eau" || data.type_pac === "Eau/Eau"
+  if (isWaterBased && !data.temperature_depart) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La température est requise",
+      path: ["temperature_depart"],
+    })
+  }
+})
+```
+
+**Pourquoi ça ne fonctionne pas** :
+- Les erreurs ajoutées via `ctx.addIssue()` dans `superRefine` ne sont **pas reconnues** par React Hook Form
+- Le composant `<FormMessage />` ne reçoit jamais ces erreurs
+- La validation Zod réussit techniquement, mais les erreurs custom ne se propagent pas à l'UI
+
+**Analyse détaillée** :
+1. React Hook Form utilise le résultat de la validation Zod
+2. `superRefine` ajoute des "issues" custom à l'objet d'erreur Zod
+3. Mais ces issues custom ne sont pas correctement mappées aux champs dans le formulaire
+4. Le `zodResolver` ne transmet pas ces erreurs custom à `formState.errors`
+5. Donc `<FormMessage />` reste vide car `fieldState.error` est `undefined`
+
+**Conclusion** : `superRefine` n'est pas compatible avec React Hook Form pour afficher des erreurs de champs individuels.
+
+#### ✅ BONNE SOLUTION : Union discriminée (Discriminated Union)
+
+La solution est d'utiliser des **schémas séparés** pour chaque cas et de les combiner avec `z.discriminatedUnion()` :
+
+```typescript
+// ✅ SOLUTION : Schémas séparés basés sur un discriminant
+import { z } from "zod"
+
+// Champs communs à tous les types
+const baseFields = {
+  type_pac: z.enum(["Air/Eau", "Eau/Eau", "Air/Air"], {
+    message: "Le type de PAC est requis",
+  }),
+  puissance_pac_kw: z
+    .number({ message: "La puissance est requise" })
+    .min(1),
+  // ... autres champs communs
+}
+
+// Schéma pour PAC hydrauliques (Air/Eau et Eau/Eau)
+// → température et émetteurs REQUIS
+const waterBasedPacSchema = z.object({
+  ...baseFields,
+  temperature_depart: z
+    .number({ message: "La température de départ est requise" })
+    .min(30, "La température doit être d'au moins 30°C")
+    .max(80, "La température ne peut pas dépasser 80°C"),
+  emetteurs: z.enum([
+    "Radiateurs haute température",
+    "Radiateurs basse température",
+    "Plancher chauffant",
+    "Ventilo-convecteurs",
+  ], {
+    message: "Le type d'émetteurs est requis",
+  }),
+})
+
+// Schéma pour PAC Air/Air
+// → température et émetteurs optionnels (non affichés dans l'UI)
+const airToAirPacSchema = z.object({
+  ...baseFields,
+  temperature_depart: z.number().optional(),
+  emetteurs: z.enum([
+    "Radiateurs haute température",
+    "Radiateurs basse température",
+    "Plancher chauffant",
+    "Ventilo-convecteurs",
+  ]).optional(),
+})
+
+// Union discriminée basée sur le champ "type_pac"
+export const heatPumpProjectSchema = z.discriminatedUnion("type_pac", [
+  waterBasedPacSchema.extend({ type_pac: z.literal("Air/Eau") }),
+  waterBasedPacSchema.extend({ type_pac: z.literal("Eau/Eau") }),
+  airToAirPacSchema.extend({ type_pac: z.literal("Air/Air") }),
+])
+
+export type HeatPumpProjectData = z.infer<typeof heatPumpProjectSchema>
+```
+
+**Avantages** :
+- ✅ Les erreurs de validation s'affichent correctement
+- ✅ Les messages d'erreur personnalisés en français fonctionnent
+- ✅ La validation est type-safe (TypeScript sait quels champs sont requis selon le type)
+- ✅ Pattern utilisé dans tout le projet (voir `currentHeatingSchema.ts`)
+
+**Principe** :
+1. Le champ discriminant (`type_pac`) détermine quel schéma appliquer
+2. Chaque valeur du discriminant a son propre schéma avec les champs requis spécifiques
+3. Zod sélectionne automatiquement le bon schéma selon la valeur du discriminant
+4. React Hook Form affiche correctement les erreurs pour chaque schéma
+
+**Exemple concret** :
+- Si `type_pac === "Air/Eau"` → `waterBasedPacSchema` s'applique → `temperature_depart` est requis
+- Si `type_pac === "Air/Air"` → `airToAirPacSchema` s'applique → `temperature_depart` est optionnel
+
+**Comment ça fonctionne dans le code** :
+1. L'utilisateur sélectionne un type de PAC dans le Select
+2. React Hook Form met à jour `form.watch("type_pac")`
+3. Si `type_pac === "Air/Eau"` ou `"Eau/Eau"` → le composant affiche les champs `temperature_depart` et `emetteurs`
+4. Zod sélectionne automatiquement `waterBasedPacSchema` pour la validation
+5. Les champs sont validés comme **requis** par le schéma
+6. Les erreurs s'affichent correctement dans `<FormMessage />`
+
+**Références** :
+- Voir [heatPumpProjectSchema.ts](../app/(main)/projects/[projectId]/[step]/sections/heatPumpProject/heatPumpProjectSchema.ts) pour l'implémentation complète
+- Voir [currentHeatingSchema.ts](../app/(main)/projects/[projectId]/[step]/sections/currentHeating/currentHeatingSchema.ts) pour un autre exemple avec 10 schémas différents
+
+#### Résumé : Checklist pour champs conditionnellement requis
+
+1. ❌ **Ne pas utiliser** `.optional()` + `.superRefine()`
+2. ✅ **Créer** des champs communs dans `baseFields`
+3. ✅ **Créer** un schéma séparé pour chaque cas (avec les champs requis spécifiques)
+4. ✅ **Utiliser** `z.discriminatedUnion()` pour combiner les schémas
+5. ✅ **Masquer** les champs non applicables dans l'UI avec des conditions (`{isWaterBased && ...}`)
+6. ✅ **Tester** que les erreurs s'affichent correctement pour chaque cas
 
 ## Références
 
