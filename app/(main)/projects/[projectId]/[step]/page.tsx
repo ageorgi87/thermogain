@@ -314,6 +314,14 @@ export default function WizardStepPage() {
           form.setValue("prix_bois_stere", prixBoisStere)
         }
         break
+      case "Electrique":
+      case "PAC Air/Air":
+      case "PAC Air/Eau":
+      case "PAC Eau/Eau":
+        if (form.getValues("prix_elec_kwh") === undefined || form.getValues("prix_elec_kwh") === null) {
+          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+        }
+        break
     }
   }, [watchTypeChauffage, step, isLoading, defaultPrices, form])
 
