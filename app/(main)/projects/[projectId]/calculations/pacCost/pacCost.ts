@@ -1,5 +1,8 @@
 import { ProjectData } from "../types"
 import { calculateCurrentAnnualCost } from "../currentCost/currentCost"
+import { getDeltaAbonnementElectricite, getAbonnementElectriciteAnnuel } from "@/lib/subscriptionRates"
+import { getElectricityModelSync } from "@/lib/energyModelCache"
+import { calculateCostForYear } from "@/lib/energyPriceEvolution"
 
 /**
  * Calcule la consommation énergétique annuelle actuelle en kWh
@@ -54,23 +57,92 @@ export function calculatePacConsumptionKwh(data: ProjectData): number {
 }
 
 /**
- * Calcule le coût annuel du chauffage avec PAC
+ * Calcule le coût VARIABLE annuel du chauffage avec PAC (électricité uniquement, sans coûts fixes)
  * @param data Données du projet
- * @returns Coût annuel en euros
+ * @returns Coût variable annuel en euros
+ */
+export function calculatePacVariableCost(data: ProjectData): number {
+  const pacConsumption = calculatePacConsumptionKwh(data)
+  // Utilise le prix électricité PAC si renseigné, sinon le prix électricité actuel
+  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0
+  return pacConsumption * prixElec
+}
+
+/**
+ * Calcule les coûts FIXES annuels de la PAC
+ * Inclut:
+ * - Abonnement électricité (puissance nécessaire pour la PAC)
+ * - Entretien annuel PAC
+ *
+ * Note: L'abonnement gaz est supprimé (économie comptabilisée dans la comparaison)
+ *
+ * @param data Données du projet
+ * @returns Objet détaillant les coûts fixes de la PAC
+ */
+export function calculatePacFixedCosts(data: ProjectData): {
+  abonnementElec: number
+  entretien: number
+  total: number
+} {
+  const puissancePac = data.puissance_souscrite_pac || 9
+
+  // Abonnement électricité avec PAC (puissance augmentée)
+  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePac)
+
+  // Entretien PAC
+  const entretien = data.entretien_pac_annuel || 120
+
+  return {
+    abonnementElec,
+    entretien,
+    total: abonnementElec + entretien
+  }
+}
+
+/**
+ * Calcule le coût annuel TOTAL du chauffage avec PAC
+ * Inclut les coûts variables (électricité) ET les coûts fixes (abonnement électricité + entretien PAC)
+ *
+ * @param data Données du projet
+ * @returns Coût total annuel en euros
  */
 export function calculatePacAnnualCost(data: ProjectData): number {
-  const pacConsumption = calculatePacConsumptionKwh(data)
-  return pacConsumption * (data.prix_elec_kwh || 0)
+  const variableCost = calculatePacVariableCost(data)
+  const fixedCosts = calculatePacFixedCosts(data)
+  return variableCost + fixedCosts.total
 }
 
 /**
  * Calcule le coût PAC pour une année donnée avec évolution du prix de l'électricité
+ *
+ * NOUVEAU (Décembre 2024): Utilise le modèle Mean Reversion basé sur l'historique
+ * complet de l'API DIDO-SDES (18+ ans de données) au lieu d'un taux linéaire constant.
+ *
+ * Le modèle applique:
+ * - Taux récent (6,9%/an) sur les 5 premières années
+ * - Transition progressive vers le taux d'équilibre (2,5%/an)
+ * - Taux d'équilibre stabilisé après 5 ans
+ *
+ * IMPORTANT: Seuls les coûts VARIABLES (électricité) évoluent avec le temps.
+ * Les coûts FIXES (abonnement, entretien) restent constants en euros constants.
+ *
  * @param data Données du projet
  * @param year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
 export function calculatePacCostForYear(data: ProjectData, year: number): number {
-  const baseCost = calculatePacAnnualCost(data)
-  const evolution = data.evolution_prix_electricite || 0
-  return baseCost * Math.pow(1 + evolution / 100, year)
+  // Coûts variables: évoluent avec le modèle Mean Reversion
+  const variableCost = calculatePacVariableCost(data)
+  const fixedCosts = calculatePacFixedCosts(data)
+
+  // Récupérer le modèle Mean Reversion depuis l'API DIDO
+  const model = getElectricityModelSync()
+
+  // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
+  return calculateCostForYear(
+    variableCost,
+    fixedCosts.total,
+    year,
+    model
+  )
 }

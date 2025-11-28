@@ -11,7 +11,6 @@ import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Calculator, AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
-import { getCurrentEnergyPrice } from "@/lib/didoApi"
 
 interface PageProps {
   params: Promise<{
@@ -47,8 +46,7 @@ export default async function ResultsPage({ params }: PageProps) {
     !project.chauffageActuel ||
     !project.projetPac ||
     !project.couts ||
-    !project.aides ||
-    !project.evolutions
+    !project.aides
   ) {
     redirect(`/projects/${projectId}/logement`)
   }
@@ -62,13 +60,9 @@ export default async function ResultsPage({ params }: PageProps) {
     project.logement.code_postal
   )
 
-  // Si le prix de l'électricité n'est pas renseigné, le récupérer depuis l'API
-  let prixElecKwh = project.chauffageActuel.prix_elec_kwh || 0
-  if (!prixElecKwh || prixElecKwh === 0) {
-    console.log("Prix électricité non renseigné, récupération depuis l'API DIDO...")
-    prixElecKwh = await getCurrentEnergyPrice("electricite")
-    console.log(`Prix électricité récupéré: ${prixElecKwh} €/kWh`)
-  }
+  // Le prix de l'électricité est maintenant renseigné dans "Projet PAC"
+  // (obligatoire, nécessaire pour calculer le coût de la PAC)
+  const prixElecKwh = project.projetPac.prix_elec_kwh || 0
 
   // Prepare data for calculations
   const projectData: ProjectData = {
@@ -87,20 +81,29 @@ export default async function ResultsPage({ params }: PageProps) {
     prix_elec_kwh: prixElecKwh,
     cop_actuel: project.chauffageActuel.cop_actuel || undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
+
+    // Nouveaux champs pour coûts fixes système actuel (Novembre 2024)
+    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle || undefined,
+    abonnement_gaz: project.chauffageActuel.abonnement_gaz || undefined,
+    entretien_annuel: project.chauffageActuel.entretien_annuel || undefined,
+
     type_pac: project.projetPac.type_pac,
     puissance_pac_kw: project.projetPac.puissance_pac_kw,
     cop_estime: project.projetPac.cop_estime,
     temperature_depart: project.projetPac.temperature_depart || 45, // Fallback si null
     emetteurs: project.projetPac.emetteurs || "Radiateurs basse température", // Fallback si null
     duree_vie_pac: project.projetPac.duree_vie_pac,
+
+    // Nouveaux champs pour coûts fixes PAC (Novembre 2024)
+    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac || undefined,
+    entretien_pac_annuel: project.projetPac.entretien_pac_annuel || undefined,
+    prix_elec_pac: project.projetPac.prix_elec_pac || undefined,
+
     code_postal: project.logement.code_postal || undefined,
     cout_total: project.couts.cout_total,
     reste_a_charge: project.couts.cout_total - project.aides.total_aides,
-    evolution_prix_fioul: project.evolutions.evolution_prix_fioul || undefined,
-    evolution_prix_gaz: project.evolutions.evolution_prix_gaz || undefined,
-    evolution_prix_gpl: project.evolutions.evolution_prix_gpl || undefined,
-    evolution_prix_bois: project.evolutions.evolution_prix_bois || undefined,
-    evolution_prix_electricite: project.evolutions.evolution_prix_electricite,
+    // Les taux d'évolution ne sont plus passés ici - ils sont calculés automatiquement
+    // via le modèle Mean Reversion depuis l'API DIDO dans les fonctions de calcul
     mode_financement: project.financement?.mode_financement || undefined,
     montant_credit: project.financement?.montant_credit || undefined,
     taux_interet: project.financement?.taux_interet || undefined,
@@ -113,30 +116,6 @@ export default async function ResultsPage({ params }: PageProps) {
 
   // Calculate PAC consumption for ConsumptionCard
   const pacConsumptionKwh = calculatePacConsumptionKwh(projectData)
-
-  // Get current energy price evolution based on heating type
-  let currentEnergyEvolution = 0
-  switch (projectData.type_chauffage) {
-    case "Fioul":
-      currentEnergyEvolution = projectData.evolution_prix_fioul || 0
-      break
-    case "Gaz":
-      currentEnergyEvolution = projectData.evolution_prix_gaz || 0
-      break
-    case "GPL":
-      currentEnergyEvolution = projectData.evolution_prix_gpl || 0
-      break
-    case "Pellets":
-    case "Bois":
-      currentEnergyEvolution = projectData.evolution_prix_bois || 0
-      break
-    case "Electrique":
-    case "PAC Air/Air":
-    case "PAC Air/Eau":
-    case "PAC Eau/Eau":
-      currentEnergyEvolution = projectData.evolution_prix_electricite || 0
-      break
-  }
 
   return (
     <div className="container mx-auto py-8 max-w-7xl space-y-8">
@@ -254,8 +233,6 @@ export default async function ResultsPage({ params }: PageProps) {
           resteACharge={projectData.reste_a_charge}
           netBenefit={results.netBenefitLifetime}
           dureeVie={projectData.duree_vie_pac}
-          currentEnergyEvolution={currentEnergyEvolution}
-          electricityEvolution={projectData.evolution_prix_electricite}
           tauxRentabilite={results.tauxRentabilite}
         />
       </div>

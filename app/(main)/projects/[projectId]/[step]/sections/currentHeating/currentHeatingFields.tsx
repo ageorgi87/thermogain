@@ -26,6 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscriptionRates"
 
 interface ChauffageActuelFieldsProps {
   form: UseFormReturn<CurrentHeatingData>
@@ -555,6 +556,113 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               />
             </>
           )}
+
+          {/* Nouveaux champs: Coûts fixes et abonnements (Novembre 2024) */}
+          {/* Grille à 2 colonnes pour tous les champs restants */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Abonnement gaz - UNIQUEMENT si type_chauffage === "Gaz" */}
+            {watchTypeChauffage === "Gaz" && (
+              <FormField
+                control={form.control}
+                name="abonnement_gaz"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span>Abonnement gaz annuel (€/an) *</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[300px]">
+                              <p className="text-sm">
+                                Coût de votre abonnement gaz naturel annuel (visible sur votre facture).
+                                <br /><br />
+                                <span className="font-semibold">Valeur moyenne : 120 €/an</span>
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="1"
+                        min="0"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Entretien annuel */}
+            <FormField
+              control={form.control}
+              name="entretien_annuel"
+              render={({ field }) => {
+                // Déterminer le coût moyen d'entretien selon le type de chauffage
+                const getEntretienMoyen = () => {
+                  if (watchTypeChauffage?.startsWith("PAC")) return ENTRETIEN_ANNUEL_MOYEN["PAC"]
+                  if (watchTypeChauffage === "Electrique") return ENTRETIEN_ANNUEL_MOYEN["Électricité"]
+                  return ENTRETIEN_ANNUEL_MOYEN[watchTypeChauffage] || 100
+                }
+
+                const entretienMoyen = getEntretienMoyen()
+
+                return (
+                  <FormItem>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span>Coût d&apos;entretien annuel (€/an) *</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[300px]">
+                              <p className="text-sm">
+                                Coût annuel de l&apos;entretien de votre système de chauffage actuel.
+                                <br /><br />
+                                <span className="font-semibold">
+                                  Valeur moyenne pour {watchTypeChauffage} : {entretienMoyen} €/an
+                                </span>
+                                {watchTypeChauffage === "Gaz" || watchTypeChauffage === "Fioul" ? (
+                                  <>
+                                    <br /><br />
+                                    <span className="text-xs">
+                                      ⚠️ L&apos;entretien annuel des chaudières gaz/fioul est obligatoire (Décret n°2009-649)
+                                    </span>
+                                  </>
+                                ) : null}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="1"
+                        min="0"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
+            />
+          </div>
         </>
       )}
 

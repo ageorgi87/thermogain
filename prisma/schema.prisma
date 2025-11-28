@@ -155,6 +155,17 @@ model ProjectChauffageActuel {
   cop_actuel           Float?
   conso_pac_kwh        Float?
 
+  // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
+  // Puissance souscrite électrique actuelle (en kVA: 3, 6, 9, 12, 15, 18)
+  puissance_souscrite_actuelle Int @default(6)
+
+  // Abonnement gaz annuel (€/an) - seulement pour type_chauffage = "Gaz"
+  abonnement_gaz               Float @default(120)
+
+  // Coût d'entretien annuel du système actuel (€/an)
+  // Valeurs moyennes: Gaz 120€, Fioul 150€, GPL 130€, Pellets 100€, Bois 80€, Électricité 0€
+  entretien_annuel             Float @default(120)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -171,6 +182,27 @@ model ProjectProjetPac {
   temperature_depart   Int?     // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
   emetteurs            String?  // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
   duree_vie_pac        Int      @default(17) // Durée de vie estimée de la PAC en années
+
+  // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
+  // Prix de l'électricité (€/kWh) - OBLIGATOIRE (déplacé depuis chauffage actuel)
+  // Nécessaire pour calculer le coût de fonctionnement de la PAC
+  prix_elec_kwh                Float @default(0.2516) // Prix moyen TRV Base 2024
+
+  // Puissance souscrite électrique actuelle (en kVA: 3, 6, 9, 12, 15, 18)
+  // Déplacé depuis chauffage actuel car nécessaire pour recommander la puissance avec PAC
+  puissance_souscrite_actuelle Int @default(6)
+
+  // Puissance souscrite électrique recommandée pour la PAC (en kVA: 6, 9, 12, 15, 18)
+  // Calculée automatiquement selon puissance_pac_kw, mais modifiable par l'utilisateur
+  puissance_souscrite_pac      Int @default(9)
+
+  // Coût d'entretien annuel de la PAC (€/an)
+  // Valeur moyenne: 120€/an (entretien obligatoire annuel)
+  entretien_pac_annuel         Float @default(120)
+
+  // Prix électricité pour la PAC (€/kWh) - peut être différent du prix actuel
+  // Optionnel: pour tarifs heures creuses ou autres contrats spécifiques
+  prix_elec_pac                Float?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

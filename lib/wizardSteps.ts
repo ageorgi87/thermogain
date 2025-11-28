@@ -10,7 +10,6 @@ export const WIZARD_STEPS = [
   { key: "couts", title: "Coûts", description: "Coûts d'installation et travaux" },
   { key: "aides", title: "Aides", description: "Aides financières disponibles" },
   { key: "financement", title: "Financement", description: "Mode de financement du projet" },
-  { key: "evolutions", title: "Évolutions", description: "Évolution des prix de l'énergie" },
 ] as const
 
 /**

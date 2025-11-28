@@ -35,10 +35,6 @@ import {
   financingSchema as financementSchema,
   type FinancingData as FinancementData,
 } from "./sections/financing/financingSchema"
-import {
-  evolutionsSchema,
-  type EvolutionsData,
-} from "./sections/evolutions/evolutionsSchema"
 import { InformationsFields } from "./sections/informations/informationsFields"
 import { HousingFields } from "./sections/housing/housingFields"
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
@@ -46,7 +42,6 @@ import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectField
 import { CoutsFields } from "./sections/costs/costsFields"
 import { AidesFields } from "./sections/financialAid/financialAidFields"
 import { FinancementFields } from "./sections/financing/financingFields"
-import { EvolutionsFields } from "./sections/evolutions/evolutionsFields"
 import { Card, CardContent } from "@/components/ui/card"
 import { saveInformationsData } from "./sections/informations/informationsActions"
 import { saveHousingData } from "./sections/housing/housingActions"
@@ -55,7 +50,6 @@ import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProj
 import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
 import { saveFinancingData } from "./sections/financing/financingActions"
-import { saveEvolutionsData, getDefaultEvolutions } from "./sections/evolutions/evolutionsActions"
 import { getProject } from "@/lib/actions/projects"
 import { updateProjectStep } from "./updateProjectStep"
 import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
@@ -68,7 +62,6 @@ const STEP_EXPLANATIONS: Record<string, string> = {
   "couts": "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
   "aides": "Les aides financières disponibles (MaPrimeRénov', CEE, etc.) réduisent significativement votre reste à charge. Nous les prenons en compte pour calculer le retour sur investissement réel de votre projet.",
   "financement": "Votre mode de financement (comptant, crédit) impacte directement le coût total du projet et les mensualités. Ces informations permettent d'évaluer l'effort financier mensuel et le coût global incluant les intérêts.",
-  "evolutions": "L'évolution prévue des prix de l'énergie influence fortement vos économies futures. Ces projections permettent d'estimer le gain financier sur 10, 15 ou 20 ans et d'anticiper la rentabilité de votre investissement.",
 }
 
 const DEFAULT_VALUES = {
@@ -97,6 +90,11 @@ const DEFAULT_VALUES = {
     cop_estime: 3.5,
     temperature_depart: 55,
     emetteurs: "Radiateurs basse température",
+    puissance_souscrite_actuelle: 6,
+    puissance_souscrite_pac: 9,
+    duree_vie_pac: 17,
+    entretien_pac_annuel: 120,
+    prix_elec_kwh: 0.2516,
   },
   couts: {
     cout_pac: 0,
@@ -118,13 +116,6 @@ const DEFAULT_VALUES = {
     duree_credit_mois: 120,
     // mensualite is calculated automatically
   },
-  evolutions: {
-    evolution_prix_fioul: 5,
-    evolution_prix_gaz: 5,
-    evolution_prix_gpl: 5,
-    evolution_prix_bois: 5,
-    evolution_prix_electricite: 3,
-  },
 }
 
 const SCHEMAS = {
@@ -135,7 +126,6 @@ const SCHEMAS = {
   couts: coutsSchema,
   aides: aidesSchema,
   financement: financementSchema,
-  evolutions: evolutionsSchema,
 }
 
 export default function WizardStepPage() {
@@ -148,20 +138,14 @@ export default function WizardStepPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [showExplanation, setShowExplanation] = useState(false)
   const [typeChauffage, setTypeChauffage] = useState<string | undefined>(undefined)
+  const [prixElecKwhActuel, setPrixElecKwhActuel] = useState<number | undefined>(undefined)
+  const [puissanceSouscriteActuelle, setPuissanceSouscriteActuelle] = useState<number | undefined>(undefined)
   const [defaultPrices, setDefaultPrices] = useState<{
     fioul: number
     gaz: number
     gpl: number
     bois: number
     electricite: number
-  } | undefined>(undefined)
-  const [evolutionsLastUpdated, setEvolutionsLastUpdated] = useState<Date | undefined>(undefined)
-  const [apiEvolutions, setApiEvolutions] = useState<{
-    evolution_prix_fioul: number
-    evolution_prix_gaz: number
-    evolution_prix_gpl: number
-    evolution_prix_bois: number
-    evolution_prix_electricite: number
   } | undefined>(undefined)
   const [totalCouts, setTotalCouts] = useState<number>(0)
   const [totalAides, setTotalAides] = useState<number>(0)
@@ -195,16 +179,22 @@ export default function WizardStepPage() {
       try {
         const project = await getProject(projectId)
 
-        // Load default prices for chauffage-actuel step
-        if (step === "chauffage-actuel") {
+        // Load default prices for chauffage-actuel and projet-pac steps
+        if (step === "chauffage-actuel" || step === "projet-pac") {
           const prices = await getDefaultEnergyPrices()
           setDefaultPrices(prices)
         }
 
         if (project) {
-          // Store type_chauffage for evolutions step
+          // Store type_chauffage and electricity data for projet-pac step
           if (project.chauffageActuel?.type_chauffage) {
             setTypeChauffage(project.chauffageActuel.type_chauffage)
+          }
+          if (project.chauffageActuel?.prix_elec_kwh) {
+            setPrixElecKwhActuel(project.chauffageActuel.prix_elec_kwh)
+          }
+          if (project.chauffageActuel?.puissance_souscrite_actuelle) {
+            setPuissanceSouscriteActuelle(project.chauffageActuel.puissance_souscrite_actuelle)
           }
 
           // Store total costs and aids for financing step
@@ -241,24 +231,10 @@ export default function WizardStepPage() {
             "couts": "couts",
             "aides": "aides",
             "financement": "financement",
-            "evolutions": "evolutions",
           }
 
           const sectionKey = sectionMap[step]
           const sectionData = project[sectionKey as keyof typeof project]
-
-          // Charger les valeurs de l'API pour l'étape evolutions dans tous les cas (pour les tooltips)
-          if (step === "evolutions") {
-            const defaultEvolutions = await getDefaultEvolutions()
-            setEvolutionsLastUpdated(defaultEvolutions.lastUpdated)
-            setApiEvolutions({
-              evolution_prix_fioul: defaultEvolutions.evolution_prix_fioul,
-              evolution_prix_gaz: defaultEvolutions.evolution_prix_gaz,
-              evolution_prix_gpl: defaultEvolutions.evolution_prix_gpl,
-              evolution_prix_bois: defaultEvolutions.evolution_prix_bois,
-              evolution_prix_electricite: defaultEvolutions.evolution_prix_electricite,
-            })
-          }
 
           if (sectionData && typeof sectionData === 'object') {
             // Remove the ID, projectId, and timestamp fields before resetting
@@ -275,16 +251,21 @@ export default function WizardStepPage() {
                 return [key, value]
               })
             )
-            form.reset(cleanedData)
+
+            // For projet-pac step, merge with default values to ensure new fields have defaults
+            if (step === "projet-pac") {
+              const mergedData = {
+                ...DEFAULT_VALUES["projet-pac"],
+                ...cleanedData,
+              }
+              form.reset(mergedData)
+            } else {
+              form.reset(cleanedData)
+            }
           } else if (step === "chauffage-actuel" && !sectionData) {
             // Si on est sur l'étape chauffage-actuel et qu'il n'y a pas de données sauvegardées,
             // utiliser les valeurs par défaut (les prix seront mis à jour par le second useEffect)
             form.reset(DEFAULT_VALUES["chauffage-actuel"])
-          } else if (step === "evolutions" && !sectionData) {
-            // Si on est sur l'étape évolutions et qu'il n'y a pas de données sauvegardées,
-            // charger les taux d'évolution depuis le cache (déjà chargé ci-dessus)
-            const defaultEvolutions = await getDefaultEvolutions()
-            form.reset(defaultEvolutions)
           }
 
         }
@@ -333,16 +314,20 @@ export default function WizardStepPage() {
           form.setValue("prix_bois_stere", prixBoisStere)
         }
         break
-      case "Electrique":
-      case "PAC Air/Air":
-      case "PAC Air/Eau":
-      case "PAC Eau/Eau":
-        if (form.getValues("prix_elec_kwh") === undefined) {
-          form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
-        }
-        break
     }
   }, [watchTypeChauffage, step, isLoading, defaultPrices, form])
+
+  // Auto-fill prix_elec_kwh on projet-pac step
+  useEffect(() => {
+    if (step !== "projet-pac" || !defaultPrices || isLoading) {
+      return
+    }
+
+    // Only update if it's undefined (never set)
+    if (form.getValues("prix_elec_kwh") === undefined) {
+      form.setValue("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+    }
+  }, [step, defaultPrices, isLoading, form])
 
   const onSubmit = async (data: any) => {
     console.log("🚀 Form submission started", { step, data })
@@ -371,9 +356,6 @@ export default function WizardStepPage() {
           break
         case "financement":
           await saveFinancingData(projectId, data)
-          break
-        case "evolutions":
-          await saveEvolutionsData(projectId, data)
           break
         default:
           throw new Error("Invalid step")
@@ -501,7 +483,15 @@ export default function WizardStepPage() {
                 {step === "informations" && <InformationsFields form={form as any} />}
                 {step === "logement" && <HousingFields form={form as any} />}
                 {step === "chauffage-actuel" && <ChauffageActuelFields form={form as any} defaultPrices={defaultPrices} />}
-                {step === "projet-pac" && <ProjetPacFields form={form as any} />}
+                {step === "projet-pac" && (
+                  <ProjetPacFields
+                    form={form as any}
+                    currentElectricPower={puissanceSouscriteActuelle}
+                    defaultElectricityPrice={defaultPrices?.electricite}
+                    prixElecKwhActuel={prixElecKwhActuel}
+                    typeChauffageActuel={typeChauffage}
+                  />
+                )}
                 {step === "couts" && <CoutsFields form={form as any} />}
                 {step === "aides" && (
                   <AidesFields
@@ -514,7 +504,6 @@ export default function WizardStepPage() {
                   />
                 )}
                 {step === "financement" && <FinancementFields form={form as any} watchModeFinancement={watchModeFinancement as string} totalCouts={totalCouts} totalAides={totalAides} />}
-                {step === "evolutions" && <EvolutionsFields form={form as any} typeChauffage={typeChauffage} lastUpdated={evolutionsLastUpdated} apiEvolutions={apiEvolutions} />}
               </CardContent>
             </Card>
 

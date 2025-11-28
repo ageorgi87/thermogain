@@ -9,8 +9,6 @@ interface ProfitabilityCardProps {
   resteACharge: number
   netBenefit: number
   dureeVie: number
-  currentEnergyEvolution: number
-  electricityEvolution: number
   tauxRentabilite: number | null
 }
 

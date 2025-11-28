@@ -28,9 +28,6 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
   const coutAnnuelPac = calculatePacAnnualCost(data)
   const economiesAnnuelles = coutAnnuelActuel - coutAnnuelPac
 
-  // Projections sur la durée de vie de la PAC
-  const yearlyData = calculateYearlyData(data, data.duree_vie_pac)
-
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
   // Mode Crédit : reste_a_charge + intérêts du crédit
@@ -45,21 +42,24 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
     investissementReel = data.apport_personnel + coutTotalCredit
   }
 
-  // Créer un objet ProjectData ajusté pour le calcul du ROI avec l'investissement réel
+  // Créer un objet ProjectData ajusté avec l'investissement réel
   const dataAjusteeROI: ProjectData = {
     ...data,
     reste_a_charge: investissementReel
   }
+
+  // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
+  const yearlyData = calculateYearlyData(dataAjusteeROI, data.duree_vie_pac)
 
   // ROI avec investissement réel (incluant intérêts du crédit)
   const paybackPeriod = calculatePaybackPeriod(dataAjusteeROI)
   const paybackYear = calculatePaybackYear(dataAjusteeROI)
 
   // Gains totaux sur la durée de vie de la PAC
-  const totalSavingsLifetime = calculateTotalSavings(data, data.duree_vie_pac)
+  const totalSavingsLifetime = calculateTotalSavings(dataAjusteeROI, data.duree_vie_pac)
   const netBenefitLifetime = calculateNetBenefit(dataAjusteeROI, data.duree_vie_pac)
 
-  // Coûts totaux sur durée de vie (utiliser investissement réel)
+  // Coûts totaux sur durée de vie
   const coutTotalActuelLifetime = yearlyData.reduce((sum, y) => sum + y.coutActuel, 0)
   const coutTotalPacLifetime = investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0)
 

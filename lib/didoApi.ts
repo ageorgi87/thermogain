@@ -9,7 +9,7 @@
 const DIDO_API_BASE_URL = "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1"
 
 // RIDs des fichiers de données de prix pour les ménages (nov 2025)
-const DATAFILE_RIDS = {
+export const DATAFILE_RIDS = {
   petroleum: "daf4715a-0795-4098-bdb1-d90b6e6a568d",  // 1.1 Prix pétrole ménages
   electricity: "cd28227c-bc1e-401b-8d42-3073497c2973", // 1.2 Prix électricité ménages
   gas: "9bb3b4e5-91e7-4ee5-95d9-aef38471ee75",        // 1.3 Prix gaz ménages

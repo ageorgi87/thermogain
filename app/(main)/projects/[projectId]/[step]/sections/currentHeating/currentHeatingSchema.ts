@@ -36,6 +36,13 @@ const baseSchema = z.object({
   prix_elec_kwh: z.number().min(0, "Le prix ne peut pas être négatif").max(1, "Le prix semble trop élevé").optional(),
   cop_actuel: z.number().min(1, "Le COP doit être au moins de 1").max(10, "Le COP ne peut pas dépasser 10").optional(),
   conso_pac_kwh: z.number().min(0, "La consommation ne peut pas être négative").max(100000, "La consommation semble trop élevée").optional(),
+
+  // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
+  // Abonnement gaz annuel (€/an) - seulement pour type_chauffage = "Gaz"
+  abonnement_gaz: z.number().min(0).max(1000).default(120),
+
+  // Coût d'entretien annuel du système actuel (€/an)
+  entretien_annuel: z.number().min(0).max(500).default(120),
 })
 
 // Conditional validation based on heating type and consumption knowledge

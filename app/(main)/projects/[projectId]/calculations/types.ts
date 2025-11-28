@@ -17,6 +17,11 @@ export interface ProjectData {
   cop_actuel?: number
   conso_pac_kwh?: number
 
+  // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
+  puissance_souscrite_actuelle?: number  // Puissance souscrite électrique actuelle (kVA)
+  abonnement_gaz?: number                // Abonnement gaz annuel (€/an) - pour type_chauffage = "Gaz"
+  entretien_annuel?: number              // Coût d'entretien annuel système actuel (€/an)
+
   // Projet PAC
   type_pac: string
   puissance_pac_kw: number
@@ -24,6 +29,11 @@ export interface ProjectData {
   temperature_depart: number
   emetteurs: string
   duree_vie_pac: number
+
+  // Nouveaux champs PAC pour coûts fixes (Novembre 2024)
+  puissance_souscrite_pac?: number     // Puissance souscrite électrique pour PAC (kVA)
+  entretien_pac_annuel?: number        // Coût d'entretien annuel PAC (€/an)
+  prix_elec_pac?: number               // Prix électricité pour PAC (€/kWh), si différent du prix actuel
 
   // Code postal pour ajustement climatique COP
   code_postal?: string
@@ -34,12 +44,14 @@ export interface ProjectData {
   // Aides
   reste_a_charge: number
 
-  // Évolutions
+  // Évolutions (DEPRECATED - Novembre 2024)
+  // Les taux d'évolution sont maintenant calculés automatiquement via le modèle Mean Reversion
+  // depuis l'API DIDO-SDES. Ces champs sont conservés pour compatibilité mais ne sont plus utilisés.
   evolution_prix_fioul?: number
   evolution_prix_gaz?: number
   evolution_prix_gpl?: number
   evolution_prix_bois?: number
-  evolution_prix_electricite: number
+  evolution_prix_electricite?: number
 
   // Financement
   mode_financement?: string

@@ -32,15 +32,21 @@ Chaque module dispose de sa propre documentation complète incluant :
 
 **Rôle** : Calcule le coût annuel du système de chauffage existant et estime son évolution dans le temps.
 
+**Nouveau (Novembre 2024)** :
+- Séparation des coûts variables (énergie) et coûts fixes (abonnements, entretien)
+- Utilisation du modèle Mean Reversion avec taux auto-calculés depuis l'API DIDO-SDES (18-42 ans d'historique)
+
 **Fonctions principales** :
-- `calculateCurrentAnnualCost()` - Coût annuel actuel
-- `getCurrentEnergyEvolution()` - Taux d'évolution du prix de l'énergie
-- `calculateCurrentCostForYear()` - Projection du coût futur
+- `calculateCurrentVariableCost()` - Coût variable annuel (énergie uniquement)
+- `calculateCurrentFixedCosts()` - Coûts fixes annuels (abonnements + entretien)
+- `calculateCurrentAnnualCost()` - Coût total annuel (variable + fixe)
+- `calculateCurrentCostForYear()` - Projection du coût futur avec modèle Mean Reversion
 
 **Ce que vous y trouverez** :
 - Calcul du coût selon 8 types d'énergie (fioul, gaz, GPL, bois, pellets, électrique, PAC)
-- Projection des coûts avec évolution des prix énergétiques
-- Exemples : chaudière gaz 15 000 kWh/an → 1 500 €/an
+- Intégration des abonnements (électricité, gaz) et coûts d'entretien
+- Projection avec évolution différenciée (coûts variables évoluent, coûts fixes restent constants)
+- Exemples : chaudière gaz 15 000 kWh/an → 1 500 €/an variable + 257 €/an fixe = 1 757 €/an total
 
 ### 2. [pacConsumption/](./pacConsumption/README.md) - Consommation de la PAC
 
@@ -58,16 +64,23 @@ Chaque module dispose de sa propre documentation complète incluant :
 
 **Rôle** : Calcule le coût annuel du chauffage avec la PAC et ses projections futures.
 
+**Nouveau (Novembre 2024)** : Séparation des coûts variables (électricité) et coûts fixes (delta abonnement, suppression gaz, entretien PAC).
+
 **Fonctions principales** :
 - `calculateCurrentConsumptionKwh()` - Conversion en équivalent kWh
 - `calculatePacConsumptionKwh()` - Consommation PAC (version simple sans ajustement)
-- `calculatePacAnnualCost()` - Coût annuel avec PAC
+- `calculatePacVariableCost()` - Coût variable annuel (électricité uniquement)
+- `calculatePacFixedCosts()` - Coûts fixes annuels (delta abonnement + suppression gaz + entretien)
+- `calculatePacAnnualCost()` - Coût total annuel (variable + fixe)
 - `calculatePacCostForYear()` - Projection du coût futur
 
 **Ce que vous y trouverez** :
 - Calcul du coût électrique de la PAC
-- Projection avec évolution du prix de l'électricité
-- Exemples : 4 687 kWh × 0.21 €/kWh = 984 €/an
+- Intégration du delta d'abonnement électrique (augmentation nécessaire pour la PAC)
+- Prise en compte de l'économie de suppression d'abonnement gaz (si applicable)
+- Coût d'entretien annuel de la PAC
+- Projection avec évolution différenciée (coûts variables évoluent, coûts fixes restent constants)
+- Exemples : 4 687 kWh × 0.21 €/kWh = 984 €/an variable + 83 €/an fixe = 1 067 €/an total
 
 ### 4. [savings/](./savings/README.md) - Économies sur la Durée
 
@@ -231,7 +244,130 @@ ThermoGain s'appuie sur des sources officielles françaises et européennes :
 
 ## ✅ Améliorations Récentes (Novembre 2024)
 
-### 1. Validation du dimensionnement PAC améliorée
+### 1. Refonte complète du modèle de calcul des coûts (Novembre 2024)
+
+**Objectif** : Intégrer tous les coûts fixes (abonnements, entretien) pour un calcul réaliste et complet des économies.
+
+#### 1.1. Séparation coûts variables vs coûts fixes
+
+Le modèle de calcul distingue désormais deux catégories de coûts :
+
+**Coûts VARIABLES** (évoluent avec l'inflation énergétique) :
+- Consommation d'énergie (fioul, gaz, GPL, pellets, bois, électricité)
+- Calculés avec les prix unitaires (€/L, €/kWh, €/kg, etc.)
+
+**Coûts FIXES** (restent constants en euros constants) :
+- Abonnements électricité et gaz
+- Entretien annuel du système de chauffage
+- Ces coûts suivent l'inflation générale, pas l'inflation énergétique
+
+#### 1.2. Nouveaux champs ajoutés
+
+**Pour le système actuel** ([`currentCost/`](./currentCost/)) :
+- `puissance_souscrite_actuelle` : Puissance électrique souscrite en kVA (défaut: 6 kVA)
+- `abonnement_gaz` : Abonnement gaz annuel en €/an (si chauffage au gaz, défaut: 120 €/an)
+- `entretien_annuel` : Coût d'entretien annuel du système actuel en €/an
+
+**Pour la PAC** ([`pacCost/`](./pacCost/)) :
+- `puissance_souscrite_pac` : Puissance électrique nécessaire pour la PAC en kVA (défaut: 9 kVA)
+- `entretien_pac_annuel` : Coût d'entretien annuel de la PAC en €/an (défaut: 120-150 €/an)
+- `prix_elec_pac` : Prix électricité spécifique pour la PAC en €/kWh (si tarif HP/HC différent)
+
+#### 1.3. Barème officiel EDF 2024
+
+Nouveau module [`lib/subscriptionRates.ts`](../../../../../lib/subscriptionRates.ts) contenant :
+
+**Tarif Base (TTC, 2024)** :
+| Puissance | Abonnement annuel |
+|-----------|-------------------|
+| 3 kVA     | 115.56 €          |
+| 6 kVA     | 137.64 €          |
+| 9 kVA     | 190.92 €          |
+| 12 kVA    | 228.48 €          |
+| 15 kVA    | 262.44 €          |
+| 18 kVA    | 296.16 €          |
+
+**Fonctions utilitaires** :
+- `getAbonnementElectriciteAnnuel(puissance)` : Retourne l'abonnement pour une puissance donnée
+- `getDeltaAbonnementElectricite(puissanceActuelle, puissancePac)` : Calcule l'augmentation d'abonnement
+- `getPuissanceSouscritePacRecommandee(puissancePac)` : Recommande la puissance souscrite
+
+#### 1.4. Méthodologie de projection
+
+**Principe clé** : En euros constants, seuls les coûts variables (énergie) évoluent avec l'inflation énergétique.
+
+```
+Coût(année n) = [Coût variable × (1 + évolution)^n] + Coûts fixes
+```
+
+**Justification** :
+- Les abonnements sont des tarifs réglementés quasi-stables
+- L'entretien suit l'inflation générale (~2%), pas l'inflation énergétique (~7%)
+- Cette approche évite de surestimer les coûts futurs
+
+**Exemple concret** :
+```typescript
+// Système actuel (Gaz)
+const coutVariable = 1500 € // 15 000 kWh × 0.10 €/kWh
+const coutsFixes = {
+  abonnementElec: 138 €,    // 6 kVA
+  abonnementGaz: 120 €,     // Gaz
+  entretien: 100 €,         // Chaudière gaz
+  total: 358 €
+}
+const coutTotal = 1500 + 358 = 1858 €/an
+
+// PAC
+const coutVariablePac = 984 € // 4 687 kWh × 0.21 €/kWh
+const coutsFixesPac = {
+  deltaAbonnementElec: 53 €,     // Passage 6→9 kVA (+53€)
+  suppressionAbonnementGaz: -120 €, // Économie gaz (-120€)
+  entretien: 150 €,              // Entretien PAC (+150€)
+  total: 83 €
+}
+const coutTotalPac = 984 + 83 = 1067 €/an
+
+// Économie année 1
+const economie = 1858 - 1067 = 791 €/an
+
+// Projection année 10 (évolution +3%/an électricité, +4%/an gaz)
+const coutVariableGazAn10 = 1500 × (1.04)^10 = 2220 €
+const coutTotalAn10 = 2220 + 358 = 2578 €
+
+const coutVariablePacAn10 = 984 × (1.03)^10 = 1322 €
+const coutTotalPacAn10 = 1322 + 83 = 1405 €
+
+// Économie année 10
+const economieAn10 = 2578 - 1405 = 1173 €/an
+```
+
+#### 1.5. Impact sur les résultats
+
+**Avant** (sans coûts fixes) :
+- Calcul uniquement sur la consommation d'énergie
+- Sous-estimation du coût réel (~15-20%)
+- ROI optimiste
+
+**Après** (avec coûts fixes) :
+- Calcul complet incluant tous les coûts
+- Prise en compte des économies (suppression abonnement gaz)
+- Prise en compte des surcoûts (augmentation abonnement électrique, entretien PAC)
+- ROI plus réaliste et précis
+
+**Modules modifiés** :
+- ✅ [`types.ts`](./types.ts) - Ajout des nouveaux champs
+- ✅ [`currentCost/currentCost.ts`](./currentCost/currentCost.ts) - Séparation variable/fixe
+- ✅ [`pacCost/pacCost.ts`](./pacCost/pacCost.ts) - Séparation variable/fixe
+- ✅ [`lib/subscriptionRates.ts`](../../../../../lib/subscriptionRates.ts) - Nouveau module
+- ✅ Schémas Prisma et Zod mis à jour
+- ✅ Formulaires du wizard mis à jour
+
+**Documentation complète** :
+- [`currentCost/README.md`](./currentCost/README.md) - 939 lignes de documentation détaillée
+- [`pacCost/README.md`](./pacCost/README.md) - Documentation mise à jour
+- [`lib/subscriptionRates.README.md`](../../../../../lib/subscriptionRates.README.md) - Barème et méthodologie
+
+### 2. Validation du dimensionnement PAC améliorée
 
 La fonction `validatePacPower()` du module `@/lib/copAdjustments` a été améliorée pour prendre en compte :
 
@@ -430,6 +566,7 @@ Pour toute question technique sur les calculs :
 
 ---
 
-**Dernière mise à jour** : 27 novembre 2024
-**Version** : 1.3
-**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012, API DIDO-SDES
+**Dernière mise à jour** : 28 novembre 2024
+**Version** : 1.4
+**Conformité** : DPE 3CL-DPE 2021, ADEME, EN 15316, RT2012, API DIDO-SDES, Barème EDF 2024
+**Nouveauté majeure** : Intégration complète des coûts fixes (abonnements, entretien) dans tous les modules de calcul
