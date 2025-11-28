@@ -34,7 +34,14 @@ export function HousingFields({ form }: HousingFieldsProps) {
               <Input
                 placeholder="ex: 75001, 20000, 97400"
                 maxLength={5}
-                {...field}
+                value={field.value ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? undefined : value)
+                }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormDescription>
@@ -57,10 +64,10 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   placeholder="ex: 1990, 2010"
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value ?? ""}
                   onChange={(e) => {
                     const value = e.target.value
-                    field.onChange(value === "" ? 0 : Number(value))
+                    field.onChange(value === "" ? undefined : Number(value))
                   }}
                   onBlur={field.onBlur}
                   name={field.name}
@@ -83,10 +90,10 @@ export function HousingFields({ form }: HousingFieldsProps) {
                   type="number"
                   min="0"
                   placeholder="ex: 100"
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value ?? ""}
                   onChange={(e) => {
                     const value = e.target.value
-                    field.onChange(value === "" ? 0 : Number(value))
+                    field.onChange(value === "" ? undefined : Number(value))
                   }}
                   onBlur={field.onBlur}
                   name={field.name}
@@ -110,8 +117,14 @@ export function HousingFields({ form }: HousingFieldsProps) {
                 type="number"
                 min="0"
                 placeholder="ex: 3"
-                {...field}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                value={field.value ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(value === "" ? undefined : Number(value))
+                }}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
               />
             </FormControl>
             <FormMessage />
