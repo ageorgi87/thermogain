@@ -48,7 +48,8 @@ export async function getProject(id: string) {
     throw new Error("Projet non trouvé")
   }
 
-  return project
+  // Convert to plain JSON to ensure proper serialization for Next.js
+  return JSON.parse(JSON.stringify(project))
 }
 
 export async function getProjects() {

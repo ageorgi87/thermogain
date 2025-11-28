@@ -207,7 +207,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_fioul_litre"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -221,9 +221,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -257,7 +257,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_gaz_kwh"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -271,9 +271,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -307,7 +307,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_gpl_kg"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -321,9 +321,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -357,7 +357,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_pellets_kg"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -371,9 +371,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -407,7 +407,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_bois_stere"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -419,11 +419,11 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min="0"
-                        {...field}
-                        
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -457,7 +457,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_elec_kwh"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -471,9 +471,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-                        
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -531,7 +531,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <FormField
                 control={form.control}
                 name="prix_elec_kwh"
-                render={({ field }) => (
+                render={({ field: { value, onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>
                       <PriceLabelWithTooltip
@@ -545,9 +545,9 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-                        
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        {...fieldProps}
+                        value={value ?? ""}
+                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />

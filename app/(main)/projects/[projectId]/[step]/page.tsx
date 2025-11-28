@@ -82,7 +82,7 @@ const DEFAULT_VALUES = {
     etat_installation: "Moyen",
     connait_consommation: true,
     conso_gaz_kwh: 12000,
-    prix_gaz_kwh: 0.09,
+    // prix_gaz_kwh will be set by useEffect from API defaults
   },
   "projet-pac": {
     type_pac: "Air/Eau",
@@ -94,7 +94,7 @@ const DEFAULT_VALUES = {
     puissance_souscrite_pac: 9,
     duree_vie_pac: 17,
     entretien_pac_annuel: 120,
-    prix_elec_kwh: 0.2516,
+    // prix_elec_kwh will be set by useEffect from API defaults
   },
   couts: {
     cout_pac: 0,
@@ -285,32 +285,32 @@ export default function WizardStepPage() {
       return
     }
 
-    // Only update the price field if it's undefined (never set)
+    // Only update the price field if it's undefined or null (never set)
     switch (watchTypeChauffage) {
       case "Fioul":
-        if (form.getValues("prix_fioul_litre") === undefined) {
+        if (form.getValues("prix_fioul_litre") === undefined || form.getValues("prix_fioul_litre") === null) {
           form.setValue("prix_fioul_litre", Math.round(defaultPrices.fioul * 1000) / 1000)
         }
         break
       case "Gaz":
-        if (form.getValues("prix_gaz_kwh") === undefined) {
+        if (form.getValues("prix_gaz_kwh") === undefined || form.getValues("prix_gaz_kwh") === null) {
           form.setValue("prix_gaz_kwh", Math.round(defaultPrices.gaz * 1000) / 1000)
         }
         break
       case "GPL":
-        if (form.getValues("prix_gpl_kg") === undefined) {
+        if (form.getValues("prix_gpl_kg") === undefined || form.getValues("prix_gpl_kg") === null) {
           form.setValue("prix_gpl_kg", Math.round(defaultPrices.gpl * 1000) / 1000)
         }
         break
       case "Pellets":
-        if (form.getValues("prix_pellets_kg") === undefined) {
+        if (form.getValues("prix_pellets_kg") === undefined || form.getValues("prix_pellets_kg") === null) {
           form.setValue("prix_pellets_kg", Math.round(defaultPrices.bois * 1000) / 1000)
         }
         break
       case "Bois":
         // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
         const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
-        if (form.getValues("prix_bois_stere") === undefined) {
+        if (form.getValues("prix_bois_stere") === undefined || form.getValues("prix_bois_stere") === null) {
           form.setValue("prix_bois_stere", prixBoisStere)
         }
         break
