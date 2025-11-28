@@ -595,6 +595,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
 
           {/* Nouveaux champs: Coûts fixes et abonnements (Novembre 2024) */}
           {/* Grille à 2 colonnes pour tous les champs restants */}
+          {watchTypeChauffage && (
           <div className="grid grid-cols-2 gap-4">
             {/* COP actuel - UNIQUEMENT pour les PAC */}
             {(watchTypeChauffage === "PAC Air/Air" ||
@@ -660,9 +661,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         step="1"
                         min="0"
                         placeholder="ex: 120"
-                        {...field}
                         value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -722,9 +728,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         step="1"
                         min="0"
                         placeholder="ex: 150"
-                        {...field}
                         value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -733,6 +744,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               }}
             />
           </div>
+          )}
         </>
       )}
 
