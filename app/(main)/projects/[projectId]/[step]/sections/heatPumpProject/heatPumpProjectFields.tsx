@@ -56,6 +56,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
   const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau"
   const isAirToAir = typePac === "Air/Air"
   const puissancePacKw = form.watch("puissance_pac_kw")
+  const puissanceSouscriteActuelle = form.watch("puissance_souscrite_actuelle")
 
   // Si le prix de l'électricité est déjà renseigné dans chauffage actuel ET que le type est électrique,
   // on masque le champ prix_elec_kwh
@@ -384,8 +385,10 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
               control={form.control}
               name="puissance_souscrite_pac"
               render={({ field }) => {
+                // Utiliser la puissance souscrite actuelle du formulaire si disponible, sinon la valeur par défaut
+                const currentPower = puissanceSouscriteActuelle ?? currentElectricPower
                 const recommendedPower = puissancePacKw
-                  ? getPuissanceSouscritePacRecommandee(puissancePacKw, currentElectricPower)
+                  ? getPuissanceSouscritePacRecommandee(puissancePacKw, currentPower)
                   : 9
 
                 return (
@@ -406,7 +409,7 @@ export function ProjetPacFields({ form, currentElectricPower = 6, defaultElectri
                                   Recommandation : {recommendedPower} kVA
                                 </span>
                                 <br /><br />
-                                Calculée selon la formule : Puissance actuelle ({currentElectricPower} kVA) + Puissance PAC ({puissancePacKw || 0} kW)
+                                Calculée selon la formule : Puissance actuelle ({currentPower} kVA) + Puissance PAC ({puissancePacKw || 0} kW)
                                 <br /><br />
                                 Le coefficient de foisonnement est pris en compte (tous vos appareils ne fonctionnent pas simultanément au maximum).
                               </p>
