@@ -490,26 +490,6 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="cop_actuel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>COP actuel *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          {...field}
-
-                          onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="conso_pac_kwh"
                   render={({ field }) => (
                     <FormItem>
@@ -527,39 +507,65 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="prix_elec_kwh"
+                  render={({ field: { value, onChange, ...fieldProps } }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <PriceLabelWithTooltip
+                          label="Prix de l'électricité (€/kWh) *"
+                          price={defaultPrices?.electricite}
+                          unit="€/kWh"
+                        />
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          min="0"
+                          {...fieldProps}
+                          value={value ?? ""}
+                          onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <FormField
-                control={form.control}
-                name="prix_elec_kwh"
-                render={({ field: { value, onChange, ...fieldProps } }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <PriceLabelWithTooltip
-                        label="Prix de l'électricité (€/kWh) *"
-                        price={defaultPrices?.electricite}
-                        unit="€/kWh"
-                      />
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        {...fieldProps}
-                        value={value ?? ""}
-                        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </>
           )}
 
           {/* Nouveaux champs: Coûts fixes et abonnements (Novembre 2024) */}
           {/* Grille à 2 colonnes pour tous les champs restants */}
           <div className="grid grid-cols-2 gap-4">
+            {/* COP actuel - UNIQUEMENT pour les PAC */}
+            {(watchTypeChauffage === "PAC Air/Air" ||
+              watchTypeChauffage === "PAC Air/Eau" ||
+              watchTypeChauffage === "PAC Eau/Eau") && (
+              <FormField
+                control={form.control}
+                name="cop_actuel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>COP actuel *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        {...field}
+
+                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {/* Abonnement gaz - UNIQUEMENT si type_chauffage === "Gaz" */}
             {watchTypeChauffage === "Gaz" && (
               <FormField
