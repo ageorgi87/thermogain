@@ -109,8 +109,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                   type="number"
                   min="0"
                   placeholder="ex: 10"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === "" ? undefined : Number(value))
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
                 />
               </FormControl>
               <FormMessage />
@@ -197,9 +203,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 1500"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -249,9 +260,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 15000"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -301,9 +317,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 1200"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -353,9 +374,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 3000"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -405,9 +431,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 8"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -457,9 +488,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         type="number"
                         min="0"
                         placeholder="ex: 18000"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -512,9 +548,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                           type="number"
                           min="0"
                           placeholder="ex: 6000"
-                          {...field}
-
-                          onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                          value={field.value ?? ""}
+                          onChange={(e) => {
+                            const value = e.target.value
+                            field.onChange(value === "" ? undefined : Number(value))
+                          }}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -571,9 +612,14 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         step="0.1"
                         min="0"
                         placeholder="ex: 2.5"
-                        {...field}
-
-                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          field.onChange(value === "" ? undefined : Number(value))
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />

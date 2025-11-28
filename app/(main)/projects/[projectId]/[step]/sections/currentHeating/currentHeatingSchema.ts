@@ -11,12 +11,16 @@ const baseSchema = z.object({
     "PAC Air/Air",
     "PAC Air/Eau",
     "PAC Eau/Eau",
-  ]),
+  ], {
+    message: "Le type de chauffage est requis",
+  }),
   age_installation: z
-    .number()
+    .number({ message: "L'âge de l'installation est requis" })
     .min(0, "L'âge ne peut pas être négatif")
     .max(100, "L'âge ne peut pas dépasser 100 ans"),
-  etat_installation: z.enum(["Bon", "Moyen", "Mauvais"]),
+  etat_installation: z.enum(["Bon", "Moyen", "Mauvais"], {
+    message: "L'état de l'installation est requis",
+  }),
 
   // Does user know their consumption?
   connait_consommation: z.boolean(),
@@ -39,10 +43,10 @@ const baseSchema = z.object({
 
   // Nouveaux champs pour coûts fixes et abonnements (Novembre 2024)
   // Abonnement gaz annuel (€/an) - seulement pour type_chauffage = "Gaz"
-  abonnement_gaz: z.number().min(0).max(1000).default(120),
+  abonnement_gaz: z.number().min(0).max(1000).optional(),
 
   // Coût d'entretien annuel du système actuel (€/an)
-  entretien_annuel: z.number().min(0).max(500).default(120),
+  entretien_annuel: z.number().min(0).max(500).optional(),
 })
 
 // Conditional validation based on heating type and consumption knowledge
