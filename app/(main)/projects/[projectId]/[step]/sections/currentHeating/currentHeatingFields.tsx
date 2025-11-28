@@ -219,10 +219,10 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min="0"
                         {...field}
-                        
+
                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
@@ -272,7 +272,7 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                         step="0.001"
                         min="0"
                         {...field}
-                        
+
                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
@@ -319,10 +319,10 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min="0"
                         {...field}
-                        
+
                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
@@ -369,10 +369,10 @@ export function ChauffageActuelFields({ form, defaultPrices }: ChauffageActuelFi
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min="0"
                         {...field}
-                        
+
                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                       />
                     </FormControl>
