@@ -463,13 +463,7 @@ export default function WizardStepPage() {
       ) : (
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(
-              onSubmit,
-              (errors) => {
-                console.error("❌ Form validation errors:", errors)
-                alert(`Le formulaire contient des erreurs:\n${Object.entries(errors).map(([field, error]) => `- ${field}: ${error?.message}`).join('\n')}`)
-              }
-            )}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8"
           >
             <Card className="shadow-2xl border-2">
