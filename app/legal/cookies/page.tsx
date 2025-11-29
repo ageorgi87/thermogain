@@ -129,22 +129,12 @@ export default function CookiesPage() {
               </table>
             </div>
 
-            <h3 className="text-lg font-semibold mt-6 mb-3">3.3 Cookies analytiques (si applicable)</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-3">3.3 Cookies analytiques</h3>
             <p className="mb-4">
-              Ces cookies nous permettent de comprendre comment les visiteurs utilisent notre site :
+              Actuellement, ThermoGain n'utilise pas de cookies analytiques ou de suivi statistique.
             </p>
-            <div className="bg-muted p-4 rounded-lg mb-4">
-              <p className="mb-2"><strong>[À COMPLÉTER selon vos outils d'analyse]</strong></p>
-              <p className="text-sm mb-2">Exemples si vous utilisez :</p>
-              <ul className="list-disc pl-6 text-sm space-y-1">
-                <li><strong>Google Analytics :</strong> _ga, _ga_*, _gid (durée : 2 ans, 2 ans, 24h)</li>
-                <li><strong>Matomo/Piwik :</strong> _pk_id, _pk_ses (durée : 13 mois, 30 min)</li>
-                <li><strong>Plausible Analytics :</strong> Ne pose pas de cookies (alternative respectueuse de la vie privée)</li>
-              </ul>
-            </div>
             <p className="text-sm italic">
-              Ces cookies nécessitent votre consentement préalable. Vous pouvez les accepter ou les
-              refuser via notre bandeau de gestion des cookies.
+              Si nous devions en utiliser à l'avenir, votre consentement préalable serait requis.
             </p>
 
             <h3 className="text-lg font-semibold mt-6 mb-3">3.4 Cookies de marketing (optionnels)</h3>
@@ -162,10 +152,8 @@ export default function CookiesPage() {
               Certains cookies peuvent être déposés par des services tiers que nous utilisons :
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Services d'authentification :</strong> [NextAuth.js]</li>
-              <li><strong>Services de paiement :</strong> [Stripe ou autre prestataire - cookies nécessaires au traitement du paiement]</li>
-              <li><strong>Services d'hébergement :</strong> [Vercel, AWS, OVH, etc.]</li>
-              <li><strong>Services d'analyse :</strong> [À compléter si applicable]</li>
+              <li><strong>Services d'authentification :</strong> NextAuth.js pour la gestion des sessions utilisateur</li>
+              <li><strong>Services d'hébergement :</strong> Vercel pour l'hébergement de la plateforme</li>
             </ul>
             <p className="mt-4">
               Ces services tiers sont soumis à leurs propres politiques de confidentialité et de cookies.
@@ -176,27 +164,7 @@ export default function CookiesPage() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">5. Gestion de vos préférences</h2>
 
-            <h3 className="text-lg font-semibold mt-6 mb-3">5.1 Via notre outil de gestion des cookies</h3>
-            <p className="mb-4">
-              Lors de votre première visite, un bandeau d'information vous permet de :
-            </p>
-            <ul className="list-disc pl-6 space-y-2 mb-4">
-              <li>Accepter tous les cookies</li>
-              <li>Refuser les cookies non essentiels</li>
-              <li>Personnaliser vos choix par catégorie de cookies</li>
-            </ul>
-            <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-              <p className="text-sm mb-3">
-                <strong>Note :</strong> Un gestionnaire de cookies interactif (bandeau de consentement) doit être
-                implémenté pour permettre aux utilisateurs de gérer leurs préférences. Des solutions comme
-                <a href="https://www.osano.com/cookieconsent" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mx-1">Osano Cookie Consent</a>,
-                <a href="https://www.cookiebot.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mx-1">Cookiebot</a>, ou
-                <a href="https://tarteaucitron.io" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mx-1">Tarteaucitron.js</a>
-                peuvent être utilisées pour assurer la conformité RGPD.
-              </p>
-            </div>
-
-            <h3 className="text-lg font-semibold mt-6 mb-3">5.2 Via les paramètres de votre navigateur</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-3">5.1 Via les paramètres de votre navigateur</h3>
             <p className="mb-4">
               Vous pouvez également configurer votre navigateur pour accepter ou refuser les cookies :
             </p>
@@ -279,7 +247,7 @@ export default function CookiesPage() {
               Pour exercer ces droits, consultez notre{" "}
               <Link href="/legal/politique-confidentialite" className="text-primary hover:underline">
                 Politique de Confidentialité
-              </Link> ou contactez-nous à [contact@thermogain.fr].
+              </Link> ou contactez-nous à contact@thermogain.fr.
             </p>
           </section>
 
@@ -296,27 +264,9 @@ export default function CookiesPage() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">11. Contact</h2>
             <p>
-              Pour toute question concernant notre utilisation des cookies, vous pouvez nous contacter :
+              Pour toute question concernant notre utilisation des cookies, vous pouvez nous contacter par email à : contact@thermogain.fr
             </p>
-            <ul className="list-disc pl-6 mt-2">
-              <li>Par email : [contact@thermogain.fr]</li>
-              <li>Par téléphone : [Numéro à compléter]</li>
-              <li>Par courrier : [Adresse postale complète]</li>
-            </ul>
           </section>
-
-          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
-              <strong>Note importante :</strong>
-            </p>
-            <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-              <li>• Les sections marquées [À COMPLÉTER] doivent être renseignées selon vos outils réels</li>
-              <li>• Vous devez implémenter un gestionnaire de cookies conforme (bandeau de consentement)</li>
-              <li>• Cette politique doit être mise à jour chaque fois que vous ajoutez de nouveaux cookies</li>
-              <li>• Le bouton "Gérer mes préférences" doit être fonctionnel et accessible depuis toutes les pages</li>
-              <li>• Conservez un registre des consentements utilisateurs pendant au moins 6 mois (recommandation CNIL)</li>
-            </ul>
-          </div>
         </CardContent>
       </Card>
     </div>
