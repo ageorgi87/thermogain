@@ -75,7 +75,7 @@ model VerificationToken {
 // Project - PAC Calculator (Multi-step wizard)
 model Project {
   id          String   @id @default(cuid())
-  name        String   @default("Projet PAC")
+  name        String   // No default - user must provide a name
   recipientEmails String[] @default([]) // Emails to send results to
   currentStep Int      @default(1) // Track wizard progress (1-8)
   completed   Boolean  @default(false) // All steps completed

@@ -14,7 +14,7 @@ export async function createProject(data?: { name?: string }) {
   const project = await prisma.project.create({
     data: {
       userId: session.user.id,
-      name: data?.name || "Projet PAC",
+      name: data?.name || "", // Empty by default - user must provide a name in step 1
       currentStep: 1,
       completed: false,
     },
