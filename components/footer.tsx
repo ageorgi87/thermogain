@@ -42,6 +42,13 @@ export function Footer() {
             >
               Cookies
             </Link>
+            <Separator orientation="vertical" className="h-4" />
+            <Link
+              href="/legal/methodologie"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Méthodologie
+            </Link>
           </nav>
         </div>
       </div>
