@@ -2,6 +2,7 @@ import { ProjectData } from "../types"
 import { getAbonnementElectriciteAnnuel } from "@/lib/subscriptionRates"
 import { getEnergyModelSync } from "@/lib/energyModelCache"
 import { calculateCostForYear } from "@/lib/energyPriceEvolution"
+import { GAS_SUBSCRIPTION } from "@/lib/constants"
 
 /**
  * Calcule le coût VARIABLE annuel du chauffage actuel (énergie uniquement, sans coûts fixes)
@@ -56,7 +57,7 @@ export function calculateCurrentFixedCosts(data: ProjectData): {
 
   // Abonnement gaz: uniquement pour chauffage au gaz
   const abonnementGaz = data.type_chauffage === "Gaz"
-    ? (data.abonnement_gaz || 120)
+    ? (data.abonnement_gaz || GAS_SUBSCRIPTION.ANNUAL_AVERAGE)
     : 0
 
   // Entretien: utilise la valeur renseignée par l'utilisateur

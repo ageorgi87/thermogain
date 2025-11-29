@@ -49,6 +49,13 @@ export function Footer() {
             >
               Méthodologie
             </Link>
+            <Separator orientation="vertical" className="h-4" />
+            <Link
+              href="/legal/methodologie#donnees-sources"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sources
+            </Link>
           </nav>
         </div>
       </div>

@@ -66,6 +66,15 @@ export default function MethodologiePage() {
           <section id="donnees-sources" className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">2. Sources de données</h2>
 
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-6">
+              <p className="text-sm">
+                <strong>📋 Référence technique :</strong> Toutes les constantes statiques utilisées dans nos calculs
+                (facteurs de conversion, tarifs, COP moyens, etc.) sont centralisées dans le fichier{" "}
+                <code className="bg-blue-100 dark:bg-blue-900 px-1.5 py-0.5 rounded text-xs">lib/constants.ts</code>.
+                Chaque valeur y est documentée avec sa source, son utilisation et sa date de dernière mise à jour.
+              </p>
+            </div>
+
             <h3 className="text-xl font-semibold mt-6 mb-3">2.1 Prix de l'énergie</h3>
             <p className="mb-4">
               Les prix moyens de l'énergie sont issus de l'<strong>API DIDO du Service des Données et Études Statistiques (SDES)</strong>,

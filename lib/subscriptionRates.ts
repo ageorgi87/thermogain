@@ -8,7 +8,15 @@
  * - Coûts d'entretien moyens par type de chauffage
  *
  * Dernière mise à jour: Novembre 2025 (tarifs EDF en vigueur depuis août 2025)
+ *
+ * IMPORTANT: Les valeurs constantes proviennent de @/lib/constants
  */
+
+import {
+  ELECTRICITY_SUBSCRIPTION_ANNUAL,
+  GAS_SUBSCRIPTION,
+  MAINTENANCE_COSTS_ANNUAL,
+} from "@/lib/constants"
 
 // ============================================================================
 // ABONNEMENTS ÉLECTRICITÉ - TARIF RÉGLEMENTÉ EDF (TTC)
@@ -21,15 +29,10 @@
  *
  * IMPORTANT: Ces tarifs correspondent à l'option Base (tarif unique 24h/24)
  * Tarifs mensuels × 12 = tarifs annuels
+ *
+ * Note: Valeurs importées depuis @/lib/constants
  */
-export const ABONNEMENT_ELECTRICITE_ANNUEL: Record<number, number> = {
-  3: 140.76,   // 3 kVA : 140,76 €/an (11,73 €/mois) - Très petit logement, usage minimal
-  6: 185.64,   // 6 kVA : 185,64 €/an (15,47 €/mois) - Logement standard sans chauffage électrique
-  9: 232.68,   // 9 kVA : 232,68 €/an (19,39 €/mois) - Logement avec PAC ou chauffage élec
-  12: 279.84,  // 12 kVA : 279,84 €/an (23,32 €/mois) - Grande maison avec PAC puissante
-  15: 324.72,  // 15 kVA : 324,72 €/an (27,06 €/mois) - Très grande maison ou usage professionnel
-  18: 369.12,  // 18 kVA : 369,12 €/an (30,76 €/mois) - Usage professionnel ou très grande maison
-}
+export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL
 
 /**
  * Récupère le coût d'abonnement électrique annuel selon la puissance souscrite
@@ -72,18 +75,22 @@ export function getDeltaAbonnementElectricite(
  * Prix TTC incluant: acheminement (ATRD), taxes (TICGN, CTA), TVA 5.5% sur abonnement
  *
  * Valeur moyenne pour consommation standard chauffage (12000-20000 kWh/an)
+ *
+ * Note: Valeurs importées depuis @/lib/constants
  */
-export const ABONNEMENT_GAZ_ANNUEL_MOYEN = 120
+export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
 
 /**
  * Barème détaillé abonnement gaz selon consommation annuelle
  * Les tarifs varient selon la tranche de consommation (Base, B0, B1, B2i)
+ *
+ * Note: Valeurs importées depuis @/lib/constants
  */
 export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
-  base: 103,        // 0-1000 kWh/an - Eau chaude uniquement
-  B0: 120,          // 1000-6000 kWh/an - Eau chaude + cuisson
-  B1: 120,          // 6000-30000 kWh/an - Chauffage petit/moyen logement
-  B2i: 267,         // 30000-300000 kWh/an - Chauffage grand logement/collectif
+  base: GAS_SUBSCRIPTION.BY_CONSUMPTION.BASE,
+  B0: GAS_SUBSCRIPTION.BY_CONSUMPTION.B0,
+  B1: GAS_SUBSCRIPTION.BY_CONSUMPTION.B1,
+  B2i: GAS_SUBSCRIPTION.BY_CONSUMPTION.B2I,
 }
 
 // ============================================================================
@@ -98,15 +105,17 @@ export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
  * - Entretien chaudière gaz/fioul: OBLIGATOIRE annuellement (décret n°2009-649)
  * - Entretien PAC: Fortement recommandé annuellement, obligatoire tous les 2 ans
  * - Prix incluent: visite technicien, nettoyage, réglages, attestation
+ *
+ * Note: Valeurs importées depuis @/lib/constants
  */
 export const ENTRETIEN_ANNUEL_MOYEN: Record<string, number> = {
-  "Gaz": 120,           // Chaudière gaz: ramonage, nettoyage brûleur, contrôle combustion
-  "Fioul": 150,         // Chaudière fioul: ramonage obligatoire, nettoyage complet
-  "GPL": 130,           // Chaudière GPL: similaire gaz + spécificités GPL
-  "Pellets": 100,       // Poêle/chaudière pellets: nettoyage, ramonage
-  "Bois": 80,           // Poêle bois: ramonage (2x/an si usage principal)
-  "Électricité": 0,     // Chauffage électrique direct: aucun entretien obligatoire
-  "PAC": 120,           // PAC: contrôle étanchéité, fluide frigorigène, nettoyage filtres
+  "Gaz": MAINTENANCE_COSTS_ANNUAL.GAZ,
+  "Fioul": MAINTENANCE_COSTS_ANNUAL.FIOUL,
+  "GPL": MAINTENANCE_COSTS_ANNUAL.GPL,
+  "Pellets": MAINTENANCE_COSTS_ANNUAL.PELLETS,
+  "Bois": MAINTENANCE_COSTS_ANNUAL.BOIS,
+  "Électricité": MAINTENANCE_COSTS_ANNUAL.ELECTRIQUE,
+  "PAC": MAINTENANCE_COSTS_ANNUAL.PAC,
 }
 
 /**
