@@ -13,22 +13,26 @@ import { calculateCostForYear } from "@/lib/energyPriceEvolution"
 export function calculateCurrentConsumptionKwh(data: ProjectData): number {
   switch (data.type_chauffage) {
     case "Fioul":
-      // 1 litre de fioul ≈ 10 kWh
-      return (data.conso_fioul_litres || 0) * 10
+      // 1 litre de fioul = 9.96 kWh PCI (Pouvoir Calorifique Inférieur)
+      // Source: Standards européens, ADEME
+      return (data.conso_fioul_litres || 0) * 9.96
 
     case "Gaz":
       return data.conso_gaz_kwh || 0
 
     case "GPL":
-      // 1 kg de GPL ≈ 12.8 kWh
+      // 1 kg de GPL (propane) = 12.8 kWh PCI
+      // Source: Standards européens
       return (data.conso_gpl_kg || 0) * 12.8
 
     case "Pellets":
-      // 1 kg de pellets ≈ 4.8 kWh
-      return (data.conso_pellets_kg || 0) * 4.8
+      // 1 kg de pellets = 4.6 kWh PCI (avec taux humidité < 10%)
+      // Source: Standards européens, ADEME
+      return (data.conso_pellets_kg || 0) * 4.6
 
     case "Bois":
-      // 1 stère de bois ≈ 1800 kWh
+      // 1 stère de bois sec (20-25% humidité) = 1800 kWh
+      // Note: Valeur variable selon essence et humidité
       return (data.conso_bois_steres || 0) * 1800
 
     case "Electrique":

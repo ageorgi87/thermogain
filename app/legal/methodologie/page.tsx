@@ -94,17 +94,17 @@ export default function MethodologiePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">3 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">112,86 €/an</td></tr>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">6 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">151,20 €/an</td></tr>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">9 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">189,60 €/an</td></tr>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">12 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">228,24 €/an</td></tr>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">15 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">265,56 €/an</td></tr>
-                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">18 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">301,08 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">3 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">140,76 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">6 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">185,64 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">9 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">232,68 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">12 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">279,84 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">15 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">324,72 €/an</td></tr>
+                  <tr><td className="border border-gray-300 dark:border-gray-700 p-3">18 kVA</td><td className="border border-gray-300 dark:border-gray-700 p-3">369,12 €/an</td></tr>
                 </tbody>
               </table>
             </div>
             <p className="mb-4 text-sm italic">
-              Source : <a href="https://particulier.edf.fr/fr/accueil/gestion-contrat/options/base.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">EDF - Tarif Bleu Base 2024</a>
+              Source : <a href="https://particulier.edf.fr/fr/accueil/gestion-contrat/options/base.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">EDF - Tarif Bleu Base (en vigueur depuis 1er août 2025)</a>
             </p>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">2.3 Coefficients de performance (COP)</h3>
@@ -148,8 +148,8 @@ export default function MethodologiePage() {
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">Fioul domestique</td>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">1 litre</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">10 kWh</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">ADEME</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">9,96 kWh PCI</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Standards européens</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">Gaz naturel</td>
@@ -160,20 +160,20 @@ export default function MethodologiePage() {
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">GPL (propane)</td>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">1 kg</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">12,8 kWh</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">ADEME</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">12,8 kWh PCI</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Standards européens</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">Pellets (granulés)</td>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">1 kg</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">4,8 kWh</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">ADEME</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">4,6 kWh PCI</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Standards européens (&lt;10% humidité)</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">Bois (bûches)</td>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">1 stère</td>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">1800 kWh</td>
-                    <td className="border border-gray-300 dark:border-gray-700 p-3">ADEME</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Bois sec 20-25% humidité</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 dark:border-gray-700 p-3">Électricité</td>
@@ -184,6 +184,12 @@ export default function MethodologiePage() {
                 </tbody>
               </table>
             </div>
+            <p className="mb-4 mt-4 text-sm bg-muted/30 p-3 rounded-lg">
+              <strong>Note importante sur le PCI :</strong> Les facteurs de conversion utilisent le <strong>PCI (Pouvoir Calorifique Inférieur)</strong>
+              et non le PCS (Pouvoir Calorifique Supérieur), conformément aux standards européens. Le PCI correspond à l'énergie réellement
+              utilisable par les systèmes de chauffage modernes. Pour le bois, la valeur de 1800 kWh/stère correspond à du bois sec
+              avec un taux d'humidité de 20-25% ; cette valeur peut varier selon l'essence et l'humidité du bois.
+            </p>
           </section>
 
           {/* 4. Coût du chauffage actuel */}

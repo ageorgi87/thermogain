@@ -1,5 +1,5 @@
 /**
- * Barèmes d'abonnement électricité et gaz 2024
+ * Barèmes d'abonnement électricité et gaz 2025
  * Sources officielles: EDF, Engie, CRE (Commission de Régulation de l'Énergie)
  *
  * Ce module centralise tous les tarifs réglementés et moyens pour:
@@ -7,7 +7,7 @@
  * - Abonnements gaz
  * - Coûts d'entretien moyens par type de chauffage
  *
- * Dernière mise à jour: Novembre 2024
+ * Dernière mise à jour: Novembre 2025 (tarifs EDF en vigueur depuis août 2025)
  */
 
 // ============================================================================
@@ -16,16 +16,19 @@
 
 /**
  * Barème abonnement électricité selon puissance souscrite
- * Source: EDF Tarif Bleu - Novembre 2024
+ * Source: EDF Tarif Bleu - En vigueur depuis 1er août 2025
  * Prix TTC incluant: acheminement (TURPE), taxes (CSPE, CTA), TVA 5.5% sur abonnement
+ *
+ * IMPORTANT: Ces tarifs correspondent à l'option Base (tarif unique 24h/24)
+ * Tarifs mensuels × 12 = tarifs annuels
  */
 export const ABONNEMENT_ELECTRICITE_ANNUEL: Record<number, number> = {
-  3: 115,   // 3 kVA : 115 €/an (~9.60 €/mois) - Très petit logement, usage minimal
-  6: 151,   // 6 kVA : 151 €/an (~12.60 €/mois) - Logement standard sans chauffage électrique
-  9: 189,   // 9 kVA : 189 €/an (~15.75 €/mois) - Logement avec PAC ou chauffage élec
-  12: 228,  // 12 kVA : 228 €/an (~19.00 €/mois) - Grande maison avec PAC puissante
-  15: 264,  // 15 kVA : 264 €/an (~22.00 €/mois) - Très grande maison ou usage professionnel
-  18: 301,  // 18 kVA : 301 €/an (~25.08 €/mois) - Usage professionnel ou très grande maison
+  3: 140.76,   // 3 kVA : 140,76 €/an (11,73 €/mois) - Très petit logement, usage minimal
+  6: 185.64,   // 6 kVA : 185,64 €/an (15,47 €/mois) - Logement standard sans chauffage électrique
+  9: 232.68,   // 9 kVA : 232,68 €/an (19,39 €/mois) - Logement avec PAC ou chauffage élec
+  12: 279.84,  // 12 kVA : 279,84 €/an (23,32 €/mois) - Grande maison avec PAC puissante
+  15: 324.72,  // 15 kVA : 324,72 €/an (27,06 €/mois) - Très grande maison ou usage professionnel
+  18: 369.12,  // 18 kVA : 369,12 €/an (30,76 €/mois) - Usage professionnel ou très grande maison
 }
 
 /**
