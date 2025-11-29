@@ -17,7 +17,7 @@ export default function CreateProjectPage() {
     const createNewProject = async () => {
       hasCreatedProject.current = true
       try {
-        const project = await createProject({ name: "Projet PAC" })
+        const project = await createProject({ name: "" })
         // Toujours rediriger vers la première étape du wizard
         const firstStep = WIZARD_STEPS[0].key
         router.push(`/projects/${project.id}/${firstStep}`)
