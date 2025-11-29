@@ -22,24 +22,15 @@ export async function saveInformationsData(projectId: string, data: Informations
     throw new Error("Projet non trouvé")
   }
 
-  // Update project name and recipientEmails
-  await prisma.project.update({
+  // Update project name and recipientEmails directly in Project table
+  const updatedProject = await prisma.project.update({
     where: { id: projectId },
     data: {
       name: validatedData.project_name,
       recipientEmails: validatedData.recipient_emails,
+      currentStep: project.currentStep === 0 ? 1 : project.currentStep, // Move to step 1 if on step 0
     },
   })
 
-  // Upsert informations data
-  const informations = await prisma.projectInformations.upsert({
-    where: { projectId },
-    create: {
-      ...validatedData,
-      projectId,
-    } as any,
-    update: validatedData as any,
-  })
-
-  return informations
+  return updatedProject
 }

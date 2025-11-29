@@ -212,39 +212,44 @@ export default function WizardStepPage() {
             setNombreOccupants(project.logement.nombre_occupants)
           }
 
-          // Map step key to database field name
-          const sectionMap: Record<string, string> = {
-            "informations": "informations",
-            "logement": "logement",
-            "chauffage-actuel": "chauffageActuel",
-            "projet-pac": "projetPac",
-            "couts": "couts",
-            "aides": "aides",
-            "financement": "financement",
-          }
+          // Load form data based on current step
+          if (step === "informations") {
+            // Informations step: load from Project table directly (no separate table)
+            const informationsData = {
+              project_name: project.name || "",
+              recipient_emails: project.recipientEmails || [],
+            }
+            setFormData(informationsData)
+          } else {
+            // Other steps: load from their respective section tables
+            const sectionMap: Record<string, string> = {
+              "logement": "logement",
+              "chauffage-actuel": "chauffageActuel",
+              "projet-pac": "projetPac",
+              "couts": "couts",
+              "aides": "aides",
+              "financement": "financement",
+            }
 
-          const sectionKey = sectionMap[step]
-          const sectionData = project[sectionKey as keyof typeof project]
+            const sectionKey = sectionMap[step]
+            const sectionData = project[sectionKey as keyof typeof project]
 
-          if (sectionData && typeof sectionData === 'object') {
-            // Remove the ID, projectId, and timestamp fields before resetting
-            const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
-            // Convert null values appropriately:
-            // - For number fields: convert to undefined (not 0, to allow optional validation)
-            // - For boolean fields: keep as null or undefined
-            // - For string fields: keep as is
-            const cleanedData = Object.fromEntries(
-              Object.entries(data).map(([key, value]) => {
-                if (value === null) {
-                  return [key, undefined]
-                }
-                return [key, value]
-              })
-            )
+            if (sectionData && typeof sectionData === 'object') {
+              // Remove the ID, projectId, and timestamp fields before resetting
+              const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
+              // Convert null values appropriately:
+              // - For number fields: convert to undefined (not 0, to allow optional validation)
+              // - For boolean fields: keep as null or undefined
+              // - For string fields: keep as is
+              const cleanedData = Object.fromEntries(
+                Object.entries(data).map(([key, value]) => {
+                  if (value === null) {
+                    return [key, undefined]
+                  }
+                  return [key, value]
+                })
+              )
 
-            // For refactored steps, use custom state management
-            const refactoredSteps = ["informations", "logement", "chauffage-actuel", "projet-pac", "couts", "aides", "financement"]
-            if (refactoredSteps.includes(step)) {
               setFormData(cleanedData)
             }
           }

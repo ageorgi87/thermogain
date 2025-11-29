@@ -83,8 +83,7 @@ model Project {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations to section tables
-  informations     ProjectInformations?
+  // Relations to section tables (Section 0 removed - data stored directly in Project)
   logement         ProjectLogement?
   chauffageActuel  ProjectChauffageActuel?
   projetPac        ProjectProjetPac?
@@ -92,19 +91,6 @@ model Project {
   aides            ProjectAides?
   financement      ProjectFinancement?
   evolutions       ProjectEvolutions?
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// Section 0: Informations (Project Information)
-model ProjectInformations {
-  id                   String   @id @default(cuid())
-  projectId            String   @unique
-  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  project_name         String   @default("Projet PAC")
-  recipient_emails     String[] @default([]) // Emails to send results to
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
