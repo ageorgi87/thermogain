@@ -34,12 +34,14 @@ export function ProfitabilityCard({
   }
 
   const isRentable = netBenefit > 0
+  // Check if payback period exceeds lifespan
+  const exceedsLifespan = paybackPeriod !== null && paybackPeriod > dureeVie
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <LineChart className="h-5 w-5 text-brand-teal-600" />
+          <LineChart className={`h-5 w-5 ${exceedsLifespan || !isRentable ? "text-red-600" : "text-brand-teal-600"}`} />
           Rentabilité
         </CardTitle>
         <CardDescription className="mt-1.5">Analyse sur {dureeVie} ans</CardDescription>
@@ -47,17 +49,17 @@ export function ProfitabilityCard({
       <CardContent className="space-y-6">
         {/* Payback Period - Métrique LEAD */}
         {paybackPeriod && paybackYear ? (
-          <div className="bg-brand-teal-50 dark:bg-brand-teal-950 rounded-lg p-4">
+          <div className={`rounded-lg p-4 ${exceedsLifespan ? "bg-red-50 dark:bg-red-950" : "bg-brand-teal-50 dark:bg-brand-teal-950"}`}>
             <p className="text-sm text-muted-foreground mb-1">Retour sur investissement</p>
-            <div className="text-4xl font-bold text-brand-teal-600 mb-1">
+            <div className={`text-4xl font-bold mb-1 ${exceedsLifespan ? "text-red-600" : "text-brand-teal-600"}`}>
               {formatPaybackPeriod(paybackPeriod)}
             </div>
             <p className="text-sm text-muted-foreground">En {paybackYear}</p>
           </div>
         ) : (
-          <div className="bg-orange-50 dark:bg-orange-950 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-950 rounded-lg p-4">
             <p className="text-sm text-muted-foreground mb-1">Retour sur investissement</p>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-bold text-red-600">
               Non rentabilisé
             </div>
             <p className="text-sm text-muted-foreground">Sur {dureeVie} ans</p>
@@ -69,7 +71,7 @@ export function ProfitabilityCard({
         {/* Taux de rentabilité annuel */}
         <div>
           <p className="text-sm text-muted-foreground mb-2">Taux de rentabilité annuel</p>
-          <div className="text-4xl font-bold text-brand-teal-600">
+          <div className={`text-4xl font-bold ${exceedsLifespan || !isRentable ? "text-red-600" : "text-brand-teal-600"}`}>
             {tauxRentabilite !== null ? `${tauxRentabilite}%` : "N/A"}
           </div>
         </div>

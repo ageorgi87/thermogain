@@ -22,6 +22,7 @@ export function ConsumptionCard({
   dureeVie,
 }: ConsumptionCardProps) {
   const totalSavings = coutTotalActuelLifetime - coutTotalPacLifetime
+  const isNegative = totalSavings < 0
 
   return (
     <Card>
@@ -47,9 +48,9 @@ export function ConsumptionCard({
         <Separator />
 
         {/* Économies totales sur durée de vie */}
-        <div className="bg-brand-teal-50 dark:bg-brand-teal-950 rounded-lg p-4">
+        <div className={`rounded-lg p-4 ${isNegative ? "bg-red-50 dark:bg-red-950" : "bg-brand-teal-50 dark:bg-brand-teal-950"}`}>
           <p className="text-sm text-muted-foreground mb-2">Économies totales sur {dureeVie} ans</p>
-          <div className="text-4xl font-bold text-brand-teal-600">
+          <div className={`text-4xl font-bold ${isNegative ? "text-red-600" : "text-brand-teal-600"}`}>
             {totalSavings.toLocaleString("fr-FR")} €
           </div>
         </div>
