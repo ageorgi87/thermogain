@@ -26,7 +26,6 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentAnnualCost(data)
   const coutAnnuelPac = calculatePacAnnualCost(data)
-  const economiesAnnuelles = coutAnnuelActuel - coutAnnuelPac
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
@@ -50,6 +49,11 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
   const yearlyData = calculateYearlyData(dataAjusteeROI, data.duree_vie_pac)
+
+  // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
+  const economiesAnnuelles = yearlyData.length > 0
+    ? yearlyData.reduce((sum, y) => sum + y.economie, 0) / yearlyData.length
+    : coutAnnuelActuel - coutAnnuelPac
 
   // ROI avec investissement réel (incluant intérêts du crédit)
   const paybackPeriod = calculatePaybackPeriod(dataAjusteeROI)

@@ -36,7 +36,7 @@ export function ConsumptionCard({
       <CardContent className="space-y-6">
         {/* Économies annuelles - Métrique hero */}
         <div>
-          <p className="text-sm text-muted-foreground mb-2">Économies annuelles moyennes</p>
+          <p className="text-sm text-muted-foreground mb-2">Économies annuelles moyennes (hors investissement)</p>
           <div className="flex items-baseline gap-2">
             <span className="text-5xl font-bold text-brand-teal-600">
               {economiesAnnuelles.toLocaleString("fr-FR")} €
