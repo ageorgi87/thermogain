@@ -204,7 +204,7 @@ export async function sendStudyResults({
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
       to: emailsTo,
-      subject: `Votre étude PAC : ${Math.round(results.economiesAnnuelles).toLocaleString('fr-FR')}€ d'économies/an`,
+      subject: 'Votre étude de rentabilité pompe à chaleur',
       html: emailHtml,
       // Optionnel : ajouter des tags pour tracking
       tags: [

@@ -73,7 +73,7 @@ export async function submitContactForm(
 
     // Send notification email to admin
     const notificationResult = await resend.emails.send({
-      from: 'ThermoGain <noreply@thermogain.fr>',
+      from: 'ThermoGain <contact@thermogain.fr>',
       to: 'contact@thermogain.fr',
       replyTo: data.email, // Allow direct reply to the sender
       subject: `[Contact] ${data.subject}`,
@@ -90,7 +90,7 @@ export async function submitContactForm(
 
     // Send confirmation email to user
     const confirmationResult = await resend.emails.send({
-      from: 'ThermoGain <noreply@thermogain.fr>',
+      from: 'ThermoGain <contact@thermogain.fr>',
       to: data.email,
       subject: 'Confirmation de réception de votre message',
       html: confirmationHtml,

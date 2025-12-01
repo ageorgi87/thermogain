@@ -1,7 +1,5 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
 
 export const metadata = {
   title: "Gestion des Cookies | ThermoGain",
@@ -10,17 +8,7 @@ export const metadata = {
 
 export default function CookiesPage() {
   return (
-    <div className="container mx-auto py-8 max-w-4xl px-4">
-      <div className="mb-6">
-        <Link href="/">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour à l'accueil
-          </Button>
-        </Link>
-      </div>
-
-      <Card>
+    <Card>
         <CardHeader>
           <CardTitle className="text-3xl">Gestion des Cookies</CardTitle>
           <CardDescription>
@@ -269,6 +257,5 @@ export default function CookiesPage() {
           </section>
         </CardContent>
       </Card>
-    </div>
   )
 }

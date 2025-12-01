@@ -1,7 +1,5 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
 
 export const metadata = {
   title: "Politique de Confidentialité | ThermoGain",
@@ -10,17 +8,7 @@ export const metadata = {
 
 export default function PolitiqueConfidentialitePage() {
   return (
-    <div className="container mx-auto py-8 max-w-4xl px-4">
-      <div className="mb-6">
-        <Link href="/">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour à l'accueil
-          </Button>
-        </Link>
-      </div>
-
-      <Card>
+    <Card>
         <CardHeader>
           <CardTitle className="text-3xl">Politique de Confidentialité</CardTitle>
           <CardDescription>
@@ -338,6 +326,5 @@ export default function PolitiqueConfidentialitePage() {
           </div>
         </CardContent>
       </Card>
-    </div>
   )
 }
