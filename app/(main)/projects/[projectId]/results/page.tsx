@@ -128,7 +128,12 @@ export default async function ResultsPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto py-8 max-w-7xl space-y-8">
-      <ResultsHeader projectName={project.name} projectId={project.id} />
+      <ResultsHeader
+        projectId={project.id}
+        userId={project.userId}
+        userEmail={project.user.email || ''}
+        hasRecipientEmails={project.recipientEmails && project.recipientEmails.length > 0}
+      />
 
       {/* Power Validation Warning */}
       {!powerValidation.isValid && (
