@@ -72,10 +72,8 @@ export default function ProjectsPage() {
   }
 
   const getProjectEditUrl = (project: Project) => {
-    const totalSteps = getTotalSteps()
-
     // Si toutes les étapes sont complétées, aller à la première étape
-    if (project.completed || project.currentStep > totalSteps) {
+    if (project.completed) {
       return `/projects/${project.id}/${WIZARD_STEPS[0].key}`
     }
 
@@ -153,7 +151,7 @@ export default function ProjectsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {getProjectStatus(project.currentStep) === "Terminé" ? (
+                    {getProjectStatus(project.completed) === "Terminé" ? (
                       <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0">
                         Terminé
                       </Badge>

@@ -29,12 +29,12 @@ export function getStepNumber(currentStep: number): number {
 }
 
 /**
- * Retourne le statut d'un projet en fonction de son currentStep
- * @param currentStep - Le numéro d'étape actuel du projet (1-based)
+ * Retourne le statut d'un projet en fonction du flag completed
+ * @param completed - Le flag indiquant si le projet est terminé
  * @returns "En cours" ou "Terminé"
  */
-export function getProjectStatus(currentStep: number): "En cours" | "Terminé" {
-  return currentStep > getTotalSteps() ? "Terminé" : "En cours"
+export function getProjectStatus(completed: boolean): "En cours" | "Terminé" {
+  return completed ? "Terminé" : "En cours"
 }
 
 /**
