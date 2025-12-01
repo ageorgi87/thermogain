@@ -29,6 +29,13 @@ model User {
   sessions      Session[]
   projects      Project[]
 
+  // Professional contact information
+  address       String?
+  phone         String?
+  city          String?
+  postalCode    String?
+  website       String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

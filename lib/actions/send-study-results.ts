@@ -161,6 +161,11 @@ export async function sendStudyResults({
       ? `${project.user.firstName} ${project.user.lastName}`
       : project.user.firstName || project.user.name || undefined
     const professionalCompany = project.user.company || undefined
+    const professionalAddress = project.user.address || undefined
+    const professionalPhone = project.user.phone || undefined
+    const professionalCity = project.user.city || undefined
+    const professionalPostalCode = project.user.postalCode || undefined
+    const professionalWebsite = project.user.website || undefined
 
     // 8. Préparer les données communes pour l'email
     // Note: Le prénom ne sera pas inclus car on envoie à plusieurs destinataires potentiels
@@ -175,6 +180,11 @@ export async function sendStudyResults({
       recipientFirstName,
       professionalName,
       professionalCompany,
+      professionalAddress,
+      professionalPhone,
+      professionalCity,
+      professionalPostalCode,
+      professionalWebsite,
       projectName: project.name,
       currentHeatingType: project.chauffageActuel?.type_chauffage || 'système actuel',
       pacType: project.projetPac?.type_pac || 'PAC',

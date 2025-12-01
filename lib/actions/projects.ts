@@ -34,6 +34,7 @@ export async function getProject(id: string) {
   const project = await prisma.project.findUnique({
     where: { id },
     include: {
+      user: true,
       logement: true,
       chauffageActuel: true,
       projetPac: true,

@@ -16,6 +16,11 @@ interface StudyResultsEmailProps {
   // Professional info
   professionalName?: string
   professionalCompany?: string
+  professionalAddress?: string
+  professionalPhone?: string
+  professionalCity?: string
+  professionalPostalCode?: string
+  professionalWebsite?: string
 
   // Project info
   projectName: string
@@ -39,6 +44,11 @@ export function StudyResultsEmail({
   recipientFirstName,
   professionalName,
   professionalCompany,
+  professionalAddress,
+  professionalPhone,
+  professionalCity,
+  professionalPostalCode,
+  professionalWebsite,
   projectName,
   currentHeatingType,
   pacType,
@@ -56,6 +66,13 @@ export function StudyResultsEmail({
   const hasProfessional = professionalName || professionalCompany
   const professionalDisplay = professionalCompany || professionalName || 'votre conseiller'
 
+  // Build full address if available
+  const hasAddress = professionalAddress || professionalCity || professionalPostalCode
+  const fullAddress = [
+    professionalAddress,
+    professionalPostalCode && professionalCity ? `${professionalPostalCode} ${professionalCity}` : professionalPostalCode || professionalCity
+  ].filter(Boolean).join(', ')
+
   return (
     <EmailLayout previewText={previewText}>
       <Preview>{previewText}</Preview>
@@ -66,14 +83,14 @@ export function StudyResultsEmail({
       </Text>
 
       <Text style={paragraph}>
-        Votre étude de remplacement <strong>{currentHeatingType}</strong> → <strong>{pacType}</strong> est prête !
+        Nous avons le plaisir de vous transmettre l'analyse de rentabilité pour l'installation d'une pompe à chaleur <strong>{pacType}</strong> en remplacement de votre système de chauffage actuel <strong>{currentHeatingType}</strong>. Cette étude a été réalisée sur la base des informations spécifiques que vous avez fournies concernant votre logement et vos besoins énergétiques.
       </Text>
 
       {/* Professional Attribution */}
       {hasProfessional && (
         <Section style={professionalBox}>
           <Text style={professionalLabel}>
-            📋 Étude réalisée avec :
+            Étude réalisée avec
           </Text>
           <Text style={professionalNameStyle}>
             {professionalDisplay}
@@ -81,6 +98,21 @@ export function StudyResultsEmail({
           {professionalCompany && professionalName && (
             <Text style={professionalRoleStyle}>
               {professionalName}
+            </Text>
+          )}
+          {hasAddress && (
+            <Text style={professionalContactStyle}>
+              📍 {fullAddress}
+            </Text>
+          )}
+          {professionalPhone && (
+            <Text style={professionalContactStyle}>
+              📞 {professionalPhone}
+            </Text>
+          )}
+          {professionalWebsite && (
+            <Text style={professionalContactStyle}>
+              🌐 <Link href={professionalWebsite} style={professionalLinkStyle}>{professionalWebsite}</Link>
             </Text>
           )}
         </Section>
@@ -132,38 +164,23 @@ export function StudyResultsEmail({
         </table>
       </Section>
 
-      {/* CTA Button */}
-      <Section style={buttonContainer}>
-        <Button style={button} href={resultsUrl}>
-          Voir l'étude complète
-        </Button>
-      </Section>
-
-      {/* What's included */}
-      <Text style={paragraph}>
-        <strong>L'étude complète inclut :</strong>
-      </Text>
-      <ul style={list}>
-        <li>Projection financière détaillée sur 17 ans</li>
-        <li>Graphiques d'évolution des coûts</li>
-        <li>Détail du calcul des aides (MaPrimeRénov', CEE)</li>
-        <li>COP ajusté selon votre zone climatique</li>
-        <li>Impact environnemental (réduction CO₂)</li>
-      </ul>
-
       {/* Legal Disclaimers */}
       <Hr style={divider} />
 
       <Text style={disclaimerText}>
-        Nature de l'étude : Cette analyse est une simulation indicative basée sur les informations que vous avez fournies et les données moyennes du marché. Les montants affichés sont des projections estimatives et non contractuelles.
+        Nature de l'étude : Cette analyse est une simulation indicative et approximative basée sur les informations que vous avez fournies et les données moyennes du marché. Les montants, économies et délais affichés sont des projections estimatives à titre informatif uniquement et n'ont aucune valeur contractuelle.
       </Text>
 
       <Text style={disclaimerText}>
-        Non-engagement : Ni ThermoGain ni {professionalDisplay} ne s'engagent sur l'exactitude des résultats affichés. Les économies réelles dépendront de nombreux facteurs : évolution des prix de l'énergie, conditions climatiques, usage du logement, performance effective de l'installation, etc.
+        Non-engagement : Ni ThermoGain, ni {professionalDisplay}, ni aucune partie impliquée dans la réalisation de cette étude ne s'engagent sur l'exactitude, la fiabilité ou la garantie des résultats affichés. Les chiffres présentés ne constituent en aucun cas une promesse de résultat. Les économies réelles dépendront de nombreux facteurs variables : évolution imprévisible des prix de l'énergie, conditions climatiques, usage effectif du logement, comportement des occupants, performance réelle de l'installation, qualité de la mise en œuvre, etc.
       </Text>
 
       <Text style={disclaimerText}>
-        Aides financières : Les montants d'aides indiqués sont donnés à titre informatif. Leur obtention est soumise à conditions (ressources, éligibilité, conformité des travaux). Consultez les organismes officiels (ANAH, fournisseurs d'énergie) pour connaître vos droits réels.
+        Aides financières : Les montants d'aides indiqués sont donnés à titre purement informatif et indicatif. Leur obtention effective est soumise à de nombreuses conditions (niveau de ressources, éligibilité du logement et des équipements, conformité des travaux, respect des procédures administratives). Ces aides peuvent évoluer ou être supprimées à tout moment. Consultez impérativement les organismes officiels (ANAH, fournisseurs d'énergie) pour connaître vos droits réels et les démarches à effectuer.
+      </Text>
+
+      <Text style={disclaimerText}>
+        Responsabilité : L'utilisation de cette étude se fait sous votre seule et entière responsabilité. Aucune réclamation ne pourra être formulée en cas d'écart entre les estimations présentées et les résultats effectivement constatés.
       </Text>
     </EmailLayout>
   )
@@ -324,7 +341,19 @@ const professionalNameStyle: React.CSSProperties = {
 const professionalRoleStyle: React.CSSProperties = {
   fontSize: '15px',
   color: '#c2410c',
-  margin: '0',
+  margin: '0 0 12px',
+}
+
+const professionalContactStyle: React.CSSProperties = {
+  fontSize: '14px',
+  color: '#92400e',
+  margin: '6px 0 0',
+  lineHeight: '20px',
+}
+
+const professionalLinkStyle: React.CSSProperties = {
+  color: '#ea580c',
+  textDecoration: 'none',
 }
 
 const divider = {
@@ -332,37 +361,9 @@ const divider = {
   margin: '24px 0',
 }
 
-const buttonContainer = {
-  textAlign: 'center' as const,
-  margin: '40px 0 32px',
-}
-
-const button = {
-  backgroundColor: '#ea580c',
-  borderRadius: '8px',
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '600',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '16px 48px',
-  lineHeight: '1',
-  border: 'none',
-  cursor: 'pointer',
-}
-
-const list = {
-  fontSize: '15px',
-  lineHeight: '24px',
-  color: '#374151',
-  paddingLeft: '20px',
-  margin: '12px 0 24px',
-}
-
 const disclaimerText = {
   fontSize: '11px',
   lineHeight: '16px',
   color: '#6b7280',
-  margin: '0 0 8px',
+  margin: '0 0 4px',
 }

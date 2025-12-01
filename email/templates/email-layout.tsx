@@ -4,6 +4,7 @@ import {
   Head,
   Html,
   Img,
+  Link,
   Section,
   Text,
 } from '@react-email/components'
@@ -34,19 +35,21 @@ export const EmailLayout = ({ children, previewText }: EmailLayoutProps) => {
         <Container style={container}>
           {/* Header avec logo */}
           <Section style={header}>
-            <Img
-              src="https://thermogain.fr/logo.png"
-              width="48"
-              height="48"
-              alt="ThermoGain Logo"
-              style={logo}
-            />
-            <Img
-              src="https://thermogain.fr/nomLogo.png"
-              width="200"
-              alt="ThermoGain"
-              style={logoText}
-            />
+            <Link href="https://thermogain.fr" style={logoLink}>
+              <Img
+                src="https://thermogain.fr/logo.png"
+                width="48"
+                height="48"
+                alt="ThermoGain Logo"
+                style={logo}
+              />
+              <Img
+                src="https://thermogain.fr/nomLogo.png"
+                width="200"
+                alt="ThermoGain"
+                style={logoText}
+              />
+            </Link>
           </Section>
 
           {/* Contenu principal */}
@@ -110,6 +113,11 @@ const header = {
   padding: '32px 32px 24px',
   textAlign: 'center' as const,
   borderBottom: '1px solid #e5e7eb',
+}
+
+const logoLink = {
+  display: 'block',
+  textDecoration: 'none',
 }
 
 const logo = {
