@@ -41,7 +41,12 @@ export const EmailLayout = ({ children, previewText }: EmailLayoutProps) => {
               alt="ThermoGain Logo"
               style={logo}
             />
-            <Text style={headerTitle}>ThermoGain</Text>
+            <Img
+              src="https://thermogain.fr/nomLogo.png"
+              width="200"
+              alt="ThermoGain"
+              style={logoText}
+            />
           </Section>
 
           {/* Contenu principal */}
@@ -112,14 +117,9 @@ const logo = {
   display: 'block',
 }
 
-const headerTitle = {
-  fontSize: '24px',
-  fontWeight: 'bold',
-  background: 'linear-gradient(to right, #ea580c, #dc2626)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  margin: '12px 0 0',
-  padding: '0',
+const logoText = {
+  margin: '12px auto 0',
+  display: 'block',
 }
 
 const contentSection = {

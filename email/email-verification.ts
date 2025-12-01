@@ -48,14 +48,13 @@ export async function createVerificationToken(email: string, firstName?: string)
     await resend.emails.send({
       from: EMAIL_FROM,
       to: email,
-      // Sujet optimisé : court (< 50 car), clair, action directe
       subject: 'Confirmez votre email ThermoGain',
       html: emailHtml,
     })
 
     return { success: true }
   } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email de vérification:', error)
+    console.error('Failed to send verification email:', error)
     throw new Error('Impossible d\'envoyer l\'email de vérification')
   }
 }
