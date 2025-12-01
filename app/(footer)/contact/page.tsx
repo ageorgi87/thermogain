@@ -108,10 +108,9 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-12">
+    <div className="max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-orange-100 mb-6">
             <Mail className="w-8 h-8 text-brand-orange-600" />
           </div>
@@ -194,9 +193,6 @@ export default function ContactPage() {
                   {errors.email}
                 </p>
               )}
-              <p className="text-sm text-muted-foreground">
-                Nous vous enverrons une confirmation de réception à cette adresse
-              </p>
             </div>
 
             {/* Subject Field */}
@@ -274,14 +270,6 @@ export default function ContactPage() {
             </p>
           </form>
         </div>
-
-        {/* Additional Information */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            Nous nous engageons à répondre à toutes les demandes dans un délai de 24 à 48 heures ouvrées.
-          </p>
-        </div>
-      </div>
     </div>
   )
 }
