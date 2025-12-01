@@ -15,7 +15,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, TrendingDown, BarChart3, Calculator, CheckCircle2, Mail } from "lucide-react";
+import {
+  Loader2,
+  TrendingDown,
+  BarChart3,
+  Calculator,
+  CheckCircle2,
+  Mail,
+} from "lucide-react";
 import { checkEmailExists, registerUser } from "@/lib/actions/auth";
 
 type Step = "email" | "login" | "register" | "verify-email";
@@ -168,10 +175,10 @@ export default function LoginPage() {
                 Évaluez la rentabilité des pompes à chaleur pour vos clients
               </h2>
               <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
-                Investir aujourd'hui pour économiser demain peut freiner vos clients.
-                ThermoGain vous permet de démontrer la rentabilité réelle de chaque projet
-                avec des chiffres clairs, personnalisés et visuels qui rassurent et
-                facilitent la décision.
+                Investir aujourd'hui pour économiser demain peut freiner vos
+                clients. ThermoGain vous permet de démontrer la rentabilité
+                réelle de chaque projet avec des chiffres clairs, personnalisés
+                et visuels qui rassurent et facilitent la décision.
               </p>
             </div>
 
@@ -216,8 +223,8 @@ export default function LoginPage() {
                     Données centralisées et accessibles
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Tous les projets sauvegardés, partageables instantanément pour
-                    concrétiser vos ventes
+                    Tous les projets sauvegardés, partageables instantanément
+                    pour concrétiser vos ventes
                   </p>
                 </div>
               </div>
@@ -226,225 +233,234 @@ export default function LoginPage() {
 
           {/* Right Section - Login Card */}
           <Card className="w-full shadow-2xl border-2 order-2">
-          <CardHeader className="space-y-4">
-            <CardTitle className="text-2xl text-center">
-              {step === "email" && "Bienvenue"}
-              {step === "login" && "Bon retour"}
-              {step === "register" && "Créez votre compte"}
-              {step === "verify-email" && "Vérifiez votre email"}
-            </CardTitle>
-            <CardDescription className="text-center">
-              {step === "email" &&
-                "Entrez votre adresse e-mail professionnelle pour commencer"}
-              {step === "login" &&
-                "Entrez votre mot de passe pour accéder à votre espace"}
-              {step === "register" &&
-                "Complétez votre profil pour créer votre compte professionnel"}
-              {step === "verify-email" &&
-                "Consultez votre boîte de réception pour activer votre compte"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            <CardHeader className="space-y-4">
+              <CardTitle className="text-2xl text-center">
+                {step === "email" && "Bienvenue"}
+                {step === "login" && "Bon retour"}
+                {step === "register" && "Créez votre compte"}
+                {step === "verify-email" && "Vérifiez votre email"}
+              </CardTitle>
+              <CardDescription className="text-center">
+                {step === "email" &&
+                  "Entrez votre adresse e-mail professionnelle pour commencer"}
+                {step === "login" &&
+                  "Entrez votre mot de passe pour accéder à votre espace"}
+                {step === "register" &&
+                  "Complétez votre profil pour créer votre compte professionnel"}
+                {step === "verify-email" &&
+                  "Consultez votre boîte de réception pour activer votre compte"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>
+                    {error}
+                    {error === "Mot de passe invalide" && (
+                      <>
+                        <br />
+                        <a
+                          href="/forgot-password"
+                          className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
+                        >
+                          Mot de passe oublié ?
+                        </a>
+                      </>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
 
-            {step === "email" && (
-              <form onSubmit={handleEmailSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Adresse e-mail professionnelle</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="vous@exemple.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    autoFocus
-                    autoComplete="email"
-                    className="h-11"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-11"
-                  disabled={isLoading}
-                >
-                  {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Continuer
-                </Button>
-              </form>
-            )}
-
-            {step === "login" && (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Adresse e-mail</Label>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">{email}</p>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={resetToEmail}
-                    >
-                      Modifier
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    autoFocus
-                    autoComplete="current-password"
-                    className="h-11"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-11"
-                  disabled={isLoading}
-                >
-                  {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Se connecter
-                </Button>
-              </form>
-            )}
-
-            {step === "register" && (
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Adresse e-mail</Label>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">{email}</p>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={resetToEmail}
-                    >
-                      Modifier
-                    </Button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+              {step === "email" && (
+                <form onSubmit={handleEmailSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">Prénom</Label>
+                    <Label htmlFor="email">
+                      Adresse e-mail professionnelle
+                    </Label>
                     <Input
-                      id="firstName"
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
+                      id="email"
+                      type="email"
+                      placeholder="vous@exemple.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={isLoading}
                       autoFocus
-                      autoComplete="given-name"
+                      autoComplete="email"
+                      className="h-11"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full h-11"
+                    disabled={isLoading}
+                  >
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Continuer
+                  </Button>
+                </form>
+              )}
+
+              {step === "login" && (
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Adresse e-mail</Label>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-muted-foreground">{email}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={resetToEmail}
+                      >
+                        Modifier
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Mot de passe</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      autoFocus
+                      autoComplete="current-password"
+                      className="h-11"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full h-11"
+                    disabled={isLoading}
+                  >
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Se connecter
+                  </Button>
+                </form>
+              )}
+
+              {step === "register" && (
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Adresse e-mail</Label>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-muted-foreground">{email}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={resetToEmail}
+                      >
+                        Modifier
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">Prénom</Label>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        autoFocus
+                        autoComplete="given-name"
+                        className="h-11"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Nom</Label>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        autoComplete="family-name"
+                        className="h-11"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Entreprise (optionnel)</Label>
+                    <Input
+                      id="company"
+                      type="text"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      disabled={isLoading}
+                      placeholder="Nom de votre entreprise"
+                      autoComplete="organization"
                       className="h-11"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Nom</Label>
+                    <Label htmlFor="registerPassword">Mot de passe</Label>
                     <Input
-                      id="lastName"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      id="registerPassword"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                       disabled={isLoading}
-                      autoComplete="family-name"
+                      minLength={6}
+                      autoComplete="new-password"
                       className="h-11"
                     />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company">Entreprise (optionnel)</Label>
-                  <Input
-                    id="company"
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    disabled={isLoading}
-                    placeholder="Nom de votre entreprise"
-                    autoComplete="organization"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="registerPassword">Mot de passe</Label>
-                  <Input
-                    id="registerPassword"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    minLength={6}
-                    autoComplete="new-password"
-                    className="h-11"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Au moins 6 caractères
-                  </p>
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-11"
-                  disabled={isLoading}
-                >
-                  {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Créer mon compte
-                </Button>
-              </form>
-            )}
-
-            {step === "verify-email" && (
-              <div className="space-y-6 py-4">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="rounded-full bg-green-100 dark:bg-green-950 p-4">
-                    <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div className="text-center space-y-2">
-                    <h3 className="text-xl font-semibold">
-                      Compte créé avec succès !
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Un email de vérification a été envoyé à
-                    </p>
-                    <p className="font-medium text-orange-600">
-                      {email}
+                    <p className="text-xs text-muted-foreground">
+                      Au moins 6 caractères
                     </p>
                   </div>
-                </div>
+                  <Button
+                    type="submit"
+                    className="w-full h-11"
+                    disabled={isLoading}
+                  >
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Créer mon compte
+                  </Button>
+                </form>
+              )}
 
-                <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950">
-                  <Mail className="h-4 w-4 text-orange-600" />
-                  <AlertDescription className="text-sm">
-                    <strong>Vérifiez votre boîte de réception</strong>
-                    <br />
-                    Cliquez sur le lien dans l'email pour activer votre compte.
-                    Si vous ne le voyez pas, vérifiez vos spams.
-                  </AlertDescription>
-                </Alert>
+              {step === "verify-email" && (
+                <div className="space-y-6 py-4">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="rounded-full bg-green-100 dark:bg-green-950 p-4">
+                      <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-xl font-semibold">
+                        Compte créé avec succès !
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Un email de vérification a été envoyé à
+                      </p>
+                      <p className="font-medium text-orange-600">{email}</p>
+                    </div>
+                  </div>
 
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Redirection automatique dans 5 secondes...
-                  </p>
+                  <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950">
+                    <Mail className="h-4 w-4 text-orange-600" />
+                    <AlertDescription className="text-sm">
+                      <strong>Vérifiez votre boîte de réception</strong>
+                      <br />
+                      Cliquez sur le lien dans l'email pour activer votre
+                      compte. Si vous ne le voyez pas, vérifiez vos spams.
+                    </AlertDescription>
+                  </Alert>
+
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -456,10 +472,9 @@ export default function LoginPage() {
                     Retour à la connexion
                   </Button>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

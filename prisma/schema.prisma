@@ -82,6 +82,16 @@ model EmailVerificationToken {
   createdAt DateTime @default(now())
 }
 
+// Password Reset Tokens
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+
+  createdAt DateTime @default(now())
+}
+
 // Project - PAC Calculator (Multi-step wizard)
 model Project {
   id          String   @id @default(cuid())
