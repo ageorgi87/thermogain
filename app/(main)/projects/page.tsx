@@ -167,15 +167,17 @@ export default function ProjectsPage() {
                     {new Date(project.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push(`/projects/${project.id}/results`)}
-                      title="Voir les résultats"
-                      className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                    {project.completed && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push(`/projects/${project.id}/results`)}
+                        title="Voir les résultats"
+                        className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
