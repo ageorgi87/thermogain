@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -57,7 +58,26 @@ function ForgotPasswordContent() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      {/* Logo and Site Name */}
+      <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+        <Image
+          src="/logo.png"
+          alt="ThermoGain"
+          width={48}
+          height={48}
+          className="object-contain"
+        />
+        <div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            ThermoGain
+          </h1>
+          <p className="text-xs text-muted-foreground">
+            Études thermiques intelligentes
+          </p>
+        </div>
+      </Link>
+
       <Card className="w-full max-w-md shadow-2xl border-2">
         <CardHeader className="space-y-4">
           {status === "success" ? (
@@ -177,7 +197,24 @@ export default function ForgotPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+          <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+            <Image
+              src="/logo.png"
+              alt="ThermoGain"
+              width={48}
+              height={48}
+              className="object-contain"
+            />
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                ThermoGain
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Études thermiques intelligentes
+              </p>
+            </div>
+          </Link>
           <Card className="w-full max-w-md shadow-2xl border-2">
             <CardHeader className="space-y-4 text-center">
               <div className="mx-auto">

@@ -259,12 +259,15 @@ export default function LoginPage() {
                     {error === "Mot de passe invalide" && (
                       <>
                         <br />
-                        <a
-                          href={`/forgot-password?email=${encodeURIComponent(email)}`}
-                          className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
-                        >
-                          Mot de passe oublié ?
-                        </a>
+                        <span>
+                          Souhaitez-vous{" "}
+                          <a
+                            href={`/forgot-password?email=${encodeURIComponent(email)}`}
+                            className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
+                          >
+                            réinitialiser votre mot de passe ?
+                          </a>
+                        </span>
                       </>
                     )}
                   </AlertDescription>
