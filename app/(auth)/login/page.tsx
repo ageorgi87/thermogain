@@ -15,10 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, TrendingDown, BarChart3, Calculator } from "lucide-react";
+import { Loader2, TrendingDown, BarChart3, Calculator, CheckCircle2, Mail } from "lucide-react";
 import { checkEmailExists, registerUser } from "@/lib/actions/auth";
 
-type Step = "email" | "login" | "register";
+type Step = "email" | "login" | "register" | "verify-email";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -90,26 +90,19 @@ export default function LoginPage() {
         company,
       });
 
-      // Auto login after registration
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
+      // Show success screen
+      setStep("verify-email");
+      setIsLoading(false);
 
-      if (result?.error) {
-        setError(
-          "Compte créé mais la connexion a échoué. Veuillez essayer de vous connecter."
-        );
-      } else {
-        router.push("/");
+      // Redirect to login after 5 seconds
+      setTimeout(() => {
+        router.push("/login");
         router.refresh();
-      }
+      }, 5000);
     } catch (error: any) {
       setError(
         error.message || "Une erreur s'est produite. Veuillez réessayer."
       );
-    } finally {
       setIsLoading(false);
     }
   };
@@ -238,6 +231,7 @@ export default function LoginPage() {
               {step === "email" && "Bienvenue"}
               {step === "login" && "Bon retour"}
               {step === "register" && "Créez votre compte"}
+              {step === "verify-email" && "Vérifiez votre email"}
             </CardTitle>
             <CardDescription className="text-center">
               {step === "email" &&
@@ -246,6 +240,8 @@ export default function LoginPage() {
                 "Entrez votre mot de passe pour accéder à votre espace"}
               {step === "register" &&
                 "Complétez votre profil pour créer votre compte professionnel"}
+              {step === "verify-email" &&
+                "Consultez votre boîte de réception pour activer votre compte"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -414,6 +410,53 @@ export default function LoginPage() {
                   Créer mon compte
                 </Button>
               </form>
+            )}
+
+            {step === "verify-email" && (
+              <div className="space-y-6 py-4">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="rounded-full bg-green-100 dark:bg-green-950 p-4">
+                    <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      Compte créé avec succès !
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Un email de vérification a été envoyé à
+                    </p>
+                    <p className="font-medium text-orange-600">
+                      {email}
+                    </p>
+                  </div>
+                </div>
+
+                <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950">
+                  <Mail className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-sm">
+                    <strong>Vérifiez votre boîte de réception</strong>
+                    <br />
+                    Cliquez sur le lien dans l'email pour activer votre compte.
+                    Si vous ne le voyez pas, vérifiez vos spams.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Redirection automatique dans 5 secondes...
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      router.push("/login");
+                      router.refresh();
+                    }}
+                    className="w-full"
+                  >
+                    Retour à la connexion
+                  </Button>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
