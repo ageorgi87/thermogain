@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Card,
@@ -17,9 +17,9 @@ import {
   resendVerificationEmail,
 } from "@/email/email-verification";
 
-type Status = "verifying" | "success" | "error" | "resending";
+type Status = "verifying" | "success" | "error" | "resending" | "resent";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<Status>("verifying");
@@ -70,11 +70,7 @@ export default function VerifyEmailPage() {
         setStatus("error");
       } else {
         setError("");
-        Alert({
-          title: "Email envoyé",
-          description:
-            "Un nouveau lien de vérification a été envoyé à votre adresse email",
-        });
+        setStatus("resent");
       }
     } catch (error) {
       setError("Impossible de renvoyer l'email de vérification");
@@ -99,6 +95,9 @@ export default function VerifyEmailPage() {
             {status === "resending" && (
               <Mail className="h-16 w-16 text-orange-600 animate-pulse" />
             )}
+            {status === "resent" && (
+              <CheckCircle2 className="h-16 w-16 text-green-600" />
+            )}
           </div>
 
           <CardTitle className="text-2xl">
@@ -106,6 +105,7 @@ export default function VerifyEmailPage() {
             {status === "success" && "Email vérifié !"}
             {status === "error" && "Erreur de vérification"}
             {status === "resending" && "Envoi en cours..."}
+            {status === "resent" && "Email envoyé !"}
           </CardTitle>
 
           <CardDescription>
@@ -116,6 +116,8 @@ export default function VerifyEmailPage() {
             {status === "error" && error}
             {status === "resending" &&
               "Envoi d'un nouveau lien de vérification..."}
+            {status === "resent" &&
+              "Un nouveau lien de vérification a été envoyé à votre adresse email. Vérifiez votre boîte de réception."}
           </CardDescription>
         </CardHeader>
 
@@ -126,36 +128,37 @@ export default function VerifyEmailPage() {
             </Button>
           )}
 
-          {status === "error" && error.includes("expiré") && (
-            <div className="space-y-4">
-              <Alert>
-                <AlertDescription>
-                  Le lien de vérification a expiré. Entrez votre email pour
-                  recevoir un nouveau lien.
-                </AlertDescription>
-              </Alert>
+          {(status === "error" || status === "resending" || status === "resent") &&
+            error.includes("expiré") && (
+              <div className="space-y-4">
+                <Alert>
+                  <AlertDescription>
+                    Le lien de vérification a expiré. Entrez votre email pour
+                    recevoir un nouveau lien.
+                  </AlertDescription>
+                </Alert>
 
-              <div className="space-y-2">
-                <input
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-                <Button
-                  onClick={handleResendEmail}
-                  className="w-full"
-                  disabled={!email || status === "resending"}
-                >
-                  {status === "resending" && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Renvoyer l'email
-                </Button>
+                <div className="space-y-2">
+                  <input
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <Button
+                    onClick={handleResendEmail}
+                    className="w-full"
+                    disabled={!email || status === "resending" || status === "resent"}
+                  >
+                    {status === "resending" && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Renvoyer l'email
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {status === "error" && !error.includes("expiré") && (
             <Button
@@ -169,5 +172,26 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-2xl border-2">
+            <CardHeader className="space-y-4 text-center">
+              <div className="mx-auto">
+                <Loader2 className="h-16 w-16 animate-spin text-orange-600" />
+              </div>
+              <CardTitle className="text-2xl">Chargement...</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
