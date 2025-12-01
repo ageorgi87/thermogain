@@ -441,10 +441,25 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
 
       {/* Entretien annuel - shown for all users */}
       <FormField
-        label="Coût d'entretien annuel (€/an)"
+        label={
+          <div className="flex items-center gap-2">
+            <span>Coût d'entretien annuel (€/an)</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[300px]">
+                  <p className="text-sm">
+                    Coût moyen d'entretien pour <span className="font-semibold">{typeChauffage || "ce type de chauffage"}</span> : <span className="font-semibold">{ENTRETIEN_ANNUEL_MOYEN[typeChauffage as keyof typeof ENTRETIEN_ANNUEL_MOYEN] || 0}€/an</span>
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        }
         required
         error={errors.entretien_annuel}
-        description={`Coût moyen d'entretien pour ${typeChauffage || "ce type de chauffage"}: ${ENTRETIEN_ANNUEL_MOYEN[typeChauffage as keyof typeof ENTRETIEN_ANNUEL_MOYEN] || 0}€/an`}
       >
         <Input
           type="number"
