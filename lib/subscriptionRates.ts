@@ -40,7 +40,7 @@ export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL
  * @returns Coût annuel de l'abonnement en euros TTC
  */
 export function getAbonnementElectriciteAnnuel(puissanceKva: number): number {
-  const tarif = ABONNEMENT_ELECTRICITE_ANNUEL[puissanceKva]
+  const tarif = ABONNEMENT_ELECTRICITE_ANNUEL[puissanceKva as keyof typeof ABONNEMENT_ELECTRICITE_ANNUEL]
   if (!tarif) {
     console.warn(`Puissance ${puissanceKva} kVA non reconnue, utilisation 6 kVA par défaut`)
     return ABONNEMENT_ELECTRICITE_ANNUEL[6]
