@@ -1,74 +1,74 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { X, Plus } from "lucide-react"
-import { FormField } from "@/components/form/FormField"
-import { InformationsData } from "./informationsSchema"
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus } from "lucide-react";
+import { FormField } from "@/components/form/FormField";
+import { InformationsData } from "./informationsSchema";
 
 interface InformationsFieldsProps {
-  formData: Partial<InformationsData>
-  errors: Partial<Record<keyof InformationsData, string>>
-  onChange: (name: keyof InformationsData, value: any) => void
+  formData: Partial<InformationsData>;
+  errors: Partial<Record<keyof InformationsData, string>>;
+  onChange: (name: keyof InformationsData, value: any) => void;
 }
 
-export function InformationsFields({ formData, errors, onChange }: InformationsFieldsProps) {
-  const [emailInput, setEmailInput] = useState("")
-  const [emailError, setEmailError] = useState("")
+export function InformationsFields({
+  formData,
+  errors,
+  onChange,
+}: InformationsFieldsProps) {
+  const [emailInput, setEmailInput] = useState("");
+  const [emailError, setEmailError] = useState("");
 
-  const currentEmails = formData.recipient_emails || []
+  const currentEmails = formData.recipient_emails || [];
 
   const addEmail = () => {
-    setEmailError("")
+    setEmailError("");
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailInput)) {
-      setEmailError("Email invalide")
-      return
+      setEmailError("Email invalide");
+      return;
     }
 
     // Check for duplicates
     if (currentEmails.includes(emailInput)) {
-      setEmailError("Cet email est déjà dans la liste")
-      return
+      setEmailError("Cet email est déjà dans la liste");
+      return;
     }
 
     // Add email to the list
-    onChange("recipient_emails", [...currentEmails, emailInput])
-    setEmailInput("")
-  }
+    onChange("recipient_emails", [...currentEmails, emailInput]);
+    setEmailInput("");
+  };
 
   const removeEmail = (emailToRemove: string) => {
     onChange(
       "recipient_emails",
       currentEmails.filter((email) => email !== emailToRemove)
-    )
-  }
+    );
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault()
-      addEmail()
+      e.preventDefault();
+      addEmail();
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
-      <FormField
-        label="Nom du projet"
-        required
-        error={errors.project_name}
-      >
+      <FormField label="Nom du projet" required error={errors.project_name}>
         <Input
           placeholder="ex: Installation PAC - Maison Dupont"
           maxLength={100}
           value={formData.project_name ?? ""}
           onChange={(e) => {
-            const value = e.target.value
-            onChange("project_name", value === "" ? undefined : value)
+            const value = e.target.value;
+            onChange("project_name", value === "" ? undefined : value);
           }}
         />
       </FormField>
@@ -85,8 +85,8 @@ export function InformationsFields({ formData, errors, onChange }: InformationsF
               placeholder="exemple@email.com"
               value={emailInput}
               onChange={(e) => {
-                setEmailInput(e.target.value)
-                setEmailError("")
+                setEmailInput(e.target.value);
+                setEmailError("");
               }}
               onKeyDown={handleKeyDown}
             />
@@ -96,7 +96,7 @@ export function InformationsFields({ formData, errors, onChange }: InformationsF
               onClick={addEmail}
               disabled={!emailInput}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" /> Ajouter
             </Button>
           </div>
 
@@ -131,5 +131,5 @@ export function InformationsFields({ formData, errors, onChange }: InformationsF
         </div>
       </FormField>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Loader2, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info } from "lucide-react"
@@ -151,6 +151,13 @@ export default function WizardStepPage() {
   // State pour le formulaire
   const [formData, setFormData] = useState<any>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Ref pour stocker le type de chauffage précédent
+  const prevTypeChauffageRef = useRef<string | undefined>(undefined)
+
+  // Ref pour stocker les données complètes du chauffage actuel depuis la DB
+  // Permet de restaurer les données quand on change de type de chauffage
+  const savedChauffageDataRef = useRef<any>(null)
 
   // Helper pour mettre à jour un champ dans le state
   const updateField = (name: string, value: any) => {
@@ -323,6 +330,72 @@ export default function WizardStepPage() {
       updateField("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
     }
   }, [step, defaultPrices, isLoading, formData.prix_elec_kwh])
+
+  // Clear consumption fields when user switches to "No" on chauffage-actuel step
+  useEffect(() => {
+    if (step !== "chauffage-actuel" || isLoading) {
+      return
+    }
+
+    // If user selects "No, I don't know my consumption", clear all consumption-related fields
+    if (formData.connait_consommation === false) {
+      const fieldsToClean = [
+        'conso_fioul_litres', 'prix_fioul_litre',
+        'conso_gaz_kwh', 'prix_gaz_kwh', 'abonnement_gaz',
+        'conso_gpl_kg', 'prix_gpl_kg',
+        'conso_pellets_kg', 'prix_pellets_kg',
+        'conso_bois_steres', 'prix_bois_stere',
+        'conso_elec_kwh', 'prix_elec_kwh',
+        'conso_pac_kwh'
+      ]
+
+      // Check if any field needs to be cleaned
+      const needsCleaning = fieldsToClean.some(field => formData[field] !== undefined)
+
+      if (needsCleaning) {
+        setFormData((prev: any) => {
+          const newData = { ...prev }
+          fieldsToClean.forEach(field => {
+            delete newData[field]
+          })
+          return newData
+        })
+      }
+    }
+  }, [step, isLoading, formData.connait_consommation])
+
+  // Clear ALL consumption fields when heating type changes
+  useEffect(() => {
+    if (step !== "chauffage-actuel" || isLoading) {
+      return
+    }
+
+    const currentType = formData.type_chauffage
+    const prevType = prevTypeChauffageRef.current
+
+    // First load: just store the current type
+    if (prevType === undefined && currentType) {
+      prevTypeChauffageRef.current = currentType
+      return
+    }
+
+    // Type has changed - clear ALL fields except type_chauffage itself
+    if (prevType !== undefined && currentType && prevType !== currentType) {
+      console.log(`🧹 Type de chauffage changé: ${prevType} → ${currentType}`)
+
+      setFormData((prev: any) => {
+        // Keep ONLY the type_chauffage field, clear everything else
+        // Set connait_consommation to true by default
+        return {
+          type_chauffage: currentType,
+          connait_consommation: true
+        }
+      })
+
+      // Update the ref
+      prevTypeChauffageRef.current = currentType
+    }
+  }, [step, isLoading, formData.type_chauffage])
 
   const onSubmit = async (data: any) => {
     console.log("🚀 Form submission started", { step, data })

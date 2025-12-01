@@ -41,7 +41,10 @@ export function calculateCurrentVariableCost(data: ProjectData): number {
 
 /**
  * Calcule les coûts FIXES annuels du système actuel
- * Inclut: abonnement électricité, abonnement gaz (si applicable), entretien
+ * Inclut: abonnement électricité (si chauffage électrique), abonnement gaz (si applicable), entretien
+ *
+ * IMPORTANT: Pour isoler le coût du système de chauffage, l'abonnement électricité
+ * n'est inclus QUE si le mode de chauffage utilise l'électricité.
  *
  * @param data Données du projet
  * @returns Objet détaillant les coûts fixes
@@ -53,7 +56,10 @@ export function calculateCurrentFixedCosts(data: ProjectData): {
   total: number
 } {
   const puissanceActuelle = data.puissance_souscrite_actuelle || 6
-  const abonnementElec = getAbonnementElectriciteAnnuel(puissanceActuelle)
+
+  // Abonnement électricité: uniquement pour les chauffages électriques ou PAC
+  const isElectricHeating = ["Electrique", "PAC Air/Air", "PAC Air/Eau", "PAC Eau/Eau"].includes(data.type_chauffage || "")
+  const abonnementElec = isElectricHeating ? getAbonnementElectriciteAnnuel(puissanceActuelle) : 0
 
   // Abonnement gaz: uniquement pour chauffage au gaz
   const abonnementGaz = data.type_chauffage === "Gaz"

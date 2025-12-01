@@ -146,13 +146,13 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
         >
           <div className="flex items-center space-x-3 space-y-0">
             <RadioGroupItem value="true" />
-            <label className="font-normal cursor-pointer">
+            <label className="text-sm font-normal cursor-pointer">
               Oui, je connais ma consommation annuelle et le prix
             </label>
           </div>
           <div className="flex items-center space-x-3 space-y-0">
             <RadioGroupItem value="false" />
-            <label className="font-normal cursor-pointer">
+            <label className="text-sm font-normal cursor-pointer">
               Non, j&apos;aimerais l&apos;estimer à partir des caractéristiques de mon logement
             </label>
           </div>

@@ -6,6 +6,7 @@ import { currentHeatingSchema, type CurrentHeatingData } from "./currentHeatingS
 import { estimateConsumptionByEnergyType } from "@/lib/consumptionEstimation"
 import { getCachedEnergyPrice } from "@/lib/energyPriceCache"
 import { calculateBoilerEfficiency, FUEL_ENERGY_CONTENT, calculateHeatDemand } from "@/lib/boilerEfficiency"
+import { GAS_SUBSCRIPTION } from "@/lib/constants"
 
 /**
  * Calcule le rendement estimé d'une installation de chauffage
@@ -213,6 +214,8 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
         energyPrice = await getCachedEnergyPrice("gaz")
         validatedData.conso_gaz_kwh = estimation.value
         validatedData.prix_gaz_kwh = energyPrice
+        // Assigner l'abonnement gaz par défaut (moyenne nationale)
+        validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
         break
       case "GPL":
         energyPrice = await getCachedEnergyPrice("gpl")
