@@ -11,6 +11,7 @@ import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Calculator, AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
+import { prisma } from "@/lib/prisma"
 
 interface PageProps {
   params: Promise<{
@@ -49,6 +50,14 @@ export default async function ResultsPage({ params }: PageProps) {
     !project.aides
   ) {
     redirect(`/projects/${projectId}/logement`)
+  }
+
+  // Mark project as completed when accessing results page
+  if (!project.completed) {
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { completed: true }
+    })
   }
 
   // Validate PAC power based on housing characteristics
