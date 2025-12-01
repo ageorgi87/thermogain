@@ -17,8 +17,6 @@ export default async function MainLayout({
     redirect("/login");
   }
 
-  console.log(session.user?.company);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
       <nav className="border-b bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg">

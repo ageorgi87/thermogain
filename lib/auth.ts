@@ -46,24 +46,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           id: user.id,
           email: user.email,
-          name: user.name ?? undefined,
-          company: user.company ?? undefined,
         }
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // À la première connexion, ne stocker que l'id et l'email
       if (user) {
         token.id = user.id
-        token.company = user.company
+        token.email = user.email
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
-        session.user.company = token.company as string | undefined
+        session.user.email = token.email as string
       }
       return session
     }

@@ -16,6 +16,7 @@ interface StudyResultsEmailProps {
   // Professional info
   professionalName?: string
   professionalCompany?: string
+  professionalSiret?: string
   professionalAddress?: string
   professionalPhone?: string
   professionalCity?: string
@@ -44,6 +45,7 @@ export function StudyResultsEmail({
   recipientFirstName,
   professionalName,
   professionalCompany,
+  professionalSiret,
   professionalAddress,
   professionalPhone,
   professionalCity,
@@ -98,6 +100,11 @@ export function StudyResultsEmail({
           {professionalCompany && professionalName && (
             <Text style={professionalRoleStyle}>
               {professionalName}
+            </Text>
+          )}
+          {professionalSiret && (
+            <Text style={professionalContactStyle}>
+              SIRET : {professionalSiret}
             </Text>
           )}
           {hasAddress && (

@@ -467,8 +467,12 @@ export default function LoginPage() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      router.push("/login");
-                      router.refresh();
+                      setStep("email");
+                      setPassword("");
+                      setFirstName("");
+                      setLastName("");
+                      setCompany("");
+                      setError("");
                     }}
                     className="w-full"
                   >

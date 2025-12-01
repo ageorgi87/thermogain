@@ -161,6 +161,7 @@ export async function sendStudyResults({
       ? `${project.user.firstName} ${project.user.lastName}`
       : project.user.firstName || project.user.name || undefined
     const professionalCompany = project.user.company || undefined
+    const professionalSiret = project.user.siret || undefined
     const professionalAddress = project.user.address || undefined
     const professionalPhone = project.user.phone || undefined
     const professionalCity = project.user.city || undefined
@@ -180,6 +181,7 @@ export async function sendStudyResults({
       recipientFirstName,
       professionalName,
       professionalCompany,
+      professionalSiret,
       professionalAddress,
       professionalPhone,
       professionalCity,

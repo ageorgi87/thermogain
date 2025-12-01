@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 
 interface UpdateProfileData {
-  name?: string
+  firstName?: string
+  lastName?: string
   phone?: string
   company?: string
+  siret?: string
   address?: string
   city?: string
   postalCode?: string
@@ -24,13 +26,15 @@ export async function updateProfile(data: UpdateProfileData) {
       }
     }
 
-    // Mise à jour du profil
+    // Mise à jour du profil en base de données
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        name: data.name,
+        firstName: data.firstName,
+        lastName: data.lastName,
         phone: data.phone,
         company: data.company,
+        siret: data.siret,
         address: data.address,
         city: data.city,
         postalCode: data.postalCode,
