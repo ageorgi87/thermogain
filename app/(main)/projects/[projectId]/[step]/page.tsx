@@ -258,6 +258,11 @@ export default function WizardStepPage() {
               )
 
               setFormData(cleanedData)
+
+              // For chauffage-actuel step, save the full data to restore later when type changes
+              if (step === "chauffage-actuel") {
+                savedChauffageDataRef.current = cleanedData
+              }
             }
           }
 
@@ -379,18 +384,56 @@ export default function WizardStepPage() {
       return
     }
 
-    // Type has changed - clear ALL fields except type_chauffage itself
+    // Type has changed - check if we have saved data for this type, otherwise clear
     if (prevType !== undefined && currentType && prevType !== currentType) {
       console.log(`🧹 Type de chauffage changé: ${prevType} → ${currentType}`)
 
-      setFormData((prev: any) => {
-        // Keep ONLY the type_chauffage field, clear everything else
-        // Set connait_consommation to true by default
-        return {
+      // Check if saved data exists and matches the new type
+      const savedData = savedChauffageDataRef.current
+      const hasSavedDataForType = savedData && savedData.type_chauffage === currentType
+
+      if (hasSavedDataForType) {
+        // Restore saved data for this heating type
+        console.log(`♻️ Restauration des données sauvegardées pour ${currentType}`)
+        setFormData(savedData)
+      } else {
+        // No saved data - clear form and set defaults including DIDO price
+        console.log(`📊 Pas de données sauvegardées, application du prix DIDO pour ${currentType}`)
+
+        const newFormData: any = {
           type_chauffage: currentType,
           connait_consommation: true
         }
-      })
+
+        // Set default DIDO price for the selected heating type
+        if (defaultPrices) {
+          switch (currentType) {
+            case "Fioul":
+              newFormData.prix_fioul_litre = Math.round(defaultPrices.fioul * 1000) / 1000
+              break
+            case "Gaz":
+              newFormData.prix_gaz_kwh = Math.round(defaultPrices.gaz * 1000) / 1000
+              break
+            case "GPL":
+              newFormData.prix_gpl_kg = Math.round(defaultPrices.gpl * 1000) / 1000
+              break
+            case "Pellets":
+              newFormData.prix_pellets_kg = Math.round(defaultPrices.bois * 1000) / 1000
+              break
+            case "Bois":
+              newFormData.prix_bois_stere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
+              break
+            case "Electrique":
+            case "PAC Air/Air":
+            case "PAC Air/Eau":
+            case "PAC Eau/Eau":
+              newFormData.prix_elec_kwh = Math.round(defaultPrices.electricite * 1000) / 1000
+              break
+          }
+        }
+
+        setFormData(newFormData)
+      }
 
       // Update the ref
       prevTypeChauffageRef.current = currentType
