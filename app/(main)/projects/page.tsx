@@ -173,7 +173,7 @@ export default function ProjectsPage() {
                         size="sm"
                         onClick={() => router.push(`/projects/${project.id}/results`)}
                         title="Voir les résultats"
-                        className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
+                        className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600 cursor-pointer"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -183,7 +183,7 @@ export default function ProjectsPage() {
                       size="sm"
                       onClick={() => router.push(getProjectEditUrl(project))}
                       title="Continuer le projet"
-                      className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600"
+                      className="hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-600 cursor-pointer"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -192,7 +192,7 @@ export default function ProjectsPage() {
                       size="sm"
                       onClick={() => setDeleteId(project.id)}
                       title="Supprimer le projet"
-                      className="hover:bg-red-50 dark:hover:bg-red-950"
+                      className="hover:bg-red-50 dark:hover:bg-red-950 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
