@@ -16,6 +16,13 @@ export function Footer() {
           {/* Legal Links */}
           <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
             <Link
+              href="/contact"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Contact
+            </Link>
+            <Separator orientation="vertical" className="h-4" />
+            <Link
               href="/legal/mentions-legales"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >

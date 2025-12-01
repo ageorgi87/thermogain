@@ -66,16 +66,16 @@ export const EmailLayout = ({ children, previewText }: EmailLayoutProps) => {
               Études thermiques intelligentes pour professionnels
             </Text>
             <Text style={footerLinks}>
+              <a href="https://thermogain.fr/contact" style={link}>
+                Contact
+              </a>
+              {' · '}
               <a href="https://thermogain.fr/legal/mentions-legales" style={link}>
                 Mentions légales
               </a>
               {' · '}
               <a href="https://thermogain.fr/legal/politique-confidentialite" style={link}>
                 Confidentialité
-              </a>
-              {' · '}
-              <a href="https://thermogain.fr" style={link}>
-                Nous contacter
               </a>
             </Text>
           </Section>
