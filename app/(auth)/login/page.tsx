@@ -260,7 +260,7 @@ export default function LoginPage() {
                       <>
                         <br />
                         <a
-                          href="/forgot-password"
+                          href={`/forgot-password?email=${encodeURIComponent(email)}`}
                           className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
                         >
                           Mot de passe oublié ?

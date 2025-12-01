@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Card,
@@ -19,11 +19,20 @@ import { requestPasswordReset } from "@/lib/actions/password-reset";
 
 type Status = "idle" | "loading" | "success";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<Status>("idle");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+
+  // Pré-remplir l'email depuis l'URL
+  useEffect(() => {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,5 +170,26 @@ export default function ForgotPasswordPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-2xl border-2">
+            <CardHeader className="space-y-4 text-center">
+              <div className="mx-auto">
+                <Loader2 className="h-16 w-16 animate-spin text-orange-600" />
+              </div>
+              <CardTitle className="text-2xl">Chargement...</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      }
+    >
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }
