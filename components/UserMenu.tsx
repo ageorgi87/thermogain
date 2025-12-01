@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, Settings, User, ChevronDown } from "lucide-react"
+import { LogOut, User, ChevronDown } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useState } from "react"
 
@@ -114,22 +114,13 @@ export function UserMenu({ userName, userEmail }: UserMenuProps) {
 
         <DropdownMenuSeparator />
 
-        {/* Option Profil (pour future implémentation) */}
+        {/* Option Profil */}
         <DropdownMenuItem
           className="cursor-pointer gap-2 py-2.5 px-3"
-          disabled
+          onClick={() => window.location.href = '/profil'}
         >
           <User className="h-4 w-4" />
           <span>Profil</span>
-        </DropdownMenuItem>
-
-        {/* Option Paramètres */}
-        <DropdownMenuItem
-          className="cursor-pointer gap-2 py-2.5 px-3"
-          disabled
-        >
-          <Settings className="h-4 w-4" />
-          <span>Paramètres</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
