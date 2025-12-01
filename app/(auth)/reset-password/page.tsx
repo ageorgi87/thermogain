@@ -171,7 +171,7 @@ function ResetPasswordContent() {
             </Button>
           )}
 
-          {status === "idle" && (
+          {(status === "idle" || status === "loading") && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="newPassword">Nouveau mot de passe</Label>
@@ -191,11 +191,13 @@ function ResetPasswordContent() {
                     autoFocus
                     autoComplete="new-password"
                     className="h-11 pr-10"
+                    disabled={status === "loading"}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    disabled={status === "loading"}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -225,11 +227,13 @@ function ResetPasswordContent() {
                     required
                     autoComplete="new-password"
                     className="h-11 pr-10"
+                    disabled={status === "loading"}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    disabled={status === "loading"}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
