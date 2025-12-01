@@ -36,7 +36,7 @@ export async function createVerificationToken(email: string, firstName?: string)
 
   // Construire l'URL de vérification
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-  const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`
+  const verificationUrl = `${baseUrl}/verify-email?token=${token}`
 
   // Rendre le template email
   const emailHtml = await render(
