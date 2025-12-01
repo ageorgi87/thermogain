@@ -177,11 +177,11 @@ export default function LoginPage() {
 
             {/* Key Features */}
             <div className="grid gap-4">
-              <div className="flex flex-col md:flex-row items-start md:items-start gap-3">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-3">
                 <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
                   <Calculator className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
-                <div>
+                <div className="text-center md:text-left">
                   <h3 className="font-semibold text-foreground">
                     Analyses personnalisées et précises
                   </h3>
@@ -192,11 +192,11 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row items-start md:items-start gap-3">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-3">
                 <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
                   <BarChart3 className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
-                <div>
+                <div className="text-center md:text-left">
                   <h3 className="font-semibold text-foreground">
                     Visualisations parlantes
                   </h3>
@@ -207,11 +207,11 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row items-start md:items-start gap-3">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-3">
                 <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
                   <TrendingDown className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
-                <div>
+                <div className="text-center md:text-left">
                   <h3 className="font-semibold text-foreground">
                     Données centralisées et accessibles
                   </h3>
