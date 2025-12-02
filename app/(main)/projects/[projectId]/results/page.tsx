@@ -8,7 +8,7 @@ import { ConsumptionCard } from "./components/ConsumptionCard"
 import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
 import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, XCircle } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 
@@ -125,45 +125,47 @@ export default async function ResultsPage({ params }: PageProps) {
         hasRecipientEmails={project.recipientEmails && project.recipientEmails.length > 0}
       />
 
-      {/* Summary Alert */}
-      <Alert className="border-2 bg-white text-foreground relative md:pr-24">
-        {results.netBenefitLifetime > 0 ? (
-          <CheckCircle2 className="h-5 w-5 !text-brand-teal-600" />
-        ) : (
-          <XCircle className="h-5 w-5 !text-red-600" />
-        )}
-        <AlertTitle className="text-lg font-semibold">
-          {results.netBenefitLifetime > 0 ? "Projet rentable" : "Projet non rentable"}
-        </AlertTitle>
-        <AlertDescription className="mt-1.5 text-foreground">
+      {/* Summary Card */}
+      <Card className={results.netBenefitLifetime > 0 ? "border-brand-teal-200 bg-brand-teal-50 dark:bg-brand-teal-950" : "border-red-200 bg-red-50 dark:bg-red-950"}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            {results.netBenefitLifetime > 0 ? (
+              <CheckCircle2 className="h-5 w-5 text-brand-teal-600" />
+            ) : (
+              <XCircle className="h-5 w-5 text-red-600" />
+            )}
+            {results.netBenefitLifetime > 0 ? "Projet rentable" : "Projet non rentable"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Phrase de synthèse uniquement */}
           {results.netBenefitLifetime > 0 ? (
-            <p>
+            <>
               {results.paybackPeriod && results.paybackYear ? (
-                <>
-                  Votre investissement sera rentabilisé en <strong className="text-lg">{formatPaybackPeriod(results.paybackPeriod)}</strong> (en {results.paybackYear}),
-                  pour un bénéfice net de <strong className="text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong> sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong>.
-                </>
+                <p className="text-lg text-foreground">
+                  Votre investissement sera rentabilisé en{" "}
+                  <strong className="text-brand-teal-600 font-semibold">{formatPaybackPeriod(results.paybackPeriod)}</strong>
+                  {" "}(en {results.paybackYear}), pour un bénéfice net de{" "}
+                  <strong className="text-brand-teal-600 font-semibold">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
+                  {" "}sur {projectData.duree_vie_pac} ans.
+                </p>
               ) : (
-                <>
-                  Bénéfice net sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong> : <strong className="text-lg">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
-                </>
+                <p className="text-lg text-foreground">
+                  Ce projet génère un bénéfice net de{" "}
+                  <strong className="text-brand-teal-600 font-semibold">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
+                  {" "}sur {projectData.duree_vie_pac} ans.
+                </p>
               )}
-            </p>
+            </>
           ) : (
-            <p>
-              Les économies générées sur <strong className="text-lg">{projectData.duree_vie_pac} ans</strong> ne couvrent pas entièrement l&apos;investissement,
-              avec un déficit de <strong className="text-lg">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>.
+            <p className="text-lg text-foreground">
+              Ce projet génère un déficit de{" "}
+              <strong className="text-red-600 font-semibold">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>
+              {" "}sur une durée de {projectData.duree_vie_pac} ans. Les économies générées ne couvrent pas l&apos;investissement.
             </p>
           )}
-        </AlertDescription>
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
-          {results.netBenefitLifetime > 0 ? (
-            <CheckCircle2 className="h-16 w-16 text-brand-teal-600 opacity-60" />
-          ) : (
-            <XCircle className="h-16 w-16 text-red-600 opacity-60" />
-          )}
-        </div>
-      </Alert>
+        </CardContent>
+      </Card>
 
       {/* Graphique principal des coûts cumulés */}
       <CumulativeCostChart
