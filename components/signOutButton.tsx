@@ -22,7 +22,7 @@ export function SignOutButton() {
 
       if (response.ok) {
         // Redirect to login page
-        router.push("/login")
+        router.push("/")
         router.refresh()
       }
     } catch (error) {

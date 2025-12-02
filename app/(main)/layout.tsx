@@ -14,7 +14,7 @@ export default async function MainLayout({
   const session = await auth();
 
   if (!session) {
-    redirect("/login");
+    redirect("/");
   }
 
   return (

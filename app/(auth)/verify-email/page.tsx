@@ -49,7 +49,7 @@ function VerifyEmailContent() {
         setStatus("success");
         // Rediriger vers la page de connexion après 3 secondes
         setTimeout(() => {
-          router.push("/login");
+          router.push("/");
         }, 3000);
       }
     } catch (error) {
@@ -123,7 +123,7 @@ function VerifyEmailContent() {
 
         <CardContent className="space-y-4">
           {status === "success" && (
-            <Button onClick={() => router.push("/login")} className="w-full">
+            <Button onClick={() => router.push("/")} className="w-full">
               Se connecter maintenant
             </Button>
           )}

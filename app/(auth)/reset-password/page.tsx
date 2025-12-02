@@ -97,7 +97,7 @@ function ResetPasswordContent() {
         setStatus("success");
         // Rediriger vers la page de connexion après 3 secondes
         setTimeout(() => {
-          router.push("/login");
+          router.push("/");
         }, 3000);
       }
     } catch (error: any) {
@@ -111,7 +111,7 @@ function ResetPasswordContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       {/* Logo and Site Name */}
-      <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+      <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
         <Image
           src="/logo.png"
           alt="ThermoGain"
@@ -166,7 +166,7 @@ function ResetPasswordContent() {
 
         <CardContent className="space-y-4">
           {status === "success" && (
-            <Button onClick={() => router.push("/login")} className="w-full">
+            <Button onClick={() => router.push("/")} className="w-full">
               Se connecter maintenant
             </Button>
           )}
@@ -286,7 +286,7 @@ function ResetPasswordContent() {
                 Demander un nouveau lien
               </Button>
               <Link
-                href="/login"
+                href="/"
                 className="block text-center text-sm text-muted-foreground hover:text-foreground"
               >
                 Retour à la connexion
@@ -304,7 +304,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
-          <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
             <Image
               src="/logo.png"
               alt="ThermoGain"

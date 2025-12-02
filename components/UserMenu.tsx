@@ -54,7 +54,7 @@ export function UserMenu({ userName, userEmail }: UserMenuProps) {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/login" })
+    await signOut({ callbackUrl: "/" })
   }
 
   // Gérer la fermeture du menu : retirer le focus du bouton

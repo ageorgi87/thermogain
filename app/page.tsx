@@ -103,7 +103,7 @@ export default function LoginPage() {
 
       // Redirect to login after 5 seconds
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
         router.refresh();
       }, 5000);
     } catch (error: any) {

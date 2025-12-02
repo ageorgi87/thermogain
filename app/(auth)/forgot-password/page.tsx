@@ -60,7 +60,7 @@ function ForgotPasswordContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       {/* Logo and Site Name */}
-      <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+      <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
         <Image
           src="/logo.png"
           alt="ThermoGain"
@@ -121,7 +121,7 @@ function ForgotPasswordContent() {
 
               <div className="space-y-2">
                 <Button
-                  onClick={() => router.push("/login")}
+                  onClick={() => router.push("/")}
                   className="w-full"
                 >
                   Retour à la connexion
@@ -178,7 +178,7 @@ function ForgotPasswordContent() {
 
               <div className="text-center">
                 <Link
-                  href="/login"
+                  href="/"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -198,7 +198,7 @@ export default function ForgotPasswordPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
-          <Link href="/login" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
             <Image
               src="/logo.png"
               alt="ThermoGain"
