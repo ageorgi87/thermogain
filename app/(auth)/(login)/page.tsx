@@ -73,7 +73,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Mot de passe invalide");
       } else {
-        router.push("/");
+        router.push("/projects");
         router.refresh();
       }
     } catch (error) {
