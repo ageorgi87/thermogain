@@ -65,6 +65,10 @@ export function YearlyBreakdownTable({
   const totalEconomies = yearlyDataWithCumulative.reduce((sum, year) => sum + year.economie, 0)
   const positionFinale = yearlyDataWithCumulative[yearlyDataWithCumulative.length - 1].positionCumulee
 
+  // Déterminer si le coût total PAC (avec investissement) est supérieur au coût actuel
+  const totalCoutPacAvecInvestissement = totalCoutPac + investissementReel
+  const isPacMoreExpensive = totalCoutPacAvecInvestissement > totalCoutActuel
+
   return (
     <Card>
       <CardHeader>
@@ -155,7 +159,7 @@ export function YearlyBreakdownTable({
                     </TableCell>
 
                     {/* Coût PAC (énergie annuelle) */}
-                    <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
+                    <TableCell className={`text-right tabular-nums ${year.coutPac > year.coutActuel ? 'bg-red-50/30 dark:bg-red-950/30' : 'bg-brand-teal-50/30 dark:bg-brand-teal-950/30'}`}>
                       {year.coutPac.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
@@ -198,7 +202,7 @@ export function YearlyBreakdownTable({
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
-                <TableCell className="text-right tabular-nums font-bold text-base bg-brand-teal-100/50 dark:bg-brand-teal-900/50">
+                <TableCell className={`text-right tabular-nums font-bold text-base ${isPacMoreExpensive ? 'bg-red-100/50 dark:bg-red-900/50' : 'bg-brand-teal-100/50 dark:bg-brand-teal-900/50'}`}>
                   {(totalCoutPac + investissementReel).toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
