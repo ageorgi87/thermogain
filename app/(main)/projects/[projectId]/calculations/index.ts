@@ -73,8 +73,14 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
   let tauxRentabilite: number | null = null
   if (investissementReel > 0 && data.duree_vie_pac > 0) {
     const valeurFinale = investissementReel + netBenefitLifetime
+    // Calculer le taux même si négatif (perte annuelle moyenne)
+    // Si valeurFinale <= 0, le taux sera négatif
     if (valeurFinale > 0) {
       tauxRentabilite = (Math.pow(valeurFinale / investissementReel, 1 / data.duree_vie_pac) - 1) * 100
+    } else {
+      // Pour les projets non rentables, calculer la perte annuelle moyenne en pourcentage
+      // Perte totale / investissement / nombre d'années * 100
+      tauxRentabilite = (netBenefitLifetime / investissementReel / data.duree_vie_pac) * 100
     }
   }
 
