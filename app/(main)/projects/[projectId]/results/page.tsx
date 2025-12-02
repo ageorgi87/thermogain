@@ -2,7 +2,6 @@ import { getProject } from "@/lib/actions/projects"
 import { notFound, redirect } from "next/navigation"
 import { calculateAllResults, ProjectData } from "../calculations"
 import { calculatePacConsumptionKwh } from "../calculations/pacConsumption/pacConsumption"
-import { validatePacPower } from "@/lib/copAdjustments"
 import { ResultsHeader } from "./components/ResultsHeader"
 import { CumulativeCostChart } from "./components/CumulativeCostChart"
 import { ConsumptionCard } from "./components/ConsumptionCard"
@@ -10,7 +9,7 @@ import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
 import { ProfitabilityCard } from "./components/ProfitabilityCard"
 import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Calculator, AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, XCircle } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 
 interface PageProps {
@@ -59,15 +58,6 @@ export default async function ResultsPage({ params }: PageProps) {
       data: { completed: true }
     })
   }
-
-  // Validate PAC power based on housing characteristics
-  const powerValidation = validatePacPower(
-    project.projetPac.puissance_pac_kw,
-    project.logement.surface_habitable,
-    project.logement.annee_construction,
-    project.logement.qualite_isolation,
-    project.logement.code_postal
-  )
 
   // Le prix de l'électricité est maintenant renseigné dans "Projet PAC"
   // (obligatoire, nécessaire pour calculer le coût de la PAC)
@@ -134,20 +124,6 @@ export default async function ResultsPage({ params }: PageProps) {
         userEmail={project.user.email || ''}
         hasRecipientEmails={project.recipientEmails && project.recipientEmails.length > 0}
       />
-
-      {/* Power Validation Warning */}
-      {!powerValidation.isValid && (
-        <Alert className="border-2 bg-white text-foreground relative md:pr-24">
-          <AlertTriangle className="h-5 w-5 !text-red-600" />
-          <AlertTitle className="text-lg font-semibold">Attention : Dimensionnement de la PAC</AlertTitle>
-          <AlertDescription className="mt-1.5 text-foreground whitespace-pre-line">
-            {powerValidation.message}
-          </AlertDescription>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
-            <AlertTriangle className="h-16 w-16 text-red-600 opacity-60" />
-          </div>
-        </Alert>
-      )}
 
       {/* Summary Alert */}
       <Alert className="border-2 bg-white text-foreground relative md:pr-24">
