@@ -107,22 +107,6 @@ export function calculateAdjustedCOP(
   // COP ajusté = COP fabricant × tous les facteurs applicables
   const copAjuste = copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique
 
-  // Log pour debug
-  console.log(`🔧 Ajustement COP (${typePac || "non spécifié"}):`)
-  console.log(`   - COP fabricant: ${copFabricant.toFixed(2)}`)
-
-  if (isAirToAir) {
-    console.log(`   ℹ️  PAC Air/Air : ajustements température/émetteurs non applicables (pas de circuit d'eau)`)
-  } else {
-    console.log(`   - Température ${temperatureDepart}°C: ${(facteurTemperature * 100).toFixed(0)}%`)
-    console.log(`   - Émetteurs "${typeEmetteurs}": ${(facteurEmetteurs * 100).toFixed(0)}%`)
-  }
-
-  if (codePostal) {
-    console.log(`   - Climat (${codePostal}): ${(facteurClimatique * 100).toFixed(0)}%`)
-  }
-  console.log(`   → COP ajusté: ${copAjuste.toFixed(2)}`)
-
   // Arrondir à 2 décimales
   return Math.round(copAjuste * 100) / 100
 }

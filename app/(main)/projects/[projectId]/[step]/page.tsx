@@ -386,19 +386,15 @@ export default function WizardStepPage() {
 
     // Type has changed - check if we have saved data for this type, otherwise clear
     if (prevType !== undefined && currentType && prevType !== currentType) {
-      console.log(`🧹 Type de chauffage changé: ${prevType} → ${currentType}`)
-
       // Check if saved data exists and matches the new type
       const savedData = savedChauffageDataRef.current
       const hasSavedDataForType = savedData && savedData.type_chauffage === currentType
 
       if (hasSavedDataForType) {
         // Restore saved data for this heating type
-        console.log(`♻️ Restauration des données sauvegardées pour ${currentType}`)
         setFormData(savedData)
       } else {
         // No saved data - clear form and set defaults including DIDO price
-        console.log(`📊 Pas de données sauvegardées, application du prix DIDO pour ${currentType}`)
 
         const newFormData: any = {
           type_chauffage: currentType,
@@ -441,7 +437,6 @@ export default function WizardStepPage() {
   }, [step, isLoading, formData.type_chauffage])
 
   const onSubmit = async (data: any) => {
-    console.log("🚀 Form submission started", { step, data })
     setIsSubmitting(true)
     try {
       let validatedData = data
@@ -500,7 +495,6 @@ export default function WizardStepPage() {
           await saveHousingData(projectId, validatedData)
           break
         case "chauffage-actuel":
-          console.log("💾 Saving current heating data...")
           await saveCurrentHeatingData(projectId, validatedData)
           break
         case "projet-pac":
@@ -519,13 +513,9 @@ export default function WizardStepPage() {
           throw new Error("Invalid step")
       }
 
-      console.log("✅ Data saved successfully")
-
       // Update project step to next step (step numbers start at 1)
       const nextStepNumber = currentStepIndex + 2 // +1 for array index, +1 for next step
       await updateProjectStep(projectId, nextStepNumber)
-
-      console.log("📍 Navigating to next step...")
 
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {

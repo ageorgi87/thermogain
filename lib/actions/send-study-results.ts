@@ -240,16 +240,8 @@ export async function sendStudyResults({
         },
       })
     } catch (dbError) {
-      // Non bloquant
-      console.warn('[sendStudyResults] Failed to update project timestamp:', dbError)
+      // Non bloquant - silently ignore timestamp update failures
     }
-
-    console.log('[sendStudyResults] Email sent successfully:', {
-      projectId,
-      to: emailsTo,
-      recipientCount: emailsTo.length,
-      messageId: data?.id,
-    })
 
     return {
       success: true,

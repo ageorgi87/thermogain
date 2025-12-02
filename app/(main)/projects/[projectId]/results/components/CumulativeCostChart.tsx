@@ -68,14 +68,6 @@ export function CumulativeCostChart({
   const currentYear = new Date().getFullYear()
   const breakEvenYear = paybackPeriod ? currentYear + paybackPeriod : paybackYear
 
-  // Debug
-  console.log('=== DEBUG CHART ROI ===')
-  console.log('paybackYear:', paybackYear)
-  console.log('paybackPeriod:', paybackPeriod)
-  console.log('breakEvenYear (avec fraction):', breakEvenYear)
-  console.log('investissementReel:', investissementReel)
-  console.log('Data range:', chartData[0]?.year, 'to', chartData[chartData.length - 1]?.year)
-
   // Description selon le mode de financement
   const getFinancementDescription = () => {
     if (modeFinancement === "Comptant") {
