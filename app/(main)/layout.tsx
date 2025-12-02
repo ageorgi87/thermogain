@@ -5,6 +5,14 @@ import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { BackToProjectsButton } from "@/components/BackToProjectsButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function MainLayout({
   children,

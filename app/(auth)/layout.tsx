@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Authentication",
+  title: "ThermoGain - Études de Rentabilité Pompe à Chaleur",
+  description: "Analysez la rentabilité des pompes à chaleur pour vos clients avec des calculs personnalisés et des visualisations claires. Rassurez vos clients avec des chiffres précis.",
 }
 
 export default function AuthLayout({
