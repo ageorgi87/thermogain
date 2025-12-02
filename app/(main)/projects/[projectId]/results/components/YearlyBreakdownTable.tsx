@@ -106,8 +106,8 @@ export function YearlyBreakdownTable({
         <div className="rounded-md border border-border overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="text-center font-semibold w-20 sticky left-0 bg-muted/30">
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="text-center font-semibold w-20 sticky left-0 bg-muted/50">
                   Année
                 </TableHead>
                 <TableHead className="text-right font-semibold min-w-[140px]">
@@ -163,7 +163,7 @@ export function YearlyBreakdownTable({
                     </TableCell>
 
                     {/* Économies */}
-                    <TableCell className="text-right tabular-nums font-medium text-brand-teal-600">
+                    <TableCell className={`text-right tabular-nums font-medium ${year.economie < 0 ? 'text-red-600' : 'text-brand-teal-600'}`}>
                       {year.economie > 0 ? "+" : ""}
                       {year.economie.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
@@ -175,8 +175,8 @@ export function YearlyBreakdownTable({
                     <TableCell
                       className={`text-right tabular-nums font-semibold ${
                         isPositive
-                          ? "text-brand-teal-600 bg-brand-teal-50/50 dark:bg-brand-teal-950/50"
-                          : "text-orange-600 bg-orange-50/50 dark:bg-orange-950/50"
+                          ? "text-brand-teal-700 bg-brand-teal-50 dark:bg-brand-teal-950 dark:text-brand-teal-300"
+                          : "text-red-700 bg-red-50 dark:bg-red-950 dark:text-red-300"
                       }`}
                     >
                       {year.positionCumulee > 0 ? "+" : ""}
@@ -190,31 +190,31 @@ export function YearlyBreakdownTable({
               })}
 
               {/* Ligne de totaux */}
-              <TableRow className="bg-muted/50 font-bold border-t-2 border-border hover:bg-muted/50">
-                <TableCell className="text-center sticky left-0 bg-muted/50">Total</TableCell>
-                <TableCell className="text-right tabular-nums text-muted-foreground">
+              <TableRow className="bg-muted font-bold border-t-2 border-border hover:bg-muted">
+                <TableCell className="text-center sticky left-0 bg-muted font-bold text-base">Total</TableCell>
+                <TableCell className="text-right tabular-nums text-foreground font-bold text-base">
                   {totalCoutActuel.toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
-                <TableCell className="text-right tabular-nums bg-brand-teal-50/30 dark:bg-brand-teal-950/30">
+                <TableCell className="text-right tabular-nums font-bold text-base bg-brand-teal-100/50 dark:bg-brand-teal-900/50">
                   {(totalCoutPac + investissementReel).toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-brand-teal-600">
-                  +{totalEconomies.toLocaleString("fr-FR", {
+                <TableCell className={`text-right tabular-nums font-bold text-base ${totalEconomies < 0 ? 'text-red-600' : 'text-brand-teal-600'}`}>
+                  {totalEconomies > 0 ? '+' : ''}{totalEconomies.toLocaleString("fr-FR", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })} €
                 </TableCell>
                 <TableCell
-                  className={`text-right tabular-nums ${
+                  className={`text-right tabular-nums font-bold text-base ${
                     positionFinale >= 0
-                      ? "text-brand-teal-600 bg-brand-teal-100 dark:bg-brand-teal-900"
-                      : "text-orange-600 bg-orange-100 dark:bg-orange-900"
+                      ? "text-brand-teal-700 bg-brand-teal-200 dark:bg-brand-teal-800 dark:text-brand-teal-100"
+                      : "text-red-700 bg-red-200 dark:bg-red-800 dark:text-red-100"
                   }`}
                 >
                   {positionFinale > 0 ? "+" : ""}
@@ -235,11 +235,11 @@ export function YearlyBreakdownTable({
             <span>Coûts avec PAC</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-brand-teal-100 dark:bg-brand-teal-900 border border-brand-teal-300 dark:border-brand-teal-700"></div>
+            <div className="w-3 h-3 rounded bg-brand-teal-200 dark:bg-brand-teal-800 border border-brand-teal-300 dark:border-brand-teal-700"></div>
             <span>Position positive (bénéfices)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-orange-100 dark:bg-orange-900 border border-orange-300 dark:border-orange-700"></div>
+            <div className="w-3 h-3 rounded bg-red-200 dark:bg-red-800 border border-red-300 dark:border-red-700"></div>
             <span>Position négative (investissement non amorti)</span>
           </div>
           {paybackYearIndex >= 0 && (
