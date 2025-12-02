@@ -75,6 +75,18 @@ export function StudyResultsEmail({
     professionalPostalCode && professionalCity ? `${professionalPostalCode} ${professionalCity}` : professionalPostalCode || professionalCity
   ].filter(Boolean).join(', ')
 
+  // Format ROI period (years and months)
+  const formatRoiPeriod = (period: number): string => {
+    const years = Math.floor(period)
+    const months = Math.round((period - years) * 12)
+
+    if (months === 0) {
+      return `${years} an${years > 1 ? 's' : ''}`
+    }
+
+    return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
+  }
+
   return (
     <EmailLayout previewText={previewText}>
       <Preview>{previewText}</Preview>
@@ -127,8 +139,10 @@ export function StudyResultsEmail({
 
       {/* Key Results - Hero Metrics */}
       <Section style={heroMetrics}>
-        <Text style={heroLabel}>Économies annuelles</Text>
-        <Text style={heroValue}>+{Math.round(annualSavings).toLocaleString('fr-FR')} €</Text>
+        <Text style={heroLabel}>{annualSavings >= 0 ? 'Économies annuelles' : 'Déficit annuel'}</Text>
+        <Text style={heroValue}>
+          {annualSavings >= 0 ? '+' : ''}{Math.round(annualSavings).toLocaleString('fr-FR')} €
+        </Text>
         <Text style={heroSubtext}>par an</Text>
       </Section>
 
@@ -143,7 +157,9 @@ export function StudyResultsEmail({
           </tr>
           <tr>
             <td style={tableCellLabel}>Aides financières</td>
-            <td style={tableCellValueGreen}>-{aidesTotal.toLocaleString('fr-FR')} €</td>
+            <td style={aidesTotal > 0 ? tableCellValueGreen : tableCellValue}>
+              {aidesTotal > 0 ? '-' : ''}{aidesTotal.toLocaleString('fr-FR')} €
+            </td>
           </tr>
           <tr style={tableRowDivider}>
             <td colSpan={2}><Hr style={tableDivider} /></td>
@@ -162,11 +178,15 @@ export function StudyResultsEmail({
         <table style={tableStyle} cellPadding="0" cellSpacing="0">
           <tr>
             <td style={tableCellLabel}>Retour sur investissement</td>
-            <td style={tableCellValue}>{roi.toFixed(1)} ans</td>
+            <td style={benefitNet17Years < 0 ? tableCellValueRed : tableCellValue}>
+              {roi === 0 ? 'Non atteint' : formatRoiPeriod(roi)}
+            </td>
           </tr>
           <tr>
-            <td style={tableCellLabel}>Bénéfice net sur 17 ans</td>
-            <td style={tableCellValueSuccess}>+{Math.round(benefitNet17Years).toLocaleString('fr-FR')} €</td>
+            <td style={tableCellLabel}>{benefitNet17Years >= 0 ? 'Bénéfice net sur 17 ans' : 'Déficit sur 17 ans'}</td>
+            <td style={benefitNet17Years >= 0 ? tableCellValueSuccess : tableCellValueRed}>
+              {benefitNet17Years >= 0 ? '+' : ''}{Math.round(benefitNet17Years).toLocaleString('fr-FR')} €
+            </td>
           </tr>
         </table>
       </Section>
@@ -297,6 +317,14 @@ const tableCellValueBold = {
 const tableCellValueGreen = {
   fontSize: '16px',
   color: '#059669',
+  fontWeight: '500',
+  padding: '10px 0',
+  textAlign: 'right' as const,
+}
+
+const tableCellValueRed = {
+  fontSize: '16px',
+  color: '#dc2626',
   fontWeight: '500',
   padding: '10px 0',
   textAlign: 'right' as const,
