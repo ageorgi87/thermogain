@@ -14,9 +14,13 @@ export function SavingsChart({ yearlyData }: SavingsChartProps) {
   const chartData = yearlyData
   const nbYears = chartData.length
 
+  // Déterminer si le bilan final est positif ou négatif
+  const finalBalance = chartData[chartData.length - 1]?.economiesCumulees || 0
+  const isPositive = finalBalance >= 0
+
   const chartConfig = {
     economiesCumulees: {
-      label: "Économies cumulées",
+      label: isPositive ? "Économies cumulées" : "Surcoût cumulé",
       color: "hsl(var(--primary))",
     },
   }
@@ -24,9 +28,14 @@ export function SavingsChart({ yearlyData }: SavingsChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Économies cumulées sur {nbYears} ans</CardTitle>
+        <CardTitle>
+          {isPositive ? "Économies cumulées" : "Surcoût cumulé"} sur {nbYears} ans
+        </CardTitle>
         <CardDescription>
-          Progression des économies réalisées avec la PAC
+          {isPositive
+            ? "Progression des économies réalisées avec la PAC"
+            : "Évolution du surcoût par rapport au système actuel"
+          }
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -49,7 +58,7 @@ export function SavingsChart({ yearlyData }: SavingsChartProps) {
                 fill="var(--color-economiesCumulees)"
                 fillOpacity={0.3}
                 strokeWidth={2}
-                name="Économies cumulées"
+                name={isPositive ? "Économies cumulées" : "Surcoût cumulé"}
               />
             </AreaChart>
           </ResponsiveContainer>

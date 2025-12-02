@@ -9,6 +9,8 @@ interface KeyMetricsCardsProps {
 }
 
 export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetricsCardsProps) {
+  const isRentable = results.netBenefitLifetime > 0
+
   // Convertir la période de retour en années et mois
   const formatPaybackPeriod = (period: number | null) => {
     if (!period) return "N/A"
@@ -41,10 +43,12 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
         </CardContent>
       </Card>
 
-      {/* Gain net */}
+      {/* Gain net / Surcoût */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Gain net</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {isRentable ? "Gain net" : "Surcoût"}
+          </CardTitle>
           <PiggyBank className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
@@ -62,7 +66,7 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
               <span className="font-medium text-blue-600">{results.coutTotalPacLifetime.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between border-t pt-1">
-              <span className="font-medium">Gain net:</span>
+              <span className="font-medium">{isRentable ? "Gain net" : "Surcoût"}:</span>
               <span className="font-medium text-green-600">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</span>
             </div>
           </div>
@@ -110,7 +114,7 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
               <span className="font-medium">{investissement.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between">
-              <span>Gain:</span>
+              <span>{isRentable ? "Gain" : "Surcoût"}:</span>
               <span className="font-medium text-green-600">+{results.netBenefitLifetime.toLocaleString("fr-FR")} €</span>
             </div>
             <div className="flex justify-between">
