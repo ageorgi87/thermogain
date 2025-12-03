@@ -11,60 +11,70 @@ export const registerUser = async (data: {
   lastName?: string;
   company?: string;
 }) => {
-  const { email, password, firstName, lastName, company } = data;
-
-  // Validate input
-  if (!email || !password) {
-    throw new Error("Email et mot de passe requis");
-  }
-
-  // Check if user already exists
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) {
-    throw new Error("Cet utilisateur existe déjà");
-  }
-
-  // Hash password
-  const hashedPassword = await hash(password, 12);
-
-  // Create user (emailVerified is null until verified)
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      company,
-      emailVerified: null, // Email not verified yet
-    },
-  });
-
-  // Send verification email
   try {
-    await sendVerificationWorkflow(email, firstName);
-  } catch (error) {
-    console.error("Failed to send verification email:", error);
-    // Don't throw error - user is created, just email failed
-  }
+    const { email, password, firstName, lastName, company } = data;
 
-  return {
-    id: user.id,
-    email: user.email,
-  };
+    // Validate input
+    if (!email || !password) {
+      throw new Error("Email et mot de passe requis");
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new Error("Cet utilisateur existe déjà");
+    }
+
+    // Hash password
+    const hashedPassword = await hash(password, 12);
+
+    // Create user (emailVerified is null until verified)
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        company,
+        emailVerified: null, // Email not verified yet
+      },
+    });
+
+    // Send verification email
+    try {
+      await sendVerificationWorkflow(email, firstName);
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+      // Don't throw error - user is created, just email failed
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+    };
+  } catch (error) {
+    console.error("[registerUser] Error:", error);
+    throw error;
+  }
 }
 
 export const checkEmailExists = async (email: string) => {
-  if (!email) {
-    throw new Error("Email requis");
+  try {
+    if (!email) {
+      throw new Error("Email requis");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true },
+    });
+
+    return { exists: !!user };
+  } catch (error) {
+    console.error("[checkEmailExists] Error:", error);
+    throw error;
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, email: true },
-  });
-
-  return { exists: !!user };
 }

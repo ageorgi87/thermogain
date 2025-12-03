@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
-import { verifyResetToken, resetPassword } from "@/lib/actions/password-reset";
+import { verifyResetToken, resetPassword } from "@/lib/actions/passwordReset";
 
 type Status = "verifying" | "idle" | "loading" | "success" | "error";
 

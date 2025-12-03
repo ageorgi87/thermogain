@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Mail, CheckCircle, Loader2 } from "lucide-react"
-import { sendStudyResults } from "@/lib/actions/send-study-results"
+import { sendStudyResults } from "@/lib/actions/sendStudyResults"
 
 interface SendResultsButtonProps {
   projectId: string
