@@ -107,10 +107,12 @@ export async function sendStudyResults({
       conso_pac_kwh: project.chauffageActuel?.conso_pac_kwh || undefined,
 
       // Coûts fixes chauffage actuel
-      puissance_souscrite_actuelle:
-        project.chauffageActuel?.puissance_souscrite_actuelle || undefined,
       abonnement_gaz: project.chauffageActuel?.abonnement_gaz || undefined,
       entretien_annuel: project.chauffageActuel?.entretien_annuel || undefined,
+
+      // Puissance souscrite actuelle (from projetPac section)
+      puissance_souscrite_actuelle:
+        project.projetPac?.puissance_souscrite_actuelle || undefined,
 
       // Projet PAC
       type_pac: project.projetPac?.type_pac || "",

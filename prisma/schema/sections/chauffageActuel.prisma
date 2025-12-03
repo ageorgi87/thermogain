@@ -30,15 +30,12 @@ model ProjectChauffageActuel {
   conso_pac_kwh      Float?
 
   // Fixed costs and subscriptions (Novembre 2024)
-  // Current electrical power subscription (in kVA: 3, 6, 9, 12, 15, 18)
-  puissance_souscrite_actuelle Int @default(6)
-
   // Annual gas subscription (€/year) - only for type_chauffage = "Gaz"
-  abonnement_gaz Float @default(120)
+  // Auto-filled with 120€ when user doesn't know consumption
+  abonnement_gaz Float? @default(120)
 
   // Annual maintenance cost of current system (€/year)
-  // Average values: Gas 120€, Oil 150€, LPG 130€, Pellets 100€, Wood 80€, Electric 0€
-  entretien_annuel Float @default(120)
+  entretien_annuel Float
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
