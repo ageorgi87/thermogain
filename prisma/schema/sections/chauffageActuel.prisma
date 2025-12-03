@@ -31,8 +31,8 @@ model ProjectChauffageActuel {
 
   // Fixed costs and subscriptions (Novembre 2024)
   // Annual gas subscription (€/year) - only for type_chauffage = "Gaz"
-  // Auto-filled with 120€ when user doesn't know consumption
-  abonnement_gaz Float? @default(120)
+  // REQUIRED when user knows consumption, auto-filled by server (120€) when unknown
+  abonnement_gaz Float?
 
   // Annual maintenance cost of current system (€/year)
   entretien_annuel Float
