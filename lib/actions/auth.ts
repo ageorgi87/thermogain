@@ -38,7 +38,6 @@ export async function registerUser(data: {
       firstName,
       lastName,
       company,
-      name: `${firstName} ${lastName}`.trim() || email,
       emailVerified: null, // Email not verified yet
     },
   });
@@ -54,7 +53,6 @@ export async function registerUser(data: {
   return {
     id: user.id,
     email: user.email,
-    name: user.name,
   };
 }
 

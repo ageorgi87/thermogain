@@ -167,7 +167,7 @@ export async function sendStudyResults({
     const professionalName =
       project.user.firstName && project.user.lastName
         ? `${project.user.firstName} ${project.user.lastName}`
-        : project.user.firstName || project.user.name || undefined;
+        : project.user.firstName || undefined;
     const professionalCompany = project.user.company || undefined;
     const professionalSiret = project.user.siret || undefined;
     const professionalAddress = project.user.address || undefined;
