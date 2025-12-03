@@ -1,0 +1,30 @@
+// User Model - Core user entity and professional profile
+// Stores user information, authentication data, and professional contact details
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  firstName     String?
+  lastName      String?
+  company       String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+
+  // Relations
+  accounts Account[]
+  sessions Session[]
+  projects Project[]
+
+  // Professional contact information
+  address    String?
+  phone      String?
+  city       String?
+  postalCode String?
+  website    String?
+  siret      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

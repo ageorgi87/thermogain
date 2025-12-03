@@ -1,0 +1,26 @@
+// Project - PAC Calculator (Heat Pump)
+// Main entity for the multi-step wizard that calculates heat pump profitability
+// Each project goes through 8 steps and stores detailed information in related tables
+
+model Project {
+  id              String   @id @default(cuid())
+  name            String // Project name provided by user
+  recipientEmails String[] @default([]) // Emails to send results to
+  currentStep     Int      @default(1) // Track wizard progress (1-8)
+  completed       Boolean  @default(false) // All steps completed
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations to section tables (one-to-one relationships)
+  logement        ProjectLogement?
+  chauffageActuel ProjectChauffageActuel?
+  projetPac       ProjectProjetPac?
+  couts           ProjectCouts?
+  aides           ProjectAides?
+  financement     ProjectFinancement?
+  evolutions      ProjectEvolutions?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
