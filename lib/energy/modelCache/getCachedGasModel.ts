@@ -1,5 +1,5 @@
 import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
-import { getGasMeanReversionModel } from "@/lib/energyEvolution/models/getGasMeanReversionModel"
+import { getEnergyMeanReversionModel } from "@/lib/energyEvolution/models/getEnergyMeanReversionModel"
 import { getModelFromDb } from "./helpers/getModelFromDb"
 import { saveModelToDb } from "./helpers/saveModelToDb"
 import { memoryCache, CACHE_DURATION } from "./helpers/memoryCache"
@@ -29,7 +29,7 @@ export const getCachedGasModel = async (): Promise<EnergyEvolutionModel> => {
 
   // 3. Appeler l'API DIDO
   console.log('🌐 Récupération modèle GAZ depuis API DIDO...')
-  const model = await getGasMeanReversionModel()
+  const model = await getEnergyMeanReversionModel('gaz')
 
   // Sauvegarder en DB et en mémoire
   await saveModelToDb('gaz', model)

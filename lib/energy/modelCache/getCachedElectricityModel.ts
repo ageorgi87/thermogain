@@ -1,5 +1,5 @@
 import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
-import { getElectricityMeanReversionModel } from "@/lib/energyEvolution/models/getElectricityMeanReversionModel"
+import { getEnergyMeanReversionModel } from "@/lib/energyEvolution/models/getEnergyMeanReversionModel"
 import { getModelFromDb } from "./helpers/getModelFromDb"
 import { saveModelToDb } from "./helpers/saveModelToDb"
 import { memoryCache, CACHE_DURATION } from "./helpers/memoryCache"
@@ -28,7 +28,7 @@ export const getCachedElectricityModel = async (): Promise<EnergyEvolutionModel>
 
   // 3. API DIDO
   console.log('🌐 Récupération modèle ÉLECTRICITÉ depuis API DIDO...')
-  const model = await getElectricityMeanReversionModel()
+  const model = await getEnergyMeanReversionModel('electricite')
 
   await saveModelToDb('electricite', model)
   memoryCache[key] = {
