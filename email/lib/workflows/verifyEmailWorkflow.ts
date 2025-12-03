@@ -1,7 +1,7 @@
 "use server";
 
 import { findVerificationToken } from "../tokens/findVerificationToken";
-import { isTokenExpired } from "../tokens/validateToken";
+import { isTokenExpired } from "../tokens/isTokenExpired";
 import { deleteVerificationToken } from "../tokens/deleteVerificationToken";
 import { markEmailAsVerified } from "../users/markEmailAsVerified";
 

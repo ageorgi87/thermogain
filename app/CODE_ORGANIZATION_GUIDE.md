@@ -389,6 +389,51 @@ export function LoginForm({ onSubmit, error }: LoginFormProps) {
 - **Utils** : camelCase (`formatDate.ts`, `calculateTotal.ts`)
 - **Server Actions** : camelCase verbe+nom (`registerUser`, `createProject`)
 
+### Règle de nommage des fichiers
+
+**Règle d'or** : Quand un fichier contient une seule fonction exportée, le nom du fichier doit correspondre exactement au nom de la fonction.
+
+```typescript
+// ❌ MAUVAIS
+// Fichier : validateToken.ts
+export function isTokenExpired(date: Date): boolean {
+  return date < new Date()
+}
+
+// ✅ BON
+// Fichier : isTokenExpired.ts
+export function isTokenExpired(date: Date): boolean {
+  return date < new Date()
+}
+```
+
+**Exemples concrets du projet:**
+
+```
+email/lib/
+├── tokens/
+│   ├── generateToken.ts          → export function generateToken()
+│   ├── saveVerificationToken.ts  → export function saveVerificationToken()
+│   ├── findVerificationToken.ts  → export function findVerificationToken()
+│   ├── deleteVerificationToken.ts→ export function deleteVerificationToken()
+│   └── isTokenExpired.ts         → export function isTokenExpired()
+├── emails/
+│   ├── buildVerificationUrl.ts   → export function buildVerificationUrl()
+│   ├── renderVerificationEmail.ts→ export function renderVerificationEmail()
+│   └── sendVerificationEmail.ts  → export function sendVerificationEmail()
+└── users/
+    ├── findUserByEmail.ts        → export function findUserByEmail()
+    └── markEmailAsVerified.ts    → export function markEmailAsVerified()
+```
+
+**Avantages:**
+- ✅ Import/export cohérents et prévisibles
+- ✅ Facile à trouver une fonction par son nom
+- ✅ Évite les confusions sur ce que contient un fichier
+- ✅ Facilite les refactorings automatiques
+
+**Exception:** Les fichiers avec plusieurs exports liés (comme `types.ts`, `constants.ts`, `index.ts`) ne suivent pas cette règle.
+
 ### Taille des composants
 
 **Règle** : Si un composant dépasse 200 lignes, envisager de le découper
