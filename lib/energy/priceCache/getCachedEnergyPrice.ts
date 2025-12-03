@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getCurrentEnergyPrice as fetchFromApi } from "@/lib/didoApi"
+import { getCurrentEnergyPrice as fetchFromApi } from "@/lib/dido/getCurrentEnergyPrice"
 import { isCacheValid } from "./helpers/isCacheValid"
 import { convertPriceToUnit } from "./helpers/convertPriceToUnit"
 

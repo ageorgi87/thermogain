@@ -1,7 +1,7 @@
 import { ProjectData } from "../types";
-import { getAbonnementElectriciteAnnuel } from "@/lib/subscriptionRates";
+import { getAbonnementElectriciteAnnuel } from "@/lib/subscription/getAbonnementElectriciteAnnuel";
 import { getEnergyModelSync } from "@/lib/energy/modelCache/getEnergyModelSync";
-import { calculateCostForYear } from "@/lib/energyPriceEvolution";
+import { calculateCostForYear } from "@/lib/energyEvolution/calculateCostForYear";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 
 /**

@@ -17,7 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscriptionRates"
+import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscription/subscriptionData"
 
 interface ChauffageActuelFieldsProps {
   formData: Partial<CurrentHeatingData>

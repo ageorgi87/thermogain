@@ -1,5 +1,5 @@
 /**
- * Calcul automatique des modèles d'évolution des prix basés sur l'historique API DIDO-SDES
+ * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
  *
  * Ce module utilise l'historique complet (18-42 ans) de l'API DIDO pour:
  * 1. Calculer le taux récent (moyenne pondérée 70% sur 10 ans)
@@ -7,24 +7,8 @@
  * 3. Générer automatiquement le modèle Mean Reversion optimal
  */
 
-import { getDataFileRows, DATAFILE_RIDS } from './didoApi'
-import {
-  EnergyEvolutionModel,
-  DEFAULT_GAS_MODEL,
-  DEFAULT_ELECTRICITY_MODEL
-} from './energyPriceEvolution'
-
-// Export des RIDs pour accès externe si nécessaire
-export { DATAFILE_RIDS }
-
-interface HistoricalAnalysis {
-  tauxRecent: number          // Taux pondéré 70% sur 10 ans
-  tauxEquilibre: number       // Taux moyen hors crises (long terme)
-  yearsOfData: number         // Nombre d'années d'historique
-  priceRecent: number         // Prix récent moyen (12 derniers mois)
-  priceOldest: number         // Prix le plus ancien
-  crisisYears: number[]       // Années identifiées comme crises
-}
+import { getDataFileRows } from '@/lib/dido/getDataFileRows'
+import { HistoricalAnalysis } from './energyPriceHistoryData'
 
 /**
  * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
@@ -187,152 +171,4 @@ export const analyzeEnergyPriceHistory = async (
     console.error(`Erreur analyse historique ${priceColumnName}:`, error)
     throw error
   }
-}
-
-/**
- * Génère automatiquement le modèle Mean Reversion optimal pour le gaz
- * basé sur l'historique réel de l'API DIDO
- */
-export const getGasMeanReversionModel = async (): Promise<EnergyEvolutionModel> => {
-  try {
-    const analysis = await analyzeEnergyPriceHistory(
-      DATAFILE_RIDS.gas,
-      'PX_GAZ_D_TTES_TRANCHES'
-    )
-
-    console.log('\n🎯 Modèle GAZ généré:')
-    console.log(`   • Taux récent: ${analysis.tauxRecent}%`)
-    console.log(`   • Taux équilibre: ${analysis.tauxEquilibre}%`)
-    console.log(`   • Historique: ${analysis.yearsOfData} ans`)
-    console.log(`   • Crises détectées: ${analysis.crisisYears.length}\n`)
-
-    return {
-      type: 'mean-reversion',
-      tauxRecent: analysis.tauxRecent,
-      tauxEquilibre: analysis.tauxEquilibre,
-      anneesTransition: 5 // Durée standard basée sur crises historiques
-    }
-  } catch (error) {
-    console.warn('⚠️  Impossible de générer modèle gaz depuis API, utilisation valeurs par défaut')
-    return DEFAULT_GAS_MODEL
-  }
-}
-
-/**
- * Génère automatiquement le modèle Mean Reversion optimal pour l'électricité
- * basé sur l'historique réel de l'API DIDO
- */
-export const getElectricityMeanReversionModel = async (): Promise<EnergyEvolutionModel> => {
-  try {
-    const analysis = await analyzeEnergyPriceHistory(
-      DATAFILE_RIDS.electricity,
-      'PX_ELE_D_TTES_TRANCHES'
-    )
-
-    console.log('\n🎯 Modèle ÉLECTRICITÉ généré:')
-    console.log(`   • Taux récent: ${analysis.tauxRecent}%`)
-    console.log(`   • Taux équilibre: ${analysis.tauxEquilibre}%`)
-    console.log(`   • Historique: ${analysis.yearsOfData} ans`)
-    console.log(`   • Crises détectées: ${analysis.crisisYears.length}\n`)
-
-    return {
-      type: 'mean-reversion',
-      tauxRecent: analysis.tauxRecent,
-      tauxEquilibre: analysis.tauxEquilibre,
-      anneesTransition: 5
-    }
-  } catch (error) {
-    console.warn('⚠️  Impossible de générer modèle électricité depuis API, utilisation valeurs par défaut')
-    return DEFAULT_ELECTRICITY_MODEL
-  }
-}
-
-/**
- * Génère le modèle Mean Reversion pour un type d'énergie donné
- *
- * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', etc.)
- * @returns Modèle Mean Reversion optimal
- */
-export const getEnergyMeanReversionModel = async (
-  energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
-): Promise<EnergyEvolutionModel> => {
-  switch (energyType) {
-    case 'gaz':
-      return await getGasMeanReversionModel()
-
-    case 'electricite':
-      return await getElectricityMeanReversionModel()
-
-    case 'fioul':
-      try {
-        const analysis = await analyzeEnergyPriceHistory(
-          DATAFILE_RIDS.petroleum,
-          'PX_PETRO_FOD_100KWH_C1'
-        )
-        return {
-          type: 'mean-reversion',
-          tauxRecent: analysis.tauxRecent,
-          tauxEquilibre: analysis.tauxEquilibre,
-          anneesTransition: 5
-        }
-      } catch (error) {
-        return {
-          type: 'mean-reversion',
-          tauxRecent: 3.0,
-          tauxEquilibre: 2.5,
-          anneesTransition: 5
-        }
-      }
-
-    case 'bois':
-      try {
-        const analysis = await analyzeEnergyPriceHistory(
-          DATAFILE_RIDS.wood,
-          'PX_BOIS_GRANVRAC_100KWH'
-        )
-        return {
-          type: 'mean-reversion',
-          tauxRecent: analysis.tauxRecent,
-          tauxEquilibre: analysis.tauxEquilibre,
-          anneesTransition: 5
-        }
-      } catch (error) {
-        return {
-          type: 'mean-reversion',
-          tauxRecent: 2.0,
-          tauxEquilibre: 1.5,
-          anneesTransition: 5
-        }
-      }
-
-    default:
-      return DEFAULT_GAS_MODEL
-  }
-}
-
-/**
- * Test et affichage des modèles générés pour tous les types d'énergie
- * Utile pour vérifier la qualité des données et des modèles
- */
-export const testAllEnergyModels = async (): Promise<void> => {
-  console.log('\n╔════════════════════════════════════════════════════════════════╗')
-  console.log('║  GÉNÉRATION AUTOMATIQUE DES MODÈLES MEAN REVERSION            ║')
-  console.log('╚════════════════════════════════════════════════════════════════╝\n')
-
-  const energies: Array<'gaz' | 'electricite' | 'fioul' | 'bois'> = ['gaz', 'electricite', 'fioul', 'bois']
-
-  for (const energy of energies) {
-    try {
-      const model = await getEnergyMeanReversionModel(energy)
-      console.log(`\n✅ ${energy.toUpperCase()}:`)
-      console.log(`   Type: ${model.type}`)
-      console.log(`   Taux récent: ${model.tauxRecent}%`)
-      console.log(`   Taux équilibre: ${model.tauxEquilibre}%`)
-      console.log(`   Transition: ${model.anneesTransition} ans`)
-    } catch (error) {
-      console.error(`\n❌ ${energy.toUpperCase()}: Erreur`, error)
-    }
-  }
-
-  console.log('\n═══════════════════════════════════════════════════════════════════\n')
 }

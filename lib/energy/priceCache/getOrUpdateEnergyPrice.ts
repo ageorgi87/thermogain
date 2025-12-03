@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getEnergyEvolution10y } from "@/lib/didoApi"
+import { getEnergyEvolution10y } from "@/lib/dido/getEnergyEvolution10y"
 import { isCacheValid } from "./helpers/isCacheValid"
 
 /**

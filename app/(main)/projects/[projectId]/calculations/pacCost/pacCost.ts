@@ -1,11 +1,9 @@
 import { ProjectData } from "../types";
 import { calculateCurrentAnnualCost } from "../currentCost/currentCost";
-import {
-  getDeltaAbonnementElectricite,
-  getAbonnementElectriciteAnnuel,
-} from "@/lib/subscriptionRates";
+import { getDeltaAbonnementElectricite } from "@/lib/subscription/getDeltaAbonnementElectricite";
+import { getAbonnementElectriciteAnnuel } from "@/lib/subscription/getAbonnementElectriciteAnnuel";
 import { getElectricityModelSync } from "@/lib/energy/modelCache/getElectricityModelSync";
-import { calculateCostForYear } from "@/lib/energyPriceEvolution";
+import { calculateCostForYear } from "@/lib/energyEvolution/calculateCostForYear";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
 /**

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import type { EnergyEvolutionModel } from "@/lib/energyPriceEvolution"
+import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
 
 /**
  * Sauvegarde un modèle dans la base de données

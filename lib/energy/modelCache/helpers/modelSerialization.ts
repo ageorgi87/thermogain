@@ -1,4 +1,4 @@
-import type { EnergyEvolutionModel } from "@/lib/energyPriceEvolution"
+import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
 
 /**
  * Convertit un modèle EnergyEvolutionModel en objet JSON pour la DB

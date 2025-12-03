@@ -1,5 +1,5 @@
-import type { EnergyEvolutionModel } from "@/lib/energyPriceEvolution"
-import { getElectricityMeanReversionModel } from "@/lib/energyPriceEvolutionModels"
+import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import { getElectricityMeanReversionModel } from "@/lib/energyEvolution/models/getElectricityMeanReversionModel"
 import { getModelFromDb } from "./helpers/getModelFromDb"
 import { saveModelToDb } from "./helpers/saveModelToDb"
 import { memoryCache, CACHE_DURATION } from "./helpers/memoryCache"

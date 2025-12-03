@@ -520,6 +520,51 @@ createToken() // mais envoie aussi un email ❌
 
 **Règle d'or** : Quand un fichier contient une seule fonction exportée, le nom du fichier doit correspondre exactement au nom de la fonction.
 
+### Règle : Une fonction par fichier (SRP strict)
+
+**RÈGLE ABSOLUE** : Chaque fichier ne doit exporter qu'UNE SEULE fonction. Pas de fichiers avec plusieurs exports de fonctions.
+
+**INTERDICTION FORMELLE** : Ne jamais créer de fichiers `index.ts` qui centralisent les exports. Chaque import doit être explicite et pointer directement vers le fichier de la fonction.
+
+```typescript
+// ❌ INTERDIT : Fichier avec plusieurs fonctions
+// lib/subscription/rates.ts
+export const getElectricityRate = () => { /* ... */ }
+export const getGasRate = () => { /* ... */ }
+export const getMaintenanceCost = () => { /* ... */ }
+
+// ❌ INTERDIT : Fichier index.ts qui centralise
+// lib/subscription/index.ts
+export { getElectricityRate } from './getElectricityRate'
+export { getGasRate } from './getGasRate'
+export { getMaintenanceCost } from './getMaintenanceCost'
+
+// ✅ BON : Une fonction par fichier + imports directs
+// lib/subscription/getElectricityRate.ts
+export const getElectricityRate = () => { /* ... */ }
+
+// lib/subscription/getGasRate.ts
+export const getGasRate = () => { /* ... */ }
+
+// lib/subscription/getMaintenanceCost.ts
+export const getMaintenanceCost = () => { /* ... */ }
+
+// Dans un autre fichier:
+import { getElectricityRate } from "@/lib/subscription/getElectricityRate"
+import { getGasRate } from "@/lib/subscription/getGasRate"
+```
+
+**Exceptions autorisées** :
+- `*Data.ts` : Fichiers contenant uniquement des constantes, types, et interfaces (pas de fonctions)
+- `helpers/` : Fonctions privées non exportées pour usage interne au module uniquement
+
+**Pourquoi cette règle ?**
+- ✅ Responsabilité unique (Single Responsibility Principle)
+- ✅ Code plus testable et maintenable
+- ✅ Dépendances explicites (on voit exactement ce qui est utilisé)
+- ✅ Évite les imports circulaires
+- ✅ Facilite la navigation dans le code (pas de "barrel exports" trompeurs)
+
 ```typescript
 // ❌ MAUVAIS
 // Fichier : validateToken.ts

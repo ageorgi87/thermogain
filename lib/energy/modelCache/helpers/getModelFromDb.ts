@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import type { EnergyEvolutionModel } from "@/lib/energyPriceEvolution"
+import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
 
 const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 jours en millisecondes
 

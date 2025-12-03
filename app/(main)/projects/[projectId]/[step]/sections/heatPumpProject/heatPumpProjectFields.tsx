@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 import { HelpCircle } from "lucide-react"
 import { useEffect } from "react"
 import { HeatPumpProjectData } from "./heatPumpProjectSchema"
-import { getPuissanceSouscritePacRecommandee } from "@/lib/subscriptionRates"
+import { getPuissanceSouscritePacRecommandee } from "@/lib/subscription/getPuissanceSouscritePacRecommandee"
 import { FormField } from "@/components/form/FormField"
 
 interface ProjetPacFieldsProps {

@@ -1,5 +1,5 @@
-import type { EnergyEvolutionModel } from "@/lib/energyPriceEvolution"
-import { DEFAULT_GAS_MODEL, DEFAULT_ELECTRICITY_MODEL } from "@/lib/energyPriceEvolution"
+import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import { DEFAULT_GAS_MODEL, DEFAULT_ELECTRICITY_MODEL } from "@/lib/energyEvolution/energyEvolutionData"
 import { getCachedEnergyModel } from "./getCachedEnergyModel"
 import { memoryCache, CACHE_DURATION } from "./helpers/memoryCache"
 
