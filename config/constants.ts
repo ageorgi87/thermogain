@@ -261,7 +261,7 @@ export const DEFAULT_ENERGY_PRICES = {
  * Paramètres du modèle Mean Reversion pour l'évolution des prix de l'énergie
  *
  * Source: Analyse économétrique sur historique API DIDO-SDES (18-42 ans de données)
- * Utilisé dans: lib/energyPriceEvolution.ts, lib/energyModelCache.ts
+ * Utilisé dans: lib/energyEvolution/models/analyzeEnergyPriceHistory.ts
  * Dernière mise à jour: Décembre 2024
  *
  * Le modèle Mean Reversion reflète la tendance des prix à revenir vers un taux
@@ -299,6 +299,81 @@ export const MEAN_REVERSION_PARAMS = {
     RECENT_RATE: 3.4, // %/an
     EQUILIBRIUM_RATE: 2.0, // %/an
     TRANSITION_YEARS: 5,
+  },
+} as const
+
+/**
+ * Paramètres pour le calcul automatique des taux Mean Reversion
+ *
+ * Source: Méthodologie économétrique validée
+ * Utilisé dans: lib/energyEvolution/models/analyzeEnergyPriceHistory.ts
+ * Dernière mise à jour: Décembre 2024
+ *
+ * MÉTHODOLOGIE:
+ * - tauxRecent: Moyenne pondérée pour capturer la volatilité récente tout en
+ *   restant ancré dans la tendance structurelle long terme
+ *   Formule: (70% × évolution 10 ans) + (30% × évolution totale)
+ *
+ * - tauxEquilibre: Taux structurel anticipé basé sur l'inflation + facteurs
+ *   spécifiques à chaque énergie (transition énergétique, géopolitique, etc.)
+ */
+export const ENERGY_ANALYSIS_PARAMS = {
+  /**
+   * Pondération pour le calcul du taux récent
+   * 70% sur 10 ans (volatilité récente) + 30% long terme (tendance structurelle)
+   */
+  RECENT_RATE_WEIGHTING: {
+    /** Poids sur les 10 dernières années (crises récentes) */
+    SHORT_TERM: 0.7,
+    /** Poids sur l'historique complet (tendance structurelle) */
+    LONG_TERM: 0.3,
+  },
+
+  /**
+   * Taux d'inflation long terme utilisé comme base de calcul
+   * Source: Objectif BCE (Banque Centrale Européenne)
+   */
+  INFLATION_BASELINE: 2.0, // %/an
+
+  /**
+   * Seuil de détection des années de crise (en %)
+   * Une année avec une évolution > 10% est considérée comme année de crise
+   * et exclue du calcul du taux d'équilibre
+   */
+  CRISIS_THRESHOLD: 10, // %/an
+
+  /**
+   * Taux d'équilibre par type d'énergie
+   * = Inflation baseline + facteur structurel spécifique
+   */
+  EQUILIBRIUM_RATES: {
+    /**
+     * Électricité: 2.5%/an
+     * = Inflation (2%) + Baisse ENR (-0.5%) + Croissance demande (1%)
+     * Facteur baissier: Coûts marginaux renouvelables en diminution
+     */
+    ELECTRICITE: 2.5,
+
+    /**
+     * Gaz naturel: 3.5%/an
+     * = Inflation (2%) + Risque géopolitique (1%) + Transition énergétique (0.5%)
+     * Facteur haussier: Dépendance géopolitique, décarbonation progressive
+     */
+    GAZ: 3.5,
+
+    /**
+     * Bois énergie: 2.0%/an
+     * = Inflation (2%) + Stabilité ressource locale (0%)
+     * Facteur stable: Ressource locale, peu sensible aux crises internationales
+     */
+    BOIS: 2.0,
+
+    /**
+     * Fioul/Pétrole: 2.5%/an
+     * = Inflation (2%) + Transition énergétique (0.5%)
+     * Facteur modéré: Corrélé au pétrole, en déclin progressif
+     */
+    PETROLEUM: 2.5,
   },
 } as const
 

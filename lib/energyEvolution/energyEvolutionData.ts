@@ -1,18 +1,15 @@
 /**
- * Types, interfaces et constantes pour les modèles d'évolution des prix de l'énergie
+ * Types et constantes pour le modèle d'évolution des prix de l'énergie (Mean Reversion)
  *
- * Ce module centralise les types et configurations par défaut.
- * Voir energyPriceEvolution.README.md pour la documentation complète
+ * Le modèle Mean Reversion fait une transition linéaire du taux récent vers le taux
+ * d'équilibre sur une période de transition (5 ans par défaut).
  */
 
-export type EnergyEvolutionModelType = 'linear' | 'mean-reversion' | 'dampening'
-
 export interface EnergyEvolutionModel {
-  type: EnergyEvolutionModelType
+  type: 'mean-reversion'
   tauxRecent: number        // Taux actuel influencé par les crises récentes (ex: 8.7%)
   tauxEquilibre: number     // Taux d'équilibre long terme (ex: 3.5%)
-  anneesTransition?: number // Pour mean-reversion : durée de transition (défaut: 5)
-  lambda?: number           // Pour dampening : vitesse d'amortissement (défaut: 0.15)
+  anneesTransition?: number // Durée de transition (défaut: 5 ans)
 }
 
 // ============================================================================
@@ -50,45 +47,4 @@ export const DEFAULT_ELECTRICITY_MODEL: EnergyEvolutionModel = {
   tauxRecent: 6.9,
   tauxEquilibre: 2.5,
   anneesTransition: 5
-}
-
-/**
- * Configuration alternative: Dampening exponentiel pour le gaz
- *
- * Utilise un amortissement exponentiel au lieu d'une transition linéaire.
- * Résultat légèrement plus conservateur (convergence plus lente).
- */
-export const DAMPENING_GAS_MODEL: EnergyEvolutionModel = {
-  type: 'dampening',
-  tauxRecent: 8.7,
-  tauxEquilibre: 3.5,
-  lambda: 0.15
-}
-
-/**
- * Configuration alternative: Dampening exponentiel pour l'électricité
- */
-export const DAMPENING_ELECTRICITY_MODEL: EnergyEvolutionModel = {
-  type: 'dampening',
-  tauxRecent: 6.9,
-  tauxEquilibre: 2.5,
-  lambda: 0.15
-}
-
-/**
- * Configuration legacy: Modèle linéaire constant (actuel)
- *
- * Conserve le taux d'évolution constant sur toute la période.
- * ⚠️ ATTENTION: Peut surestimer le bénéfice de ~28% à long terme
- */
-export const LINEAR_GAS_MODEL: EnergyEvolutionModel = {
-  type: 'linear',
-  tauxRecent: 8.7,
-  tauxEquilibre: 8.7, // Inutilisé en mode linéaire
-}
-
-export const LINEAR_ELECTRICITY_MODEL: EnergyEvolutionModel = {
-  type: 'linear',
-  tauxRecent: 6.9,
-  tauxEquilibre: 6.9, // Inutilisé en mode linéaire
 }

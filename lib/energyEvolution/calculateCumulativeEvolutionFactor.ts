@@ -3,7 +3,7 @@
  */
 
 import { EnergyEvolutionModel } from './energyEvolutionData'
-import { calculateEvolutionRate } from './calculateEvolutionRate'
+import { meanReversionRate } from './helpers/meanReversionRate'
 
 /**
  * Calcule le facteur d'évolution cumulé pour une année donnée
@@ -19,7 +19,7 @@ export const calculateCumulativeEvolutionFactor = (
   let facteur = 1
 
   for (let y = 0; y < annee; y++) {
-    const tauxAnnee = calculateEvolutionRate(y, model)
+    const tauxAnnee = meanReversionRate(y, model)
     facteur *= (1 + tauxAnnee / 100)
   }
 
