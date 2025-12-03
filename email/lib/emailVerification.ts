@@ -6,7 +6,7 @@ import {
   EMAIL_FROM,
   EMAIL_VERIFICATION_EXPIRES_IN,
 } from "@/email/lib/resend";
-import { VerificationEmail } from "@/email/templates/verification-email";
+import { VerificationEmail } from "@/email/templates/verificationEmail";
 import { render } from "@react-email/render";
 import crypto from "crypto";
 

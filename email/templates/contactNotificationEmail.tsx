@@ -6,7 +6,7 @@ import {
   Hr,
   Link,
 } from '@react-email/components'
-import { EmailLayout } from './email-layout'
+import { EmailLayout } from './emailLayout'
 
 interface ContactNotificationEmailProps {
   senderName: string

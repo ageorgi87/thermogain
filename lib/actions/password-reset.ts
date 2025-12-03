@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { resend, EMAIL_FROM } from "@/email/lib/resend";
-import { PasswordResetEmail } from "@/email/templates/password-reset-email";
+import { PasswordResetEmail } from "@/email/templates/passwordResetEmail";
 import { render } from "@react-email/render";
 import crypto from "crypto";
 import { hash } from "bcryptjs";

@@ -5,7 +5,7 @@ import {
   Text,
   Hr,
 } from '@react-email/components'
-import { EmailLayout } from './email-layout'
+import { EmailLayout } from './emailLayout'
 
 interface ContactConfirmationEmailProps {
   recipientName: string
