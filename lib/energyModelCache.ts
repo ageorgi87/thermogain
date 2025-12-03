@@ -211,7 +211,7 @@ export const getCachedEnergyModel = async (
 /**
  * Force le rafraîchissement du cache (utile pour les tests)
  */
-export const clearModelCache = async () => {
+export const clearModelCache = async (): Promise<void> => {
   // Vider le cache mémoire
   Object.keys(memoryCache).forEach(key => delete memoryCache[key])
 

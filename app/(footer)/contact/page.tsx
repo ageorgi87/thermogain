@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, Mail, AlertCircle, Loader2 } from "lucide-react"
-import { submitContactForm } from "@/lib/actions/contact"
+import { submitContactForm } from "@/lib/actions/submitContactForm"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
