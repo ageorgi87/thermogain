@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import { createProject } from "@/lib/actions/projects"
-import { WIZARD_STEPS } from "@/lib/wizardSteps"
+import { createProject } from "@/lib/actions/projects/createProject"
+import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
 
 export default function CreateProjectPage() {
   const router = useRouter()

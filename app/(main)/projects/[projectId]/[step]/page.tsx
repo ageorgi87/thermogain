@@ -47,9 +47,9 @@ import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProj
 import { saveCostsData } from "./sections/costs/costsActions"
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
 import { saveFinancingData } from "./sections/financing/financingActions"
-import { getProject } from "@/lib/actions/projects"
+import { getProject } from "@/lib/actions/projects/getProject"
 import { updateProjectStep } from "./updateProjectStep"
-import { WIZARD_STEPS as STEPS } from "@/lib/wizardSteps"
+import { WIZARD_STEPS as STEPS } from "@/lib/wizard/wizardStepsData"
 
 const STEP_EXPLANATIONS: Record<string, string> = {
   "informations": "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",

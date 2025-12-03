@@ -19,7 +19,7 @@ import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react"
 import { calculateMaPrimeRenov } from "@/lib/eligibilityMaPrimeRenov"
 import { calculateCEE } from "@/lib/eligibilityCEE"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getClimateZoneFromPostalCode } from "@/lib/climateZones"
+import { getClimateZoneFromPostalCode } from "@/lib/climate/getClimateZoneFromPostalCode"
 import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,

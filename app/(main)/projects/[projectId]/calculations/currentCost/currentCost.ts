@@ -1,6 +1,6 @@
 import { ProjectData } from "../types";
 import { getAbonnementElectriciteAnnuel } from "@/lib/subscriptionRates";
-import { getEnergyModelSync } from "@/lib/energyModelCache";
+import { getEnergyModelSync } from "@/lib/energy/modelCache/getEnergyModelSync";
 import { calculateCostForYear } from "@/lib/energyPriceEvolution";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 

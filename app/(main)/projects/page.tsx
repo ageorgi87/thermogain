@@ -22,8 +22,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
-import { getProjects, deleteProject } from "@/lib/actions/projects"
-import { WIZARD_STEPS, getTotalSteps, getStepNumber, getProjectStatus, getStepKey } from "@/lib/wizardSteps"
+import { getProjects } from "@/lib/actions/projects/getProjects"
+import { deleteProject } from "@/lib/actions/projects/deleteProject"
+import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { getTotalSteps } from "@/lib/wizard/getTotalSteps"
+import { getStepNumber } from "@/lib/wizard/getStepNumber"
+import { getProjectStatus } from "@/lib/wizard/getProjectStatus"
+import { getStepKey } from "@/lib/wizard/getStepKey"
 
 type Project = {
   id: string

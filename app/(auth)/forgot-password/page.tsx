@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { requestPasswordReset } from "@/lib/actions/passwordReset";
+import { requestPasswordReset } from "@/lib/actions/passwordReset/requestPasswordReset";
 
 type Status = "idle" | "loading" | "success";
 

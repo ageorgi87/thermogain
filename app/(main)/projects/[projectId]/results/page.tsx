@@ -1,4 +1,4 @@
-import { getProject } from "@/lib/actions/projects"
+import { getProject } from "@/lib/actions/projects/getProject"
 import { notFound, redirect } from "next/navigation"
 import { calculateAllResults, ProjectData } from "../calculations"
 import { calculatePacConsumptionKwh } from "../calculations/pacConsumption/pacConsumption"

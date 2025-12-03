@@ -23,7 +23,8 @@ import {
   CheckCircle2,
   Mail,
 } from "lucide-react";
-import { checkEmailExists, registerUser } from "@/lib/actions/auth";
+import { checkEmailExists } from "@/lib/actions/auth/checkEmailExists";
+import { registerUser } from "@/lib/actions/auth/registerUser";
 
 type Step = "email" | "login" | "register" | "verify-email";
 

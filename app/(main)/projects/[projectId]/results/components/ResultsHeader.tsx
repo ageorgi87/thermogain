@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Pencil, CheckCircle, AlertCircle } from "lucide-react"
-import { getFirstStepKey } from "@/lib/wizardSteps"
+import { getFirstStepKey } from "@/lib/wizard/getFirstStepKey"
 import { SendResultsButton } from "./SendResultsButton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 

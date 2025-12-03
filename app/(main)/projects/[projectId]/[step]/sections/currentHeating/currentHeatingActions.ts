@@ -6,13 +6,11 @@ import {
   currentHeatingSchema,
   type CurrentHeatingData,
 } from "./currentHeatingSchema";
-import { estimateConsumptionByEnergyType } from "@/lib/consumptionEstimation";
-import { getCachedEnergyPrice } from "@/lib/energyPriceCache";
-import {
-  calculateBoilerEfficiency,
-  FUEL_ENERGY_CONTENT,
-  calculateHeatDemand,
-} from "@/lib/boilerEfficiency";
+import { estimateConsumptionByEnergyType } from "@/lib/estimation/estimateConsumptionByEnergyType";
+import { getCachedEnergyPrice } from "@/lib/energy/priceCache/getCachedEnergyPrice";
+import { calculateBoilerEfficiency } from "@/lib/heating/calculateBoilerEfficiency";
+import { FUEL_ENERGY_CONTENT } from "@/lib/heating/heatingEfficiencyData";
+import { calculateHeatDemand } from "@/lib/heating/calculateHeatDemand";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 
 /**

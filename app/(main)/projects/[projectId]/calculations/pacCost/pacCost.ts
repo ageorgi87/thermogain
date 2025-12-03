@@ -4,7 +4,7 @@ import {
   getDeltaAbonnementElectricite,
   getAbonnementElectriciteAnnuel,
 } from "@/lib/subscriptionRates";
-import { getElectricityModelSync } from "@/lib/energyModelCache";
+import { getElectricityModelSync } from "@/lib/energy/modelCache/getElectricityModelSync";
 import { calculateCostForYear } from "@/lib/energyPriceEvolution";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 

@@ -1,5 +1,5 @@
 import { ProjectData } from "../types";
-import { calculateAdjustedCOP } from "@/lib/copAdjustments";
+import { calculateAdjustedCOP } from "@/lib/pac/calculateAdjustedCOP";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
 /**
