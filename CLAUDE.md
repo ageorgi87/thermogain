@@ -565,6 +565,76 @@ import { getGasRate } from "@/lib/subscription/getGasRate"
 - ✅ Évite les imports circulaires
 - ✅ Facilite la navigation dans le code (pas de "barrel exports" trompeurs)
 
+### Règle : Gestion des types et interfaces
+
+**RÈGLE** : Les types et interfaces doivent être placés selon leur portée d'utilisation.
+
+#### Types/Interfaces utilisés dans UN SEUL fichier
+
+**Déclaration locale** : Le type/interface doit rester dans le fichier qui l'utilise, non exporté.
+
+```typescript
+// ✅ BON : Interface locale non exportée
+// lib/energyEvolution/models/analyzeEnergyPriceHistory.ts
+interface HistoricalAnalysis {
+  tauxRecent: number
+  tauxEquilibre: number
+  yearsOfData: number
+}
+
+export const analyzeEnergyPriceHistory = async (): Promise<HistoricalAnalysis> => {
+  // ...
+}
+
+// ❌ MAUVAIS : Interface exportée alors qu'utilisée nulle part ailleurs
+// lib/energyEvolution/models/energyPriceHistoryData.ts
+export interface HistoricalAnalysis {
+  tauxRecent: number
+  tauxEquilibre: number
+}
+```
+
+#### Types/Interfaces utilisés dans PLUSIEURS fichiers
+
+**Extraction obligatoire** : Le type/interface doit être extrait et placé dans le dossier `/types` à la racine du projet.
+
+```typescript
+// ✅ BON : Type partagé dans /types
+// types/project.ts
+export interface Project {
+  id: string
+  userId: string
+  name: string
+  createdAt: Date
+}
+
+// Utilisé dans plusieurs fichiers:
+// lib/actions/projects/createProject.ts
+import type { Project } from "@/types/project"
+
+// lib/actions/projects/getProject.ts
+import type { Project } from "@/types/project"
+
+// app/(main)/projects/page.tsx
+import type { Project } from "@/types/project"
+```
+
+**Organisation du dossier /types** :
+```
+types/
+├── project.ts           # Types liés aux projets
+├── user.ts              # Types liés aux utilisateurs
+├── energy.ts            # Types liés à l'énergie
+└── calculation.ts       # Types liés aux calculs
+```
+
+**Pourquoi cette règle ?**
+- ✅ Évite la duplication de types
+- ✅ Facilite la maintenance (un seul endroit à modifier)
+- ✅ Respecte le principe DRY (Don't Repeat Yourself)
+- ✅ Centralise les types partagés pour meilleure découvrabilité
+- ❌ Évite les fichiers *Data.ts inutiles pour des types utilisés localement
+
 ```typescript
 // ❌ MAUVAIS
 // Fichier : validateToken.ts

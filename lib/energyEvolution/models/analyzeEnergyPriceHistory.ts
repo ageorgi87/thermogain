@@ -8,7 +8,18 @@
  */
 
 import { getDataFileRows } from '@/lib/dido/getDataFileRows'
-import { HistoricalAnalysis } from './energyPriceHistoryData'
+
+/**
+ * Interface pour l'analyse d'historique des prix de l'énergie
+ */
+interface HistoricalAnalysis {
+  tauxRecent: number          // Taux pondéré 70% sur 10 ans
+  tauxEquilibre: number       // Taux moyen hors crises (long terme)
+  yearsOfData: number         // Nombre d'années d'historique
+  priceRecent: number         // Prix récent moyen (12 derniers mois)
+  priceOldest: number         // Prix le plus ancien
+  crisisYears: number[]       // Années identifiées comme crises
+}
 
 /**
  * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
