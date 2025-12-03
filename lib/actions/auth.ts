@@ -2,7 +2,7 @@
 
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { createVerificationToken } from "@/email/lib/emailVerification";
+import { createVerificationToken } from "@/email/lib/createVerificationToken";
 
 export async function registerUser(data: {
   email: string;

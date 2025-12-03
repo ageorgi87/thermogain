@@ -12,10 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
-import {
-  verifyEmailToken,
-  resendVerificationEmail,
-} from "@/email/lib/emailVerification";
+import { verifyEmailToken } from "@/email/lib/verifyEmailToken";
+import { resendVerificationEmail } from "@/email/lib/resendVerificationEmail";
 
 type Status = "verifying" | "success" | "error" | "resending" | "resent";
 
