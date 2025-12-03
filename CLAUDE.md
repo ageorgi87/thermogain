@@ -1014,6 +1014,13 @@ Si création de `components/CLAUDE.md` pour documenter les composants :
 
 ### Documentation du projet
 
+- **[docs/](docs/)** - Documentation métier et calculs
+  - [methodologieCalculs.md](docs/methodologieCalculs.md) - Méthodologie générale de calcul
+  - [calculsCouts.md](docs/calculsCouts.md) - Calculs de coûts (chauffage actuel et PAC)
+  - [calculsConsommation.md](docs/calculsConsommation.md) - Calculs de consommation PAC
+  - [calculsEconomieRoi.md](docs/calculsEconomieRoi.md) - Économies et ROI
+  - [guideTheming.md](docs/guideTheming.md) - Guide du système de thème
+- **[config/constants.ts](config/constants.ts)** - Source unique de vérité pour toutes les constantes
 - **[prisma/CLAUDE.md](prisma/CLAUDE.md)** - Directives Prisma schema
 - **[email/CLAUDE.md](email/CLAUDE.md)** - Directives système email
 

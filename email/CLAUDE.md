@@ -264,7 +264,7 @@ const button = {
 
 ### Palette de couleurs
 
-**Définir dans `lib/constants.ts`** :
+**Définir dans `config/constants.ts`** :
 
 ```typescript
 export const EMAIL_COLORS = {

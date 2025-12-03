@@ -57,7 +57,7 @@ export default function MethodologiePage() {
               <p className="text-sm">
                 <strong>📋 Référence technique :</strong> Toutes les constantes statiques utilisées dans nos calculs
                 (facteurs de conversion, tarifs, COP moyens, etc.) sont centralisées dans le fichier{" "}
-                <code className="bg-blue-100 dark:bg-blue-900 px-1.5 py-0.5 rounded text-xs">lib/constants.ts</code>.
+                <code className="bg-blue-100 dark:bg-blue-900 px-1.5 py-0.5 rounded text-xs">config/constants.ts</code>.
                 Chaque valeur y est documentée avec sa source, son utilisation et sa date de dernière mise à jour.
               </p>
             </div>

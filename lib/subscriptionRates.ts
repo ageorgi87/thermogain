@@ -9,7 +9,7 @@
  *
  * Dernière mise à jour: Novembre 2025 (tarifs EDF en vigueur depuis août 2025)
  *
- * IMPORTANT: Les valeurs constantes proviennent de @/lib/constants
+ * IMPORTANT: Les valeurs constantes proviennent de @/config/constants
  */
 
 import {
@@ -30,7 +30,7 @@ import {
  * IMPORTANT: Ces tarifs correspondent à l'option Base (tarif unique 24h/24)
  * Tarifs mensuels × 12 = tarifs annuels
  *
- * Note: Valeurs importées depuis @/lib/constants
+ * Note: Valeurs importées depuis @/config/constants
  */
 export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL;
 
@@ -81,7 +81,7 @@ export function getDeltaAbonnementElectricite(
  *
  * Valeur moyenne pour consommation standard chauffage (12000-20000 kWh/an)
  *
- * Note: Valeurs importées depuis @/lib/constants
+ * Note: Valeurs importées depuis @/config/constants
  */
 export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
 
@@ -89,7 +89,7 @@ export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
  * Barème détaillé abonnement gaz selon consommation annuelle
  * Les tarifs varient selon la tranche de consommation (Base, B0, B1, B2i)
  *
- * Note: Valeurs importées depuis @/lib/constants
+ * Note: Valeurs importées depuis @/config/constants
  */
 export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
   base: GAS_SUBSCRIPTION.BY_CONSUMPTION.BASE,
@@ -111,7 +111,7 @@ export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
  * - Entretien PAC: Fortement recommandé annuellement, obligatoire tous les 2 ans
  * - Prix incluent: visite technicien, nettoyage, réglages, attestation
  *
- * Note: Valeurs importées depuis @/lib/constants
+ * Note: Valeurs importées depuis @/config/constants
  */
 export const ENTRETIEN_ANNUEL_MOYEN: Record<string, number> = {
   Gaz: MAINTENANCE_COSTS_ANNUAL.GAZ,
