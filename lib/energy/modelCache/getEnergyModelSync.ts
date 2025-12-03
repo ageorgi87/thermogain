@@ -1,10 +1,16 @@
 import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
-import { DEFAULT_GAS_MODEL, DEFAULT_ELECTRICITY_MODEL } from "@/lib/energyEvolution/energyEvolutionData"
 import { getCachedEnergyModel } from "./getCachedEnergyModel"
 import { memoryCache, CACHE_DURATION } from "./helpers/memoryCache"
 
 /**
  * Récupère un modèle énergétique de manière SYNCHRONE
+ *
+ * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', 'bois')
+ * @returns Modèle d'évolution depuis le cache mémoire
+ * @throws Error si le cache n'est pas initialisé
+ *
+ * IMPORTANT: Ce cache doit être pré-chargé au démarrage de l'application.
+ * Si cette fonction throw, c'est un bug - le cache aurait dû être initialisé.
  */
 export const getEnergyModelSync = (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
@@ -15,20 +21,10 @@ export const getEnergyModelSync = (
     return memoryCache[key].model
   }
 
-  // Lancer le chargement en arrière-plan
+  // Lancer le chargement en arrière-plan pour les prochains appels
   getCachedEnergyModel(energyType).catch(err =>
     console.error(`Erreur chargement modèle ${energyType}:`, err)
   )
 
-  // Retourner valeurs par défaut selon le type
-  switch (energyType) {
-    case 'gaz':
-      return DEFAULT_GAS_MODEL
-    case 'electricite':
-      return DEFAULT_ELECTRICITY_MODEL
-    case 'fioul':
-      return { type: 'mean-reversion', tauxRecent: 7.2, tauxEquilibre: 2.5, anneesTransition: 5 }
-    case 'bois':
-      return { type: 'mean-reversion', tauxRecent: 3.4, tauxEquilibre: 2.0, anneesTransition: 5 }
-  }
+  throw new Error(`Cache du modèle ${energyType} non initialisé. Veuillez appeler getCachedEnergyModel('${energyType}') au démarrage de l'application.`)
 }

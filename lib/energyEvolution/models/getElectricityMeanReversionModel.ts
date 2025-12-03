@@ -4,30 +4,25 @@
  */
 
 import { DATAFILE_RIDS } from '@/lib/dido/didoConstants'
-import { EnergyEvolutionModel, DEFAULT_ELECTRICITY_MODEL } from '@/lib/energyEvolution/energyEvolutionData'
+import type { EnergyEvolutionModel } from '@/lib/energyEvolution/energyEvolutionData'
 import { analyzeEnergyPriceHistory } from './analyzeEnergyPriceHistory'
 
 export const getElectricityMeanReversionModel = async (): Promise<EnergyEvolutionModel> => {
-  try {
-    const analysis = await analyzeEnergyPriceHistory(
-      DATAFILE_RIDS.electricity,
-      'PX_ELE_D_TTES_TRANCHES'
-    )
+  const analysis = await analyzeEnergyPriceHistory(
+    DATAFILE_RIDS.electricity,
+    'PX_ELE_D_TTES_TRANCHES'
+  )
 
-    console.log('\n🎯 Modèle ÉLECTRICITÉ généré:')
-    console.log(`   • Taux récent: ${analysis.tauxRecent}%`)
-    console.log(`   • Taux équilibre: ${analysis.tauxEquilibre}%`)
-    console.log(`   • Historique: ${analysis.yearsOfData} ans`)
-    console.log(`   • Crises détectées: ${analysis.crisisYears.length}\n`)
+  console.log('\n🎯 Modèle ÉLECTRICITÉ généré:')
+  console.log(`   • Taux récent: ${analysis.tauxRecent}%`)
+  console.log(`   • Taux équilibre: ${analysis.tauxEquilibre}%`)
+  console.log(`   • Historique: ${analysis.yearsOfData} ans`)
+  console.log(`   • Crises détectées: ${analysis.crisisYears.length}\n`)
 
-    return {
-      type: 'mean-reversion',
-      tauxRecent: analysis.tauxRecent,
-      tauxEquilibre: analysis.tauxEquilibre,
-      anneesTransition: 5
-    }
-  } catch (error) {
-    console.warn('⚠️  Impossible de générer modèle électricité depuis API, utilisation valeurs par défaut')
-    return DEFAULT_ELECTRICITY_MODEL
+  return {
+    type: 'mean-reversion',
+    tauxRecent: analysis.tauxRecent,
+    tauxEquilibre: analysis.tauxEquilibre,
+    anneesTransition: 5
   }
 }
