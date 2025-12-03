@@ -1,0 +1,16 @@
+// Section 5: Aides (Financial Aid)
+// Stores available financial aid and subsidies
+
+model ProjectAides {
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  ma_prime_renov Float
+  cee            Float
+  autres_aides   Float
+  total_aides    Float // Automatically calculated (sum of aids)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

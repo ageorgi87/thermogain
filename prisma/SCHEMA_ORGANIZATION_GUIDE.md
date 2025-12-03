@@ -34,19 +34,24 @@ model Project {
 
 ---
 
-## 🗂️ Structure proposée pour ThermoGain
+## 🗂️ Structure actuelle pour ThermoGain
 
 ```
 prisma/
-├── schema/                    # Nouveau dossier (Prisma 5.15+)
-│   ├── base.prisma           # Configuration (generator, datasource)
-│   ├── auth.prisma           # Authentification NextAuth
-│   ├── users.prisma          # Utilisateurs et profils
-│   ├── tokens.prisma         # Tokens de vérification et reset
-│   ├── projects.prisma       # Projets PAC (entité principale)
-│   ├── projectSections.prisma# Sections détaillées des projets
-│   └── cache.prisma          # Cache API externe
-└── schema.prisma             # ⚠️ À supprimer après migration
+├── schema/                       # Dossier principal (Prisma 5.15+)
+│   ├── base.prisma              # Configuration (generator, datasource)
+│   ├── users.prisma             # Utilisateurs et profils
+│   ├── tokens.prisma            # Tokens de vérification et reset
+│   ├── projects.prisma          # Projets PAC (entité principale)
+│   ├── cache.prisma             # Cache API externe
+│   └── sections/                # Sections détaillées des projets (7 fichiers)
+│       ├── logement.prisma
+│       ├── chauffageActuel.prisma
+│       ├── projetPac.prisma
+│       ├── couts.prisma
+│       ├── aides.prisma
+│       ├── financement.prisma
+│       └── evolutions.prisma
 
 ```
 
@@ -77,76 +82,24 @@ datasource db {
 
 ---
 
-### `auth.prisma`
-
-Modèles NextAuth.js (OAuth, sessions).
-
-```prisma
-// NextAuth.js Models - OAuth & Sessions
-model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([provider, providerAccountId])
-}
-
-model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-}
-```
-
-**Domaine :** Authentification OAuth et gestion de sessions
-
----
-
 ### `users.prisma`
 
 Utilisateurs et informations de profil.
 
 ```prisma
-// User model - Core user entity
+// User Model - Core user entity and professional profile
+// Stores user information, authentication data, and professional contact details
+
 model User {
   id            String    @id @default(cuid())
-  name          String?
   firstName     String?
   lastName      String?
   company       String?
   email         String    @unique
   emailVerified DateTime?
-  image         String?
   password      String?
 
   // Relations
-  accounts Account[]
-  sessions Session[]
   projects Project[]
 
   // Professional contact information
@@ -164,6 +117,8 @@ model User {
 
 **Domaine :** Gestion des utilisateurs et profils professionnels
 
+**Note :** Les modèles NextAuth OAuth (Account, Session) ont été supprimés car l'application utilise une stratégie JWT sans OAuth.
+
 ---
 
 ### `tokens.prisma`
@@ -171,22 +126,27 @@ model User {
 Tokens de vérification email et réinitialisation mot de passe.
 
 ```prisma
+// Security Tokens - Email verification and password reset
+// These tokens are temporary and expire after a certain time
+
 // Email Verification Tokens
+// Used during user registration to verify email ownership
 model EmailVerificationToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
 
   createdAt DateTime @default(now())
 }
 
 // Password Reset Tokens
+// Used when users request a password reset
 model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
 
   createdAt DateTime @default(now())
 }
@@ -201,18 +161,21 @@ model PasswordResetToken {
 Entité principale des projets PAC.
 
 ```prisma
-// Project - PAC Calculator (Multi-step wizard)
+// Project - PAC Calculator (Heat Pump)
+// Main entity for the multi-step wizard that calculates heat pump profitability
+// Each project goes through 8 steps and stores detailed information in related tables
+
 model Project {
   id              String   @id @default(cuid())
-  name            String
-  recipientEmails String[] @default([])
+  name            String // Project name provided by user
+  recipientEmails String[] @default([]) // Emails to send results to
   currentStep     Int      @default(1) // Track wizard progress (1-8)
   completed       Boolean  @default(false) // All steps completed
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations to section tables
+  // Relations to section tables (one-to-one relationships)
   logement        ProjectLogement?
   chauffageActuel ProjectChauffageActuel?
   projetPac       ProjectProjetPac?
@@ -230,77 +193,101 @@ model Project {
 
 ---
 
-### `projectSections.prisma`
+### `sections/` (7 fichiers)
 
-Toutes les sections détaillées des projets (7 tables).
+Les sections détaillées des projets ont été organisées dans un sous-dossier `sections/` pour une meilleure lisibilité.
+
+Chaque section représente une étape du wizard multi-étapes :
+
+#### `sections/logement.prisma`
+
+Information sur le logement (étape 1).
 
 ```prisma
 // Section 1: Logement (Housing Information)
+// Stores basic property information collected in step 1 of the wizard
+
 model ProjectLogement {
-  id                 String  @id @default(cuid())
-  projectId          String  @unique
-  project            Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   code_postal        String
   annee_construction Int
   surface_habitable  Float
   nombre_occupants   Int
-  qualite_isolation  String  @default("Moyenne")
+  qualite_isolation  String @default("Moyenne") // "Mauvaise", "Moyenne", "Bonne"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+```
 
+#### `sections/chauffageActuel.prisma`
+
+Système de chauffage actuel et consommation (étape 2).
+
+```prisma
 // Section 2: Chauffage Actuel (Current Heating System)
+// Stores information about the existing heating system and energy consumption
+
 model ProjectChauffageActuel {
-  id                           String  @id @default(cuid())
-  projectId                    String  @unique
-  project                      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  type_chauffage               String
-  age_installation             Int
-  etat_installation            String
-  connait_consommation         Boolean @default(true)
+  type_chauffage    String
+  age_installation  Int
+  etat_installation String
+  connait_consommation Boolean @default(true)
 
-  // Consumption data (conditional)
-  conso_fioul_litres           Float?
-  prix_fioul_litre             Float?
-  conso_gaz_kwh                Float?
-  prix_gaz_kwh                 Float?
-  conso_gpl_kg                 Float?
-  prix_gpl_kg                  Float?
-  conso_pellets_kg             Float?
-  prix_pellets_kg              Float?
-  conso_bois_steres            Float?
-  prix_bois_stere              Float?
-  conso_elec_kwh               Float?
-  prix_elec_kwh                Float?
-  cop_actuel                   Float?
-  conso_pac_kwh                Float?
+  // Consumption data - conditional based on type_chauffage and connait_consommation
+  conso_fioul_litres Float?
+  prix_fioul_litre   Float?
+  conso_gaz_kwh      Float?
+  prix_gaz_kwh       Float?
+  conso_gpl_kg       Float?
+  prix_gpl_kg        Float?
+  conso_pellets_kg   Float?
+  prix_pellets_kg    Float?
+  conso_bois_steres  Float?
+  prix_bois_stere    Float?
+  conso_elec_kwh     Float?
+  prix_elec_kwh      Float?
+  cop_actuel         Float?
+  conso_pac_kwh      Float?
 
-  // Fixed costs (Novembre 2024)
-  puissance_souscrite_actuelle Int   @default(6)
-  abonnement_gaz               Float @default(120)
-  entretien_annuel             Float @default(120)
+  // Fixed costs and subscriptions (Novembre 2024)
+  puissance_souscrite_actuelle Int @default(6)
+  abonnement_gaz Float @default(120)
+  entretien_annuel Float @default(120)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+```
 
+#### `sections/projetPac.prisma`
+
+Projet de pompe à chaleur (étape 3).
+
+```prisma
 // Section 3: Projet PAC (Heat Pump Project)
+// Stores specifications for the planned heat pump installation
+
 model ProjectProjetPac {
-  id                           String  @id @default(cuid())
-  projectId                    String  @unique
-  project                      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  type_pac                     String
-  puissance_pac_kw             Float
-  cop_estime                   Float
-  temperature_depart           Int?
-  emetteurs                    String?
-  duree_vie_pac                Int     @default(17)
+  type_pac           String
+  puissance_pac_kw   Float
+  cop_estime         Float
+  temperature_depart Int?
+  emetteurs          String?
+  duree_vie_pac      Int @default(17)
 
-  // Electricity costs (Novembre 2024)
+  // Fixed costs and subscriptions (Novembre 2024)
   prix_elec_kwh                Float @default(0.2516)
   puissance_souscrite_actuelle Int   @default(6)
   puissance_souscrite_pac      Int   @default(9)
@@ -310,77 +297,20 @@ model ProjectProjetPac {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-// Section 4: Coûts (Costs)
-model ProjectCouts {
-  id                   String  @id @default(cuid())
-  projectId            String  @unique
-  project              Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  cout_pac             Float
-  cout_installation    Float
-  cout_travaux_annexes Float
-  cout_total           Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Section 5: Aides (Financial Aid)
-model ProjectAides {
-  id              String  @id @default(cuid())
-  projectId       String  @unique
-  project         Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  ma_prime_renov  Float
-  cee             Float
-  autres_aides    Float
-  total_aides     Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Section 6: Financement (Financing)
-model ProjectFinancement {
-  id                String  @id @default(cuid())
-  projectId         String  @unique
-  project           Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  mode_financement  String
-  apport_personnel  Float?
-  montant_credit    Float?
-  taux_interet      Float?
-  duree_credit_mois Int?
-  mensualite        Float?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Section 7: Évolutions (Price Evolution)
-model ProjectEvolutions {
-  id                         String  @id @default(cuid())
-  projectId                  String  @unique
-  project                    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  evolution_prix_fioul       Float?
-  evolution_prix_gaz         Float?
-  evolution_prix_gpl         Float?
-  evolution_prix_bois        Float?
-  evolution_prix_electricite Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 ```
+
+#### `sections/couts.prisma`, `sections/aides.prisma`, `sections/financement.prisma`, `sections/evolutions.prisma`
+
+Les 4 autres sections suivent le même modèle : un modèle par fichier, avec relation `onDelete: Cascade` vers `Project`.
 
 **Domaine :** Sections détaillées du workflow de projet PAC (wizard multi-étapes)
 
-**Pourquoi regroupé ?**
+**Pourquoi un sous-dossier `sections/` ?**
+- ✅ Organisation hiérarchique claire : sépare les sections du reste du schema
+- ✅ Navigation facilitée : toutes les sections au même endroit
 - ✅ Forte cohésion : toutes dépendent de `Project`
 - ✅ Relations en cascade : `onDelete: Cascade`
-- ✅ Utilisées ensemble dans le workflow
+- ✅ Scalabilité : facile d'ajouter de nouvelles sections
 
 ---
 
@@ -520,9 +450,11 @@ schema/
 ✅ **Organisation par domaine métier**
 ```
 schema/
-├── auth.prisma        # ✅ Authentification
-├── projects.prisma    # ✅ Projets PAC
 ├── users.prisma       # ✅ Utilisateurs
+├── projects.prisma    # ✅ Projets PAC
+├── sections/          # ✅ Sections de projets (hiérarchie)
+│   ├── logement.prisma
+│   └── ...
 ```
 
 ---

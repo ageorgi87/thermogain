@@ -1,0 +1,39 @@
+// Section 3: Projet PAC (Heat Pump Project)
+// Stores specifications for the planned heat pump installation
+
+model ProjectProjetPac {
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type_pac           String
+  puissance_pac_kw   Float
+  cop_estime         Float
+  temperature_depart Int? // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
+  emetteurs          String? // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
+  duree_vie_pac      Int     @default(17) // Estimated heat pump lifespan in years
+
+  // Fixed costs and subscriptions (Novembre 2024)
+  // Electricity price (€/kWh) - REQUIRED (moved from current heating)
+  // Necessary to calculate heat pump operating cost
+  prix_elec_kwh Float @default(0.2516) // Average regulated tariff Base 2024
+
+  // Current electrical power subscription (in kVA: 3, 6, 9, 12, 15, 18)
+  // Moved from current heating as needed to recommend power with PAC
+  puissance_souscrite_actuelle Int @default(6)
+
+  // Recommended electrical power subscription for PAC (in kVA: 6, 9, 12, 15, 18)
+  // Automatically calculated based on puissance_pac_kw, but user-modifiable
+  puissance_souscrite_pac Int @default(9)
+
+  // Annual heat pump maintenance cost (€/year)
+  // Average value: 120€/year (mandatory annual maintenance)
+  entretien_pac_annuel Float @default(120)
+
+  // Electricity price for PAC (€/kWh) - can be different from current price
+  // Optional: for off-peak rates or other specific contracts
+  prix_elec_pac Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

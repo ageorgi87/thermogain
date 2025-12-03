@@ -1,0 +1,45 @@
+// Section 2: Chauffage Actuel (Current Heating System)
+// Stores information about the existing heating system and energy consumption
+
+model ProjectChauffageActuel {
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type_chauffage    String
+  age_installation  Int
+  etat_installation String
+
+  // Does user know their consumption? (determines which fields to collect)
+  connait_consommation Boolean @default(true)
+
+  // Consumption data - conditional based on type_chauffage and connait_consommation
+  conso_fioul_litres Float?
+  prix_fioul_litre   Float?
+  conso_gaz_kwh      Float?
+  prix_gaz_kwh       Float?
+  conso_gpl_kg       Float?
+  prix_gpl_kg        Float?
+  conso_pellets_kg   Float?
+  prix_pellets_kg    Float?
+  conso_bois_steres  Float?
+  prix_bois_stere    Float?
+  conso_elec_kwh     Float?
+  prix_elec_kwh      Float?
+  cop_actuel         Float?
+  conso_pac_kwh      Float?
+
+  // Fixed costs and subscriptions (Novembre 2024)
+  // Current electrical power subscription (in kVA: 3, 6, 9, 12, 15, 18)
+  puissance_souscrite_actuelle Int @default(6)
+
+  // Annual gas subscription (€/year) - only for type_chauffage = "Gaz"
+  abonnement_gaz Float @default(120)
+
+  // Annual maintenance cost of current system (€/year)
+  // Average values: Gas 120€, Oil 150€, LPG 130€, Pellets 100€, Wood 80€, Electric 0€
+  entretien_annuel Float @default(120)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
