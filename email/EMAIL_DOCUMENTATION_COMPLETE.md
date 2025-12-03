@@ -173,12 +173,12 @@ email/
 │   ├── resend.ts                       # Configuration Resend
 │   └── emailVerification.ts            # Logique vérification email
 ├── templates/
-│   ├── emailLayout.tsx                # Layout réutilisable
-│   ├── verificationEmail.tsx          # Email d'inscription
-│   ├── passwordResetEmail.tsx        # Reset mot de passe
-│   ├── studyResultsEmail.tsx         # Résultats d'étude PAC
-│   ├── contactNotificationEmail.tsx  # Notification contact
-│   └── contactConfirmationEmail.tsx  # Confirmation contact
+│   ├── EmailLayout.tsx                # Layout réutilisable
+│   ├── VerificationEmail.tsx          # Email d'inscription
+│   ├── PasswordResetEmail.tsx        # Reset mot de passe
+│   ├── StudyResultsEmail.tsx         # Résultats d'étude PAC
+│   ├── ContactNotificationEmail.tsx  # Notification contact
+│   └── ContactConfirmationEmail.tsx  # Confirmation contact
 └── [Documentation]
     ├── EMAIL_BEST_PRACTICES.md
     ├── GUIDE_ENVOI_RESULTATS.md
@@ -215,7 +215,7 @@ NEXTAUTH_URL=https://thermogain.fr  # CRITIQUE pour les liens
 
 ### Layout Email Réutilisable
 
-**Fichier :** `email/templates/emailLayout.tsx`
+**Fichier :** `email/templates/EmailLayout.tsx`
 
 **Structure :**
 ```
@@ -248,7 +248,7 @@ interface EmailLayoutProps {
 
 ### Templates Email Disponibles
 
-#### 1. Vérification Email (`verificationEmail.tsx`)
+#### 1. Vérification Email (`VerificationEmail.tsx`)
 
 **Usage :** Inscription utilisateur
 
@@ -269,7 +269,7 @@ export async function sendVerificationEmail(
 
 **Sujet :** "Confirmez votre email ThermoGain"
 
-#### 2. Réinitialisation Mot de Passe (`passwordResetEmail.tsx`)
+#### 2. Réinitialisation Mot de Passe (`PasswordResetEmail.tsx`)
 
 **Usage :** Mot de passe oublié
 
@@ -286,7 +286,7 @@ export async function requestPasswordReset(email: string)
 
 **Sujet :** "Réinitialisez votre mot de passe ThermoGain"
 
-#### 3. Résultats d'Étude PAC (`studyResultsEmail.tsx`)
+#### 3. Résultats d'Étude PAC (`StudyResultsEmail.tsx`)
 
 **Usage :** Envoi des résultats après complétion projet
 
@@ -924,7 +924,7 @@ const hardBounces = await resend.bounces.list({
 ### Récapitulatif des Fichiers Créés (Phase 1)
 
 **Nouveaux fichiers :**
-- `email/templates/studyResultsEmail.tsx` (482 lignes)
+- `email/templates/StudyResultsEmail.tsx` (482 lignes)
 - `lib/actions/send-study-results.ts` (293 lignes)
 - `app/(main)/projects/[projectId]/results/components/SendResultsButton.tsx` (78 lignes)
 
@@ -939,11 +939,11 @@ const hardBounces = await resend.bounces.list({
 
 | Type | Template | Server Action | Usage |
 |------|----------|---------------|-------|
-| Vérification email | verificationEmail.tsx | emailVerification.ts | Inscription |
-| Reset mot de passe | passwordResetEmail.tsx | password-reset.ts | Mot de passe oublié |
-| Résultats étude PAC | studyResultsEmail.tsx | send-study-results.ts | Envoi résultats |
-| Contact notification | contactNotificationEmail.tsx | N/A | Notification admin |
-| Contact confirmation | contactConfirmationEmail.tsx | N/A | Confirmation user |
+| Vérification email | VerificationEmail.tsx | emailVerification.ts | Inscription |
+| Reset mot de passe | PasswordResetEmail.tsx | password-reset.ts | Mot de passe oublié |
+| Résultats étude PAC | StudyResultsEmail.tsx | send-study-results.ts | Envoi résultats |
+| Contact notification | ContactNotificationEmail.tsx | N/A | Notification admin |
+| Contact confirmation | ContactConfirmationEmail.tsx | N/A | Confirmation user |
 
 ### Variables d'Environnement Complètes
 

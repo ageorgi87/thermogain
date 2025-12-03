@@ -2,8 +2,8 @@
 
 import { render } from '@react-email/components'
 import { Resend } from 'resend'
-import { ContactNotificationEmail } from '@/email/templates/contactNotificationEmail'
-import { ContactConfirmationEmail } from '@/email/templates/contactConfirmationEmail'
+import { ContactNotificationEmail } from '@/email/templates/ContactNotificationEmail'
+import { ContactConfirmationEmail } from '@/email/templates/ContactConfirmationEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 

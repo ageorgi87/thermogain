@@ -7,7 +7,7 @@ import {
   Hr,
   Link,
 } from '@react-email/components'
-import { EmailLayout } from './emailLayout'
+import { EmailLayout } from './EmailLayout'
 
 interface StudyResultsEmailProps {
   // Client info

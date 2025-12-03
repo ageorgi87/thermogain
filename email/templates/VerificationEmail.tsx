@@ -7,7 +7,7 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import { EmailLayout } from './emailLayout'
+import { EmailLayout } from './EmailLayout'
 
 interface VerificationEmailProps {
   verificationUrl: string

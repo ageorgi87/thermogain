@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { resend, EMAIL_FROM } from "@/email/lib/resend";
-import { StudyResultsEmail } from "@/email/templates/studyResultsEmail";
+import { StudyResultsEmail } from "@/email/templates/StudyResultsEmail";
 import { render } from "@react-email/render";
 import { calculateAllResults } from "@/app/(main)/projects/[projectId]/calculations";
 import { type ProjectData } from "@/app/(main)/projects/[projectId]/calculations/types";
