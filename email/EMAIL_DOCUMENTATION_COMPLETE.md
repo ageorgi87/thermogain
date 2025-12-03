@@ -169,9 +169,9 @@ Footer BG        : #f9fafb (Gris plus clair)
 
 ```
 email/
-├── resend.ts                           # Configuration Resend
 ├── lib/
-│   └── email-verification.ts           # Logique vérification email
+│   ├── resend.ts                       # Configuration Resend
+│   └── emailVerification.ts            # Logique vérification email
 ├── templates/
 │   ├── email-layout.tsx                # Layout réutilisable
 │   ├── verification-email.tsx          # Email d'inscription
@@ -258,7 +258,7 @@ interface EmailLayoutProps {
 - Bouton CTA "Confirmer mon adresse email"
 - Texte alternatif avec lien cliquable
 
-**Server Action :** `email/lib/email-verification.ts`
+**Server Action :** `email/lib/emailVerification.ts`
 ```typescript
 export async function sendVerificationEmail(
   email: string,
@@ -863,7 +863,7 @@ NEXTAUTH_URL=https://thermogain.fr
 
 **Vérification :**
 ```typescript
-// email/lib/email-verification.ts
+// email/lib/emailVerification.ts
 console.log('Base URL:', process.env.NEXTAUTH_URL)
 // Doit afficher : https://thermogain.fr (pas localhost)
 ```
@@ -939,7 +939,7 @@ const hardBounces = await resend.bounces.list({
 
 | Type | Template | Server Action | Usage |
 |------|----------|---------------|-------|
-| Vérification email | verification-email.tsx | email-verification.ts | Inscription |
+| Vérification email | verification-email.tsx | emailVerification.ts | Inscription |
 | Reset mot de passe | password-reset-email.tsx | password-reset.ts | Mot de passe oublié |
 | Résultats étude PAC | study-results-email.tsx | send-study-results.ts | Envoi résultats |
 | Contact notification | contact-notification-email.tsx | N/A | Notification admin |

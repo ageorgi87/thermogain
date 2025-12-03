@@ -15,7 +15,7 @@ import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
 import {
   verifyEmailToken,
   resendVerificationEmail,
-} from "@/email/lib/email-verification";
+} from "@/email/lib/emailVerification";
 
 type Status = "verifying" | "success" | "error" | "resending" | "resent";
 
