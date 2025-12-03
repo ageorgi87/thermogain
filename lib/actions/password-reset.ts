@@ -4,18 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { resend, EMAIL_FROM } from "@/email/lib/resend";
 import { PasswordResetEmail } from "@/email/templates/passwordResetEmail";
 import { render } from "@react-email/render";
-import crypto from "crypto";
 import { hash } from "bcryptjs";
+import { generateToken } from "@/email/lib/generateToken";
 
 // Token expires in 1 hour (bonnes pratiques 2025)
 const PASSWORD_RESET_EXPIRES_IN = 60 * 60 * 1000;
-
-/**
- * Génère un token de réinitialisation unique et sécurisé
- */
-function generateToken(): string {
-  return crypto.randomBytes(32).toString("hex");
-}
 
 /**
  * Demande de réinitialisation de mot de passe

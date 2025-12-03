@@ -8,14 +8,7 @@ import {
 } from "@/email/lib/resend";
 import { VerificationEmail } from "@/email/templates/verificationEmail";
 import { render } from "@react-email/render";
-import crypto from "crypto";
-
-/**
- * Génère un token de vérification unique
- */
-function generateToken(): string {
-  return crypto.randomBytes(32).toString("hex");
-}
+import { generateToken } from "./generateToken";
 
 /**
  * Crée un token de vérification et envoie l'email
