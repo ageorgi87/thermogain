@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
-import { verifyEmailToken } from "@/email/lib/verifyEmailToken";
-import { resendVerificationEmail } from "@/email/lib/resendVerificationEmail";
+import { verifyEmailWorkflow } from "@/email/lib/workflows/verifyEmailWorkflow";
+import { resendVerificationWorkflow } from "@/email/lib/workflows/resendVerificationWorkflow";
 
 type Status = "verifying" | "success" | "error" | "resending" | "resent";
 
@@ -38,7 +38,7 @@ function VerifyEmailContent() {
 
   const verifyToken = async (token: string) => {
     try {
-      const result = await verifyEmailToken(token);
+      const result = await verifyEmailWorkflow(token);
 
       if (result.error) {
         setStatus("error");
@@ -61,7 +61,7 @@ function VerifyEmailContent() {
 
     setStatus("resending");
     try {
-      const result = await resendVerificationEmail(email);
+      const result = await resendVerificationWorkflow(email);
 
       if (result.error) {
         setError(result.error);

@@ -5,7 +5,7 @@ import { resend, EMAIL_FROM } from "@/email/lib/resend";
 import { PasswordResetEmail } from "@/email/templates/PasswordResetEmail";
 import { render } from "@react-email/render";
 import { hash } from "bcryptjs";
-import { generateToken } from "@/email/lib/generateToken";
+import { generateToken } from "@/email/lib/tokens/generateToken";
 
 // Token expires in 1 hour (bonnes pratiques 2025)
 const PASSWORD_RESET_EXPIRES_IN = 60 * 60 * 1000;

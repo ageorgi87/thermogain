@@ -2,7 +2,7 @@
 
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { createVerificationToken } from "@/email/lib/createVerificationToken";
+import { sendVerificationWorkflow } from "@/email/lib/workflows/sendVerificationWorkflow";
 
 export async function registerUser(data: {
   email: string;
@@ -45,7 +45,7 @@ export async function registerUser(data: {
 
   // Send verification email
   try {
-    await createVerificationToken(email, firstName);
+    await sendVerificationWorkflow(email, firstName);
   } catch (error) {
     console.error("Failed to send verification email:", error);
     // Don't throw error - user is created, just email failed
