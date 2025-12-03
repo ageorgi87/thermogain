@@ -15,7 +15,7 @@ import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
 import {
   verifyEmailToken,
   resendVerificationEmail,
-} from "@/email/email-verification";
+} from "@/email/lib/email-verification";
 
 type Status = "verifying" | "success" | "error" | "resending" | "resent";
 
@@ -128,7 +128,9 @@ function VerifyEmailContent() {
             </Button>
           )}
 
-          {(status === "error" || status === "resending" || status === "resent") &&
+          {(status === "error" ||
+            status === "resending" ||
+            status === "resent") &&
             error.includes("expiré") && (
               <div className="space-y-4">
                 <Alert>
@@ -149,7 +151,9 @@ function VerifyEmailContent() {
                   <Button
                     onClick={handleResendEmail}
                     className="w-full"
-                    disabled={!email || status === "resending" || status === "resent"}
+                    disabled={
+                      !email || status === "resending" || status === "resent"
+                    }
                   >
                     {status === "resending" && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
