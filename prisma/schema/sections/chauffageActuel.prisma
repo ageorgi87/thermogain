@@ -11,7 +11,7 @@ model ProjectChauffageActuel {
   etat_installation String
 
   // Does user know their consumption? (determines which fields to collect)
-  connait_consommation Boolean @default(true)
+  connait_consommation Boolean
 
   // Consumption data - conditional based on type_chauffage and connait_consommation
   conso_fioul_litres Float?
@@ -31,7 +31,6 @@ model ProjectChauffageActuel {
 
   // Fixed costs and subscriptions (Novembre 2024)
   // Annual gas subscription (€/year) - only for type_chauffage = "Gaz"
-  // REQUIRED when user knows consumption, auto-filled by server (120€) when unknown
   abonnement_gaz Float?
 
   // Annual maintenance cost of current system (€/year)

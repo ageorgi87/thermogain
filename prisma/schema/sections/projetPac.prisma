@@ -22,7 +22,7 @@ model ProjectProjetPac {
 
   // Current electrical power subscription (in kVA: 3, 6, 9, 12, 15, 18)
   // Retrieved from previous section (chauffageActuel) or defaults to 6 kVA
-  puissance_souscrite_actuelle Int @default(6)
+  puissance_souscrite_actuelle Int 
 
   // Recommended electrical power subscription for PAC (in kVA: 6, 9, 12, 15, 18)
   // Smart calculation based on puissance_pac_kw, but user-modifiable

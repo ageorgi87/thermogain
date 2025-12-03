@@ -59,6 +59,116 @@ Quand un domaine contient plusieurs modèles fortement liés :
    - ❌ Jamais utilisé dans des calculs
    - ❌ Jamais référencé dans le code
 
+## 🚫 Règle critique : Valeurs par défaut (@default)
+
+### Principe absolu
+
+**NE JAMAIS utiliser `@default()` sauf pour les valeurs générées automatiquement.**
+
+### ✅ Valeurs par défaut AUTORISÉES (générées automatiquement)
+
+**Uniquement** pour les valeurs que Prisma ou la base de données génèrent :
+
+```prisma
+model Example {
+  id        String   @id @default(cuid())      // ✅ ID auto-généré
+  createdAt DateTime @default(now())           // ✅ Timestamp auto-généré
+  updatedAt DateTime @updatedAt                // ✅ Auto-update timestamp
+  uuid      String   @default(uuid())          // ✅ UUID auto-généré
+}
+```
+
+### ❌ Valeurs par défaut INTERDITES (valeurs métier)
+
+**JAMAIS** pour des valeurs métier, même si elles semblent logiques :
+
+```prisma
+// ❌ INTERDIT : Valeurs métier avec @default
+model ProjectProjetPac {
+  duree_vie_pac        Int   @default(17)      // ❌ Champ REQUIS dans le formulaire
+  prix_elec_kwh        Float @default(0.2516)  // ❌ API fournit le prix dynamique
+  entretien_pac_annuel Float @default(120)     // ❌ Utilisateur doit entrer la valeur
+  puissance_souscrite  Int   @default(6)       // ❌ Sauf si vraiment fallback technique
+  abonnement_gaz       Float @default(120)     // ❌ Serveur set la valeur explicitement
+}
+
+// ✅ CORRECT : Pas de @default, logique dans le code
+model ProjectProjetPac {
+  duree_vie_pac        Int    // Form REQUIRED - user must enter
+  prix_elec_kwh        Float  // API provides via useEffect
+  entretien_pac_annuel Float  // Form REQUIRED - user must enter
+  puissance_souscrite  Int    // Calculated from previous section
+  abonnement_gaz       Float? // Server sets via GAS_SUBSCRIPTION constant
+}
+```
+
+### Pourquoi cette règle ?
+
+1. **Les defaults en DB sont trompeurs** :
+   - Ils suggèrent que la DB gère la logique métier
+   - Alors que c'est le **code applicatif** qui doit décider
+
+2. **Les defaults deviennent obsolètes** :
+   - Prix de l'électricité : 0.2516€ en 2024, mais 0.30€ en 2025 ?
+   - Les constants dans le code sont plus faciles à mettre à jour
+
+3. **Les defaults cachent les bugs** :
+   - Si le formulaire oublie d'envoyer une valeur REQUISE
+   - Le @default masque l'erreur au lieu de la révéler
+
+4. **Les defaults court-circuitent la validation** :
+   - Le formulaire dit "champ REQUIS"
+   - Mais le @default permet de sauvegarder sans valeur
+   - Incohérence entre UI et DB
+
+### Où placer les valeurs par défaut ?
+
+**Dans le code applicatif**, pas dans le schema :
+
+```typescript
+// ✅ Dans les constants
+export const GAS_SUBSCRIPTION = {
+  ANNUAL_AVERAGE: 120, // Moyenne nationale 2024
+}
+
+export const HEAT_PUMP_DEFAULTS = {
+  LIFESPAN_YEARS: 17,        // Études ADEME
+  MAINTENANCE_ANNUAL: 120,    // Coût moyen maintenance
+}
+
+// ✅ Dans les server actions
+if (!data.abonnement_gaz && type === "Gaz" && !knowsConsumption) {
+  validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
+}
+
+// ✅ Dans les useEffect
+useEffect(() => {
+  if (formData.prix_elec_kwh === undefined) {
+    const price = await fetchCurrentElectricityPrice()
+    updateField("prix_elec_kwh", price)
+  }
+}, [])
+```
+
+### Exception : Fallback technique
+
+**UN SEUL cas acceptable** pour @default avec valeur métier :
+
+```prisma
+model ProjectProjetPac {
+  // ⚠️ Exception : fallback quand donnée précédente indisponible
+  puissance_souscrite_actuelle Int @default(6)
+}
+```
+
+**Conditions pour garder un @default métier** :
+1. ✅ La valeur est **normalement** fournie par une autre source (section précédente, API, calcul)
+2. ✅ Le @default sert **uniquement de fallback technique** en cas d'erreur
+3. ✅ Le commentaire **documente clairement** que c'est un fallback
+4. ✅ Le @default est utilisé **rarement** en pratique (99% du temps, autre source fonctionne)
+
+**Si ces 4 conditions ne sont PAS réunies → SUPPRIMER le @default**
+
 ### Processus de suppression
 
 ```typescript
