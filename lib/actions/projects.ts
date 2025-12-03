@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-export async function createProject(data?: { name?: string }) {
+export const createProject = async (data?: { name?: string }) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -24,7 +24,7 @@ export async function createProject(data?: { name?: string }) {
   return project
 }
 
-export async function getProject(id: string) {
+export const getProject = async (id: string) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -53,7 +53,7 @@ export async function getProject(id: string) {
   return JSON.parse(JSON.stringify(project))
 }
 
-export async function getProjects() {
+export const getProjects = async () => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -73,10 +73,10 @@ export async function getProjects() {
   return projects
 }
 
-export async function updateProjectStep(
+export const updateProjectStep = async (
   id: string,
   currentStep: number
-) {
+) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -100,7 +100,7 @@ export async function updateProjectStep(
   return updatedProject
 }
 
-export async function deleteProject(id: string) {
+export const deleteProject = async (id: string) => {
   const session = await auth()
 
   if (!session?.user?.id) {

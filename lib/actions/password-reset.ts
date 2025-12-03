@@ -19,7 +19,7 @@ const PASSWORD_RESET_EXPIRES_IN = 60 * 60 * 1000;
  * - Token expire après 1 heure
  * - Envoie un email uniquement si l'utilisateur existe
  */
-export async function requestPasswordReset(email: string) {
+export const requestPasswordReset = async (email: string) => {
   // Valider l'email
   if (!email || !email.includes("@")) {
     return {
@@ -93,7 +93,7 @@ export async function requestPasswordReset(email: string) {
 /**
  * Vérifie la validité d'un token de réinitialisation
  */
-export async function verifyResetToken(token: string) {
+export const verifyResetToken = async (token: string) => {
   if (!token) {
     return { error: "Token manquant" };
   }
@@ -120,7 +120,7 @@ export async function verifyResetToken(token: string) {
 /**
  * Réinitialise le mot de passe avec un token valide
  */
-export async function resetPassword(token: string, newPassword: string) {
+export const resetPassword = async (token: string, newPassword: string) => {
   // Valider le token
   const verification = await verifyResetToken(token);
 

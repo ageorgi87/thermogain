@@ -27,7 +27,7 @@ import { getCOPAdjustment as getClimateAdjustment, getClimateInfoFromPostalCode 
  * - 55°C (radiateurs MT) : -25%
  * - 65°C (radiateurs HT) : -35%
  */
-export function getTemperatureAdjustment(temperatureDepart: number): number {
+export const getTemperatureAdjustment = (temperatureDepart: number): number => {
   if (temperatureDepart <= 35) return 1.0      // Conditions optimales
   if (temperatureDepart <= 40) return 0.95     // Plancher + radiateurs BT
   if (temperatureDepart <= 45) return 0.85     // Radiateurs basse température
@@ -46,7 +46,7 @@ export function getTemperatureAdjustment(temperatureDepart: number): number {
  *
  * Référence : DTU 65.14 et guides ADEME
  */
-export function getEmitterAdjustment(typeEmetteurs: string): number {
+export const getEmitterAdjustment = (typeEmetteurs: string): number => {
   switch (typeEmetteurs) {
     case "Plancher chauffant":
       // Optimal : température de départ 35°C
@@ -81,13 +81,13 @@ export function getEmitterAdjustment(typeEmetteurs: string): number {
  * @param typePac - Type de PAC (Air/Eau, Eau/Eau, Air/Air) - détermine les ajustements applicables
  * @returns COP ajusté réel
  */
-export function calculateAdjustedCOP(
+export const calculateAdjustedCOP = (
   copFabricant: number,
   temperatureDepart: number,
   typeEmetteurs: string,
   codePostal?: string,
   typePac?: string
-): number {
+): number => {
   // Les PAC Air/Air n'ont pas de circuit d'eau
   // Elles ne nécessitent pas d'ajustements température/émetteurs
   const isAirToAir = typePac === "Air/Air"

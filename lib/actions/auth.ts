@@ -4,13 +4,13 @@ import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { sendVerificationWorkflow } from "@/email/lib/workflows/sendVerificationWorkflow";
 
-export async function registerUser(data: {
+export const registerUser = async (data: {
   email: string;
   password: string;
   firstName?: string;
   lastName?: string;
   company?: string;
-}) {
+}) => {
   const { email, password, firstName, lastName, company } = data;
 
   // Validate input
@@ -56,7 +56,7 @@ export async function registerUser(data: {
   };
 }
 
-export async function checkEmailExists(email: string) {
+export const checkEmailExists = async (email: string) => {
   if (!email) {
     throw new Error("Email requis");
   }

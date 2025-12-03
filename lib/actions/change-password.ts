@@ -9,7 +9,7 @@ interface ChangePasswordData {
   newPassword: string
 }
 
-export async function changePassword(data: ChangePasswordData) {
+export const changePassword = async (data: ChangePasswordData) => {
   try {
     const session = await auth()
 

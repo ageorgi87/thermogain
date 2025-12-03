@@ -27,11 +27,11 @@ interface SendStudyResultsResponse {
  * @param recipientEmail - Email du destinataire (optionnel, par défaut l'email du user)
  * @returns Résultat de l'envoi
  */
-export async function sendStudyResults({
+export const sendStudyResults = async ({
   projectId,
   userId,
   recipientEmail,
-}: SendStudyResultsParams): Promise<SendStudyResultsResponse> {
+}: SendStudyResultsParams): Promise<SendStudyResultsResponse> => {
   try {
     // 1. Récupérer le projet complet avec toutes les relations
     const project = await prisma.project.findUnique({
@@ -273,7 +273,7 @@ export async function sendStudyResults({
 /**
  * Helper: Récupère le taux d'évolution selon le type de chauffage
  */
-function getEvolutionForEnergyType(
+const getEvolutionForEnergyType = (
   typeChauffage: string,
   evolutions: {
     evolution_prix_fioul?: number | null;
@@ -282,7 +282,7 @@ function getEvolutionForEnergyType(
     evolution_prix_bois?: number | null;
     evolution_prix_electricite: number;
   } | null
-): number {
+): number => {
   if (!evolutions) return 5; // Valeur par défaut
 
   switch (typeChauffage) {

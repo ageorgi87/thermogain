@@ -18,10 +18,10 @@ interface HousingCharacteristics {
 /**
  * Calcule le coefficient de consommation en kWh/m²/an selon l'année de construction et l'isolation
  */
-function getConsumptionCoefficient(
+const getConsumptionCoefficient = (
   anneeConstruction: number,
   qualiteIsolation: string
-): number {
+): number => {
   // Convertir la qualité d'isolation en score numérique
   // "Mauvaise" = 0, "Moyenne" = 1-2, "Bonne" = 3
   let isolationScore: number
@@ -64,7 +64,7 @@ function getConsumptionCoefficient(
  * Ajuste la consommation selon le nombre d'occupants
  * Plus il y a d'occupants, plus il y a de besoins en chauffage et d'apports internes
  */
-function getOccupancyFactor(nombreOccupants: number): number {
+const getOccupancyFactor = (nombreOccupants: number): number => {
   // Facteur de correction basé sur les apports internes
   // 1 personne = référence, plus il y a de personnes, moins on chauffe (apports internes)
   if (nombreOccupants === 1) return 1.1
@@ -78,7 +78,7 @@ function getOccupancyFactor(nombreOccupants: number): number {
  * Estime la consommation énergétique annuelle en kWh
  * Prend en compte la zone climatique si le code postal est fourni
  */
-export function estimateAnnualConsumption(housing: HousingCharacteristics): number {
+export const estimateAnnualConsumption = (housing: HousingCharacteristics): number => {
   const coefficientBase = getConsumptionCoefficient(
     housing.annee_construction,
     housing.qualite_isolation
@@ -102,10 +102,10 @@ export function estimateAnnualConsumption(housing: HousingCharacteristics): numb
 /**
  * Estime la consommation selon le type d'énergie (en unités spécifiques)
  */
-export function estimateConsumptionByEnergyType(
+export const estimateConsumptionByEnergyType = (
   housing: HousingCharacteristics,
   energyType: string
-): { value: number; unit: string } {
+): { value: number; unit: string } => {
   const consommationKwh = estimateAnnualConsumption(housing)
 
   switch (energyType) {
@@ -172,7 +172,7 @@ export function estimateConsumptionByEnergyType(
 /**
  * Retourne une estimation de la classe DPE (A à G)
  */
-export function estimateDPEClass(housing: HousingCharacteristics): string {
+export const estimateDPEClass = (housing: HousingCharacteristics): string => {
   const consommationParM2 = estimateAnnualConsumption(housing) / housing.surface_habitable
 
   if (consommationParM2 < 50) return "A"

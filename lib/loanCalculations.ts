@@ -7,11 +7,11 @@
  * - r = monthly interest rate (annual rate / 12 / 100)
  * - n = number of payments (months)
  */
-export function calculateMensualite(
+export const calculateMensualite = (
   montant: number,
   tauxAnnuel: number,
   dureeMois: number
-): number {
+): number => {
   // If no interest rate, return simple division
   if (tauxAnnuel === 0) {
     return montant / dureeMois

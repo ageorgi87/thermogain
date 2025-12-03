@@ -33,10 +33,10 @@ interface HistoricalAnalysis {
  * @param priceColumnName Nom de la colonne contenant les prix
  * @returns Analyse complète de l'historique
  */
-export async function analyzeEnergyPriceHistory(
+export const analyzeEnergyPriceHistory = async (
   rid: string,
   priceColumnName: string
-): Promise<HistoricalAnalysis> {
+): Promise<HistoricalAnalysis> => {
   try {
     // Récupérer TOUT l'historique disponible
     const rows = await getDataFileRows(rid, 10000)
@@ -193,7 +193,7 @@ export async function analyzeEnergyPriceHistory(
  * Génère automatiquement le modèle Mean Reversion optimal pour le gaz
  * basé sur l'historique réel de l'API DIDO
  */
-export async function getGasMeanReversionModel(): Promise<EnergyEvolutionModel> {
+export const getGasMeanReversionModel = async (): Promise<EnergyEvolutionModel> => {
   try {
     const analysis = await analyzeEnergyPriceHistory(
       DATAFILE_RIDS.gas,
@@ -222,7 +222,7 @@ export async function getGasMeanReversionModel(): Promise<EnergyEvolutionModel> 
  * Génère automatiquement le modèle Mean Reversion optimal pour l'électricité
  * basé sur l'historique réel de l'API DIDO
  */
-export async function getElectricityMeanReversionModel(): Promise<EnergyEvolutionModel> {
+export const getElectricityMeanReversionModel = async (): Promise<EnergyEvolutionModel> => {
   try {
     const analysis = await analyzeEnergyPriceHistory(
       DATAFILE_RIDS.electricity,
@@ -253,9 +253,9 @@ export async function getElectricityMeanReversionModel(): Promise<EnergyEvolutio
  * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', etc.)
  * @returns Modèle Mean Reversion optimal
  */
-export async function getEnergyMeanReversionModel(
+export const getEnergyMeanReversionModel = async (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
-): Promise<EnergyEvolutionModel> {
+): Promise<EnergyEvolutionModel> => {
   switch (energyType) {
     case 'gaz':
       return await getGasMeanReversionModel()
@@ -314,7 +314,7 @@ export async function getEnergyMeanReversionModel(
  * Test et affichage des modèles générés pour tous les types d'énergie
  * Utile pour vérifier la qualité des données et des modèles
  */
-export async function testAllEnergyModels(): Promise<void> {
+export const testAllEnergyModels = async (): Promise<void> => {
   console.log('\n╔════════════════════════════════════════════════════════════════╗')
   console.log('║  GÉNÉRATION AUTOMATIQUE DES MODÈLES MEAN REVERSION            ║')
   console.log('╚════════════════════════════════════════════════════════════════╝\n')

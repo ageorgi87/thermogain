@@ -24,10 +24,10 @@ export interface EnergyEvolutionModel {
  * @param model Configuration du modèle d'évolution
  * @returns Taux d'évolution en pourcentage pour cette année
  */
-export function calculateEvolutionRate(
+export const calculateEvolutionRate = (
   annee: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   switch (model.type) {
     case 'linear':
       return linearRate(model)
@@ -47,7 +47,7 @@ export function calculateEvolutionRate(
  * Modèle linéaire constant (modèle actuel)
  * Le taux d'évolution reste constant sur toute la période
  */
-function linearRate(model: EnergyEvolutionModel): number {
+const linearRate = (model: EnergyEvolutionModel): number => {
   return model.tauxRecent
 }
 
@@ -65,10 +65,10 @@ function linearRate(model: EnergyEvolutionModel): number {
  * - Année 4: 4.54%
  * - Année 5+: 3.5%
  */
-function meanReversionRate(
+const meanReversionRate = (
   annee: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   const { tauxRecent, tauxEquilibre, anneesTransition = 5 } = model
 
   if (annee < anneesTransition) {
@@ -96,10 +96,10 @@ function meanReversionRate(
  * - Année 10: 4.67%
  * - Année 17: 4.06%
  */
-function dampeningRate(
+const dampeningRate = (
   annee: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   const { tauxRecent, tauxEquilibre, lambda = 0.15 } = model
   const delta = tauxRecent - tauxEquilibre
   const dampeningFactor = Math.exp(-lambda * annee)
@@ -114,10 +114,10 @@ function dampeningRate(
  * @param model Configuration du modèle d'évolution
  * @returns Facteur multiplicatif cumulé (ex: 1.15 = +15%)
  */
-export function calculateCumulativeEvolutionFactor(
+export const calculateCumulativeEvolutionFactor = (
   annee: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   let facteur = 1
 
   for (let y = 0; y < annee; y++) {
@@ -140,12 +140,12 @@ export function calculateCumulativeEvolutionFactor(
  * @param model Configuration du modèle d'évolution
  * @returns Coût total pour cette année
  */
-export function calculateCostForYear(
+export const calculateCostForYear = (
   coutVariable: number,
   coutsFixes: number,
   annee: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   const facteurEvolution = calculateCumulativeEvolutionFactor(annee, model)
   const coutVariableAnnee = coutVariable * facteurEvolution
 
@@ -161,12 +161,12 @@ export function calculateCostForYear(
  * @param model Configuration du modèle d'évolution
  * @returns Coût total cumulé sur la période
  */
-export function calculateTotalCostOverPeriod(
+export const calculateTotalCostOverPeriod = (
   coutVariable: number,
   coutsFixes: number,
   dureeAnnees: number,
   model: EnergyEvolutionModel
-): number {
+): number => {
   let coutTotal = 0
 
   for (let annee = 0; annee < dureeAnnees; annee++) {
@@ -263,10 +263,10 @@ export const LINEAR_ELECTRICITY_MODEL: EnergyEvolutionModel = {
  *
  * Utile pour afficher une courbe de projection dans l'interface
  */
-export function generateEvolutionRateProjection(
+export const generateEvolutionRateProjection = (
   dureeAnnees: number,
   model: EnergyEvolutionModel
-): { annee: number; taux: number }[] {
+): { annee: number; taux: number }[] => {
   const projection = []
 
   for (let annee = 0; annee < dureeAnnees; annee++) {
@@ -284,12 +284,12 @@ export function generateEvolutionRateProjection(
  *
  * Utile pour afficher une courbe de coûts dans l'interface
  */
-export function generateCostProjection(
+export const generateCostProjection = (
   coutVariable: number,
   coutsFixes: number,
   dureeAnnees: number,
   model: EnergyEvolutionModel
-): { annee: number; cout: number; coutVariable: number; coutsFixes: number }[] {
+): { annee: number; cout: number; coutVariable: number; coutsFixes: number }[] => {
   const projection = []
 
   for (let annee = 0; annee < dureeAnnees; annee++) {

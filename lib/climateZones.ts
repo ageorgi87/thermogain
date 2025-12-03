@@ -246,7 +246,7 @@ const DEPARTMENT_TO_ZONE: Record<string, ClimateZone> = {
  * getClimateZoneFromPostalCode("13001") // => "H3" (Marseille)
  * getClimateZoneFromPostalCode("67000") // => "H1b" (Strasbourg)
  */
-export function getClimateZoneFromPostalCode(codePostal: string): ClimateZone {
+export const getClimateZoneFromPostalCode = (codePostal: string): ClimateZone => {
   if (!codePostal || codePostal.length < 2) {
     console.warn(`Code postal invalide: ${codePostal}, utilisation de H2a par défaut`)
     return "H2a"
@@ -285,7 +285,7 @@ export function getClimateZoneFromPostalCode(codePostal: string): ClimateZone {
  * const info = getClimateZoneInfo("H1a")
  * console.log(info.dju) // => 3000
  */
-export function getClimateZoneInfo(zone: ClimateZone): ClimateZoneInfo {
+export const getClimateZoneInfo = (zone: ClimateZone): ClimateZoneInfo => {
   return CLIMATE_ZONES[zone]
 }
 
@@ -300,7 +300,7 @@ export function getClimateZoneInfo(zone: ClimateZone): ClimateZoneInfo {
  * console.log(info.name) // => "H1b - Est"
  * console.log(info.dju) // => 2700
  */
-export function getClimateInfoFromPostalCode(codePostal: string): ClimateZoneInfo {
+export const getClimateInfoFromPostalCode = (codePostal: string): ClimateZoneInfo => {
   const zone = getClimateZoneFromPostalCode(codePostal)
   return getClimateZoneInfo(zone)
 }
@@ -319,7 +319,7 @@ export function getClimateInfoFromPostalCode(codePostal: string): ClimateZoneInf
  * // Une maison en H3 (zone chaude) consomme ~27% de moins qu'en H2a
  * getConsumptionAdjustment("13001") // => 0.73 (H3)
  */
-export function getConsumptionAdjustment(codePostal: string): number {
+export const getConsumptionAdjustment = (codePostal: string): number => {
   const info = getClimateInfoFromPostalCode(codePostal)
   const djuReference = CLIMATE_ZONES["H2a"].dju // 2200 DJU
 
@@ -341,7 +341,7 @@ export function getConsumptionAdjustment(codePostal: string): number {
  * // En zone H3 (méditerranée), le COP est amélioré de 10%
  * getCOPAdjustment("06000") // => 1.10
  */
-export function getCOPAdjustment(codePostal: string): number {
+export const getCOPAdjustment = (codePostal: string): number => {
   const info = getClimateInfoFromPostalCode(codePostal)
   return info.copAdjustment
 }

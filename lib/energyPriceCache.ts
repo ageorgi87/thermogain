@@ -7,7 +7,7 @@ import { getEnergyEvolution10y, getCurrentEnergyPrice as fetchFromApi } from "@/
  * Vérifie si les données en cache sont du mois en cours
  * Le cache est considéré comme valide si lastUpdated est dans le même mois et la même année
  */
-function isCacheValid(lastUpdated: Date): boolean {
+const isCacheValid = (lastUpdated: Date): boolean => {
   const now = new Date()
   const cacheDate = new Date(lastUpdated)
 
@@ -21,7 +21,7 @@ function isCacheValid(lastUpdated: Date): boolean {
 /**
  * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie
  */
-function convertPriceToUnit(pricePerKwh: number, energyType: string): number {
+const convertPriceToUnit = (pricePerKwh: number, energyType: string): number => {
   switch (energyType) {
     case "fioul":
       // Fioul: 10 kWh/litre → prix en €/litre
@@ -50,7 +50,7 @@ function convertPriceToUnit(pricePerKwh: number, energyType: string): number {
  * @param energyType - Type d'énergie: "fioul", "gaz", "gpl", "bois", "electricite"
  * @returns Le prix dans l'unité appropriée (€/litre, €/kWh, €/kg, etc.)
  */
-export async function getCachedEnergyPrice(energyType: string): Promise<number> {
+export const getCachedEnergyPrice = async (energyType: string): Promise<number> => {
   try {
     // Rechercher le prix en cache
     const cached = await prisma.energyPriceCache.findUnique({
@@ -124,7 +124,7 @@ export async function getCachedEnergyPrice(energyType: string): Promise<number> 
  * Utilise le cache si les données datent du mois en cours, sinon interroge l'API
  * Retourne uniquement l'évolution sur 10 ans (alignée avec l'horizon d'investissement de 17 ans)
  */
-export async function getOrUpdateEnergyPrice(energyType: string) {
+export const getOrUpdateEnergyPrice = async (energyType: string) => {
   try {
     // Chercher dans le cache
     const cached = await prisma.energyPriceCache.findUnique({
@@ -207,7 +207,7 @@ export async function getOrUpdateEnergyPrice(energyType: string) {
  * Récupère toutes les évolutions de prix en utilisant le système de cache
  * Retourne l'évolution sur 10 ans pour chaque type d'énergie
  */
-export async function getAllEnergyPrices() {
+export const getAllEnergyPrices = async () => {
   const [fioul, gaz, gpl, bois, electricite] = await Promise.all([
     getOrUpdateEnergyPrice("fioul"),
     getOrUpdateEnergyPrice("gaz"),
@@ -229,7 +229,7 @@ export async function getAllEnergyPrices() {
  * Force la mise à jour du cache pour tous les types d'énergie
  * Utile pour forcer un refresh manuel
  */
-export async function refreshAllEnergyPrices() {
+export const refreshAllEnergyPrices = async () => {
   console.log("🔄 Rafraîchissement forcé de tous les prix de l'énergie...")
 
   // Supprimer tout le cache existant

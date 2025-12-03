@@ -7,7 +7,7 @@ import { getAllEnergyPrices, refreshAllEnergyPrices } from "@/lib/energyPriceCac
  * Utilise le système de cache en base de données pour éviter les appels API excessifs
  * Les données sont mises à jour automatiquement si elles datent de plus d'un mois
  */
-export async function fetchEnergyPriceEvolutions() {
+export const fetchEnergyPriceEvolutions = async () => {
   try {
     const evolutions = await getAllEnergyPrices()
     return {
@@ -33,7 +33,7 @@ export async function fetchEnergyPriceEvolutions() {
  * Server Action pour forcer le rafraîchissement du cache des prix de l'énergie
  * Utile pour obtenir les données les plus récentes immédiatement
  */
-export async function forceRefreshEnergyPrices() {
+export const forceRefreshEnergyPrices = async () => {
   try {
     const evolutions = await refreshAllEnergyPrices()
     return {

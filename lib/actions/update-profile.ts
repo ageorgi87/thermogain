@@ -15,7 +15,7 @@ interface UpdateProfileData {
   website?: string
 }
 
-export async function updateProfile(data: UpdateProfileData) {
+export const updateProfile = async (data: UpdateProfileData) => {
   try {
     const session = await auth()
 

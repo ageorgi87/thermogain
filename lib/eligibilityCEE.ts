@@ -77,7 +77,7 @@ const MONTANTS_CEE_PAC_2024: Record<CEECategory, Record<string, number>> = {
 /**
  * Détermine si le code postal correspond à l'Île-de-France
  */
-function isIleDeFrance(codePostal: string): boolean {
+const isIleDeFrance = (codePostal: string): boolean => {
   const departement = codePostal.substring(0, 2)
   return ["75", "77", "78", "91", "92", "93", "94", "95"].includes(departement)
 }
@@ -85,11 +85,11 @@ function isIleDeFrance(codePostal: string): boolean {
 /**
  * Détermine la catégorie CEE (précarité énergétique)
  */
-function determineCEECategory(
+const determineCEECategory = (
   revenuFiscalReference: number,
   nombrePersonnes: number,
   codePostal: string
-): CEECategory {
+): CEECategory => {
   const isIDF = isIleDeFrance(codePostal)
   const seuils = isIDF ? SEUILS_PRECARITE_IDF_2024 : SEUILS_PRECARITE_PROVINCE_2024
 
@@ -123,7 +123,7 @@ function determineCEECategory(
 /**
  * Calcule l'éligibilité et le montant CEE pour une PAC
  */
-export function calculateCEE(input: CEEInput): CEEResult {
+export const calculateCEE = (input: CEEInput): CEEResult => {
   const details: string[] = []
 
   // Vérification des conditions d'éligibilité de base
@@ -210,12 +210,12 @@ export function calculateCEE(input: CEEInput): CEEResult {
  *
  * Non utilisée dans le drawer pour simplifier l'UX, mais disponible pour des calculs avancés
  */
-export function calculateCEEDetailed(
+export const calculateCEEDetailed = (
   typePac: string,
   surfaceHabitable: number,
   zoneClimatique: string,
   category: CEECategory
-): number {
+): number => {
   // Facteurs de pondération selon zone climatique (fiche BAR-TH-104)
   const facteursZone: Record<string, number> = {
     H1: 1.2,

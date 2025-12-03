@@ -40,7 +40,7 @@ interface EnergyPriceEvolution {
 /**
  * Recherche les datasets liés aux prix de l'énergie
  */
-export async function searchEnergyPriceDatasets(): Promise<DidoDataset[]> {
+export const searchEnergyPriceDatasets = async (): Promise<DidoDataset[]> => {
   try {
     const response = await fetch(
       `${DIDO_API_BASE_URL}/datasets?topics=Énergie&pageSize=100`
@@ -67,7 +67,7 @@ export async function searchEnergyPriceDatasets(): Promise<DidoDataset[]> {
 /**
  * Récupère les fichiers de données pour un dataset donné
  */
-export async function getDataFiles(datasetId: string): Promise<DidoDataFile[]> {
+export const getDataFiles = async (datasetId: string): Promise<DidoDataFile[]> => {
   try {
     const response = await fetch(
       `${DIDO_API_BASE_URL}/datafiles?datasetId=${datasetId}&pageSize=100`
@@ -88,7 +88,7 @@ export async function getDataFiles(datasetId: string): Promise<DidoDataFile[]> {
 /**
  * Récupère les données d'un fichier spécifique en format CSV et les convertit en JSON
  */
-export async function getDataFileRows(rid: string, limit: number = 100): Promise<any[]> {
+export const getDataFileRows = async (rid: string, limit: number = 100): Promise<any[]> => {
   try {
     // Essayer d'abord l'endpoint JSON
     let response = await fetch(
@@ -113,7 +113,7 @@ export async function getDataFileRows(rid: string, limit: number = 100): Promise
 /**
  * Calcule le taux d'évolution annuel moyen à partir de données historiques
  */
-function calculateAverageAnnualEvolution(prices: number[]): number {
+const calculateAverageAnnualEvolution = (prices: number[]): number => {
   if (prices.length < 2) return 0
 
   // Calculer les variations annuelles
@@ -138,7 +138,7 @@ function calculateAverageAnnualEvolution(prices: number[]): number {
  * 70% du poids sur les 10 dernières années, 30% sur toute la période historique
  * Utilise les moyennes glissantes des 12 derniers mois vs période de référence
  */
-async function calculateEnergyEvolution10y(rid: string, priceColumnName: string): Promise<number> {
+const calculateEnergyEvolution10y = async (rid: string, priceColumnName: string): Promise<number> => {
   try {
     // Récupérer toutes les données disponibles (pas de limite)
     const rows = await getDataFileRows(rid, 10000)
@@ -219,7 +219,7 @@ async function calculateEnergyEvolution10y(rid: string, priceColumnName: string)
  *
  * En cas d'échec de l'API, des valeurs par défaut basées sur les moyennes historiques sont retournées.
  */
-export async function getEnergyPriceEvolutions(): Promise<EnergyPriceEvolution> {
+export const getEnergyPriceEvolutions = async (): Promise<EnergyPriceEvolution> => {
   // Valeurs par défaut basées sur les moyennes historiques 2014-2024 (10 ans)
   const defaultValues: EnergyPriceEvolution = {
     evolution_prix_fioul: 3,
@@ -256,7 +256,7 @@ export async function getEnergyPriceEvolutions(): Promise<EnergyPriceEvolution> 
  * Récupère le prix actuel moyen d'une énergie depuis l'API DIDO
  * Le prix est calculé comme la moyenne des 12 derniers mois disponibles
  */
-export async function getCurrentEnergyPrice(energyType: string): Promise<number> {
+export const getCurrentEnergyPrice = async (energyType: string): Promise<number> => {
   // Valeurs par défaut (prix moyens en €/kWh)
   const defaultPrices: Record<string, number> = {
     fioul: 0.115,      // ~1.15 €/L / 10 kWh
@@ -330,7 +330,7 @@ export async function getCurrentEnergyPrice(energyType: string): Promise<number>
  * Récupère l'évolution sur 10 ans pour un type d'énergie spécifique
  * Utilisé par le système de cache pour mettre à jour les prix
  */
-export async function getEnergyEvolution10y(energyType: string): Promise<number> {
+export const getEnergyEvolution10y = async (energyType: string): Promise<number> => {
   const defaultEvolution = 3 // 3% par an par défaut
 
   try {

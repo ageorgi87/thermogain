@@ -82,7 +82,7 @@ const MONTANTS_PAC_2024: Record<MaPrimeRenovCategory, Record<string, number>> = 
 /**
  * Détermine si le code postal correspond à l'Île-de-France
  */
-function isIleDeFrance(codePostal: string): boolean {
+const isIleDeFrance = (codePostal: string): boolean => {
   const departement = codePostal.substring(0, 2)
   return ["75", "77", "78", "91", "92", "93", "94", "95"].includes(departement)
 }
@@ -90,11 +90,11 @@ function isIleDeFrance(codePostal: string): boolean {
 /**
  * Détermine la catégorie de revenus selon les barèmes ANAH
  */
-function determineCategory(
+const determineCategory = (
   revenuFiscalReference: number,
   nombrePersonnes: number,
   codePostal: string
-): MaPrimeRenovCategory {
+): MaPrimeRenovCategory => {
   const isIDF = isIleDeFrance(codePostal)
   const bareme = isIDF ? BAREME_IDF_2024 : BAREME_PROVINCE_2024
 
@@ -133,7 +133,7 @@ function determineCategory(
 /**
  * Calcule l'éligibilité et le montant MaPrimeRénov' pour une PAC
  */
-export function calculateMaPrimeRenov(input: MaPrimeRenovInput): MaPrimeRenovResult {
+export const calculateMaPrimeRenov = (input: MaPrimeRenovInput): MaPrimeRenovResult => {
   const details: string[] = []
 
   // Vérification des conditions d'éligibilité de base

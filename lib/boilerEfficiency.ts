@@ -75,7 +75,7 @@ const MAINTENANCE_FACTORS = {
 /**
  * Détermine la tranche d'âge d'une installation
  */
-function getAgeRange(age: number): keyof typeof GAS_BOILER_EFFICIENCY.condensing {
+const getAgeRange = (age: number): keyof typeof GAS_BOILER_EFFICIENCY.condensing => {
   if (age < 5) return "0-5"
   if (age < 10) return "5-10"
   if (age < 15) return "10-15"
@@ -86,11 +86,11 @@ function getAgeRange(age: number): keyof typeof GAS_BOILER_EFFICIENCY.condensing
 /**
  * Calcule le rendement réel d'une chaudière à gaz
  */
-function calculateGasBoilerEfficiency(
+const calculateGasBoilerEfficiency = (
   age: number,
   condition: "Bon" | "Moyen" | "Mauvais",
   isCondensing: boolean = true // Par défaut, on assume condensation (plus courant depuis 2000)
-): number {
+): number => {
   const ageRange = getAgeRange(age)
   const baseEfficiency = isCondensing
     ? GAS_BOILER_EFFICIENCY.condensing[ageRange]
@@ -104,11 +104,11 @@ function calculateGasBoilerEfficiency(
 /**
  * Calcule le rendement réel d'une chaudière au fioul
  */
-function calculateOilBoilerEfficiency(
+const calculateOilBoilerEfficiency = (
   age: number,
   condition: "Bon" | "Moyen" | "Mauvais",
   isCondensing: boolean = false // Les chaudières fioul à condensation sont plus rares
-): number {
+): number => {
   const ageRange = getAgeRange(age)
   const baseEfficiency = isCondensing
     ? OIL_BOILER_EFFICIENCY.condensing[ageRange]
@@ -122,10 +122,10 @@ function calculateOilBoilerEfficiency(
 /**
  * Calcule le rendement réel d'un système à bois/pellets
  */
-function calculateWoodPelletEfficiency(
+const calculateWoodPelletEfficiency = (
   age: number,
   condition: "Bon" | "Moyen" | "Mauvais"
-): number {
+): number => {
   const ageRange = getAgeRange(age)
   const baseEfficiency = WOOD_PELLET_EFFICIENCY.modern[ageRange]
   const maintenanceFactor = MAINTENANCE_FACTORS[condition]
@@ -149,12 +149,12 @@ function calculateWoodPelletEfficiency(
  * // Chaudière fioul moderne bien entretenue
  * calculateBoilerEfficiency("Fioul", 3, "Bon") // => 0.75 (75%)
  */
-export function calculateBoilerEfficiency(
+export const calculateBoilerEfficiency = (
   heatingType: string,
   age: number,
   condition: "Bon" | "Moyen" | "Mauvais",
   isCondensing?: boolean
-): number {
+): number => {
   // Valider l'état d'entretien
   if (!["Bon", "Moyen", "Mauvais"].includes(condition)) {
     console.warn(`État d'entretien invalide: ${condition}, utilisation de "Moyen" par défaut`)
@@ -217,11 +217,11 @@ export function calculateBoilerEfficiency(
  * // 2000 litres de fioul (10 kWh/L) avec chaudière à 65% de rendement
  * calculateHeatDemand(2000, 10, 0.65) // => 13,000 kWh de chaleur
  */
-export function calculateHeatDemand(
+export const calculateHeatDemand = (
   fuelConsumption: number,
   fuelEnergyContent: number,
   boilerEfficiency: number
-): number {
+): number => {
   return fuelConsumption * fuelEnergyContent * boilerEfficiency
 }
 
@@ -249,7 +249,7 @@ export const FUEL_ENERGY_CONTENT = {
  * // 13,000 kWh de chaleur avec une PAC à COP 2.9
  * calculatePACConsumption(13000, 2.9) // => 4,483 kWh d'électricité
  */
-export function calculatePACConsumption(heatDemand: number, cop: number): number {
+export const calculatePACConsumption = (heatDemand: number, cop: number): number => {
   if (cop <= 0) {
     console.warn(`COP invalide: ${cop}, utilisation de 2.9 (moyenne ADEME) par défaut`)
     cop = 2.9
@@ -261,12 +261,12 @@ export function calculatePACConsumption(heatDemand: number, cop: number): number
  * Génère un message explicatif sur le rendement calculé
  * Utile pour afficher à l'utilisateur pourquoi son rendement est bas/élevé
  */
-export function getEfficiencyExplanation(
+export const getEfficiencyExplanation = (
   heatingType: string,
   age: number,
   condition: "Bon" | "Moyen" | "Mauvais",
   efficiency: number
-): string {
+): string => {
   const efficiencyPercent = Math.round(efficiency * 100)
 
   let explanation = `Votre ${heatingType} de ${age} ans `

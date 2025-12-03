@@ -39,7 +39,7 @@ export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL;
  * @param puissanceKva - Puissance souscrite en kVA (3, 6, 9, 12, 15, 18)
  * @returns Coût annuel de l'abonnement en euros TTC
  */
-export function getAbonnementElectriciteAnnuel(puissanceKva: number): number {
+export const getAbonnementElectriciteAnnuel = (puissanceKva: number): number => {
   const tarif =
     ABONNEMENT_ELECTRICITE_ANNUEL[
       puissanceKva as keyof typeof ABONNEMENT_ELECTRICITE_ANNUEL
@@ -61,10 +61,10 @@ export function getAbonnementElectriciteAnnuel(puissanceKva: number): number {
  * @param puissancePac - Puissance recommandée pour la PAC en kVA
  * @returns Delta d'abonnement annuel en euros (positif = augmentation, négatif = diminution)
  */
-export function getDeltaAbonnementElectricite(
+export const getDeltaAbonnementElectricite = (
   puissanceActuelle: number,
   puissancePac: number
-): number {
+): number => {
   const abonnementActuel = getAbonnementElectriciteAnnuel(puissanceActuelle);
   const abonnementPac = getAbonnementElectriciteAnnuel(puissancePac);
   return abonnementPac - abonnementActuel;
@@ -128,7 +128,7 @@ export const ENTRETIEN_ANNUEL_MOYEN: Record<string, number> = {
  * @param typeChauffage - Type de système de chauffage
  * @returns Coût annuel d'entretien en euros
  */
-export function getEntretienAnnuelMoyen(typeChauffage: string): number {
+export const getEntretienAnnuelMoyen = (typeChauffage: string): number => {
   const cout = ENTRETIEN_ANNUEL_MOYEN[typeChauffage];
   if (cout === undefined) {
     console.warn(
@@ -162,10 +162,10 @@ export function getEntretienAnnuelMoyen(typeChauffage: string): number {
  * @param puissanceActuelleKva - Puissance souscrite actuelle en kVA
  * @returns Puissance recommandée en kVA (6, 9, 12, 15, ou 18)
  */
-export function getPuissanceSouscritePacRecommandee(
+export const getPuissanceSouscritePacRecommandee = (
   puissancePacKw: number,
   puissanceActuelleKva: number
-): number {
+): number => {
   // Calcul théorique: puissance actuelle + puissance PAC
   // Pas de marge car on compte sur le foisonnement (tous les appareils ne sont pas en marche en même temps)
   const puissanceTheorique = puissanceActuelleKva + puissancePacKw;
@@ -200,7 +200,7 @@ export function getPuissanceSouscritePacRecommandee(
  * @param abonnementGaz - Coût abonnement gaz si applicable (0 sinon)
  * @returns Coût total annuel des frais fixes (€/an)
  */
-export function getCoutFixeAncienSysteme(
+export const getCoutFixeAncienSysteme = (
   typeChauffage: string,
   puissanceElecActuelle: number,
   abonnementGaz: number = 0
@@ -209,7 +209,7 @@ export function getCoutFixeAncienSysteme(
   abonnementGaz: number;
   entretien: number;
   total: number;
-} {
+} => {
   const abonnementElec = getAbonnementElectriciteAnnuel(puissanceElecActuelle);
   const entretien = getEntretienAnnuelMoyen(typeChauffage);
 
@@ -228,14 +228,14 @@ export function getCoutFixeAncienSysteme(
  * @param entretienPac - Coût d'entretien annuel de la PAC (défaut 120€)
  * @returns Coût total annuel des frais fixes (€/an)
  */
-export function getCoutFixePac(
+export const getCoutFixePac = (
   puissancePacKva: number,
   entretienPac: number = 120
 ): {
   abonnementElec: number;
   entretien: number;
   total: number;
-} {
+} => {
   const abonnementElec = getAbonnementElectriciteAnnuel(puissancePacKva);
 
   return {
@@ -255,7 +255,7 @@ export function getCoutFixePac(
  * @param entretienPac - Coût entretien PAC (défaut 120€)
  * @returns Analyse détaillée des économies/surcoûts sur coûts fixes
  */
-export function analyseImpactCoutsFixes(
+export const analyseImpactCoutsFixes = (
   typeChauffageActuel: string,
   puissanceElecActuelle: number,
   abonnementGazActuel: number,
@@ -270,7 +270,7 @@ export function analyseImpactCoutsFixes(
     entretien: number;
     total: number;
   };
-} {
+} => {
   const ancien = getCoutFixeAncienSysteme(
     typeChauffageActuel,
     puissanceElecActuelle,

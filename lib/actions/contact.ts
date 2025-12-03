@@ -25,9 +25,9 @@ interface ContactFormResult {
  * 1. Notification to admin (contact@thermogain.fr)
  * 2. Confirmation to the user
  */
-export async function submitContactForm(
+export const submitContactForm = async (
   data: ContactFormData
-): Promise<ContactFormResult> {
+): Promise<ContactFormResult> => {
   try {
     // Validate input
     if (!data.name || !data.email || !data.subject || !data.message) {

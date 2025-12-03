@@ -23,23 +23,23 @@ const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 jours en millisecondes
 /**
  * Convertit un modèle EnergyEvolutionModel en objet JSON pour la DB
  */
-function modelToJson(model: EnergyEvolutionModel): string {
+const modelToJson = (model: EnergyEvolutionModel): string => {
   return JSON.stringify(model)
 }
 
 /**
  * Convertit un objet JSON de la DB en EnergyEvolutionModel
  */
-function jsonToModel(json: string): EnergyEvolutionModel {
+const jsonToModel = (json: string): EnergyEvolutionModel => {
   return JSON.parse(json)
 }
 
 /**
  * Récupère un modèle depuis la base de données
  */
-async function getModelFromDb(
+const getModelFromDb = async (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
-): Promise<EnergyEvolutionModel | null> {
+): Promise<EnergyEvolutionModel | null> => {
   try {
     const cached = await prisma.energyPriceCache.findUnique({
       where: { energyType }
@@ -75,10 +75,10 @@ async function getModelFromDb(
 /**
  * Sauvegarde un modèle dans la base de données
  */
-async function saveModelToDb(
+const saveModelToDb = async (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois',
   model: EnergyEvolutionModel
-): Promise<void> {
+): Promise<void> => {
   try {
     await prisma.energyPriceCache.upsert({
       where: { energyType },
@@ -102,7 +102,7 @@ async function saveModelToDb(
 /**
  * Récupère le modèle gaz avec cache (DB + mémoire)
  */
-export async function getCachedGasModel(): Promise<EnergyEvolutionModel> {
+export const getCachedGasModel = async (): Promise<EnergyEvolutionModel> => {
   const key = 'gaz'
 
   // 1. Vérifier le cache mémoire (ultra rapide)
@@ -139,7 +139,7 @@ export async function getCachedGasModel(): Promise<EnergyEvolutionModel> {
 /**
  * Récupère le modèle électricité avec cache (DB + mémoire)
  */
-export async function getCachedElectricityModel(): Promise<EnergyEvolutionModel> {
+export const getCachedElectricityModel = async (): Promise<EnergyEvolutionModel> => {
   const key = 'electricite'
 
   // 1. Cache mémoire
@@ -174,9 +174,9 @@ export async function getCachedElectricityModel(): Promise<EnergyEvolutionModel>
 /**
  * Récupère un modèle générique avec cache (DB + mémoire)
  */
-export async function getCachedEnergyModel(
+export const getCachedEnergyModel = async (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
-): Promise<EnergyEvolutionModel> {
+): Promise<EnergyEvolutionModel> => {
   const key = energyType
 
   // 1. Cache mémoire
@@ -211,7 +211,7 @@ export async function getCachedEnergyModel(
 /**
  * Force le rafraîchissement du cache (utile pour les tests)
  */
-export async function clearModelCache() {
+export const clearModelCache = async () => {
   // Vider le cache mémoire
   Object.keys(memoryCache).forEach(key => delete memoryCache[key])
 
@@ -228,7 +228,7 @@ export async function clearModelCache() {
  * Récupère tous les modèles en une seule fois (optimisation)
  * Utilise le cache si disponible, sinon appelle l'API en parallèle
  */
-export async function preloadAllModels(): Promise<void> {
+export const preloadAllModels = async (): Promise<void> => {
   if (isPreloading) {
     console.log('⏳ Pré-chargement déjà en cours...')
     return
@@ -263,7 +263,7 @@ export async function preloadAllModels(): Promise<void> {
  * Utilise le cache mémoire si disponible, sinon retourne les valeurs par défaut
  * et lance le chargement en arrière-plan
  */
-export function getGasModelSync(): EnergyEvolutionModel {
+export const getGasModelSync = (): EnergyEvolutionModel => {
   const key = 'gaz'
 
   if (memoryCache[key] && Date.now() - memoryCache[key].timestamp < CACHE_DURATION) {
@@ -280,7 +280,7 @@ export function getGasModelSync(): EnergyEvolutionModel {
 /**
  * Récupère le modèle électricité de manière SYNCHRONE
  */
-export function getElectricityModelSync(): EnergyEvolutionModel {
+export const getElectricityModelSync = (): EnergyEvolutionModel => {
   const key = 'electricite'
 
   if (memoryCache[key] && Date.now() - memoryCache[key].timestamp < CACHE_DURATION) {
@@ -294,9 +294,9 @@ export function getElectricityModelSync(): EnergyEvolutionModel {
 /**
  * Récupère un modèle énergétique de manière SYNCHRONE
  */
-export function getEnergyModelSync(
+export const getEnergyModelSync = (
   energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
-): EnergyEvolutionModel {
+): EnergyEvolutionModel => {
   const key = energyType
 
   if (memoryCache[key] && Date.now() - memoryCache[key].timestamp < CACHE_DURATION) {

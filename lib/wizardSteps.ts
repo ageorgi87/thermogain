@@ -15,7 +15,7 @@ export const WIZARD_STEPS = [
 /**
  * Retourne le nombre total d'étapes du wizard
  */
-export function getTotalSteps(): number {
+export const getTotalSteps = (): number => {
   return WIZARD_STEPS.length
 }
 
@@ -24,7 +24,7 @@ export function getTotalSteps(): number {
  * @param currentStep - Le numéro d'étape actuel du projet (1-based)
  * @returns Le numéro d'étape à afficher (1-based)
  */
-export function getStepNumber(currentStep: number): number {
+export const getStepNumber = (currentStep: number): number => {
   return Math.min(currentStep, getTotalSteps())
 }
 
@@ -33,7 +33,7 @@ export function getStepNumber(currentStep: number): number {
  * @param completed - Le flag indiquant si le projet est terminé
  * @returns "En cours" ou "Terminé"
  */
-export function getProjectStatus(completed: boolean): "En cours" | "Terminé" {
+export const getProjectStatus = (completed: boolean): "En cours" | "Terminé" => {
   return completed ? "Terminé" : "En cours"
 }
 
@@ -42,7 +42,7 @@ export function getProjectStatus(completed: boolean): "En cours" | "Terminé" {
  * @param currentStep - Le numéro d'étape actuel du projet (1-based)
  * @returns La clé de l'étape ou undefined si invalide
  */
-export function getStepKey(currentStep: number): string | undefined {
+export const getStepKey = (currentStep: number): string | undefined => {
   const index = currentStep - 1
   return WIZARD_STEPS[index]?.key
 }
@@ -51,7 +51,7 @@ export function getStepKey(currentStep: number): string | undefined {
  * Retourne la clé de la première étape du wizard
  * @returns La clé de la première étape
  */
-export function getFirstStepKey(): string {
+export const getFirstStepKey = (): string => {
   return WIZARD_STEPS[0].key
 }
 
