@@ -1,12 +1,19 @@
-"use server"
+"use server";
 
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { currentHeatingSchema, type CurrentHeatingData } from "./currentHeatingSchema"
-import { estimateConsumptionByEnergyType } from "@/lib/consumptionEstimation"
-import { getCachedEnergyPrice } from "@/lib/energyPriceCache"
-import { calculateBoilerEfficiency, FUEL_ENERGY_CONTENT, calculateHeatDemand } from "@/lib/boilerEfficiency"
-import { GAS_SUBSCRIPTION } from "@/lib/constants"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import {
+  currentHeatingSchema,
+  type CurrentHeatingData,
+} from "./currentHeatingSchema";
+import { estimateConsumptionByEnergyType } from "@/lib/consumptionEstimation";
+import { getCachedEnergyPrice } from "@/lib/energyPriceCache";
+import {
+  calculateBoilerEfficiency,
+  FUEL_ENERGY_CONTENT,
+  calculateHeatDemand,
+} from "@/lib/boilerEfficiency";
+import { GAS_SUBSCRIPTION } from "@/config/constants";
 
 /**
  * Calcule le rendement estimé d'une installation de chauffage
@@ -17,45 +24,47 @@ export async function calculateEstimatedEfficiency(
   ageInstallation: number,
   etatInstallation: "Bon" | "Moyen" | "Mauvais"
 ): Promise<{
-  efficiency: number
-  efficiencyPercent: number
-  explanation: string
+  efficiency: number;
+  efficiencyPercent: number;
+  explanation: string;
 }> {
   const efficiency = calculateBoilerEfficiency(
     typeChauffage,
     ageInstallation,
     etatInstallation
-  )
+  );
 
-  const efficiencyPercent = Math.round(efficiency * 100)
+  const efficiencyPercent = Math.round(efficiency * 100);
 
-  let explanation = `Votre ${typeChauffage} de ${ageInstallation} ans `
+  let explanation = `Votre ${typeChauffage} de ${ageInstallation} ans `;
 
   if (etatInstallation === "Bon") {
-    explanation += "bien entretenu "
+    explanation += "bien entretenu ";
   } else if (etatInstallation === "Moyen") {
-    explanation += "moyennement entretenu "
+    explanation += "moyennement entretenu ";
   } else {
-    explanation += "mal entretenu "
+    explanation += "mal entretenu ";
   }
 
-  explanation += `fonctionne à environ ${efficiencyPercent}% de rendement. `
+  explanation += `fonctionne à environ ${efficiencyPercent}% de rendement. `;
 
-  if (efficiency < 0.70) {
-    explanation += "⚠️ Ce rendement est faible. Un entretien ou un remplacement permettrait de réaliser des économies importantes."
-  } else if (efficiency < 0.80) {
-    explanation += "Ce rendement est dans la moyenne des installations anciennes."
-  } else if (efficiency < 0.90) {
-    explanation += "Ce rendement est correct pour une installation de cet âge."
+  if (efficiency < 0.7) {
+    explanation +=
+      "⚠️ Ce rendement est faible. Un entretien ou un remplacement permettrait de réaliser des économies importantes.";
+  } else if (efficiency < 0.8) {
+    explanation +=
+      "Ce rendement est dans la moyenne des installations anciennes.";
+  } else if (efficiency < 0.9) {
+    explanation += "Ce rendement est correct pour une installation de cet âge.";
   } else {
-    explanation += "Ce rendement est excellent."
+    explanation += "Ce rendement est excellent.";
   }
 
   return {
     efficiency,
     efficiencyPercent,
-    explanation
-  }
+    explanation,
+  };
 }
 
 /**
@@ -70,26 +79,26 @@ export async function getDefaultEnergyPrices() {
       getCachedEnergyPrice("gpl"),
       getCachedEnergyPrice("bois"),
       getCachedEnergyPrice("electricite"),
-    ])
+    ]);
 
     return {
-      fioul,      // €/litre
-      gaz,        // €/kWh
-      gpl,        // €/kg
-      bois,       // €/kg (pellets)
+      fioul, // €/litre
+      gaz, // €/kWh
+      gpl, // €/kg
+      bois, // €/kg (pellets)
       electricite, // €/kWh
-    }
+    };
   } catch (error) {
-    console.error("Erreur lors de la récupération des prix par défaut:", error)
+    console.error("Erreur lors de la récupération des prix par défaut:", error);
 
     // Valeurs par défaut en cas d'erreur
     return {
       fioul: 1.15,
-      gaz: 0.10,
-      gpl: 1.60,
+      gaz: 0.1,
+      gpl: 1.6,
       bois: 0.26,
       electricite: 0.2516,
-    }
+    };
   }
 }
 
@@ -109,7 +118,7 @@ function adjustConsumptionForEfficiency(
     typeChauffage,
     ageInstallation,
     etatInstallation
-  )
+  );
 
   // Pour les systèmes à combustion, ajuster la consommation en fonction du rendement
   // La consommation estimée est basée sur une installation "moyenne"
@@ -118,61 +127,70 @@ function adjustConsumptionForEfficiency(
   // Rendement moyen de référence utilisé dans l'estimation initiale
   // (correspond à une installation de ~10 ans en état moyen)
   const REFERENCE_EFFICIENCY: Record<string, number> = {
-    "Gaz": 0.82,
-    "Fioul": 0.68,
-    "GPL": 0.82,
-    "Pellets": 0.80,
-    "Bois": 0.80,
-    "Electrique": 1.0,
+    Gaz: 0.82,
+    Fioul: 0.68,
+    GPL: 0.82,
+    Pellets: 0.8,
+    Bois: 0.8,
+    Electrique: 1.0,
     "PAC Air/Air": 1.0,
     "PAC Air/Eau": 1.0,
     "PAC Eau/Eau": 1.0,
-  }
+  };
 
-  const refEfficiency = REFERENCE_EFFICIENCY[typeChauffage] || 0.75
+  const refEfficiency = REFERENCE_EFFICIENCY[typeChauffage] || 0.75;
 
   // Si le rendement réel est inférieur au rendement de référence,
   // la consommation réelle sera plus élevée (et vice versa)
-  const adjustedConsumption = consumptionValue * (refEfficiency / efficiency)
+  const adjustedConsumption = consumptionValue * (refEfficiency / efficiency);
 
-  console.log(`⚙️ Ajustement pour rendement:`)
-  console.log(`   Type: ${typeChauffage}, Âge: ${ageInstallation} ans, État: ${etatInstallation}`)
-  console.log(`   Rendement calculé: ${(efficiency * 100).toFixed(1)}%`)
-  console.log(`   Consommation estimée initiale: ${consumptionValue.toFixed(0)}`)
-  console.log(`   Consommation ajustée: ${adjustedConsumption.toFixed(0)}`)
+  console.log(`⚙️ Ajustement pour rendement:`);
+  console.log(
+    `   Type: ${typeChauffage}, Âge: ${ageInstallation} ans, État: ${etatInstallation}`
+  );
+  console.log(`   Rendement calculé: ${(efficiency * 100).toFixed(1)}%`);
+  console.log(
+    `   Consommation estimée initiale: ${consumptionValue.toFixed(0)}`
+  );
+  console.log(`   Consommation ajustée: ${adjustedConsumption.toFixed(0)}`);
 
   return {
     adjustedConsumption: Math.round(adjustedConsumption),
-    efficiency
-  }
+    efficiency,
+  };
 }
 
-export async function saveCurrentHeatingData(projectId: string, data: CurrentHeatingData) {
-  const session = await auth()
+export async function saveCurrentHeatingData(
+  projectId: string,
+  data: CurrentHeatingData
+) {
+  const session = await auth();
 
   if (!session?.user?.id) {
-    throw new Error("Non autorisé")
+    throw new Error("Non autorisé");
   }
 
-  const validatedData = currentHeatingSchema.parse(data)
+  const validatedData = currentHeatingSchema.parse(data);
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-  })
+  });
 
   if (!project || project.userId !== session.user.id) {
-    throw new Error("Projet non trouvé")
+    throw new Error("Projet non trouvé");
   }
 
   // If user doesn't know consumption, estimate it based on housing characteristics
   if (!validatedData.connait_consommation) {
     // Récupérer les données du logement depuis l'étape 1 (ProjectLogement)
     const logement = await prisma.projectLogement.findUnique({
-      where: { projectId }
-    })
+      where: { projectId },
+    });
 
     if (!logement) {
-      throw new Error("Les informations du logement sont requises. Veuillez d'abord remplir l'étape Logement.")
+      throw new Error(
+        "Les informations du logement sont requises. Veuillez d'abord remplir l'étape Logement."
+      );
     }
 
     // Housing data from Step 1
@@ -182,10 +200,13 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
       qualite_isolation: logement.qualite_isolation,
       nombre_occupants: logement.nombre_occupants,
       code_postal: logement.code_postal, // Code postal pour zone climatique
-    }
+    };
 
     // Estimate consumption based on energy type (avec ajustement climatique)
-    const estimationInitiale = estimateConsumptionByEnergyType(housingData, validatedData.type_chauffage)
+    const estimationInitiale = estimateConsumptionByEnergyType(
+      housingData,
+      validatedData.type_chauffage
+    );
 
     // Ajuster l'estimation selon le rendement réel de l'installation (âge + état)
     const { adjustedConsumption, efficiency } = adjustConsumptionForEfficiency(
@@ -193,66 +214,68 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
       validatedData.age_installation,
       validatedData.etat_installation as "Bon" | "Moyen" | "Mauvais",
       estimationInitiale.value
-    )
+    );
 
     // Utiliser la consommation ajustée
     const estimation = {
       ...estimationInitiale,
-      value: adjustedConsumption
-    }
+      value: adjustedConsumption,
+    };
 
     // Get current energy price from cache (monthly refresh)
-    let energyPrice: number
+    let energyPrice: number;
 
     switch (validatedData.type_chauffage) {
       case "Fioul":
-        energyPrice = await getCachedEnergyPrice("fioul")
-        validatedData.conso_fioul_litres = estimation.value
-        validatedData.prix_fioul_litre = energyPrice
-        break
+        energyPrice = await getCachedEnergyPrice("fioul");
+        validatedData.conso_fioul_litres = estimation.value;
+        validatedData.prix_fioul_litre = energyPrice;
+        break;
       case "Gaz":
-        energyPrice = await getCachedEnergyPrice("gaz")
-        validatedData.conso_gaz_kwh = estimation.value
-        validatedData.prix_gaz_kwh = energyPrice
+        energyPrice = await getCachedEnergyPrice("gaz");
+        validatedData.conso_gaz_kwh = estimation.value;
+        validatedData.prix_gaz_kwh = energyPrice;
         // Assigner l'abonnement gaz par défaut (moyenne nationale)
-        validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
-        break
+        validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
+        break;
       case "GPL":
-        energyPrice = await getCachedEnergyPrice("gpl")
-        validatedData.conso_gpl_kg = estimation.value
-        validatedData.prix_gpl_kg = energyPrice
-        break
+        energyPrice = await getCachedEnergyPrice("gpl");
+        validatedData.conso_gpl_kg = estimation.value;
+        validatedData.prix_gpl_kg = energyPrice;
+        break;
       case "Pellets":
       case "Bois":
-        energyPrice = await getCachedEnergyPrice("bois")
+        energyPrice = await getCachedEnergyPrice("bois");
         if (validatedData.type_chauffage === "Pellets") {
-          validatedData.conso_pellets_kg = estimation.value
-          validatedData.prix_pellets_kg = energyPrice
+          validatedData.conso_pellets_kg = estimation.value;
+          validatedData.prix_pellets_kg = energyPrice;
         } else {
-          validatedData.conso_bois_steres = estimation.value
-          validatedData.prix_bois_stere = energyPrice
+          validatedData.conso_bois_steres = estimation.value;
+          validatedData.prix_bois_stere = energyPrice;
         }
-        break
+        break;
       case "Electrique":
-        energyPrice = await getCachedEnergyPrice("electricite")
-        validatedData.conso_elec_kwh = estimation.value
-        validatedData.prix_elec_kwh = energyPrice
-        break
+        energyPrice = await getCachedEnergyPrice("electricite");
+        validatedData.conso_elec_kwh = estimation.value;
+        validatedData.prix_elec_kwh = energyPrice;
+        break;
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        energyPrice = await getCachedEnergyPrice("electricite")
-        validatedData.conso_pac_kwh = estimation.value
-        validatedData.prix_elec_kwh = energyPrice
+        energyPrice = await getCachedEnergyPrice("electricite");
+        validatedData.conso_pac_kwh = estimation.value;
+        validatedData.prix_elec_kwh = energyPrice;
         // Set a default COP for existing PACs (estimated average)
-        validatedData.cop_actuel = 2.5
-        break
+        validatedData.cop_actuel = 2.5;
+        break;
     }
 
-    console.log(`📊 Résumé de l'estimation:`)
-    console.log(`   Consommation estimée (ajustée): ${estimation.value} ${estimation.unit}`)
-    console.log(`   Prix énergétique: ${energyPrice} €`)
-    console.log(`   Rendement installation: ${(efficiency * 100).toFixed(1)}%`)
+    console.log(`📊 Résumé de l'estimation:`);
+    console.log(
+      `   Consommation estimée (ajustée): ${estimation.value} ${estimation.unit}`
+    );
+    console.log(`   Prix énergétique: ${energyPrice} €`);
+    console.log(`   Rendement installation: ${(efficiency * 100).toFixed(1)}%`);
   }
 
   const chauffageActuel = await prisma.projectChauffageActuel.upsert({
@@ -262,15 +285,15 @@ export async function saveCurrentHeatingData(projectId: string, data: CurrentHea
       projectId,
     } as any,
     update: validatedData as any,
-  })
+  });
 
   // Update currentStep from 1 to 2 (chauffage-actuel is now step 1)
   if (project.currentStep === 1) {
     await prisma.project.update({
       where: { id: projectId },
       data: { currentStep: 2 },
-    })
+    });
   }
 
-  return chauffageActuel
+  return chauffageActuel;
 }

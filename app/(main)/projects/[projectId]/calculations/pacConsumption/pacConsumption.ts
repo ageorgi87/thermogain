@@ -1,6 +1,6 @@
-import { ProjectData } from "../types"
-import { calculateAdjustedCOP } from "@/lib/copAdjustments"
-import { ENERGY_CONVERSION_FACTORS } from "@/lib/constants"
+import { ProjectData } from "../types";
+import { calculateAdjustedCOP } from "@/lib/copAdjustments";
+import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
 /**
  * Calcule la consommation annuelle de la PAC en kWh
@@ -14,33 +14,40 @@ import { ENERGY_CONVERSION_FACTORS } from "@/lib/constants"
  */
 export function calculatePacConsumptionKwh(data: ProjectData): number {
   // Get current energy consumption in kWh equivalent
-  let currentEnergyKwh = 0
+  let currentEnergyKwh = 0;
 
   switch (data.type_chauffage) {
     case "Fioul":
-      currentEnergyKwh = (data.conso_fioul_litres || 0) * ENERGY_CONVERSION_FACTORS.FIOUL_KWH_PER_LITRE
-      break
+      currentEnergyKwh =
+        (data.conso_fioul_litres || 0) *
+        ENERGY_CONVERSION_FACTORS.FIOUL_KWH_PER_LITRE;
+      break;
     case "Gaz":
-      currentEnergyKwh = data.conso_gaz_kwh || 0
-      break
+      currentEnergyKwh = data.conso_gaz_kwh || 0;
+      break;
     case "GPL":
-      currentEnergyKwh = (data.conso_gpl_kg || 0) * ENERGY_CONVERSION_FACTORS.GPL_KWH_PER_KG
-      break
+      currentEnergyKwh =
+        (data.conso_gpl_kg || 0) * ENERGY_CONVERSION_FACTORS.GPL_KWH_PER_KG;
+      break;
     case "Pellets":
-      currentEnergyKwh = (data.conso_pellets_kg || 0) * ENERGY_CONVERSION_FACTORS.PELLETS_KWH_PER_KG
-      break
+      currentEnergyKwh =
+        (data.conso_pellets_kg || 0) *
+        ENERGY_CONVERSION_FACTORS.PELLETS_KWH_PER_KG;
+      break;
     case "Bois":
-      currentEnergyKwh = (data.conso_bois_steres || 0) * ENERGY_CONVERSION_FACTORS.BOIS_KWH_PER_STERE
-      break
+      currentEnergyKwh =
+        (data.conso_bois_steres || 0) *
+        ENERGY_CONVERSION_FACTORS.BOIS_KWH_PER_STERE;
+      break;
     case "Electrique":
-      currentEnergyKwh = data.conso_elec_kwh || 0
-      break
+      currentEnergyKwh = data.conso_elec_kwh || 0;
+      break;
     case "PAC Air/Air":
     case "PAC Air/Eau":
     case "PAC Eau/Eau":
       // Si c'est déjà une PAC, utiliser sa consommation directement
-      currentEnergyKwh = data.conso_pac_kwh || 0
-      break
+      currentEnergyKwh = data.conso_pac_kwh || 0;
+      break;
   }
 
   // Calculate adjusted COP based on all factors
@@ -49,15 +56,19 @@ export function calculatePacConsumptionKwh(data: ProjectData): number {
     data.temperature_depart,
     data.emetteurs,
     data.code_postal
-  )
+  );
 
   // Calculate PAC consumption using adjusted COP
-  const pacConsumptionKwh = currentEnergyKwh / copAjuste
+  const pacConsumptionKwh = currentEnergyKwh / copAjuste;
 
-  console.log(`📊 Consommation PAC:`)
-  console.log(`   - Besoins thermiques: ${Math.round(currentEnergyKwh).toLocaleString()} kWh/an`)
-  console.log(`   - COP ajusté: ${copAjuste.toFixed(2)}`)
-  console.log(`   → Consommation électrique PAC: ${Math.round(pacConsumptionKwh).toLocaleString()} kWh/an`)
+  console.log(`📊 Consommation PAC:`);
+  console.log(
+    `   - Besoins thermiques: ${Math.round(currentEnergyKwh).toLocaleString()} kWh/an`
+  );
+  console.log(`   - COP ajusté: ${copAjuste.toFixed(2)}`);
+  console.log(
+    `   → Consommation électrique PAC: ${Math.round(pacConsumptionKwh).toLocaleString()} kWh/an`
+  );
 
-  return Math.round(pacConsumptionKwh)
+  return Math.round(pacConsumptionKwh);
 }

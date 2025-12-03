@@ -1,9 +1,12 @@
-import { ProjectData } from "../types"
-import { calculateCurrentAnnualCost } from "../currentCost/currentCost"
-import { getDeltaAbonnementElectricite, getAbonnementElectriciteAnnuel } from "@/lib/subscriptionRates"
-import { getElectricityModelSync } from "@/lib/energyModelCache"
-import { calculateCostForYear } from "@/lib/energyPriceEvolution"
-import { ENERGY_CONVERSION_FACTORS } from "@/lib/constants"
+import { ProjectData } from "../types";
+import { calculateCurrentAnnualCost } from "../currentCost/currentCost";
+import {
+  getDeltaAbonnementElectricite,
+  getAbonnementElectriciteAnnuel,
+} from "@/lib/subscriptionRates";
+import { getElectricityModelSync } from "@/lib/energyModelCache";
+import { calculateCostForYear } from "@/lib/energyPriceEvolution";
+import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
 /**
  * Calcule la consommation énergétique annuelle actuelle en kWh
@@ -16,37 +19,48 @@ export function calculateCurrentConsumptionKwh(data: ProjectData): number {
     case "Fioul":
       // 1 litre de fioul = 9.96 kWh PCI (Pouvoir Calorifique Inférieur)
       // Source: Standards européens, ADEME
-      return (data.conso_fioul_litres || 0) * ENERGY_CONVERSION_FACTORS.FIOUL_KWH_PER_LITRE
+      return (
+        (data.conso_fioul_litres || 0) *
+        ENERGY_CONVERSION_FACTORS.FIOUL_KWH_PER_LITRE
+      );
 
     case "Gaz":
-      return data.conso_gaz_kwh || 0
+      return data.conso_gaz_kwh || 0;
 
     case "GPL":
       // 1 kg de GPL (propane) = 12.8 kWh PCI
       // Source: Standards européens
-      return (data.conso_gpl_kg || 0) * ENERGY_CONVERSION_FACTORS.GPL_KWH_PER_KG
+      return (
+        (data.conso_gpl_kg || 0) * ENERGY_CONVERSION_FACTORS.GPL_KWH_PER_KG
+      );
 
     case "Pellets":
       // 1 kg de pellets = 4.6 kWh PCI (avec taux humidité < 10%)
       // Source: Standards européens, ADEME
-      return (data.conso_pellets_kg || 0) * ENERGY_CONVERSION_FACTORS.PELLETS_KWH_PER_KG
+      return (
+        (data.conso_pellets_kg || 0) *
+        ENERGY_CONVERSION_FACTORS.PELLETS_KWH_PER_KG
+      );
 
     case "Bois":
       // 1 stère de bois sec (20-25% humidité) = 1800 kWh
       // Note: Valeur variable selon essence et humidité
-      return (data.conso_bois_steres || 0) * ENERGY_CONVERSION_FACTORS.BOIS_KWH_PER_STERE
+      return (
+        (data.conso_bois_steres || 0) *
+        ENERGY_CONVERSION_FACTORS.BOIS_KWH_PER_STERE
+      );
 
     case "Electrique":
-      return data.conso_elec_kwh || 0
+      return data.conso_elec_kwh || 0;
 
     case "PAC Air/Air":
     case "PAC Air/Eau":
     case "PAC Eau/Eau":
       // Si déjà une PAC, on utilise la consommation actuelle * COP actuel pour retrouver les besoins
-      return (data.conso_pac_kwh || 0) * (data.cop_actuel || 1)
+      return (data.conso_pac_kwh || 0) * (data.cop_actuel || 1);
 
     default:
-      return 0
+      return 0;
   }
 }
 
@@ -57,8 +71,8 @@ export function calculateCurrentConsumptionKwh(data: ProjectData): number {
  * @returns Consommation PAC en kWh
  */
 export function calculatePacConsumptionKwh(data: ProjectData): number {
-  const currentConsumptionKwh = calculateCurrentConsumptionKwh(data)
-  return currentConsumptionKwh / data.cop_estime
+  const currentConsumptionKwh = calculateCurrentConsumptionKwh(data);
+  return currentConsumptionKwh / data.cop_estime;
 }
 
 /**
@@ -67,10 +81,10 @@ export function calculatePacConsumptionKwh(data: ProjectData): number {
  * @returns Coût variable annuel en euros
  */
 export function calculatePacVariableCost(data: ProjectData): number {
-  const pacConsumption = calculatePacConsumptionKwh(data)
+  const pacConsumption = calculatePacConsumptionKwh(data);
   // Utilise le prix électricité PAC si renseigné, sinon le prix électricité actuel
-  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0
-  return pacConsumption * prixElec
+  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  return pacConsumption * prixElec;
 }
 
 /**
@@ -85,23 +99,23 @@ export function calculatePacVariableCost(data: ProjectData): number {
  * @returns Objet détaillant les coûts fixes de la PAC
  */
 export function calculatePacFixedCosts(data: ProjectData): {
-  abonnementElec: number
-  entretien: number
-  total: number
+  abonnementElec: number;
+  entretien: number;
+  total: number;
 } {
-  const puissancePac = data.puissance_souscrite_pac || 9
+  const puissancePac = data.puissance_souscrite_pac || 9;
 
   // Abonnement électricité avec PAC (puissance augmentée)
-  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePac)
+  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePac);
 
   // Entretien PAC
-  const entretien = data.entretien_pac_annuel || 120
+  const entretien = data.entretien_pac_annuel || 120;
 
   return {
     abonnementElec,
     entretien,
-    total: abonnementElec + entretien
-  }
+    total: abonnementElec + entretien,
+  };
 }
 
 /**
@@ -112,9 +126,9 @@ export function calculatePacFixedCosts(data: ProjectData): {
  * @returns Coût total annuel en euros
  */
 export function calculatePacAnnualCost(data: ProjectData): number {
-  const variableCost = calculatePacVariableCost(data)
-  const fixedCosts = calculatePacFixedCosts(data)
-  return variableCost + fixedCosts.total
+  const variableCost = calculatePacVariableCost(data);
+  const fixedCosts = calculatePacFixedCosts(data);
+  return variableCost + fixedCosts.total;
 }
 
 /**
@@ -135,19 +149,17 @@ export function calculatePacAnnualCost(data: ProjectData): number {
  * @param year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
-export function calculatePacCostForYear(data: ProjectData, year: number): number {
+export function calculatePacCostForYear(
+  data: ProjectData,
+  year: number
+): number {
   // Coûts variables: évoluent avec le modèle Mean Reversion
-  const variableCost = calculatePacVariableCost(data)
-  const fixedCosts = calculatePacFixedCosts(data)
+  const variableCost = calculatePacVariableCost(data);
+  const fixedCosts = calculatePacFixedCosts(data);
 
   // Récupérer le modèle Mean Reversion depuis l'API DIDO
-  const model = getElectricityModelSync()
+  const model = getElectricityModelSync();
 
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
-  return calculateCostForYear(
-    variableCost,
-    fixedCosts.total,
-    year,
-    model
-  )
+  return calculateCostForYear(variableCost, fixedCosts.total, year, model);
 }

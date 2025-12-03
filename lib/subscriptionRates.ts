@@ -16,7 +16,7 @@ import {
   ELECTRICITY_SUBSCRIPTION_ANNUAL,
   GAS_SUBSCRIPTION,
   MAINTENANCE_COSTS_ANNUAL,
-} from "@/lib/constants"
+} from "@/config/constants";
 
 // ============================================================================
 // ABONNEMENTS ÉLECTRICITÉ - TARIF RÉGLEMENTÉ EDF (TTC)
@@ -32,7 +32,7 @@ import {
  *
  * Note: Valeurs importées depuis @/lib/constants
  */
-export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL
+export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL;
 
 /**
  * Récupère le coût d'abonnement électrique annuel selon la puissance souscrite
@@ -40,12 +40,17 @@ export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL
  * @returns Coût annuel de l'abonnement en euros TTC
  */
 export function getAbonnementElectriciteAnnuel(puissanceKva: number): number {
-  const tarif = ABONNEMENT_ELECTRICITE_ANNUEL[puissanceKva as keyof typeof ABONNEMENT_ELECTRICITE_ANNUEL]
+  const tarif =
+    ABONNEMENT_ELECTRICITE_ANNUEL[
+      puissanceKva as keyof typeof ABONNEMENT_ELECTRICITE_ANNUEL
+    ];
   if (!tarif) {
-    console.warn(`Puissance ${puissanceKva} kVA non reconnue, utilisation 6 kVA par défaut`)
-    return ABONNEMENT_ELECTRICITE_ANNUEL[6]
+    console.warn(
+      `Puissance ${puissanceKva} kVA non reconnue, utilisation 6 kVA par défaut`
+    );
+    return ABONNEMENT_ELECTRICITE_ANNUEL[6];
   }
-  return tarif
+  return tarif;
 }
 
 /**
@@ -60,9 +65,9 @@ export function getDeltaAbonnementElectricite(
   puissanceActuelle: number,
   puissancePac: number
 ): number {
-  const abonnementActuel = getAbonnementElectriciteAnnuel(puissanceActuelle)
-  const abonnementPac = getAbonnementElectriciteAnnuel(puissancePac)
-  return abonnementPac - abonnementActuel
+  const abonnementActuel = getAbonnementElectriciteAnnuel(puissanceActuelle);
+  const abonnementPac = getAbonnementElectriciteAnnuel(puissancePac);
+  return abonnementPac - abonnementActuel;
 }
 
 // ============================================================================
@@ -78,7 +83,7 @@ export function getDeltaAbonnementElectricite(
  *
  * Note: Valeurs importées depuis @/lib/constants
  */
-export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
+export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
 
 /**
  * Barème détaillé abonnement gaz selon consommation annuelle
@@ -91,7 +96,7 @@ export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
   B0: GAS_SUBSCRIPTION.BY_CONSUMPTION.B0,
   B1: GAS_SUBSCRIPTION.BY_CONSUMPTION.B1,
   B2i: GAS_SUBSCRIPTION.BY_CONSUMPTION.B2I,
-}
+};
 
 // ============================================================================
 // COÛTS D'ENTRETIEN ANNUELS MOYENS PAR TYPE DE CHAUFFAGE
@@ -109,14 +114,14 @@ export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
  * Note: Valeurs importées depuis @/lib/constants
  */
 export const ENTRETIEN_ANNUEL_MOYEN: Record<string, number> = {
-  "Gaz": MAINTENANCE_COSTS_ANNUAL.GAZ,
-  "Fioul": MAINTENANCE_COSTS_ANNUAL.FIOUL,
-  "GPL": MAINTENANCE_COSTS_ANNUAL.GPL,
-  "Pellets": MAINTENANCE_COSTS_ANNUAL.PELLETS,
-  "Bois": MAINTENANCE_COSTS_ANNUAL.BOIS,
-  "Électricité": MAINTENANCE_COSTS_ANNUAL.ELECTRIQUE,
-  "PAC": MAINTENANCE_COSTS_ANNUAL.PAC,
-}
+  Gaz: MAINTENANCE_COSTS_ANNUAL.GAZ,
+  Fioul: MAINTENANCE_COSTS_ANNUAL.FIOUL,
+  GPL: MAINTENANCE_COSTS_ANNUAL.GPL,
+  Pellets: MAINTENANCE_COSTS_ANNUAL.PELLETS,
+  Bois: MAINTENANCE_COSTS_ANNUAL.BOIS,
+  Électricité: MAINTENANCE_COSTS_ANNUAL.ELECTRIQUE,
+  PAC: MAINTENANCE_COSTS_ANNUAL.PAC,
+};
 
 /**
  * Récupère le coût d'entretien annuel moyen selon le type de chauffage
@@ -124,12 +129,14 @@ export const ENTRETIEN_ANNUEL_MOYEN: Record<string, number> = {
  * @returns Coût annuel d'entretien en euros
  */
 export function getEntretienAnnuelMoyen(typeChauffage: string): number {
-  const cout = ENTRETIEN_ANNUEL_MOYEN[typeChauffage]
+  const cout = ENTRETIEN_ANNUEL_MOYEN[typeChauffage];
   if (cout === undefined) {
-    console.warn(`Type de chauffage "${typeChauffage}" non reconnu, utilisation 100€ par défaut`)
-    return 100
+    console.warn(
+      `Type de chauffage "${typeChauffage}" non reconnu, utilisation 100€ par défaut`
+    );
+    return 100;
   }
-  return cout
+  return cout;
 }
 
 // ============================================================================
@@ -161,24 +168,24 @@ export function getPuissanceSouscritePacRecommandee(
 ): number {
   // Calcul théorique: puissance actuelle + puissance PAC
   // Pas de marge car on compte sur le foisonnement (tous les appareils ne sont pas en marche en même temps)
-  const puissanceTheorique = puissanceActuelleKva + puissancePacKw
+  const puissanceTheorique = puissanceActuelleKva + puissancePacKw;
 
   // Détermination par tranches (arrondissement à la tranche supérieure)
-  let puissanceRecommandee: number
+  let puissanceRecommandee: number;
 
   if (puissanceTheorique <= 6) {
-    puissanceRecommandee = 6
+    puissanceRecommandee = 6;
   } else if (puissanceTheorique <= 9) {
-    puissanceRecommandee = 9
+    puissanceRecommandee = 9;
   } else if (puissanceTheorique <= 12) {
-    puissanceRecommandee = 12
+    puissanceRecommandee = 12;
   } else if (puissanceTheorique <= 15) {
-    puissanceRecommandee = 15
+    puissanceRecommandee = 15;
   } else {
-    puissanceRecommandee = 18
+    puissanceRecommandee = 18;
   }
 
-  return puissanceRecommandee
+  return puissanceRecommandee;
 }
 
 // ============================================================================
@@ -198,20 +205,20 @@ export function getCoutFixeAncienSysteme(
   puissanceElecActuelle: number,
   abonnementGaz: number = 0
 ): {
-  abonnementElec: number
-  abonnementGaz: number
-  entretien: number
-  total: number
+  abonnementElec: number;
+  abonnementGaz: number;
+  entretien: number;
+  total: number;
 } {
-  const abonnementElec = getAbonnementElectriciteAnnuel(puissanceElecActuelle)
-  const entretien = getEntretienAnnuelMoyen(typeChauffage)
+  const abonnementElec = getAbonnementElectriciteAnnuel(puissanceElecActuelle);
+  const entretien = getEntretienAnnuelMoyen(typeChauffage);
 
   return {
     abonnementElec,
     abonnementGaz,
     entretien,
     total: abonnementElec + abonnementGaz + entretien,
-  }
+  };
 }
 
 /**
@@ -225,17 +232,17 @@ export function getCoutFixePac(
   puissancePacKva: number,
   entretienPac: number = 120
 ): {
-  abonnementElec: number
-  entretien: number
-  total: number
+  abonnementElec: number;
+  entretien: number;
+  total: number;
 } {
-  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePacKva)
+  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePacKva);
 
   return {
     abonnementElec,
     entretien: entretienPac,
     total: abonnementElec + entretienPac,
-  }
+  };
 }
 
 /**
@@ -255,24 +262,24 @@ export function analyseImpactCoutsFixes(
   puissancePacKva: number,
   entretienPac: number = 120
 ): {
-  ancien: ReturnType<typeof getCoutFixeAncienSysteme>
-  pac: ReturnType<typeof getCoutFixePac>
+  ancien: ReturnType<typeof getCoutFixeAncienSysteme>;
+  pac: ReturnType<typeof getCoutFixePac>;
   delta: {
-    abonnementElec: number
-    abonnementGaz: number
-    entretien: number
-    total: number
-  }
+    abonnementElec: number;
+    abonnementGaz: number;
+    entretien: number;
+    total: number;
+  };
 } {
   const ancien = getCoutFixeAncienSysteme(
     typeChauffageActuel,
     puissanceElecActuelle,
     abonnementGazActuel
-  )
+  );
 
-  const pac = getCoutFixePac(puissancePacKva, entretienPac)
+  const pac = getCoutFixePac(puissancePacKva, entretienPac);
 
-  const entretienAncien = getEntretienAnnuelMoyen(typeChauffageActuel)
+  const entretienAncien = getEntretienAnnuelMoyen(typeChauffageActuel);
 
   return {
     ancien,
@@ -283,5 +290,5 @@ export function analyseImpactCoutsFixes(
       entretien: entretienPac - entretienAncien,
       total: pac.total - ancien.total,
     },
-  }
+  };
 }
