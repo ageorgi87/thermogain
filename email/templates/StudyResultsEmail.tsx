@@ -36,9 +36,6 @@ interface StudyResultsEmailProps {
   annualSavings: number
   roi: number
   benefitNet17Years: number
-
-  // Link to full results
-  resultsUrl: string
 }
 
 export function StudyResultsEmail({
@@ -60,7 +57,6 @@ export function StudyResultsEmail({
   annualSavings,
   roi,
   benefitNet17Years,
-  resultsUrl,
 }: StudyResultsEmailProps) {
   const previewText = `Votre étude PAC : ${Math.round(annualSavings).toLocaleString('fr-FR')}€ d'économies/an`
 
