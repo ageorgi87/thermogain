@@ -7,7 +7,7 @@ import {
   BAREME_IDF_2024,
   BAREME_PROVINCE_2024,
 } from "../maPrimeRenovData";
-import { isIleDeFrance } from "@/lib/isIleDeFrance";
+import { isIleDeFrance } from "@/app/(main)/[projectId]/lib/isIleDeFrance";
 
 export const determineCategory = (
   revenuFiscalReference: number,

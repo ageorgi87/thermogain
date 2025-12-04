@@ -1,5 +1,5 @@
-import { getClimateZoneFromPostalCode } from "@/lib/getClimateZoneFromPostalCode"
-import { CLIMATE_ZONES, type ClimateZone, type ClimateZoneInfo } from "@/lib/climateZonesData"
+import { getClimateZoneFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateZoneFromPostalCode"
+import { CLIMATE_ZONES, type ClimateZone, type ClimateZoneInfo } from "@/app/(main)/[projectId]/lib/climateZonesData"
 
 /**
  * Récupère les informations complètes d'une zone climatique

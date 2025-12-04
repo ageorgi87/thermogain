@@ -1,4 +1,4 @@
-import { DIDO_API_BASE_URL, type DidoDataFile } from "@/lib/didoConstants"
+import { DIDO_API_BASE_URL, type DidoDataFile } from "@/app/(main)/[projectId]/lib/didoConstants"
 
 /**
  * Récupère les fichiers de données pour un dataset donné

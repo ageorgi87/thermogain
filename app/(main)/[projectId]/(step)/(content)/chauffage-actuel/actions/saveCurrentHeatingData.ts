@@ -8,7 +8,7 @@ import {
   type CurrentHeatingData,
 } from "./currentHeatingSchema";
 import { estimateConsumptionByEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateConsumptionByEnergyType";
-import { getCachedEnergyPrice } from "@/lib/getCachedEnergyPrice";
+import { getCachedEnergyPrice } from "@/app/(main)/[projectId]/lib/getCachedEnergyPrice";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 import { adjustConsumptionForEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/adjustConsumptionForEfficiency";
 

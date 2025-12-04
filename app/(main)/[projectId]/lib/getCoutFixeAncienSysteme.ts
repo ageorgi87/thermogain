@@ -1,5 +1,5 @@
-import { getAbonnementElectriciteAnnuel } from "@/lib/getAbonnementElectriciteAnnuel"
-import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscriptionData"
+import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel"
+import { ENTRETIEN_ANNUEL_MOYEN } from "@/app/(main)/[projectId]/lib/subscriptionData"
 
 /**
  * Récupère le coût d'entretien annuel moyen selon le type de chauffage

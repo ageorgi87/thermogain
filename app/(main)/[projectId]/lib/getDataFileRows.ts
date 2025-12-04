@@ -1,4 +1,4 @@
-import { DIDO_API_BASE_URL } from "@/lib/didoConstants"
+import { DIDO_API_BASE_URL } from "@/app/(main)/[projectId]/lib/didoConstants"
 
 /**
  * Récupère les données d'un fichier spécifique en format CSV et les convertit en JSON

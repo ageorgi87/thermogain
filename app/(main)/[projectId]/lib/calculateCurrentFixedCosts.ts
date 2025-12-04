@@ -1,5 +1,5 @@
 import type { ProjectData } from "@/types/projectData";
-import { getAbonnementElectriciteAnnuel } from "@/lib/getAbonnementElectriciteAnnuel";
+import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 
 /**

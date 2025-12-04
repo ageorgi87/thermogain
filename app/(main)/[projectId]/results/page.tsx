@@ -16,7 +16,7 @@ import {
 import { CheckCircle2, XCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getProjectResults } from "@/app/(main)/[projectId]/results/actions/getProjectResults";
-import { formatPaybackPeriod } from "@/lib/formatPaybackPeriod";
+import { formatPaybackPeriod } from "@/app/(main)/[projectId]/lib/formatPaybackPeriod";
 
 interface PageProps {
   params: Promise<{

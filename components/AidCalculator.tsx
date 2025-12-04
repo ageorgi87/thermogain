@@ -19,7 +19,7 @@ import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react"
 import { calculateMaPrimeRenov } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/maPrimeRenov/calculateMaPrimeRenov"
 import { calculateCEE } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/cee/calculateCEE"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getClimateZoneFromPostalCode } from "@/lib/getClimateZoneFromPostalCode"
+import { getClimateZoneFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateZoneFromPostalCode"
 import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,

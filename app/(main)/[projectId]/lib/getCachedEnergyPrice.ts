@@ -1,9 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { isCacheValid } from "@/lib/isCacheValid";
-import { DATAFILE_RIDS } from "@/lib/didoConstants"
-import { getDataFileRows } from "@/lib/getDataFileRows"
+import { isCacheValid } from "@/app/(main)/[projectId]/lib/isCacheValid";
+import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/didoConstants"
+import { getDataFileRows } from "@/app/(main)/[projectId]/lib/getDataFileRows"
 
 /**
  * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie

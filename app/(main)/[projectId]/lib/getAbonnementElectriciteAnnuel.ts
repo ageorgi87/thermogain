@@ -1,4 +1,4 @@
-import { ABONNEMENT_ELECTRICITE_ANNUEL } from "@/lib/subscriptionData"
+import { ABONNEMENT_ELECTRICITE_ANNUEL } from "@/app/(main)/[projectId]/lib/subscriptionData"
 
 /**
  * Récupère le coût d'abonnement électrique annuel selon la puissance souscrite

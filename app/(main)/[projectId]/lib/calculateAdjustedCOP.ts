@@ -1,4 +1,4 @@
-import { getClimateInfoFromPostalCode } from "@/lib/getClimateInfoFromPostalCode"
+import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateInfoFromPostalCode"
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ

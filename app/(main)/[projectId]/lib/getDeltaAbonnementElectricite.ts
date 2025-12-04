@@ -1,4 +1,4 @@
-import { getAbonnementElectriciteAnnuel } from "@/lib/getAbonnementElectriciteAnnuel"
+import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel"
 
 /**
  * Calcule la différence d'abonnement électrique entre deux puissances

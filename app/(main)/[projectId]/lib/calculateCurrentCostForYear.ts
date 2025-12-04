@@ -1,8 +1,8 @@
 import type { ProjectData } from "@/types/projectData";
-import { calculateCurrentVariableCost } from "@/lib/calculateCurrentVariableCost";
-import { calculateCurrentFixedCosts } from "@/lib/calculateCurrentFixedCosts";
-import { getEnergyModelSync } from "@/lib/getEnergyModelSync";
-import { calculateCostForYear } from "@/lib/calculateCostForYear";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateCurrentVariableCost";
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateCurrentFixedCosts";
+import { getEnergyModelSync } from "@/app/(main)/[projectId]/lib/getEnergyModelSync";
+import { calculateCostForYear } from "@/app/(main)/[projectId]/lib/calculateCostForYear";
 
 interface CalculateCurrentCostForYearParams {
   data: ProjectData;

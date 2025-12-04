@@ -1,4 +1,4 @@
-import { getAbonnementElectriciteAnnuel } from "@/lib/getAbonnementElectriciteAnnuel"
+import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel"
 
 /**
  * Calcule le coût total fixe annuel (abonnement + entretien) pour la PAC

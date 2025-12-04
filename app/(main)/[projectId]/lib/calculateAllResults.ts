@@ -1,16 +1,16 @@
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
-import { calculateCurrentAnnualCost } from "@/lib/calculateCurrentAnnualCost";
-import { calculatePacAnnualCost } from "@/lib/calculatePacAnnualCost";
-import { calculatePacConsumptionKwh } from "@/lib/calculatePacConsumptionKwh";
-import { calculateYearlyData } from "@/lib/calculateYearlyData";
-import { calculateTotalSavings } from "@/lib/calculateTotalSavings";
-import { calculateNetBenefit } from "@/lib/calculateNetBenefit";
-import { calculatePaybackPeriod } from "@/lib/calculatePaybackPeriod";
-import { calculatePaybackYear } from "@/lib/calculatePaybackYear";
-import { calculateMonthlyPayment } from "@/lib/calculateMonthlyPayment";
-import { calculateTotalCreditCost } from "@/lib/calculateTotalCreditCost";
+import { calculateCurrentAnnualCost } from "@/app/(main)/[projectId]/lib/calculateCurrentAnnualCost";
+import { calculatePacAnnualCost } from "@/app/(main)/[projectId]/lib/calculatePacAnnualCost";
+import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculatePacConsumptionKwh";
+import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateYearlyData";
+import { calculateTotalSavings } from "@/app/(main)/[projectId]/lib/calculateTotalSavings";
+import { calculateNetBenefit } from "@/app/(main)/[projectId]/lib/calculateNetBenefit";
+import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculatePaybackPeriod";
+import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculatePaybackYear";
+import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateMonthlyPayment";
+import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateTotalCreditCost";
 
 /**
  * Fonction principale qui calcule tous les résultats du projet

@@ -1,5 +1,5 @@
-import { DATAFILE_RIDS, type EnergyPriceEvolution } from "@/lib/didoConstants";
-import { calculateEnergyEvolution10y } from "@/lib/calculateEnergyEvolution10y";
+import { DATAFILE_RIDS, type EnergyPriceEvolution } from "@/app/(main)/[projectId]/lib/didoConstants";
+import { calculateEnergyEvolution10y } from "@/app/(main)/[projectId]/lib/calculateEnergyEvolution10y";
 
 /**
  * Récupère les taux d'évolution des prix de l'énergie depuis l'API DIDO
