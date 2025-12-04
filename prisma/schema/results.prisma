@@ -1,0 +1,44 @@
+// ProjectResults - Calculation results for heat pump profitability
+// Stores all calculated values needed to display the results page
+// Updated when user completes the wizard or when project data changes
+
+model ProjectResults {
+  id        String   @id @default(cuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Year 1 costs
+  coutAnnuelActuel    Float // Current heating cost (year 1)
+  coutAnnuelPac       Float // PAC cost (year 1)
+  economiesAnnuelles  Float // Annual savings (year 1)
+
+  // Monthly costs
+  coutMensuelActuel   Float // Current monthly heating cost
+  coutMensuelPac      Float // PAC monthly cost
+  economieMensuelle   Float // Monthly savings
+
+  // ROI (Return on Investment)
+  paybackPeriod       Float? // Payback period in years (null if never breaks even)
+  paybackYear         Int?   // Calendar year when investment is recovered
+
+  // Total lifetime gains (over PAC lifespan)
+  totalSavingsLifetime   Float  // Total savings over PAC lifetime
+  netBenefitLifetime     Float  // Net benefit (savings - investment)
+  tauxRentabilite        Float? // Average annual return rate in %
+
+  // Total lifetime costs
+  coutTotalActuelLifetime Float // Total current heating cost over PAC lifetime
+  coutTotalPacLifetime    Float // Total PAC cost (investment + electricity) over PAC lifetime
+
+  // Financing
+  mensualiteCredit       Float? // Monthly credit payment (if financed)
+  coutTotalCredit        Float? // Total credit cost with interest
+  investissementReel     Float  // Real investment including credit interest
+
+  // Yearly data (JSON array of YearlyData objects)
+  // Structure: [{ year, coutActuel, coutPac, economie, economiesCumulees }, ...]
+  yearlyData Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

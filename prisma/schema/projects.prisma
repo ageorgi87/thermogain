@@ -20,6 +20,7 @@ model Project {
   aides           ProjectAides?
   financement     ProjectFinancement?
   evolutions      ProjectEvolutions?
+  results         ProjectResults? // Calculated results for display
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
