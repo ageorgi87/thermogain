@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { StepLayout } from "@/app/(main)/projects/[projectId]/components/StepLayout"
 import { InformationsFields } from "@/app/(main)/projects/[projectId]/(step)/informations/components/InformationsFields"
@@ -22,9 +22,9 @@ const STEP_INFO = {
 export default function InformationsStepPage({
   params,
 }: {
-  params: { projectId: string }
+  params: Promise<{ projectId: string }>
 }) {
-  const projectId = params.projectId
+  const { projectId } = use(params)
   const router = useRouter()
   const [formData, setFormData] = useState<Partial<InformationsData>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { StepLayout } from "@/app/(main)/projects/[projectId]/components/StepLayout"
 import { ProjetPacFields } from "@/app/(main)/projects/[projectId]/(step)/projet-pac/components/ProjetPacFields"
@@ -23,9 +23,9 @@ const STEP_INFO = {
 export default function ProjetPacStepPage({
   params,
 }: {
-  params: { projectId: string }
+  params: Promise<{ projectId: string }>
 }) {
-  const projectId = params.projectId
+  const { projectId } = use(params)
   const router = useRouter()
   const [formData, setFormData] = useState<Partial<HeatPumpProjectData>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})

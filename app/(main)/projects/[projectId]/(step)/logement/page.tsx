@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { StepLayout } from "@/app/(main)/projects/[projectId]/components/StepLayout"
 import { HousingFields } from "@/app/(main)/projects/[projectId]/(step)/logement/components/HousingFields"
@@ -22,9 +22,9 @@ const STEP_INFO = {
 export default function LogementStepPage({
   params,
 }: {
-  params: { projectId: string }
+  params: Promise<{ projectId: string }>
 }) {
-  const projectId = params.projectId
+  const { projectId } = use(params)
   const router = useRouter()
   const [formData, setFormData] = useState<Partial<HousingData>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
