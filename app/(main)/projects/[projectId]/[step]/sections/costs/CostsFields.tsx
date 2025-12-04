@@ -1,30 +1,29 @@
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/form/FormField";
-import { CostsData } from "./actions/costsSchema";
-import { useEffect } from "react";
+import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { FormField } from "@/components/form/FormField"
+import type { CostsData } from "./actions/costsSchema"
+import { calculateTotalCost, parseInputNumber } from "./costsLogic"
+import { useEffect } from "react"
 
 interface CoutsFieldsProps {
-  formData: Partial<CostsData>;
-  errors: Partial<Record<keyof CostsData, string>>;
-  onChange: (name: keyof CostsData, value: any) => void;
+  formData: Partial<CostsData>
+  errors: Partial<Record<keyof CostsData, string>>
+  onChange: (name: keyof CostsData, value: any) => void
 }
 
-export function CoutsFields({ formData, errors, onChange }: CoutsFieldsProps) {
-  const coutPac = formData.cout_pac;
-  const coutInstallation = formData.cout_installation;
-  const coutTravauxAnnexes = formData.cout_travaux_annexes;
+export const CoutsFields = ({ formData, errors, onChange }: CoutsFieldsProps) => {
+  const coutTotal = calculateTotalCost(
+    formData.cout_pac,
+    formData.cout_installation,
+    formData.cout_travaux_annexes
+  )
 
-  // Calculate total (computed value, no need for useEffect)
-  const coutTotal =
-    (coutPac || 0) + (coutInstallation || 0) + (coutTravauxAnnexes || 0);
-
-  // Update form data with calculated total when any cost changes
+  // Synchronise le total calculé avec formData
   useEffect(() => {
     if (formData.cout_total !== coutTotal) {
-      onChange("cout_total", coutTotal);
+      onChange("cout_total", coutTotal)
     }
-  }, [coutTotal, formData.cout_total, onChange]);
+  }, [coutTotal, formData.cout_total, onChange])
 
   return (
     <div className="space-y-4">
@@ -34,15 +33,7 @@ export function CoutsFields({ formData, errors, onChange }: CoutsFieldsProps) {
           min="0"
           placeholder="ex: 8000"
           value={formData.cout_pac ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "") {
-              onChange("cout_pac", undefined);
-            } else {
-              const num = parseFloat(value);
-              onChange("cout_pac", isNaN(num) ? undefined : num);
-            }
-          }}
+          onChange={(e) => onChange("cout_pac", parseInputNumber(e.target.value))}
         />
       </FormField>
 
@@ -55,15 +46,7 @@ export function CoutsFields({ formData, errors, onChange }: CoutsFieldsProps) {
           min="0"
           placeholder="ex: 5000"
           value={formData.cout_installation ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "") {
-              onChange("cout_installation", undefined);
-            } else {
-              const num = parseFloat(value);
-              onChange("cout_installation", isNaN(num) ? undefined : num);
-            }
-          }}
+          onChange={(e) => onChange("cout_installation", parseInputNumber(e.target.value))}
         />
       </FormField>
 
@@ -77,15 +60,7 @@ export function CoutsFields({ formData, errors, onChange }: CoutsFieldsProps) {
           min="0"
           placeholder="ex: 1500"
           value={formData.cout_travaux_annexes ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "") {
-              onChange("cout_travaux_annexes", undefined);
-            } else {
-              const num = parseFloat(value);
-              onChange("cout_travaux_annexes", isNaN(num) ? undefined : num);
-            }
-          }}
+          onChange={(e) => onChange("cout_travaux_annexes", parseInputNumber(e.target.value))}
         />
       </FormField>
 
@@ -98,5 +73,5 @@ export function CoutsFields({ formData, errors, onChange }: CoutsFieldsProps) {
         </span>
       </div>
     </div>
-  );
+  )
 }
