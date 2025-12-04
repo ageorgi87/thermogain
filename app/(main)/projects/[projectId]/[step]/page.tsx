@@ -43,7 +43,7 @@ import { InformationsFields } from "./sections/informations/informationsFields";
 import { HousingFields } from "./sections/housing/housingFields";
 import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields";
 import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields";
-import { CoutsFields } from "./sections/costs/costsFields";
+import { CoutsFields } from "./sections/costs/CostsFields";
 import { AidesFields } from "./sections/financialAid/financialAidFields";
 import { FinancementFields } from "./sections/financing/financingFields";
 import { Card, CardContent } from "@/components/ui/card";
