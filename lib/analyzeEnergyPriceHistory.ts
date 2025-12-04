@@ -8,10 +8,117 @@
  */
 
 import { getDataFileRows } from "@/lib/getDataFileRows";
-import { calculateRecentRate } from "@/lib/calculateRecentRate";
-import { detectCrisisYears } from "@/lib/detectCrisisYears";
 import { getEnergyTypeFromColumn } from "@/lib/getEnergyTypeFromColumn";
-import { calculateEquilibriumRate } from "@/lib/calculateEquilibriumRate";
+import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
+import type { EnergyType } from "@/lib/getEnergyTypeFromColumn";
+
+/**
+ * Calcule le taux d'évolution récent pondéré (70% sur 10 ans + 30% long terme)
+ *
+ * Cette pondération permet de capturer la volatilité récente tout en restant
+ * ancré dans la tendance structurelle long terme.
+ */
+const calculateRecentRate = (monthlyPrices: number[], yearsOfData: number): number => {
+  const recentAvg = monthlyPrices.slice(0, 12).reduce((a, b) => a + b, 0) / 12
+
+  // Long terme: toute la période
+  const oldestStartIndex = Math.max(monthlyPrices.length - 12, 0)
+  const oldestAvg = monthlyPrices
+    .slice(oldestStartIndex, oldestStartIndex + 12)
+    .reduce((a, b) => a + b, 0) / 12
+
+  const evolutionLongTerm = ((recentAvg - oldestAvg) / oldestAvg) * 100 / yearsOfData
+
+  // 10 dernières années (si disponible)
+  let evolution10y = evolutionLongTerm
+  if (monthlyPrices.length >= 120) {
+    const avg10yAgo = monthlyPrices.slice(108, 120).reduce((a, b) => a + b, 0) / 12
+    evolution10y = ((recentAvg - avg10yAgo) / avg10yAgo) * 100 / 10
+  }
+
+  const { SHORT_TERM, LONG_TERM } = ENERGY_ANALYSIS_PARAMS.RECENT_RATE_WEIGHTING
+  const tauxRecent = (evolutionLongTerm * LONG_TERM) + (evolution10y * SHORT_TERM)
+
+  console.log(`   📈 Taux récent (${SHORT_TERM * 100}% 10y + ${LONG_TERM * 100}% LT): ${tauxRecent.toFixed(2)}%/an`)
+
+  return tauxRecent
+}
+
+/**
+ * Détecte les années de crise dans l'historique des prix
+ *
+ * Une année est considérée comme année de crise si l'évolution annuelle
+ * dépasse le seuil défini (par défaut 10%/an).
+ */
+const detectCrisisYears = (annualEvolutions: number[]): number[] => {
+  const crisisYears: number[] = []
+  const { CRISIS_THRESHOLD } = ENERGY_ANALYSIS_PARAMS
+
+  annualEvolutions.forEach((evolution, idx) => {
+    if (Math.abs(evolution) > CRISIS_THRESHOLD) {
+      crisisYears.push(idx + 1) // +1 car évolution année N vs N-1
+      console.log(`   🔴 Crise détectée année ${idx + 1}: ${evolution.toFixed(1)}%`)
+    }
+  })
+
+  return crisisYears
+}
+
+/**
+ * Calcule le taux d'équilibre long terme selon l'approche académique
+ *
+ * Au lieu d'utiliser la moyenne historique (souvent négative à cause de la dérégulation),
+ * utilise l'approche académique: Inflation + Facteurs structurels spécifiques à chaque énergie.
+ *
+ * Sources:
+ * - INSEE: Inflation moyenne long terme France ≈ 2%/an
+ * - Croissance demande énergie: ~1-1,5%/an
+ *
+ * Les prix de l'énergie sur le long terme suivent:
+ * - L'inflation générale (coûts de production, salaires, etc.)
+ * - La croissance de la demande
+ * - Moins les gains d'efficacité (ENR pour électricité, efficacité extraction pour gaz)
+ */
+const calculateEquilibriumRate = (
+  energyType: EnergyType,
+  annualEvolutions: number[],
+  crisisYears: number[]
+): number => {
+  const { EQUILIBRIUM_RATES, CRISIS_THRESHOLD } = ENERGY_ANALYSIS_PARAMS;
+
+  // Taux théorique selon le type d'énergie
+  let tauxEquilibre: number = EQUILIBRIUM_RATES[energyType];
+
+  console.log(
+    `   ⚖️  Taux équilibre ${energyType} (théorique): ${tauxEquilibre.toFixed(2)}%/an`
+  );
+
+  // Validation: comparer avec moyenne hors crises (si disponible)
+  const normalEvolutions = annualEvolutions.filter(
+    (evolution, idx) =>
+      !crisisYears.includes(idx + 1) && Math.abs(evolution) <= CRISIS_THRESHOLD
+  );
+
+  if (normalEvolutions.length >= 5) {
+    const moyenneHorsCrises =
+      normalEvolutions.reduce((a, b) => a + b, 0) / normalEvolutions.length;
+    console.log(
+      `   📊 Validation: Moyenne historique hors crises = ${moyenneHorsCrises.toFixed(2)}%/an (${normalEvolutions.length} années)`
+    );
+
+    // Si la moyenne historique est positive et raisonnable, on peut l'ajuster légèrement
+    if (moyenneHorsCrises > 0 && moyenneHorsCrises < 10) {
+      // Mix 80% théorique + 20% empirique
+      const tauxAjuste = tauxEquilibre * 0.8 + moyenneHorsCrises * 0.2;
+      console.log(
+        `   🎯 Taux équilibre ajusté (80% théorie + 20% empirique): ${tauxAjuste.toFixed(2)}%/an`
+      );
+      tauxEquilibre = tauxAjuste;
+    }
+  }
+
+  return tauxEquilibre;
+};
 
 /**
  * Interface pour l'analyse d'historique des prix de l'énergie
