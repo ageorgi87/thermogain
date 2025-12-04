@@ -8,7 +8,7 @@ import {
   MONTANTS_PAC_2024,
 } from "./maPrimeRenovData";
 import { determineCategory } from "./helpers/determineCategory";
-import { isIleDeFrance } from "@/app/(main)/[projectId]/lib/isIleDeFrance";
+import { isIleDeFrance } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/isIleDeFrance";
 
 export const calculateMaPrimeRenov = (
   input: MaPrimeRenovInput

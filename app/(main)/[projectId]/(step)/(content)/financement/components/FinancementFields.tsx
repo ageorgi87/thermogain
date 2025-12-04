@@ -11,7 +11,7 @@ import { HelpCircle } from "lucide-react"
 import { FormField } from "@/components/form/FormField"
 import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
 import { useEffect } from "react"
-import { calculateMensualite } from "@/app/(main)/[projectId]/lib/loanCalculations"
+import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations"
 import { Separator } from "@/components/ui/separator"
 
 interface FinancementFieldsProps {

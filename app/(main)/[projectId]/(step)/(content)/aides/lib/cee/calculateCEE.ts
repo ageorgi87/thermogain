@@ -4,7 +4,7 @@
 
 import { CEEInput, CEEResult, MONTANTS_CEE_PAC_2024 } from "./ceeData";
 import { determineCEECategory } from "./helpers/determineCEECategory";
-import { isIleDeFrance } from "@/app/(main)/[projectId]/lib/isIleDeFrance";
+import { isIleDeFrance } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/isIleDeFrance";
 
 export const calculateCEE = (input: CEEInput): CEEResult => {
   const details: string[] = [];
