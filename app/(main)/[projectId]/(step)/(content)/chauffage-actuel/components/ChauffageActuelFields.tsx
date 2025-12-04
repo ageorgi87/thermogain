@@ -1,37 +1,45 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { FormField } from "@/components/form/FormField"
-import { CurrentHeatingData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Info, HelpCircle } from "lucide-react"
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
+import { CurrentHeatingData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info, HelpCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { ENTRETIEN_ANNUEL_MOYEN } from "@/app/(main)/[projectId]/lib/subscriptionData"
-import { PriceLabelWithTooltip } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/components/PriceLabelWithTooltip"
-import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
+} from "@/components/ui/tooltip";
+import { ENTRETIEN_ANNUEL_MOYEN } from "@/app/(main)/[projectId]/lib/subscriptionData";
+import { PriceLabelWithTooltip } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/components/PriceLabelWithTooltip";
+import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices";
 
 interface ChauffageActuelFieldsProps {
-  formData: Partial<CurrentHeatingData>
-  errors: Partial<Record<keyof CurrentHeatingData, string>>
-  onChange: (name: keyof CurrentHeatingData, value: any) => void
-  onNumberChange: (name: keyof CurrentHeatingData) => (e: React.ChangeEvent<HTMLInputElement>) => void
-  defaultPrices?: DefaultEnergyPrices
+  formData: Partial<CurrentHeatingData>;
+  errors: Partial<Record<keyof CurrentHeatingData, string>>;
+  onChange: (name: keyof CurrentHeatingData, value: any) => void;
+  onNumberChange: (
+    name: keyof CurrentHeatingData
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  defaultPrices?: DefaultEnergyPrices;
 }
 
-export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChange, defaultPrices }: ChauffageActuelFieldsProps) => {
-  const typeChauffage = formData.type_chauffage
-  const connaitConsommation = formData.connait_consommation
+export const ChauffageActuelFields = ({
+  formData,
+  errors,
+  onChange,
+  onNumberChange,
+  defaultPrices,
+}: ChauffageActuelFieldsProps) => {
+  const typeChauffage = formData.type_chauffage;
+  const connaitConsommation = formData.connait_consommation;
 
   return (
     <div className="space-y-6">
@@ -41,7 +49,12 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
         error={errors.type_chauffage}
       >
         <Select
-          onValueChange={(value) => onChange("type_chauffage", value as CurrentHeatingData["type_chauffage"])}
+          onValueChange={(value) =>
+            onChange(
+              "type_chauffage",
+              value as CurrentHeatingData["type_chauffage"]
+            )
+          }
           value={formData.type_chauffage}
         >
           <SelectTrigger>
@@ -82,7 +95,12 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
           error={errors.etat_installation}
         >
           <Select
-            onValueChange={(value) => onChange("etat_installation", value as CurrentHeatingData["etat_installation"])}
+            onValueChange={(value) =>
+              onChange(
+                "etat_installation",
+                value as CurrentHeatingData["etat_installation"]
+              )
+            }
             value={formData.etat_installation}
           >
             <SelectTrigger>
@@ -104,8 +122,16 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
         error={errors.connait_consommation}
       >
         <RadioGroup
-          onValueChange={(value: string) => onChange("connait_consommation", value === "true")}
-          value={formData.connait_consommation === undefined ? undefined : formData.connait_consommation ? "true" : "false"}
+          onValueChange={(value: string) =>
+            onChange("connait_consommation", value === "true")
+          }
+          value={
+            formData.connait_consommation === undefined
+              ? undefined
+              : formData.connait_consommation
+                ? "true"
+                : "false"
+          }
           className="flex flex-col space-y-1"
         >
           <div className="flex items-center space-x-3 space-y-0">
@@ -117,7 +143,8 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
           <div className="flex items-center space-x-3 space-y-0">
             <RadioGroupItem value="false" />
             <label className="text-sm font-normal cursor-pointer">
-              Non, j&apos;aimerais l&apos;estimer à partir des caractéristiques de mon logement
+              Non, j&apos;aimerais l&apos;estimer à partir des caractéristiques
+              de mon logement
             </label>
           </div>
         </RadioGroup>
@@ -144,7 +171,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/litre)" price={defaultPrices?.fioul} unit="€/L" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/litre)"
+                    price={defaultPrices?.fioul}
+                    unit="€/L"
+                  />
+                }
                 required
                 error={errors.prix_fioul_litre}
               >
@@ -177,7 +210,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/kWh)" price={defaultPrices?.gaz} unit="€/kWh" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/kWh)"
+                    price={defaultPrices?.gaz}
+                    unit="€/kWh"
+                  />
+                }
                 required
                 error={errors.prix_gaz_kwh}
               >
@@ -225,7 +264,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/kg)" price={defaultPrices?.gpl} unit="€/kg" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/kg)"
+                    price={defaultPrices?.gpl}
+                    unit="€/kg"
+                  />
+                }
                 required
                 error={errors.prix_gpl_kg}
               >
@@ -258,7 +303,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/kg)" price={defaultPrices?.bois} unit="€/kg" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/kg)"
+                    price={defaultPrices?.bois}
+                    unit="€/kg"
+                  />
+                }
                 required
                 error={errors.prix_pellets_kg}
               >
@@ -291,7 +342,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/stère)" price={defaultPrices?.bois} unit="€/stère" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/stère)"
+                    price={defaultPrices?.bois}
+                    unit="€/stère"
+                  />
+                }
                 required
                 error={errors.prix_bois_stere}
               >
@@ -324,7 +381,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix (€/kWh)" price={defaultPrices?.electricite} unit="€/kWh" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix (€/kWh)"
+                    price={defaultPrices?.electricite}
+                    unit="€/kWh"
+                  />
+                }
                 required
                 error={errors.prix_elec_kwh}
               >
@@ -340,7 +403,9 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
             </div>
           )}
 
-          {(typeChauffage === "PAC Air/Air" || typeChauffage === "PAC Air/Eau" || typeChauffage === "PAC Eau/Eau") && (
+          {(typeChauffage === "PAC Air/Air" ||
+            typeChauffage === "PAC Air/Eau" ||
+            typeChauffage === "PAC Eau/Eau") && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 label="COP actuel"
@@ -374,7 +439,13 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
               </FormField>
 
               <FormField
-                label={<PriceLabelWithTooltip label="Prix électricité (€/kWh)" price={defaultPrices?.electricite} unit="€/kWh" />}
+                label={
+                  <PriceLabelWithTooltip
+                    label="Prix électricité (€/kWh)"
+                    price={defaultPrices?.electricite}
+                    unit="€/kWh"
+                  />
+                }
                 required
                 error={errors.prix_elec_kwh}
                 className="col-span-2"
@@ -398,7 +469,9 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Les calculs seront basés sur une estimation à partir des caractéristiques de votre logement (surface, isolation, etc.) renseignées à l&apos;étape précédente.
+            Les calculs seront basés sur une estimation à partir des
+            caractéristiques de votre logement (surface, isolation, etc.)
+            renseignées à l&apos;étape précédente.
           </AlertDescription>
         </Alert>
       )}
@@ -415,7 +488,17 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[300px]">
                   <p className="text-sm">
-                    Coût moyen d'entretien pour <span className="font-semibold">{typeChauffage || "ce type de chauffage"}</span> : <span className="font-semibold">{ENTRETIEN_ANNUEL_MOYEN[typeChauffage as keyof typeof ENTRETIEN_ANNUEL_MOYEN] || 0}€/an</span>
+                    Coût moyen d'entretien pour{" "}
+                    <span className="font-semibold">
+                      {typeChauffage || "ce type de chauffage"}
+                    </span>{" "}
+                    :{" "}
+                    <span className="font-semibold">
+                      {ENTRETIEN_ANNUEL_MOYEN[
+                        typeChauffage as keyof typeof ENTRETIEN_ANNUEL_MOYEN
+                      ] || 0}
+                      €/an
+                    </span>
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -435,5 +518,5 @@ export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChan
         />
       </FormField>
     </div>
-  )
-}
+  );
+};

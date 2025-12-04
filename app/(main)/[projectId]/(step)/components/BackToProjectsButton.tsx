@@ -9,15 +9,22 @@ export const BackToProjectsButton = () => {
   const pathname = usePathname()
 
   // Afficher le bouton uniquement si on est sur une page de projet
-  // (commence par /projects/ et a au moins un autre segment après)
-  const isOnProjectPage = pathname?.startsWith("/projects/") && pathname !== "/projects/"
+  // Les URLs de projets suivent le pattern: /{projectId}/... où projectId est un UUID
+  // On vérifie qu'on n'est pas sur /dashboard ou d'autres pages racine
+  const isOnProjectPage =
+    pathname &&
+    pathname !== "/" &&
+    pathname !== "/dashboard" &&
+    !pathname.startsWith("/profil") &&
+    // Vérifie que le premier segment ressemble à un UUID (format: 8-4-4-4-12 caractères)
+    /^\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(pathname)
 
   if (!isOnProjectPage) {
     return null
   }
 
   return (
-    <Link href="/projects">
+    <Link href="/dashboard">
       <Button variant="ghost" size="sm">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Retour aux projets

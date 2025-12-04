@@ -1,7 +1,7 @@
-import { Separator } from "@/components/ui/separator"
-import { Input } from "@/components/ui/input"
-import { FormField } from "@/components/form/FormField"
-import type { CostsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema"
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
+import type { CostsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema";
 
 interface CostsFieldsViewProps {
   coutPac: number | undefined;
@@ -9,7 +9,13 @@ interface CostsFieldsViewProps {
   coutTravauxAnnexes: number | undefined;
   coutTotal: number;
   errors: Partial<Record<keyof CostsData, string>>;
-  onChange: ({ field, value }: { field: keyof CostsData; value: string }) => void;
+  onChange: ({
+    field,
+    value,
+  }: {
+    field: keyof CostsData;
+    value: string;
+  }) => void;
 }
 
 /**
@@ -41,7 +47,9 @@ export const CostsFieldsView = ({
         min="0"
         placeholder="ex: 5000"
         value={coutInstallation ?? ""}
-        onChange={(e) => onChange({ field: "cout_installation", value: e.target.value })}
+        onChange={(e) =>
+          onChange({ field: "cout_installation", value: e.target.value })
+        }
       />
     </FormField>
 
@@ -55,7 +63,9 @@ export const CostsFieldsView = ({
         min="0"
         placeholder="ex: 1500"
         value={coutTravauxAnnexes ?? ""}
-        onChange={(e) => onChange({ field: "cout_travaux_annexes", value: e.target.value })}
+        onChange={(e) =>
+          onChange({ field: "cout_travaux_annexes", value: e.target.value })
+        }
       />
     </FormField>
 

@@ -1,21 +1,25 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { FormField } from "@/components/form/FormField"
-import { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema"
+} from "@/components/ui/select";
+import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
+import { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
 
 interface HousingFieldsProps {
-  formData: Partial<HousingData>
-  errors: Partial<Record<keyof HousingData, string>>
-  onChange: (name: keyof HousingData, value: any) => void
+  formData: Partial<HousingData>;
+  errors: Partial<Record<keyof HousingData, string>>;
+  onChange: (name: keyof HousingData, value: any) => void;
 }
 
-export function HousingFields({ formData, errors, onChange }: HousingFieldsProps) {
+export function HousingFields({
+  formData,
+  errors,
+  onChange,
+}: HousingFieldsProps) {
   return (
     <div className="space-y-4">
       <FormField
@@ -29,8 +33,8 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
           maxLength={5}
           value={formData.code_postal ?? ""}
           onChange={(e) => {
-            const value = e.target.value
-            onChange("code_postal", value === "" ? undefined : value)
+            const value = e.target.value;
+            onChange("code_postal", value === "" ? undefined : value);
           }}
         />
       </FormField>
@@ -47,12 +51,12 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
             placeholder="ex: 1990, 2010"
             value={formData.annee_construction ?? ""}
             onChange={(e) => {
-              const value = e.target.value
+              const value = e.target.value;
               if (value === "") {
-                onChange("annee_construction", undefined)
+                onChange("annee_construction", undefined);
               } else {
-                const num = parseFloat(value)
-                onChange("annee_construction", isNaN(num) ? undefined : num)
+                const num = parseFloat(value);
+                onChange("annee_construction", isNaN(num) ? undefined : num);
               }
             }}
           />
@@ -69,12 +73,12 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
             placeholder="ex: 100"
             value={formData.surface_habitable ?? ""}
             onChange={(e) => {
-              const value = e.target.value
+              const value = e.target.value;
               if (value === "") {
-                onChange("surface_habitable", undefined)
+                onChange("surface_habitable", undefined);
               } else {
-                const num = parseFloat(value)
-                onChange("surface_habitable", isNaN(num) ? undefined : num)
+                const num = parseFloat(value);
+                onChange("surface_habitable", isNaN(num) ? undefined : num);
               }
             }}
           />
@@ -92,12 +96,12 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
           placeholder="ex: 3"
           value={formData.nombre_occupants ?? ""}
           onChange={(e) => {
-            const value = e.target.value
+            const value = e.target.value;
             if (value === "") {
-              onChange("nombre_occupants", undefined)
+              onChange("nombre_occupants", undefined);
             } else {
-              const num = parseFloat(value)
-              onChange("nombre_occupants", isNaN(num) ? undefined : num)
+              const num = parseFloat(value);
+              onChange("nombre_occupants", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -109,7 +113,12 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
         error={errors.qualite_isolation}
       >
         <Select
-          onValueChange={(value) => onChange("qualite_isolation", value as HousingData["qualite_isolation"])}
+          onValueChange={(value) =>
+            onChange(
+              "qualite_isolation",
+              value as HousingData["qualite_isolation"]
+            )
+          }
           value={formData.qualite_isolation}
         >
           <SelectTrigger>
@@ -129,5 +138,5 @@ export function HousingFields({ formData, errors, onChange }: HousingFieldsProps
         </Select>
       </FormField>
     </div>
-  )
+  );
 }

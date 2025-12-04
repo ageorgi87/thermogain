@@ -1,72 +1,92 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { HelpCircle } from "lucide-react"
-import { FormField } from "@/components/form/FormField"
-import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
-import { useEffect } from "react"
-import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
+import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
+import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
+import { useEffect } from "react";
+import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations";
+import { Separator } from "@/components/ui/separator";
 
 interface FinancementFieldsProps {
-  formData: Partial<FinancingData>
-  errors: Partial<Record<keyof FinancingData, string>>
-  onChange: (name: keyof FinancingData, value: any) => void
-  totalCouts?: number
-  totalAides?: number
+  formData: Partial<FinancingData>;
+  errors: Partial<Record<keyof FinancingData, string>>;
+  onChange: (name: keyof FinancingData, value: any) => void;
+  totalCouts?: number;
+  totalAides?: number;
 }
 
-export function FinancementFields({ formData, errors, onChange, totalCouts = 0, totalAides = 0 }: FinancementFieldsProps) {
-  const montantAPayer = Math.max(0, totalCouts - totalAides)
-  const modeFinancement = formData.mode_financement
+export function FinancementFields({
+  formData,
+  errors,
+  onChange,
+  totalCouts = 0,
+  totalAides = 0,
+}: FinancementFieldsProps) {
+  const montantAPayer = Math.max(0, totalCouts - totalAides);
+  const modeFinancement = formData.mode_financement;
 
   // Watch form values for total cost calculation
-  const montantCredit = formData.montant_credit
-  const apportPersonnel = formData.apport_personnel
-  const tauxInteret = formData.taux_interet
-  const dureeCreditMois = formData.duree_credit_mois
+  const montantCredit = formData.montant_credit;
+  const apportPersonnel = formData.apport_personnel;
+  const tauxInteret = formData.taux_interet;
+  const dureeCreditMois = formData.duree_credit_mois;
 
   // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
   useEffect(() => {
     if (modeFinancement === "Crédit") {
       if (montantCredit !== montantAPayer) {
-        onChange("montant_credit", montantAPayer)
+        onChange("montant_credit", montantAPayer);
       }
     }
-  }, [modeFinancement, montantAPayer, montantCredit, onChange])
+  }, [modeFinancement, montantAPayer, montantCredit, onChange]);
 
   // For Mixte mode: auto-adjust credit amount when personal contribution changes
   useEffect(() => {
     if (modeFinancement === "Mixte") {
-      const apport = apportPersonnel || 0
+      const apport = apportPersonnel || 0;
       // Credit = Amount to pay - Personal contribution (but not negative)
-      const newCredit = Math.max(0, montantAPayer - apport)
+      const newCredit = Math.max(0, montantAPayer - apport);
       // Only update if different to avoid infinite loop
       if (montantCredit !== newCredit) {
-        onChange("montant_credit", newCredit)
+        onChange("montant_credit", newCredit);
       }
     }
-  }, [modeFinancement, apportPersonnel, montantAPayer, montantCredit, onChange])
+  }, [
+    modeFinancement,
+    apportPersonnel,
+    montantAPayer,
+    montantCredit,
+    onChange,
+  ]);
 
   // Calculate total cost of credit (principal + interests)
   const calculateTotalCreditCost = () => {
     if (!montantCredit || !dureeCreditMois || tauxInteret === undefined) {
-      return 0
+      return 0;
     }
 
-    const mensualite = calculateMensualite(montantCredit, tauxInteret, dureeCreditMois)
-    const totalPaye = mensualite * dureeCreditMois
-    return Math.round(totalPaye * 100) / 100
-  }
+    const mensualite = calculateMensualite(
+      montantCredit,
+      tauxInteret,
+      dureeCreditMois
+    );
+    const totalPaye = mensualite * dureeCreditMois;
+    return Math.round(totalPaye * 100) / 100;
+  };
 
-  const totalCreditCost = calculateTotalCreditCost()
-  const interetsPayes = totalCreditCost - (montantCredit || 0)
+  const totalCreditCost = calculateTotalCreditCost();
+  const interetsPayes = totalCreditCost - (montantCredit || 0);
 
   return (
     <div className="space-y-4">
@@ -76,7 +96,12 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
         error={errors.mode_financement}
       >
         <Select
-          onValueChange={(value) => onChange("mode_financement", value as FinancingData["mode_financement"])}
+          onValueChange={(value) =>
+            onChange(
+              "mode_financement",
+              value as FinancingData["mode_financement"]
+            )
+          }
           value={formData.mode_financement}
         >
           <SelectTrigger>
@@ -105,14 +130,14 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
                 placeholder="ex: 3000"
                 value={formData.apport_personnel ?? ""}
                 onChange={(e) => {
-                  const value = e.target.value
+                  const value = e.target.value;
                   if (value === "") {
-                    onChange("apport_personnel", undefined)
+                    onChange("apport_personnel", undefined);
                   } else {
-                    const numValue = Number(value)
+                    const numValue = Number(value);
                     // Cap at montant à payer
-                    const cappedValue = Math.min(numValue, montantAPayer)
-                    onChange("apport_personnel", cappedValue)
+                    const cappedValue = Math.min(numValue, montantAPayer);
+                    onChange("apport_personnel", cappedValue);
                   }
                 }}
               />
@@ -132,12 +157,12 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
                 placeholder="ex: 3.5"
                 value={formData.taux_interet ?? ""}
                 onChange={(e) => {
-                  const value = e.target.value
+                  const value = e.target.value;
                   if (value === "") {
-                    onChange("taux_interet", undefined)
+                    onChange("taux_interet", undefined);
                   } else {
-                    const num = parseFloat(value)
-                    onChange("taux_interet", isNaN(num) ? undefined : num)
+                    const num = parseFloat(value);
+                    onChange("taux_interet", isNaN(num) ? undefined : num);
                   }
                 }}
               />
@@ -154,12 +179,12 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
                 placeholder="ex: 120"
                 value={formData.duree_credit_mois ?? ""}
                 onChange={(e) => {
-                  const value = e.target.value
+                  const value = e.target.value;
                   if (value === "") {
-                    onChange("duree_credit_mois", undefined)
+                    onChange("duree_credit_mois", undefined);
                   } else {
-                    const num = parseFloat(value)
-                    onChange("duree_credit_mois", isNaN(num) ? undefined : num)
+                    const num = parseFloat(value);
+                    onChange("duree_credit_mois", isNaN(num) ? undefined : num);
                   }
                 }}
               />
@@ -181,22 +206,28 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
                       <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p className="font-semibold mb-1">Montant total à rembourser</p>
+                      <p className="font-semibold mb-1">
+                        Montant total à rembourser
+                      </p>
                       <p className="text-xs mb-2">
-                        Capital emprunté + intérêts sur {dureeCreditMois || 0} mois
+                        Capital emprunté + intérêts sur {dureeCreditMois || 0}{" "}
+                        mois
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        ⚠️ Ce montant peut légèrement varier selon les banques en fonction des assurances emprunteur, frais de dossier, frais de garantie, etc.
+                        ⚠️ Ce montant peut légèrement varier selon les banques
+                        en fonction des assurances emprunteur, frais de dossier,
+                        frais de garantie, etc.
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
                 <div className="text-right">
                   <div className="text-xl font-bold text-foreground">
-                    {totalCreditCost.toLocaleString('fr-FR')} €
+                    {totalCreditCost.toLocaleString("fr-FR")} €
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    dont {interetsPayes.toLocaleString('fr-FR')} € d&apos;intérêts
+                    dont {interetsPayes.toLocaleString("fr-FR")} €
+                    d&apos;intérêts
                   </div>
                 </div>
               </div>
@@ -205,5 +236,5 @@ export function FinancementFields({ formData, errors, onChange, totalCouts = 0, 
         </>
       )}
     </div>
-  )
+  );
 }
