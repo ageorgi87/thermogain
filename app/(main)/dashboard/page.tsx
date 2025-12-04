@@ -32,10 +32,10 @@ import { getProjects } from "@/app/(main)/dashboard/actions/getProjects";
 import { deleteProject } from "@/app/(main)/dashboard/actions/deleteProject";
 import { createProject } from "@/app/(main)/dashboard/actions/createProject";
 import {
-  WIZARD_STEPS,
   getTotalSteps,
   getStepKey,
   getStepNumber,
+  getFirstStepKey,
 } from "@/config/wizardStepsData";
 import { getProjectStatus } from "@/app/(main)/dashboard/lib/getProjectStatus";
 
@@ -75,7 +75,7 @@ export default function ProjectsPage() {
     setIsCreating(true);
     try {
       const project = await createProject({ name: "" });
-      const firstStep = WIZARD_STEPS[0].key;
+      const firstStep = getFirstStepKey();
       router.push(`/${project.id}/${firstStep}`);
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -101,11 +101,11 @@ export default function ProjectsPage() {
   const getProjectEditUrl = (project: Project) => {
     // Si toutes les étapes sont complétées, aller à la première étape
     if (project.completed) {
-      return `/${project.id}/${WIZARD_STEPS[0].key}`;
+      return `/${project.id}/${getFirstStepKey()}`;
     }
 
     // Sinon, aller à l'étape courante (currentStep est 1-indexed)
-    const stepKey = getStepKey(project.currentStep) || WIZARD_STEPS[0].key;
+    const stepKey = getStepKey(project.currentStep) || getFirstStepKey();
     return `/${project.id}/${stepKey}`;
   };
 

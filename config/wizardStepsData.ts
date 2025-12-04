@@ -90,3 +90,48 @@ export const getTotalSteps = (): number => {
 export const getStepNumber = (currentStep: number): number => {
   return Math.min(currentStep, getTotalSteps());
 };
+
+/**
+ * Retourne la clé de la première étape du wizard
+ * @returns La clé de la première étape
+ */
+export const getFirstStepKey = (): string => {
+  return WIZARD_STEPS[0].key;
+};
+
+/**
+ * Retourne l'index (0-based) d'une étape par sa clé
+ * @param stepKey - La clé de l'étape
+ * @returns L'index de l'étape ou -1 si non trouvée
+ */
+export const getStepIndex = (stepKey: string): number => {
+  return WIZARD_STEPS.findIndex((s) => s.key === stepKey);
+};
+
+/**
+ * Retourne la clé de l'étape suivante
+ * @param currentStepKey - La clé de l'étape actuelle
+ * @returns La clé de l'étape suivante ou undefined si c'est la dernière
+ */
+export const getNextStepKey = (currentStepKey: string): string | undefined => {
+  const currentIndex = getStepIndex(currentStepKey);
+  if (currentIndex === -1 || currentIndex >= getTotalSteps() - 1) {
+    return undefined;
+  }
+  return WIZARD_STEPS[currentIndex + 1].key;
+};
+
+/**
+ * Retourne la clé de l'étape précédente
+ * @param currentStepKey - La clé de l'étape actuelle
+ * @returns La clé de l'étape précédente ou undefined si c'est la première
+ */
+export const getPreviousStepKey = (
+  currentStepKey: string
+): string | undefined => {
+  const currentIndex = getStepIndex(currentStepKey);
+  if (currentIndex <= 0) {
+    return undefined;
+  }
+  return WIZARD_STEPS[currentIndex - 1].key;
+};

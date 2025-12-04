@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { WIZARD_STEPS, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getTotalSteps,
+  getStepIndex,
+  getNextStepKey,
+  getPreviousStepKey,
+} from "@/config/wizardStepsData";
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep";
 import { notFound } from "next/navigation";
 
@@ -32,7 +37,7 @@ export const useStepForm = <T extends z.ZodType>({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const stepIndex = WIZARD_STEPS.findIndex((s) => s.key === stepKey);
+  const stepIndex = getStepIndex(stepKey);
   const isLastStep = stepIndex === getTotalSteps() - 1;
 
   // Charger les données du projet
@@ -82,9 +87,9 @@ export const useStepForm = <T extends z.ZodType>({
       await saveData({ projectId, data: result.data });
       await updateProjectStep(projectId, stepIndex + 2);
 
-      if (stepIndex < getTotalSteps() - 1) {
-        const nextStep = WIZARD_STEPS[stepIndex + 1];
-        router.push(`/${projectId}/${nextStep.key}`);
+      const nextStepKey = getNextStepKey(stepKey);
+      if (nextStepKey) {
+        router.push(`/${projectId}/${nextStepKey}`);
       } else {
         router.push(`/${projectId}/results`);
       }
@@ -100,9 +105,9 @@ export const useStepForm = <T extends z.ZodType>({
 
   // Naviguer vers l'étape précédente
   const handlePrevious = () => {
-    if (stepIndex > 0) {
-      const previousStep = WIZARD_STEPS[stepIndex - 1];
-      router.push(`/${projectId}/${previousStep.key}`);
+    const previousStepKey = getPreviousStepKey(stepKey);
+    if (previousStepKey) {
+      router.push(`/${projectId}/${previousStepKey}`);
     } else {
       router.push("/dashboard");
     }
