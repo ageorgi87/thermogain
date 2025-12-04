@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, TrendingUp } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { formatPaybackPeriod } from "@/app/(main)/[projectId]/results/lib/formatPaybackPeriod"
 
 interface ROICardProps {
   paybackPeriod: number | null
@@ -10,19 +11,6 @@ interface ROICardProps {
 }
 
 export function ROICard({ paybackPeriod, paybackYear, resteACharge, dureeViePac }: ROICardProps) {
-  // Convertir la période de retour en années et mois
-  const formatPaybackPeriod = (period: number | null) => {
-    if (!period) return null
-
-    const years = Math.floor(period)
-    const months = Math.round((period - years) * 12)
-
-    if (months === 0) {
-      return `${years} an${years > 1 ? 's' : ''}`
-    }
-
-    return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
-  }
 
   return (
     <Card>

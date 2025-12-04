@@ -6,7 +6,7 @@ import {
   heatPumpProjectSchema,
   type HeatPumpProjectData,
 } from "./heatPumpProjectSchema";
-import { calculateAdjustedCOP } from "@/app/(main)/[projectId]/lib/calculateAdjustedCOP";
+import { calculateAdjustedCOP } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/lib/calculateAdjustedCOP";
 
 interface SaveHeatPumpProjectDataParams {
   projectId: string;

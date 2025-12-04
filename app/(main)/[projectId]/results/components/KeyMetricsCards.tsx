@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingDown, TrendingUp, Clock, PiggyBank, Zap, Percent } from "lucide-react"
 import type { CalculationResults } from "@/types/calculationResults"
+import { formatPaybackPeriod } from "@/app/(main)/[projectId]/results/lib/formatPaybackPeriod"
 
 interface KeyMetricsCardsProps {
   results: CalculationResults
@@ -10,20 +11,6 @@ interface KeyMetricsCardsProps {
 
 export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetricsCardsProps) {
   const isRentable = results.netBenefitLifetime > 0
-
-  // Convertir la période de retour en années et mois
-  const formatPaybackPeriod = (period: number | null) => {
-    if (!period) return "N/A"
-
-    const years = Math.floor(period)
-    const months = Math.round((period - years) * 12)
-
-    if (months === 0) {
-      return `${years} an${years > 1 ? 's' : ''}`
-    }
-
-    return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
-  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -35,7 +22,7 @@ export function KeyMetricsCards({ results, investissement, dureeVie }: KeyMetric
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-blue-600">
-            {formatPaybackPeriod(results.paybackPeriod)}
+            {formatPaybackPeriod(results.paybackPeriod) || "N/A"}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             {results.paybackYear ? `En ${results.paybackYear}` : "Non atteint"}

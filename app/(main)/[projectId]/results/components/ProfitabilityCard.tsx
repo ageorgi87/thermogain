@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { LineChart } from "lucide-react"
+import { formatPaybackPeriod } from "@/app/(main)/[projectId]/results/lib/formatPaybackPeriod"
 
 interface ProfitabilityCardProps {
   paybackPeriod: number | null
@@ -19,19 +20,6 @@ export function ProfitabilityCard({
   dureeVie,
   tauxRentabilite,
 }: ProfitabilityCardProps) {
-  // Convertir la période de retour en années et mois
-  const formatPaybackPeriod = (period: number | null) => {
-    if (!period) return null
-
-    const years = Math.floor(period)
-    const months = Math.round((period - years) * 12)
-
-    if (months === 0) {
-      return `${years} an${years > 1 ? 's' : ''}`
-    }
-
-    return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
-  }
 
   const isRentable = netBenefit > 0
   // Check if payback period exceeds lifespan
