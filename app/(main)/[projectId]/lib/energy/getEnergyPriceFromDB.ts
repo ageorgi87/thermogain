@@ -32,7 +32,7 @@ const convertPriceToUnit = (pricePerKwh: number, energyType: string): number => 
  * Le prix est retourné dans l'unité appropriée (€/litre, €/kWh, €/kg)
  *
  * IMPORTANT: Cette fonction ne fait que lire la DB.
- * Les données sont mises à jour mensuellement par getOrRefreshEnergyModel().
+ * Les données sont rafraîchies au step 1 (informations) par refreshEnergyPricesIfNeeded().
  *
  * @param energyType Type d'énergie ('fioul', 'gaz', 'gpl', 'bois', 'electricite')
  * @returns Prix dans l'unité appropriée

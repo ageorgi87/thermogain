@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { informationsSchema, type InformationsData } from "./informationsSchema"
+import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/refreshEnergyPricesIfNeeded"
 
 interface SaveInformationsDataParams {
   projectId: string
@@ -29,6 +30,10 @@ export const saveInformationsData = async ({
   if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
+
+  // Refresh energy prices if needed (< 31 days)
+  // This ensures all subsequent steps have fresh energy data
+  await refreshEnergyPricesIfNeeded()
 
   // Update project name and recipientEmails directly in Project table
   const updatedProject = await prisma.project.update({

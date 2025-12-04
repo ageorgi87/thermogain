@@ -30,8 +30,8 @@ const convertPriceToUnit = (pricePerKwh: number, energyType: string): number => 
  * Récupère les prix par défaut de l'énergie depuis la DB
  * Ces prix sont utilisés comme valeurs par défaut dans le formulaire
  *
- * Les prix sont récupérés depuis la table energyPriceCache qui est mise à jour
- * mensuellement par getOrRefreshEnergyModel()
+ * Les prix sont récupérés depuis la table energyPriceCache qui est rafraîchie
+ * au step 1 (informations) par refreshEnergyPricesIfNeeded()
  *
  * @throws Error si les données ne sont pas en DB
  */
