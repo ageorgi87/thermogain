@@ -17,7 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscription/subscriptionData"
+import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscriptionData"
 import { PriceLabelWithTooltip } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/components/PriceLabelWithTooltip"
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
 

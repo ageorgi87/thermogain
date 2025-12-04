@@ -1,36 +1,39 @@
-"use server"
+"use server";
 
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { heatPumpProjectSchema, type HeatPumpProjectData } from "./heatPumpProjectSchema"
-import { calculateAdjustedCOP } from "@/app/(main)/[projectId]/calculations/pacConsumption/lib/calculateAdjustedCOP"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import {
+  heatPumpProjectSchema,
+  type HeatPumpProjectData,
+} from "./heatPumpProjectSchema";
+import { calculateAdjustedCOP } from "@/lib/calculateAdjustedCOP";
 
 interface SaveHeatPumpProjectDataParams {
-  projectId: string
-  data: HeatPumpProjectData
+  projectId: string;
+  data: HeatPumpProjectData;
 }
 
 export const saveHeatPumpProjectData = async ({
   projectId,
   data,
 }: SaveHeatPumpProjectDataParams) => {
-  const session = await auth()
+  const session = await auth();
 
   if (!session?.user?.id) {
-    throw new Error("Non autorisé")
+    throw new Error("Non autorisé");
   }
 
-  const validatedData = heatPumpProjectSchema.parse(data)
+  const validatedData = heatPumpProjectSchema.parse(data);
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     include: {
       logement: true,
     },
-  })
+  });
 
   if (!project || project.userId !== session.user.id) {
-    throw new Error("Projet non trouvé")
+    throw new Error("Projet non trouvé");
   }
 
   // Calculer le COP ajusté selon température, émetteurs, et zone climatique
@@ -40,7 +43,7 @@ export const saveHeatPumpProjectData = async ({
     validatedData.emetteurs ?? "Radiateurs basse température",
     project.logement?.code_postal ?? undefined,
     validatedData.type_pac
-  )
+  );
 
   const projetPac = await prisma.projectProjetPac.upsert({
     where: { projectId },
@@ -53,14 +56,14 @@ export const saveHeatPumpProjectData = async ({
       ...validatedData,
       cop_ajuste,
     } as any,
-  })
+  });
 
   if (project.currentStep === 4) {
     await prisma.project.update({
       where: { id: projectId },
       data: { currentStep: 5 },
-    })
+    });
   }
 
-  return projetPac
-}
+  return projetPac;
+};

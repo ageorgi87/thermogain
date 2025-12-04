@@ -1,4 +1,4 @@
-import { getCachedEnergyPrice } from "@/lib/energy/priceCache/getCachedEnergyPrice"
+import { getCachedEnergyPrice } from "@/lib/getCachedEnergyPrice"
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
 
 /**

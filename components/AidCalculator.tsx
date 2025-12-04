@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react"
-import { calculateMaPrimeRenov } from "@/lib/eligibility/maPrimeRenov/calculateMaPrimeRenov"
-import { calculateCEE } from "@/lib/eligibility/cee/calculateCEE"
+import { calculateMaPrimeRenov } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/maPrimeRenov/calculateMaPrimeRenov"
+import { calculateCEE } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/cee/calculateCEE"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getClimateZoneFromPostalCode } from "@/lib/climate/getClimateZoneFromPostalCode"
+import { getClimateZoneFromPostalCode } from "@/lib/getClimateZoneFromPostalCode"
 import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,
