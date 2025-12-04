@@ -1,16 +1,17 @@
 import type { ProjectData } from "@/types/projectData";
+import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculatePacVariableCost } from "./calculatePacVariableCost";
 import { calculatePacFixedCosts } from "./calculatePacFixedCosts";
-import { getEnergyModelSync } from "@/app/(main)/[projectId]/lib/calculateAllResults/getEnergyModelSync";
-import { calculateCostForYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCostForYear";
+import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 
-interface CalculatePacCostForYearParams {
+interface CalculatePacCostProjectedYearParams {
   data: ProjectData;
   year: number;
+  energyModel: EnergyEvolutionModel;
 }
 
 /**
- * Calcule le coût PAC pour une année donnée avec évolution du prix de l'électricité
+ * Calcule le coût PAC pour une année projetée N avec évolution du prix de l'électricité
  *
  * NOUVEAU (Décembre 2024): Utilise le modèle Mean Reversion basé sur l'historique
  * complet de l'API DIDO-SDES (18+ ans de données) au lieu d'un taux linéaire constant.
@@ -24,20 +25,19 @@ interface CalculatePacCostForYearParams {
  * Les coûts FIXES (abonnement, entretien) restent constants en euros constants.
  *
  * @param params.data Données du projet
- * @param params.year Année de projection (0 = année actuelle)
+ * @param params.year Année de projection (0 = année 1, 1 = année 2, etc.)
+ * @param params.energyModel Modèle d'évolution des prix de l'électricité
  * @returns Coût projeté en euros
  */
-export const calculatePacCostForYear = async ({
+export const calculatePacCostProjectedYear = async ({
   data,
   year,
-}: CalculatePacCostForYearParams): Promise<number> => {
+  energyModel,
+}: CalculatePacCostProjectedYearParams): Promise<number> => {
   // Coûts variables: évoluent avec le modèle Mean Reversion
   const variableCost = calculatePacVariableCost(data);
   const fixedCosts = calculatePacFixedCosts(data);
 
-  // Récupérer le modèle Mean Reversion depuis la DB
-  const model = await getEnergyModelSync("electricite");
-
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
-  return calculateCostForYear(variableCost, fixedCosts.total, year, model);
+  return applyCostEvolutionModel(variableCost, fixedCosts.total, year, energyModel);
 };

@@ -1,9 +1,12 @@
 import type { ProjectData } from "@/types/projectData";
+import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData";
 
 interface CalculatePaybackPeriodParams {
   data: ProjectData
   maxYears?: number
+  currentEnergyModel: EnergyEvolutionModel
+  pacEnergyModel: EnergyEvolutionModel
 }
 
 /**
@@ -11,13 +14,22 @@ interface CalculatePaybackPeriodParams {
  * Trouve la première année où les économies cumulées dépassent l'investissement net
  * @param params.data Données du projet
  * @param params.maxYears Nombre d'années maximum à analyser (défaut: 30)
+ * @param params.currentEnergyModel Modèle d'évolution pour le chauffage actuel
+ * @param params.pacEnergyModel Modèle d'évolution pour la PAC
  * @returns Nombre d'années pour atteindre le ROI, ou null si pas atteint
  */
 export const calculatePaybackPeriod = async ({
   data,
   maxYears = 30,
+  currentEnergyModel,
+  pacEnergyModel,
 }: CalculatePaybackPeriodParams): Promise<number | null> => {
-  const yearlyData = await calculateYearlyData({ data, years: maxYears });
+  const yearlyData = await calculateYearlyData({
+    data,
+    years: maxYears,
+    currentEnergyModel,
+    pacEnergyModel,
+  });
   const investment = data.reste_a_charge;
 
   for (let i = 0; i < yearlyData.length; i++) {

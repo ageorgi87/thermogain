@@ -1,5 +1,5 @@
 /**
- * Calcule le coût pour une année donnée avec évolution du prix
+ * Applique le modèle d'évolution des prix de l'énergie (Mean Reversion)
  *
  * IMPORTANT: Seuls les coûts VARIABLES évoluent avec le temps.
  * Les coûts FIXES (abonnements, entretien) restent constants.
@@ -38,15 +38,15 @@ const meanReversionRate = (
 }
 
 /**
- * Calcule le coût pour une année donnée avec évolution du prix
+ * Applique le modèle d'évolution des prix (Mean Reversion) pour calculer le coût d'une année projetée
  *
  * @param coutVariable Coût variable année 1 (énergie consommée)
  * @param coutsFixes Coûts fixes annuels (constants sur toute la période)
  * @param annee Année de projection (0 = année 1, 1 = année 2, etc.)
- * @param model Configuration du modèle d'évolution
+ * @param model Configuration du modèle d'évolution (tauxRecent, tauxEquilibre, anneesTransition)
  * @returns Coût total pour cette année
  */
-export const calculateCostForYear = (
+export const applyCostEvolutionModel = (
   coutVariable: number,
   coutsFixes: number,
   annee: number,

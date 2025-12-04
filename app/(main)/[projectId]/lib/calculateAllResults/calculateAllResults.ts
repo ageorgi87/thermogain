@@ -1,8 +1,8 @@
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
-import { calculateCurrentAnnualCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentAnnualCost";
-import { calculatePacAnnualCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacAnnualCost";
+import { calculateCurrentCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostYear1";
+import { calculatePacCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostYear1";
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh";
 import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData";
 import { calculateTotalSavings } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalSavings";
@@ -11,6 +11,38 @@ import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAl
 import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackYear";
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment";
 import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost";
+import { getOrRefreshEnergyModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/getOrRefreshEnergyModel";
+
+/**
+ * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
+ * @param data Données du projet
+ * @returns Type d'énergie ('gaz' | 'electricite' | 'fioul' | 'bois')
+ */
+const getEnergyType = (
+  data: ProjectData
+): "gaz" | "electricite" | "fioul" | "bois" => {
+  switch (data.type_chauffage) {
+    case "Fioul":
+    case "GPL":
+      return "fioul";
+
+    case "Gaz":
+      return "gaz";
+
+    case "Pellets":
+    case "Bois":
+      return "bois";
+
+    case "Electrique":
+    case "PAC Air/Air":
+    case "PAC Air/Eau":
+    case "PAC Eau/Eau":
+      return "electricite";
+
+    default:
+      return "gaz"; // Fallback
+  }
+};
 
 /**
  * Fonction principale qui calcule tous les résultats du projet
@@ -20,9 +52,14 @@ import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculate
 export const calculateAllResults = async (
   data: ProjectData
 ): Promise<CalculationResults> => {
+  // Récupérer les modèles énergétiques UNE SEULE FOIS au début
+  const energyType = getEnergyType(data);
+  const currentEnergyModel = await getOrRefreshEnergyModel(energyType);
+  const pacEnergyModel = await getOrRefreshEnergyModel("electricite");
+
   // Coûts année 1
-  const coutAnnuelActuel = calculateCurrentAnnualCost(data);
-  const coutAnnuelPac = calculatePacAnnualCost(data);
+  const coutAnnuelActuel = calculateCurrentCostYear1(data);
+  const coutAnnuelPac = calculatePacCostYear1(data);
 
   // Consommation PAC
   const consommationPacKwh = calculatePacConsumptionKwh(data);
@@ -67,9 +104,12 @@ export const calculateAllResults = async (
   };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
+  // Passer les modèles énergétiques pour éviter de les re-fetch à chaque année
   const yearlyData = await calculateYearlyData({
     data: dataAjusteeROI,
     years: data.duree_vie_pac,
+    currentEnergyModel,
+    pacEnergyModel,
   });
 
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
@@ -79,17 +119,29 @@ export const calculateAllResults = async (
       : coutAnnuelActuel - coutAnnuelPac;
 
   // ROI avec investissement réel (incluant intérêts du crédit)
-  const paybackPeriod = await calculatePaybackPeriod({ data: dataAjusteeROI });
-  const paybackYear = await calculatePaybackYear({ data: dataAjusteeROI });
+  const paybackPeriod = await calculatePaybackPeriod({
+    data: dataAjusteeROI,
+    currentEnergyModel,
+    pacEnergyModel,
+  });
+  const paybackYear = await calculatePaybackYear({
+    data: dataAjusteeROI,
+    currentEnergyModel,
+    pacEnergyModel,
+  });
 
   // Gains totaux sur la durée de vie de la PAC
   const totalSavingsLifetime = await calculateTotalSavings({
     data: dataAjusteeROI,
     years: data.duree_vie_pac,
+    currentEnergyModel,
+    pacEnergyModel,
   });
   const netBenefitLifetime = await calculateNetBenefit({
     data: dataAjusteeROI,
     years: data.duree_vie_pac,
+    currentEnergyModel,
+    pacEnergyModel,
   });
 
   // Coûts totaux sur durée de vie

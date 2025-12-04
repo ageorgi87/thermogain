@@ -78,6 +78,9 @@ const isCurrentMonth = (lastUpdated: Date): boolean => {
  * 3. Re-lit la DB pour obtenir les données fraîches
  * 4. Retourne toujours les données depuis la DB (jamais directement depuis l'API)
  *
+ * IMPORTANT: Cette fonction ne doit être appelée qu'UNE SEULE FOIS par type d'énergie
+ * dans calculateAllResults(), puis le modèle est passé en paramètre aux fonctions de calcul.
+ *
  * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', 'bois')
  * @returns Modèle d'évolution depuis la DB
  */
@@ -143,4 +146,4 @@ export const getOrRefreshEnergyModel = async (
     tauxEquilibre: cached.tauxEquilibre,
     anneesTransition: cached.anneesTransition
   }
-}
+};
