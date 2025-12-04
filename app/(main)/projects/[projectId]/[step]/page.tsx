@@ -1,73 +1,90 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Loader2, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info } from "lucide-react"
+import { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Loader2,
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Info,
+} from "lucide-react";
 import {
   informationsSchema,
   type InformationsData,
-} from "./sections/informations/informationsSchema"
+} from "./sections/informations/informationsSchema";
 import {
   housingSchema as logementSchema,
   type HousingData as LogementData,
-} from "./sections/housing/housingSchema"
+} from "./sections/housing/housingSchema";
 import {
   currentHeatingSchema as chauffageActuelSchema,
   type CurrentHeatingData as ChauffageActuelData,
-} from "./sections/currentHeating/currentHeatingSchema"
+} from "./sections/currentHeating/currentHeatingSchema";
 import {
   heatPumpProjectSchema as projetPacSchema,
   type HeatPumpProjectData as ProjetPacData,
-} from "./sections/heatPumpProject/heatPumpProjectSchema"
+} from "./sections/heatPumpProject/heatPumpProjectSchema";
 import {
   costsSchema as coutsSchema,
   type CostsData as CoutsData,
-} from "./sections/costs/costsSchema"
+} from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/costsSchema";
 import {
   financialAidSchema as aidesSchema,
   type FinancialAidData as AidesData,
-} from "./sections/financialAid/financialAidSchema"
+} from "./sections/financialAid/financialAidSchema";
 import {
   financingSchema as financementSchema,
   type FinancingData as FinancementData,
-} from "./sections/financing/financingSchema"
-import { InformationsFields } from "./sections/informations/informationsFields"
-import { HousingFields } from "./sections/housing/housingFields"
-import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields"
-import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields"
-import { CoutsFields } from "./sections/costs/costsFields"
-import { AidesFields } from "./sections/financialAid/financialAidFields"
-import { FinancementFields } from "./sections/financing/financingFields"
-import { Card, CardContent } from "@/components/ui/card"
-import { saveInformationsData } from "./sections/informations/informationsActions"
-import { saveHousingData } from "./sections/housing/housingActions"
-import { saveCurrentHeatingData, getDefaultEnergyPrices } from "./sections/currentHeating/currentHeatingActions"
-import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions"
-import { saveCostsData } from "./sections/costs/costsActions"
-import { saveFinancialAidData } from "./sections/financialAid/financialAidActions"
-import { saveFinancingData } from "./sections/financing/financingActions"
-import { getProject } from "@/lib/actions/projects/getProject"
-import { updateProjectStep } from "./updateProjectStep"
-import { WIZARD_STEPS as STEPS } from "@/lib/wizard/wizardStepsData"
-import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
+} from "./sections/financing/financingSchema";
+import { InformationsFields } from "./sections/informations/informationsFields";
+import { HousingFields } from "./sections/housing/housingFields";
+import { ChauffageActuelFields } from "./sections/currentHeating/currentHeatingFields";
+import { ProjetPacFields } from "./sections/heatPumpProject/heatPumpProjectFields";
+import { CoutsFields } from "./sections/costs/costsFields";
+import { AidesFields } from "./sections/financialAid/financialAidFields";
+import { FinancementFields } from "./sections/financing/financingFields";
+import { Card, CardContent } from "@/components/ui/card";
+import { saveInformationsData } from "./sections/informations/informationsActions";
+import { saveHousingData } from "./sections/housing/housingActions";
+import {
+  saveCurrentHeatingData,
+  getDefaultEnergyPrices,
+} from "./sections/currentHeating/currentHeatingActions";
+import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions";
+import { saveCostsData } from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/costsActions";
+import { saveFinancialAidData } from "./sections/financialAid/financialAidActions";
+import { saveFinancingData } from "./sections/financing/financingActions";
+import { getProject } from "@/lib/actions/projects/getProject";
+import { updateProjectStep } from "./updateProjectStep";
+import { WIZARD_STEPS as STEPS } from "@/lib/wizard/wizardStepsData";
+import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults";
 
 const STEP_EXPLANATIONS: Record<string, string> = {
-  "informations": "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",
-  "logement": "Les caractéristiques de votre logement (surface, isolation, année de construction) sont essentielles pour estimer avec précision vos besoins en chauffage, dimensionner correctement la pompe à chaleur, et calculer les économies potentielles.",
-  "chauffage-actuel": "Ces informations nous permettent d'évaluer votre consommation énergétique actuelle, son coût annuel, et le rendement de votre installation. Cette analyse servira de référence pour comparer les économies potentielles avec une pompe à chaleur.",
-  "projet-pac": "Les caractéristiques de la pompe à chaleur (type, puissance, COP) déterminent son efficacité et sa compatibilité avec votre logement. Ces données sont essentielles pour estimer précisément vos futures consommations et économies.",
-  "couts": "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
-  "aides": "Les aides financières disponibles (MaPrimeRénov', CEE, etc.) réduisent significativement votre reste à charge. Nous les prenons en compte pour calculer le retour sur investissement réel de votre projet.",
-  "financement": "Votre mode de financement (comptant, crédit) impacte directement le coût total du projet et les mensualités. Ces informations permettent d'évaluer l'effort financier mensuel et le coût global incluant les intérêts.",
-}
+  informations:
+    "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",
+  logement:
+    "Les caractéristiques de votre logement (surface, isolation, année de construction) sont essentielles pour estimer avec précision vos besoins en chauffage, dimensionner correctement la pompe à chaleur, et calculer les économies potentielles.",
+  "chauffage-actuel":
+    "Ces informations nous permettent d'évaluer votre consommation énergétique actuelle, son coût annuel, et le rendement de votre installation. Cette analyse servira de référence pour comparer les économies potentielles avec une pompe à chaleur.",
+  "projet-pac":
+    "Les caractéristiques de la pompe à chaleur (type, puissance, COP) déterminent son efficacité et sa compatibilité avec votre logement. Ces données sont essentielles pour estimer précisément vos futures consommations et économies.",
+  couts:
+    "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
+  aides:
+    "Les aides financières disponibles (MaPrimeRénov', CEE, etc.) réduisent significativement votre reste à charge. Nous les prenons en compte pour calculer le retour sur investissement réel de votre projet.",
+  financement:
+    "Votre mode de financement (comptant, crédit) impacte directement le coût total du projet et les mensualités. Ces informations permettent d'évaluer l'effort financier mensuel et le coût global incluant les intérêts.",
+};
 
 const DEFAULT_VALUES = {
-  "informations": {
+  informations: {
     project_name: "",
     recipient_emails: [],
   },
-  "logement": {
+  logement: {
     // No defaults - all values must be entered by user
   },
   "chauffage-actuel": {
@@ -100,124 +117,141 @@ const DEFAULT_VALUES = {
     duree_credit_mois: 0,
     // mensualite is calculated automatically
   },
-}
+};
 
 const SCHEMAS = {
-  "informations": informationsSchema,
-  "logement": logementSchema,
+  informations: informationsSchema,
+  logement: logementSchema,
   "chauffage-actuel": chauffageActuelSchema,
   "projet-pac": projetPacSchema,
   couts: coutsSchema,
   aides: aidesSchema,
   financement: financementSchema,
-}
+};
 
 export default function WizardStepPage() {
-  const params = useParams()
-  const router = useRouter()
-  const projectId = params.projectId as string
-  const step = params.step as string
+  const params = useParams();
+  const router = useRouter();
+  const projectId = params.projectId as string;
+  const step = params.step as string;
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [showExplanation, setShowExplanation] = useState(false)
-  const [typeChauffage, setTypeChauffage] = useState<string | undefined>(undefined)
-  const [prixElecKwhActuel, setPrixElecKwhActuel] = useState<number | undefined>(undefined)
-  const [puissanceSouscriteActuelle, setPuissanceSouscriteActuelle] = useState<number | undefined>(undefined)
-  const [defaultPrices, setDefaultPrices] = useState<{
-    fioul: number
-    gaz: number
-    gpl: number
-    bois: number
-    electricite: number
-  } | undefined>(undefined)
-  const [totalCouts, setTotalCouts] = useState<number>(0)
-  const [totalAides, setTotalAides] = useState<number>(0)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [typeChauffage, setTypeChauffage] = useState<string | undefined>(
+    undefined
+  );
+  const [prixElecKwhActuel, setPrixElecKwhActuel] = useState<
+    number | undefined
+  >(undefined);
+  const [puissanceSouscriteActuelle, setPuissanceSouscriteActuelle] = useState<
+    number | undefined
+  >(undefined);
+  const [defaultPrices, setDefaultPrices] = useState<
+    | {
+        fioul: number;
+        gaz: number;
+        gpl: number;
+        bois: number;
+        electricite: number;
+      }
+    | undefined
+  >(undefined);
+  const [totalCouts, setTotalCouts] = useState<number>(0);
+  const [totalAides, setTotalAides] = useState<number>(0);
 
   // Données pour les calculateurs d'aides
-  const [typePac, setTypePac] = useState<string | undefined>(undefined)
-  const [anneeConstruction, setAnneeConstruction] = useState<number | undefined>(undefined)
-  const [codePostal, setCodePostal] = useState<string | undefined>(undefined)
-  const [surfaceHabitable, setSurfaceHabitable] = useState<number | undefined>(undefined)
-  const [nombreOccupants, setNombreOccupants] = useState<number | undefined>(undefined)
+  const [typePac, setTypePac] = useState<string | undefined>(undefined);
+  const [anneeConstruction, setAnneeConstruction] = useState<
+    number | undefined
+  >(undefined);
+  const [codePostal, setCodePostal] = useState<string | undefined>(undefined);
+  const [surfaceHabitable, setSurfaceHabitable] = useState<number | undefined>(
+    undefined
+  );
+  const [nombreOccupants, setNombreOccupants] = useState<number | undefined>(
+    undefined
+  );
 
-  const currentStepIndex = STEPS.findIndex((s) => s.key === step)
-  const currentStep = STEPS[currentStepIndex]
+  const currentStepIndex = STEPS.findIndex((s) => s.key === step);
+  const currentStep = STEPS[currentStepIndex];
 
   if (!currentStep) {
-    router.push("/projects")
-    return null
+    router.push("/projects");
+    return null;
   }
 
   // State pour le formulaire
-  const [formData, setFormData] = useState<any>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [formData, setFormData] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Ref pour stocker le type de chauffage précédent
-  const prevTypeChauffageRef = useRef<string | undefined>(undefined)
+  const prevTypeChauffageRef = useRef<string | undefined>(undefined);
 
   // Ref pour stocker les données complètes du chauffage actuel depuis la DB
   // Permet de restaurer les données quand on change de type de chauffage
-  const savedChauffageDataRef = useRef<any>(null)
+  const savedChauffageDataRef = useRef<any>(null);
 
   // Helper pour mettre à jour un champ dans le state
   const updateField = (name: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [name]: value }))
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
     // Clear error for this field
     setErrors((prev) => {
-      const newErrors = { ...prev }
-      delete newErrors[name]
-      return newErrors
-    })
-  }
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
+  };
 
   // Load existing data if any
   useEffect(() => {
     const loadData = async () => {
       try {
-        const project = await getProject(projectId)
+        const project = await getProject(projectId);
 
         // Load default prices for chauffage-actuel and projet-pac steps
         if (step === "chauffage-actuel" || step === "projet-pac") {
-          const prices = await getDefaultEnergyPrices()
-          setDefaultPrices(prices)
+          const prices = await getDefaultEnergyPrices();
+          setDefaultPrices(prices);
         }
 
         if (project) {
           // Store type_chauffage and electricity data for projet-pac step
           if (project.chauffageActuel?.type_chauffage) {
-            setTypeChauffage(project.chauffageActuel.type_chauffage)
+            setTypeChauffage(project.chauffageActuel.type_chauffage);
           }
           if (project.chauffageActuel?.prix_elec_kwh) {
-            setPrixElecKwhActuel(project.chauffageActuel.prix_elec_kwh)
+            setPrixElecKwhActuel(project.chauffageActuel.prix_elec_kwh);
           }
           if (project.chauffageActuel?.puissance_souscrite_actuelle) {
-            setPuissanceSouscriteActuelle(project.chauffageActuel.puissance_souscrite_actuelle)
+            setPuissanceSouscriteActuelle(
+              project.chauffageActuel.puissance_souscrite_actuelle
+            );
           }
 
           // Store total costs and aids for financing step
           if (project.couts?.cout_total) {
-            setTotalCouts(project.couts.cout_total)
+            setTotalCouts(project.couts.cout_total);
           }
           if (project.aides?.total_aides) {
-            setTotalAides(project.aides.total_aides)
+            setTotalAides(project.aides.total_aides);
           }
 
           // Store data for aid calculators (aides step)
           if (project.projetPac?.type_pac) {
-            setTypePac(project.projetPac.type_pac)
+            setTypePac(project.projetPac.type_pac);
           }
           if (project.logement?.annee_construction) {
-            setAnneeConstruction(project.logement.annee_construction)
+            setAnneeConstruction(project.logement.annee_construction);
           }
           if (project.logement?.code_postal) {
-            setCodePostal(project.logement.code_postal)
+            setCodePostal(project.logement.code_postal);
           }
           if (project.logement?.surface_habitable) {
-            setSurfaceHabitable(project.logement.surface_habitable)
+            setSurfaceHabitable(project.logement.surface_habitable);
           }
           if (project.logement?.nombre_occupants) {
-            setNombreOccupants(project.logement.nombre_occupants)
+            setNombreOccupants(project.logement.nombre_occupants);
           }
 
           // Load form data based on current step
@@ -226,25 +260,31 @@ export default function WizardStepPage() {
             const informationsData = {
               project_name: project.name || "",
               recipient_emails: project.recipientEmails || [],
-            }
-            setFormData(informationsData)
+            };
+            setFormData(informationsData);
           } else {
             // Other steps: load from their respective section tables
             const sectionMap: Record<string, string> = {
-              "logement": "logement",
+              logement: "logement",
               "chauffage-actuel": "chauffageActuel",
               "projet-pac": "projetPac",
-              "couts": "couts",
-              "aides": "aides",
-              "financement": "financement",
-            }
+              couts: "couts",
+              aides: "aides",
+              financement: "financement",
+            };
 
-            const sectionKey = sectionMap[step]
-            const sectionData = project[sectionKey as keyof typeof project]
+            const sectionKey = sectionMap[step];
+            const sectionData = project[sectionKey as keyof typeof project];
 
-            if (sectionData && typeof sectionData === 'object') {
+            if (sectionData && typeof sectionData === "object") {
               // Remove the ID, projectId, and timestamp fields before resetting
-              const { id, projectId: _projectId, createdAt, updatedAt, ...data } = sectionData as any
+              const {
+                id,
+                projectId: _projectId,
+                createdAt,
+                updatedAt,
+                ...data
+              } = sectionData as any;
               // Convert null values appropriately:
               // - For number fields: convert to undefined (not 0, to allow optional validation)
               // - For boolean fields: keep as null or undefined
@@ -252,302 +292,373 @@ export default function WizardStepPage() {
               const cleanedData = Object.fromEntries(
                 Object.entries(data).map(([key, value]) => {
                   if (value === null) {
-                    return [key, undefined]
+                    return [key, undefined];
                   }
-                  return [key, value]
+                  return [key, value];
                 })
-              )
+              );
 
-              setFormData(cleanedData)
+              setFormData(cleanedData);
 
               // For chauffage-actuel step, save the full data to restore later when type changes
               if (step === "chauffage-actuel") {
-                savedChauffageDataRef.current = cleanedData
+                savedChauffageDataRef.current = cleanedData;
               }
             }
           }
-
         }
       } catch (error) {
-        console.error("Error loading data:", error)
+        console.error("Error loading data:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    loadData()
-  }, [projectId, step])
+    loadData();
+  }, [projectId, step]);
 
   // Load default energy prices when user changes heating type (only on chauffage-actuel step)
   useEffect(() => {
-    if (step !== "chauffage-actuel" || !formData.type_chauffage || isLoading || !defaultPrices) {
-      return
+    if (
+      step !== "chauffage-actuel" ||
+      !formData.type_chauffage ||
+      isLoading ||
+      !defaultPrices
+    ) {
+      return;
     }
 
     // Only update the price field if it's undefined or null (never set)
-    const typeChauffage = formData.type_chauffage
+    const typeChauffage = formData.type_chauffage;
     switch (typeChauffage) {
       case "Fioul":
-        if (formData.prix_fioul_litre === undefined || formData.prix_fioul_litre === null) {
-          updateField("prix_fioul_litre", Math.round(defaultPrices.fioul * 1000) / 1000)
+        if (
+          formData.prix_fioul_litre === undefined ||
+          formData.prix_fioul_litre === null
+        ) {
+          updateField(
+            "prix_fioul_litre",
+            Math.round(defaultPrices.fioul * 1000) / 1000
+          );
         }
-        break
+        break;
       case "Gaz":
-        if (formData.prix_gaz_kwh === undefined || formData.prix_gaz_kwh === null) {
-          updateField("prix_gaz_kwh", Math.round(defaultPrices.gaz * 1000) / 1000)
+        if (
+          formData.prix_gaz_kwh === undefined ||
+          formData.prix_gaz_kwh === null
+        ) {
+          updateField(
+            "prix_gaz_kwh",
+            Math.round(defaultPrices.gaz * 1000) / 1000
+          );
         }
-        break
+        break;
       case "GPL":
-        if (formData.prix_gpl_kg === undefined || formData.prix_gpl_kg === null) {
-          updateField("prix_gpl_kg", Math.round(defaultPrices.gpl * 1000) / 1000)
+        if (
+          formData.prix_gpl_kg === undefined ||
+          formData.prix_gpl_kg === null
+        ) {
+          updateField(
+            "prix_gpl_kg",
+            Math.round(defaultPrices.gpl * 1000) / 1000
+          );
         }
-        break
+        break;
       case "Pellets":
-        if (formData.prix_pellets_kg === undefined || formData.prix_pellets_kg === null) {
-          updateField("prix_pellets_kg", Math.round(defaultPrices.bois * 1000) / 1000)
+        if (
+          formData.prix_pellets_kg === undefined ||
+          formData.prix_pellets_kg === null
+        ) {
+          updateField(
+            "prix_pellets_kg",
+            Math.round(defaultPrices.bois * 1000) / 1000
+          );
         }
-        break
+        break;
       case "Bois":
         // Pour le bois en stères: prix pellets/kg * 2000 kWh/stère / 4.8 kWh/kg ≈ prix/kg * 416
-        const prixBoisStere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
-        if (formData.prix_bois_stere === undefined || formData.prix_bois_stere === null) {
-          updateField("prix_bois_stere", prixBoisStere)
+        const prixBoisStere =
+          Math.round(defaultPrices.bois * 416.67 * 1000) / 1000;
+        if (
+          formData.prix_bois_stere === undefined ||
+          formData.prix_bois_stere === null
+        ) {
+          updateField("prix_bois_stere", prixBoisStere);
         }
-        break
+        break;
       case "Electrique":
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        if (formData.prix_elec_kwh === undefined || formData.prix_elec_kwh === null) {
-          updateField("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+        if (
+          formData.prix_elec_kwh === undefined ||
+          formData.prix_elec_kwh === null
+        ) {
+          updateField(
+            "prix_elec_kwh",
+            Math.round(defaultPrices.electricite * 1000) / 1000
+          );
         }
-        break
+        break;
     }
-  }, [formData.type_chauffage, step, isLoading, defaultPrices])
+  }, [formData.type_chauffage, step, isLoading, defaultPrices]);
 
   // Auto-fill prix_elec_kwh on projet-pac step
   useEffect(() => {
     if (step !== "projet-pac" || !defaultPrices || isLoading) {
-      return
+      return;
     }
 
     // Only update if it's undefined (never set)
     if (formData.prix_elec_kwh === undefined) {
-      updateField("prix_elec_kwh", Math.round(defaultPrices.electricite * 1000) / 1000)
+      updateField(
+        "prix_elec_kwh",
+        Math.round(defaultPrices.electricite * 1000) / 1000
+      );
     }
-  }, [step, defaultPrices, isLoading, formData.prix_elec_kwh])
+  }, [step, defaultPrices, isLoading, formData.prix_elec_kwh]);
 
   // Clear consumption fields when user switches to "No" on chauffage-actuel step
   useEffect(() => {
     if (step !== "chauffage-actuel" || isLoading) {
-      return
+      return;
     }
 
     // If user selects "No, I don't know my consumption", clear all consumption-related fields
     if (formData.connait_consommation === false) {
       const fieldsToClean = [
-        'conso_fioul_litres', 'prix_fioul_litre',
-        'conso_gaz_kwh', 'prix_gaz_kwh', 'abonnement_gaz',
-        'conso_gpl_kg', 'prix_gpl_kg',
-        'conso_pellets_kg', 'prix_pellets_kg',
-        'conso_bois_steres', 'prix_bois_stere',
-        'conso_elec_kwh', 'prix_elec_kwh',
-        'conso_pac_kwh'
-      ]
+        "conso_fioul_litres",
+        "prix_fioul_litre",
+        "conso_gaz_kwh",
+        "prix_gaz_kwh",
+        "abonnement_gaz",
+        "conso_gpl_kg",
+        "prix_gpl_kg",
+        "conso_pellets_kg",
+        "prix_pellets_kg",
+        "conso_bois_steres",
+        "prix_bois_stere",
+        "conso_elec_kwh",
+        "prix_elec_kwh",
+        "conso_pac_kwh",
+      ];
 
       // Check if any field needs to be cleaned
-      const needsCleaning = fieldsToClean.some(field => formData[field] !== undefined)
+      const needsCleaning = fieldsToClean.some(
+        (field) => formData[field] !== undefined
+      );
 
       if (needsCleaning) {
         setFormData((prev: any) => {
-          const newData = { ...prev }
-          fieldsToClean.forEach(field => {
-            delete newData[field]
-          })
-          return newData
-        })
+          const newData = { ...prev };
+          fieldsToClean.forEach((field) => {
+            delete newData[field];
+          });
+          return newData;
+        });
       }
     }
-  }, [step, isLoading, formData.connait_consommation])
+  }, [step, isLoading, formData.connait_consommation]);
 
   // Clear ALL consumption fields when heating type changes
   useEffect(() => {
     if (step !== "chauffage-actuel" || isLoading) {
-      return
+      return;
     }
 
-    const currentType = formData.type_chauffage
-    const prevType = prevTypeChauffageRef.current
+    const currentType = formData.type_chauffage;
+    const prevType = prevTypeChauffageRef.current;
 
     // First load: just store the current type
     if (prevType === undefined && currentType) {
-      prevTypeChauffageRef.current = currentType
-      return
+      prevTypeChauffageRef.current = currentType;
+      return;
     }
 
     // Type has changed - check if we have saved data for this type, otherwise clear
     if (prevType !== undefined && currentType && prevType !== currentType) {
       // Check if saved data exists and matches the new type
-      const savedData = savedChauffageDataRef.current
-      const hasSavedDataForType = savedData && savedData.type_chauffage === currentType
+      const savedData = savedChauffageDataRef.current;
+      const hasSavedDataForType =
+        savedData && savedData.type_chauffage === currentType;
 
       if (hasSavedDataForType) {
         // Restore saved data for this heating type
-        setFormData(savedData)
+        setFormData(savedData);
       } else {
         // No saved data - clear form and set defaults including DIDO price
 
         const newFormData: any = {
           type_chauffage: currentType,
-          connait_consommation: true
-        }
+          connait_consommation: true,
+        };
 
         // Set default DIDO price for the selected heating type
         if (defaultPrices) {
           switch (currentType) {
             case "Fioul":
-              newFormData.prix_fioul_litre = Math.round(defaultPrices.fioul * 1000) / 1000
-              break
+              newFormData.prix_fioul_litre =
+                Math.round(defaultPrices.fioul * 1000) / 1000;
+              break;
             case "Gaz":
-              newFormData.prix_gaz_kwh = Math.round(defaultPrices.gaz * 1000) / 1000
-              break
+              newFormData.prix_gaz_kwh =
+                Math.round(defaultPrices.gaz * 1000) / 1000;
+              break;
             case "GPL":
-              newFormData.prix_gpl_kg = Math.round(defaultPrices.gpl * 1000) / 1000
-              break
+              newFormData.prix_gpl_kg =
+                Math.round(defaultPrices.gpl * 1000) / 1000;
+              break;
             case "Pellets":
-              newFormData.prix_pellets_kg = Math.round(defaultPrices.bois * 1000) / 1000
-              break
+              newFormData.prix_pellets_kg =
+                Math.round(defaultPrices.bois * 1000) / 1000;
+              break;
             case "Bois":
-              newFormData.prix_bois_stere = Math.round(defaultPrices.bois * 416.67 * 1000) / 1000
-              break
+              newFormData.prix_bois_stere =
+                Math.round(defaultPrices.bois * 416.67 * 1000) / 1000;
+              break;
             case "Electrique":
             case "PAC Air/Air":
             case "PAC Air/Eau":
             case "PAC Eau/Eau":
-              newFormData.prix_elec_kwh = Math.round(defaultPrices.electricite * 1000) / 1000
-              break
+              newFormData.prix_elec_kwh =
+                Math.round(defaultPrices.electricite * 1000) / 1000;
+              break;
           }
         }
 
-        setFormData(newFormData)
+        setFormData(newFormData);
       }
 
       // Update the ref
-      prevTypeChauffageRef.current = currentType
+      prevTypeChauffageRef.current = currentType;
     }
-  }, [step, isLoading, formData.type_chauffage])
+  }, [step, isLoading, formData.type_chauffage]);
 
   const onSubmit = async (data: any) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      let validatedData = data
+      let validatedData = data;
 
       // Manual validation for refactored steps
-      const refactoredSteps = ["informations", "logement", "chauffage-actuel", "projet-pac", "couts", "aides", "financement"]
+      const refactoredSteps = [
+        "informations",
+        "logement",
+        "chauffage-actuel",
+        "projet-pac",
+        "couts",
+        "aides",
+        "financement",
+      ];
       if (refactoredSteps.includes(step)) {
-        const schema = SCHEMAS[step as keyof typeof SCHEMAS]
-        const result = schema.safeParse(formData)
+        const schema = SCHEMAS[step as keyof typeof SCHEMAS];
+        const result = schema.safeParse(formData);
 
-        const errorMap: Record<string, string> = {}
+        const errorMap: Record<string, string> = {};
 
         // Collect Zod validation errors
         if (!result.success) {
           result.error.issues.forEach((issue) => {
             if (issue.path.length > 0) {
-              const fieldName = issue.path[0].toString()
+              const fieldName = issue.path[0].toString();
               if (!errorMap[fieldName]) {
-                errorMap[fieldName] = issue.message
+                errorMap[fieldName] = issue.message;
               }
             }
-          })
+          });
         }
 
         // For projet-pac step, add manual validation for conditional fields
         if (step === "projet-pac") {
-          const typePac = formData.type_pac
-          const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau"
+          const typePac = formData.type_pac;
+          const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau";
 
           if (isWaterBased) {
             if (formData.temperature_depart === undefined) {
-              errorMap.temperature_depart = "La température de départ est requise pour les PAC hydrauliques"
+              errorMap.temperature_depart =
+                "La température de départ est requise pour les PAC hydrauliques";
             }
             if (formData.emetteurs === undefined) {
-              errorMap.emetteurs = "Le type d'émetteurs est requis pour les PAC hydrauliques"
+              errorMap.emetteurs =
+                "Le type d'émetteurs est requis pour les PAC hydrauliques";
             }
           }
         }
 
         // If there are any errors (from Zod or manual), show them
         if (Object.keys(errorMap).length > 0) {
-          setErrors(errorMap)
-          setIsSubmitting(false)
-          return
+          setErrors(errorMap);
+          setIsSubmitting(false);
+          return;
         }
 
-        validatedData = result.data
+        validatedData = result.data;
       }
 
       // Call the appropriate Server Action based on current step
       switch (step) {
         case "informations":
-          await saveInformationsData(projectId, validatedData)
-          break
+          await saveInformationsData(projectId, validatedData);
+          break;
         case "logement":
-          await saveHousingData(projectId, validatedData)
-          break
+          await saveHousingData(projectId, validatedData);
+          break;
         case "chauffage-actuel":
-          await saveCurrentHeatingData(projectId, validatedData)
-          break
+          await saveCurrentHeatingData(projectId, validatedData);
+          break;
         case "projet-pac":
-          await saveHeatPumpProjectData(projectId, validatedData)
-          break
+          await saveHeatPumpProjectData(projectId, validatedData);
+          break;
         case "couts":
-          await saveCostsData(projectId, validatedData)
-          break
+          await saveCostsData(projectId, validatedData);
+          break;
         case "aides":
-          await saveFinancialAidData(projectId, validatedData)
-          break
+          await saveFinancialAidData(projectId, validatedData);
+          break;
         case "financement":
-          await saveFinancingData(projectId, validatedData)
-          break
+          await saveFinancingData(projectId, validatedData);
+          break;
         default:
-          throw new Error("Invalid step")
+          throw new Error("Invalid step");
       }
 
       // Update project step to next step (step numbers start at 1)
-      const nextStepNumber = currentStepIndex + 2 // +1 for array index, +1 for next step
-      await updateProjectStep(projectId, nextStepNumber)
+      const nextStepNumber = currentStepIndex + 2; // +1 for array index, +1 for next step
+      await updateProjectStep(projectId, nextStepNumber);
 
       // If this is the last step, calculate and save results before redirecting
-      const isLastStep = currentStepIndex === STEPS.length - 1
+      const isLastStep = currentStepIndex === STEPS.length - 1;
       if (isLastStep) {
-        console.log("📊 Dernière étape validée, calcul et sauvegarde des résultats...")
-        await calculateAndSaveResults(projectId)
+        console.log(
+          "📊 Dernière étape validée, calcul et sauvegarde des résultats..."
+        );
+        await calculateAndSaveResults(projectId);
       }
 
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {
-        const nextStep = STEPS[currentStepIndex + 1]
-        router.push(`/projects/${projectId}/${nextStep.key}`)
+        const nextStep = STEPS[currentStepIndex + 1];
+        router.push(`/projects/${projectId}/${nextStep.key}`);
       } else {
-        router.push(`/projects/${projectId}/results`)
+        router.push(`/projects/${projectId}/results`);
       }
     } catch (error) {
-      console.error("❌ Error submitting form:", error)
-      alert(`Erreur lors de la sauvegarde: ${error instanceof Error ? error.message : "Erreur inconnue"}`)
+      console.error("❌ Error submitting form:", error);
+      alert(
+        `Erreur lors de la sauvegarde: ${error instanceof Error ? error.message : "Erreur inconnue"}`
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const goToPreviousStep = () => {
     if (currentStepIndex > 0) {
-      const previousStep = STEPS[currentStepIndex - 1]
-      router.push(`/projects/${projectId}/${previousStep.key}`)
+      const previousStep = STEPS[currentStepIndex - 1];
+      router.push(`/projects/${projectId}/${previousStep.key}`);
     } else {
-      router.push("/projects")
+      router.push("/projects");
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-8 max-w-4xl">
@@ -557,7 +668,9 @@ export default function WizardStepPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
               <h1 className="text-3xl font-bold">{currentStep.title}</h1>
-              <p className="text-muted-foreground mt-2">{currentStep.description}</p>
+              <p className="text-muted-foreground mt-2">
+                {currentStep.description}
+              </p>
             </div>
             <div className="text-sm text-muted-foreground ml-4 whitespace-nowrap">
               Étape {currentStepIndex + 1} / {STEPS.length}
@@ -606,7 +719,9 @@ export default function WizardStepPage() {
           <div className="w-full bg-secondary rounded-full h-2">
             <div
               className="bg-foreground h-2 rounded-full transition-all"
-              style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
+              style={{
+                width: `${((currentStepIndex + 1) / STEPS.length) * 100}%`,
+              }}
             />
           </div>
         </CardContent>
@@ -626,8 +741,8 @@ export default function WizardStepPage() {
         // All steps now use custom state management without React Hook Form
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            onSubmit({})
+            e.preventDefault();
+            onSubmit({});
           }}
           className="space-y-8"
         >
@@ -698,16 +813,14 @@ export default function WizardStepPage() {
           </Card>
 
           <div className="flex justify-between gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goToPreviousStep}
-            >
+            <Button type="button" variant="outline" onClick={goToPreviousStep}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               {currentStepIndex === 0 ? "Annuler" : "Précédent"}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {currentStepIndex < STEPS.length - 1 ? (
                 <>
                   Suivant
@@ -721,5 +834,5 @@ export default function WizardStepPage() {
         </form>
       )}
     </div>
-  )
+  );
 }

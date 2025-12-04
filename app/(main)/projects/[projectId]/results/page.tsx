@@ -1,6 +1,6 @@
 import { getProject } from "@/lib/actions/projects/getProject"
 import { notFound, redirect } from "next/navigation"
-import { calculatePacConsumptionKwh } from "../calculations/pacConsumption/pacConsumption"
+import { calculatePacConsumptionKwh } from "@/app/(main)/projects/[projectId]/calculations/pacConsumption/pacConsumption"
 import { ResultsHeader } from "./components/ResultsHeader"
 import { CumulativeCostChart } from "./components/CumulativeCostChart"
 import { ConsumptionCard } from "./components/ConsumptionCard"
@@ -12,7 +12,7 @@ import { CheckCircle2, XCircle } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { getProjectResults } from "@/lib/actions/results/getProjectResults"
 import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
-import type { ProjectData } from "../calculations"
+import type { ProjectData } from "@/types/projectData"
 
 interface PageProps {
   params: Promise<{

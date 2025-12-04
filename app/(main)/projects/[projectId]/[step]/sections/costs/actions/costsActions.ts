@@ -1,24 +1,24 @@
-"use server"
+"use server";
 
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { costsSchema, type CostsData } from "./costsSchema"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/costsSchema";
 
 export async function saveCostsData(projectId: string, data: CostsData) {
-  const session = await auth()
+  const session = await auth();
 
   if (!session?.user?.id) {
-    throw new Error("Non autorisé")
+    throw new Error("Non autorisé");
   }
 
-  const validatedData = costsSchema.parse(data)
+  const validatedData = costsSchema.parse(data);
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-  })
+  });
 
   if (!project || project.userId !== session.user.id) {
-    throw new Error("Projet non trouvé")
+    throw new Error("Projet non trouvé");
   }
 
   // Convert undefined values to 0 for Prisma (which doesn't accept undefined for Float fields)
@@ -27,7 +27,7 @@ export async function saveCostsData(projectId: string, data: CostsData) {
     cout_installation: validatedData.cout_installation ?? 0,
     cout_travaux_annexes: validatedData.cout_travaux_annexes ?? 0,
     cout_total: validatedData.cout_total ?? 0,
-  }
+  };
 
   const couts = await prisma.projectCouts.upsert({
     where: { projectId },
@@ -36,14 +36,14 @@ export async function saveCostsData(projectId: string, data: CostsData) {
       projectId,
     },
     update: prismaData,
-  })
+  });
 
   if (project.currentStep === 5) {
     await prisma.project.update({
       where: { id: projectId },
       data: { currentStep: 6 },
-    })
+    });
   }
 
-  return couts
+  return couts;
 }
