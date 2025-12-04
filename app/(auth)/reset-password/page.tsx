@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
-import { verifyResetToken } from "@/lib/actions/passwordReset/verifyResetToken";
-import { resetPassword } from "@/lib/actions/passwordReset/resetPassword";
+import { verifyResetToken } from "@/app/(auth)/reset-password/actions/verifyResetToken";
+import { resetPassword } from "./actions/resetPassword";
 
 type Status = "verifying" | "idle" | "loading" | "success" | "error";
 
@@ -112,7 +112,10 @@ function ResetPasswordContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       {/* Logo and Site Name */}
-      <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+      <Link
+        href="/"
+        className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity"
+      >
         <Image
           src="/logo.png"
           alt="ThermoGain"
@@ -305,7 +308,10 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
-          <Link href="/" className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 mb-12 hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/logo.png"
               alt="ThermoGain"
