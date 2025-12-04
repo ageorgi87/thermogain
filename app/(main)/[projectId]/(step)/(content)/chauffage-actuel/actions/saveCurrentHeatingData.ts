@@ -8,7 +8,7 @@ import {
   type CurrentHeatingData,
 } from "./currentHeatingSchema";
 import { estimateConsumptionByEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateConsumptionByEnergyType";
-import { getCachedEnergyPrice } from "@/app/(main)/[projectId]/lib/energy/getCachedEnergyPrice";
+import { getEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyPriceFromDB";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 import { adjustConsumptionForEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/adjustConsumptionForEfficiency";
 
@@ -84,25 +84,25 @@ export const saveCurrentHeatingData = async ({
 
     switch (validatedData.type_chauffage) {
       case "Fioul":
-        energyPrice = await getCachedEnergyPrice("fioul");
+        energyPrice = await getEnergyPriceFromDB("fioul");
         validatedData.conso_fioul_litres = estimation.value;
         validatedData.prix_fioul_litre = energyPrice;
         break;
       case "Gaz":
-        energyPrice = await getCachedEnergyPrice("gaz");
+        energyPrice = await getEnergyPriceFromDB("gaz");
         validatedData.conso_gaz_kwh = estimation.value;
         validatedData.prix_gaz_kwh = energyPrice;
         // Assigner l'abonnement gaz par défaut (moyenne nationale)
         validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
         break;
       case "GPL":
-        energyPrice = await getCachedEnergyPrice("gpl");
+        energyPrice = await getEnergyPriceFromDB("gpl");
         validatedData.conso_gpl_kg = estimation.value;
         validatedData.prix_gpl_kg = energyPrice;
         break;
       case "Pellets":
       case "Bois":
-        energyPrice = await getCachedEnergyPrice("bois");
+        energyPrice = await getEnergyPriceFromDB("bois");
         if (validatedData.type_chauffage === "Pellets") {
           validatedData.conso_pellets_kg = estimation.value;
           validatedData.prix_pellets_kg = energyPrice;
@@ -112,14 +112,14 @@ export const saveCurrentHeatingData = async ({
         }
         break;
       case "Electrique":
-        energyPrice = await getCachedEnergyPrice("electricite");
+        energyPrice = await getEnergyPriceFromDB("electricite");
         validatedData.conso_elec_kwh = estimation.value;
         validatedData.prix_elec_kwh = energyPrice;
         break;
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        energyPrice = await getCachedEnergyPrice("electricite");
+        energyPrice = await getEnergyPriceFromDB("electricite");
         validatedData.conso_pac_kwh = estimation.value;
         validatedData.prix_elec_kwh = energyPrice;
         // Set a default COP for existing PACs (estimated average)

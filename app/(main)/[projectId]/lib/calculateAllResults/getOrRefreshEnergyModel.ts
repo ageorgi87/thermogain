@@ -2,6 +2,50 @@ import { prisma } from "@/lib/prisma"
 import type { EnergyEvolutionModel } from "@/types/energy"
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/energy/didoConstants";
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/lib/calculateAllResults/analyzeEnergyPriceHistory";
+import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows";
+
+/**
+ * Calcule le prix actuel moyen d'une énergie (moyenne des 12 derniers mois)
+ * depuis l'API DIDO
+ *
+ * @param rid Identifiant du datafile DIDO
+ * @param priceColumnName Nom de la colonne contenant le prix
+ * @param energyType Type d'énergie
+ * @returns Prix moyen en €/kWh
+ * @throws Error si les données ne sont pas disponibles
+ */
+const calculateCurrentPrice = async (
+  rid: string,
+  priceColumnName: string,
+  energyType: string
+): Promise<number> => {
+  // Récupérer les 12 derniers mois
+  const rows = await getDataFileRows(rid, 12);
+
+  if (rows.length === 0) {
+    throw new Error(`Aucune donnée de prix disponible pour ${energyType} depuis l'API DIDO`);
+  }
+
+  // Extraire les prix et calculer la moyenne
+  const prices: number[] = rows
+    .map((row: any) => parseFloat(row[priceColumnName]))
+    .filter((price: number) => !isNaN(price) && price > 0);
+
+  if (prices.length === 0) {
+    throw new Error(`Aucun prix valide trouvé pour ${energyType} dans les données DIDO`);
+  }
+
+  // Calculer la moyenne des prix des 12 derniers mois
+  const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+
+  // Les prix dans l'API sont en €/100kWh, donc diviser par 100 pour avoir €/kWh
+  const pricePerKwh = averagePrice / 100;
+
+  console.log(`💰 Prix moyen ${energyType}: ${pricePerKwh.toFixed(4)} €/kWh`);
+
+  // Arrondir à 4 décimales
+  return Math.round(pricePerKwh * 10000) / 10000;
+};
 
 /**
  * Génère le modèle Mean Reversion pour un type d'énergie donné
@@ -48,11 +92,13 @@ const getEnergyMeanReversionModel = async (
   }
 
   const analysis = await analyzeEnergyPriceHistory(rid, priceColumnName);
+  const currentPrice = await calculateCurrentPrice(rid, priceColumnName, energyType);
 
   return {
     tauxRecent: analysis.tauxRecent,
     tauxEquilibre: analysis.tauxEquilibre,
     anneesTransition: 5,
+    currentPrice,
   };
 };
 
@@ -104,16 +150,17 @@ export const getOrRefreshEnergyModel = async (
       )
     }
 
-    // 3. Appeler l'API DIDO pour calculer le nouveau modèle
+    // 3. Appeler l'API DIDO pour calculer le nouveau modèle ET le prix actuel
     const freshModel = await getEnergyMeanReversionModel(energyType)
 
-    // 4. Sauvegarder en DB
+    // 4. Sauvegarder en DB (modèle + prix actuel)
     await prisma.energyPriceCache.upsert({
       where: { energyType },
       update: {
         tauxRecent: freshModel.tauxRecent,
         tauxEquilibre: freshModel.tauxEquilibre,
         anneesTransition: freshModel.anneesTransition || 5,
+        currentPrice: freshModel.currentPrice || 0,
         lastUpdated: new Date()
       },
       create: {
@@ -121,7 +168,7 @@ export const getOrRefreshEnergyModel = async (
         tauxRecent: freshModel.tauxRecent,
         tauxEquilibre: freshModel.tauxEquilibre,
         anneesTransition: freshModel.anneesTransition || 5,
-        currentPrice: 0, // Legacy field
+        currentPrice: freshModel.currentPrice || 0,
         lastUpdated: new Date()
       }
     })

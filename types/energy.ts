@@ -14,4 +14,5 @@ export interface EnergyEvolutionModel {
   tauxRecent: number        // Taux actuel influencé par les crises récentes (ex: 8.7%)
   tauxEquilibre: number     // Taux d'équilibre long terme (ex: 3.5%)
   anneesTransition?: number // Durée de transition (défaut: 5 ans)
+  currentPrice?: number     // Prix actuel moyen en €/kWh (moyenne 12 derniers mois)
 }
