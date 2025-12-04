@@ -20,7 +20,7 @@ interface StepWrapperProps {
 
 /**
  * Composant wrapper pour les étapes du wizard
- * Gère l'UI interactive : header, progression, explication, navigation
+ * Gère l'UI interactive : container, header, progression, explication, navigation
  */
 export const StepWrapper = ({
   title,
@@ -37,7 +37,7 @@ export const StepWrapper = ({
   const [showExplanation, setShowExplanation] = useState(false)
 
   return (
-    <>
+    <div className="container mx-auto py-8 max-w-4xl">
       {/* Header Card */}
       <Card className="shadow-2xl border-2 mb-8">
         <CardContent className="pt-6">
@@ -132,6 +132,6 @@ export const StepWrapper = ({
           </Button>
         </div>
       </form>
-    </>
+    </div>
   )
 }
