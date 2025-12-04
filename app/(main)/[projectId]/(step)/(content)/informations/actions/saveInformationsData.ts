@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { informationsSchema, type InformationsData } from "./informationsSchema"
-import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/refreshEnergyPricesIfNeeded"
+import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/refreshEnergyPricesIfNeeded"
 
 interface SaveInformationsDataParams {
   projectId: string
