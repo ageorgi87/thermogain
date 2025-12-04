@@ -1,9 +1,11 @@
+"use client"
+
 import { ReactNode, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Info, Loader2 } from "lucide-react"
 
-interface StepLayoutProps {
+interface StepWrapperProps {
   title: string
   description: string
   stepNumber: number
@@ -17,10 +19,10 @@ interface StepLayoutProps {
 }
 
 /**
- * Layout partagé pour toutes les étapes du wizard
- * Affiche le header, la barre de progression, l'explication, et les boutons de navigation
+ * Composant wrapper pour les étapes du wizard
+ * Gère l'UI interactive : header, progression, explication, navigation
  */
-export const StepLayout = ({
+export const StepWrapper = ({
   title,
   description,
   stepNumber,
@@ -31,11 +33,11 @@ export const StepLayout = ({
   onPrevious,
   onNext,
   children,
-}: StepLayoutProps) => {
+}: StepWrapperProps) => {
   const [showExplanation, setShowExplanation] = useState(false)
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
+    <>
       {/* Header Card */}
       <Card className="shadow-2xl border-2 mb-8">
         <CardContent className="pt-6">
@@ -130,6 +132,6 @@ export const StepLayout = ({
           </Button>
         </div>
       </form>
-    </div>
+    </>
   )
 }
