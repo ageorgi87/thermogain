@@ -1,45 +1,37 @@
-import { getProject } from "@/app/(main)/[projectId]/results/actions/getProject"
-import { notFound, redirect } from "next/navigation"
-import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/calculations/pacConsumption/pacConsumption"
-import { ResultsHeader } from "./components/ResultsHeader"
-import { CumulativeCostChart } from "./components/CumulativeCostChart"
-import { ConsumptionCard } from "./components/ConsumptionCard"
-import { FinancialSummaryCard } from "./components/FinancialSummaryCard"
-import { ProfitabilityCard } from "./components/ProfitabilityCard"
-import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle2, XCircle } from "lucide-react"
-import { prisma } from "@/lib/prisma"
-import { getProjectResults } from "@/app/(main)/[projectId]/results/actions/getProjectResults"
-import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
-import type { ProjectData } from "@/types/projectData"
+import { getProject } from "@/app/(main)/[projectId]/results/actions/getProject";
+import { notFound, redirect } from "next/navigation";
+import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/calculations/pacConsumption/pacConsumption";
+import { ResultsHeader } from "./components/ResultsHeader";
+import { CumulativeCostChart } from "./components/CumulativeCostChart";
+import { ConsumptionCard } from "./components/ConsumptionCard";
+import { FinancialSummaryCard } from "./components/FinancialSummaryCard";
+import { ProfitabilityCard } from "./components/ProfitabilityCard";
+import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { getProjectResults } from "@/app/(main)/[projectId]/results/actions/getProjectResults";
+import type { ProjectData } from "@/types/projectData";
+import { formatPaybackPeriod } from "@/lib/formatPaybackPeriod";
 
 interface PageProps {
   params: Promise<{
-    projectId: string
-  }>
-}
-
-// Helper function to format payback period
-function formatPaybackPeriod(period: number | null): string {
-  if (!period) return ""
-
-  const years = Math.floor(period)
-  const months = Math.round((period - years) * 12)
-
-  if (months === 0) {
-    return `${years} an${years > 1 ? 's' : ''}`
-  }
-
-  return `${years} an${years > 1 ? 's' : ''} et ${months} mois`
+    projectId: string;
+  }>;
 }
 
 export default async function ResultsPage({ params }: PageProps) {
-  const { projectId } = await params
-  const project = await getProject(projectId)
+  const { projectId } = await params;
+  const project = await getProject(projectId);
 
   if (!project) {
-    notFound()
+    notFound();
   }
 
   // Check if all required data is present
@@ -50,33 +42,29 @@ export default async function ResultsPage({ params }: PageProps) {
     !project.couts ||
     !project.aides
   ) {
-    redirect(`/projects/${projectId}/logement`)
+    redirect(`/projects/${projectId}/logement`);
   }
 
   // Mark project as completed when accessing results page
   if (!project.completed) {
     await prisma.project.update({
       where: { id: projectId },
-      data: { completed: true }
-    })
+      data: { completed: true },
+    });
   }
 
   // Get results from database (calculated when last step was completed)
-  let results = await getProjectResults(projectId)
+  const results = await getProjectResults(projectId);
 
-  // If no results in DB (e.g., old project or direct access to results page), calculate and save them
+  // Results should always exist at this point (calculated during form completion)
   if (!results) {
-    console.log("⚠️ Aucun résultat en DB, calcul et sauvegarde...")
-    await calculateAndSaveResults(projectId)
-    results = await getProjectResults(projectId)
-
-    if (!results) {
-      throw new Error("Impossible de calculer les résultats du projet")
-    }
+    throw new Error(
+      "Les résultats n'ont pas été calculés. Veuillez compléter toutes les étapes du formulaire."
+    );
   }
 
   // Prepare minimal projectData only for functions that still need it (like calculatePacConsumptionKwh)
-  const prixElecKwh = project.projetPac.prix_elec_kwh || 0
+  const prixElecKwh = project.projetPac.prix_elec_kwh || 0;
   const projectData: ProjectData = {
     type_chauffage: project.chauffageActuel.type_chauffage,
     conso_fioul_litres: project.chauffageActuel.conso_fioul_litres || undefined,
@@ -93,7 +81,8 @@ export default async function ResultsPage({ params }: PageProps) {
     prix_elec_kwh: prixElecKwh,
     cop_actuel: project.chauffageActuel.cop_actuel || undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
-    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle || undefined,
+    puissance_souscrite_actuelle:
+      project.projetPac.puissance_souscrite_actuelle || undefined,
     abonnement_gaz: project.chauffageActuel.abonnement_gaz || undefined,
     entretien_annuel: project.chauffageActuel.entretien_annuel || undefined,
     type_pac: project.projetPac.type_pac,
@@ -102,7 +91,8 @@ export default async function ResultsPage({ params }: PageProps) {
     temperature_depart: project.projetPac.temperature_depart || 45,
     emetteurs: project.projetPac.emetteurs || "Radiateurs basse température",
     duree_vie_pac: project.projetPac.duree_vie_pac,
-    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac || undefined,
+    puissance_souscrite_pac:
+      project.projetPac.puissance_souscrite_pac || undefined,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel || undefined,
     prix_elec_pac: project.projetPac.prix_elec_pac || undefined,
     code_postal: project.logement.code_postal || undefined,
@@ -113,22 +103,30 @@ export default async function ResultsPage({ params }: PageProps) {
     taux_interet: project.financement?.taux_interet || undefined,
     duree_credit_mois: project.financement?.duree_credit_mois || undefined,
     apport_personnel: project.financement?.apport_personnel || undefined,
-  }
+  };
 
   // Calculate PAC consumption for ConsumptionCard (helper function, not a full calculation)
-  const pacConsumptionKwh = calculatePacConsumptionKwh(projectData)
+  const pacConsumptionKwh = calculatePacConsumptionKwh(projectData);
 
   return (
     <div className="container mx-auto py-8 max-w-7xl space-y-8">
       <ResultsHeader
         projectId={project.id}
         userId={project.userId}
-        userEmail={project.user.email || ''}
-        hasRecipientEmails={project.recipientEmails && project.recipientEmails.length > 0}
+        userEmail={project.user.email || ""}
+        hasRecipientEmails={
+          project.recipientEmails && project.recipientEmails.length > 0
+        }
       />
 
       {/* Summary Card */}
-      <Card className={results.netBenefitLifetime > 0 ? "border-brand-teal-200 bg-brand-teal-50 dark:bg-brand-teal-950" : "border-red-200 bg-red-50 dark:bg-red-950"}>
+      <Card
+        className={
+          results.netBenefitLifetime > 0
+            ? "border-brand-teal-200 bg-brand-teal-50 dark:bg-brand-teal-950"
+            : "border-red-200 bg-red-50 dark:bg-red-950"
+        }
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             {results.netBenefitLifetime > 0 ? (
@@ -136,7 +134,9 @@ export default async function ResultsPage({ params }: PageProps) {
             ) : (
               <XCircle className="h-5 w-5 text-red-600" />
             )}
-            {results.netBenefitLifetime > 0 ? "Projet rentable" : "Projet non rentable"}
+            {results.netBenefitLifetime > 0
+              ? "Projet rentable"
+              : "Projet non rentable"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -146,24 +146,33 @@ export default async function ResultsPage({ params }: PageProps) {
               {results.paybackPeriod && results.paybackYear ? (
                 <p className="text-lg text-foreground">
                   Votre investissement sera rentabilisé en{" "}
-                  <strong className="text-brand-teal-600 font-semibold">{formatPaybackPeriod(results.paybackPeriod)}</strong>
-                  {" "}(en {results.paybackYear}), pour un bénéfice net de{" "}
-                  <strong className="text-brand-teal-600 font-semibold">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
-                  {" "}sur {projectData.duree_vie_pac} ans.
+                  <strong className="text-brand-teal-600 font-semibold">
+                    {formatPaybackPeriod(results.paybackPeriod)}
+                  </strong>{" "}
+                  (en {results.paybackYear}), pour un bénéfice net de{" "}
+                  <strong className="text-brand-teal-600 font-semibold">
+                    {results.netBenefitLifetime.toLocaleString("fr-FR")} €
+                  </strong>{" "}
+                  sur {projectData.duree_vie_pac} ans.
                 </p>
               ) : (
                 <p className="text-lg text-foreground">
                   Ce projet génère un bénéfice net de{" "}
-                  <strong className="text-brand-teal-600 font-semibold">{results.netBenefitLifetime.toLocaleString("fr-FR")} €</strong>
-                  {" "}sur {projectData.duree_vie_pac} ans.
+                  <strong className="text-brand-teal-600 font-semibold">
+                    {results.netBenefitLifetime.toLocaleString("fr-FR")} €
+                  </strong>{" "}
+                  sur {projectData.duree_vie_pac} ans.
                 </p>
               )}
             </>
           ) : (
             <p className="text-lg text-foreground">
               Ce projet génère un déficit de{" "}
-              <strong className="text-red-600 font-semibold">{Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €</strong>
-              {" "}sur une durée de {projectData.duree_vie_pac} ans. Les économies générées ne couvrent pas l&apos;investissement.
+              <strong className="text-red-600 font-semibold">
+                {Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €
+              </strong>{" "}
+              sur une durée de {projectData.duree_vie_pac} ans. Les économies
+              générées ne couvrent pas l&apos;investissement.
             </p>
           )}
         </CardContent>
@@ -232,5 +241,5 @@ export default async function ResultsPage({ params }: PageProps) {
         />
       </div>
     </div>
-  )
+  );
 }
