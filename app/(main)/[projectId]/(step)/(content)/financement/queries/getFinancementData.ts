@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import type { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/financingSchema"
+import type { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
 
 interface GetFinancementDataParams {
   projectId: string

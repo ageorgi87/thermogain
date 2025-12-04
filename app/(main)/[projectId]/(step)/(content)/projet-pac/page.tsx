@@ -10,8 +10,7 @@ import {
 } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/heatPumpProjectSchema";
 import { getProjetPacData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/queries/getProjetPacData";
 import { getDefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getDefaultEnergyPrices";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function ProjetPacStepPage({
@@ -20,6 +19,8 @@ export default function ProjetPacStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("projet-pac")!;
 
   const [defaultPrices, setDefaultPrices] = useState({
     fioul: 0,
@@ -96,7 +97,7 @@ export default function ProjetPacStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

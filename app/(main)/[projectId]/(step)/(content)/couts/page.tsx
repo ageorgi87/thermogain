@@ -9,8 +9,7 @@ import {
   type CostsData,
 } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema";
 import { getCoutsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/queries/getCoutsData";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/couts/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function CoutsStepPage({
@@ -19,6 +18,8 @@ export default function CoutsStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("couts")!;
 
   const {
     formData,
@@ -80,7 +81,7 @@ export default function CoutsStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
-import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { notFound } from "next/navigation"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { WIZARD_STEPS, getTotalSteps } from "@/config/wizardStepsData";
+import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep";
+import { notFound } from "next/navigation";
 
 interface UseStepFormParams<T extends z.ZodType> {
-  projectId: string
-  stepKey: string
-  schema: T
-  loadData: (params: { projectId: string }) => Promise<any>
-  saveData: (params: { projectId: string; data: z.infer<T> }) => Promise<void>
+  projectId: string;
+  stepKey: string;
+  schema: T;
+  loadData: (params: { projectId: string }) => Promise<any>;
+  saveData: (params: { projectId: string; data: z.infer<T> }) => Promise<void>;
 }
 
 /**
@@ -26,87 +26,87 @@ export const useStepForm = <T extends z.ZodType>({
   loadData,
   saveData,
 }: UseStepFormParams<T>) => {
-  const router = useRouter()
-  const [formData, setFormData] = useState<Partial<z.infer<T>>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const [formData, setFormData] = useState<Partial<z.infer<T>>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const stepIndex = WIZARD_STEPS.findIndex((s) => s.key === stepKey)
-  const isLastStep = stepIndex === WIZARD_STEPS.length - 1
+  const stepIndex = WIZARD_STEPS.findIndex((s) => s.key === stepKey);
+  const isLastStep = stepIndex === getTotalSteps() - 1;
 
   // Charger les données du projet
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const data = await loadData({ projectId })
-        setFormData(data || {})
+        const data = await loadData({ projectId });
+        setFormData(data || {});
       } catch (error) {
-        console.error("❌ Erreur lors du chargement:", error)
-        notFound()
+        console.error("❌ Erreur lors du chargement:", error);
+        notFound();
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    loadProject()
-  }, [projectId])
+    loadProject();
+  }, [projectId]);
 
   // Gérer le changement d'un champ
   const handleChange = (name: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => {
-      const newErrors = { ...prev }
-      delete newErrors[name]
-      return newErrors
-    })
-  }
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
+  };
 
   // Soumettre le formulaire
   const handleSubmit = async () => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const result = schema.safeParse(formData)
+      const result = schema.safeParse(formData);
 
       if (!result.success) {
-        const errorMap: Record<string, string> = {}
+        const errorMap: Record<string, string> = {};
         result.error.issues.forEach((issue) => {
           if (issue.path.length > 0) {
-            errorMap[issue.path[0].toString()] = issue.message
+            errorMap[issue.path[0].toString()] = issue.message;
           }
-        })
-        setErrors(errorMap)
-        return
+        });
+        setErrors(errorMap);
+        return;
       }
 
-      await saveData({ projectId, data: result.data })
-      await updateProjectStep(projectId, stepIndex + 2)
+      await saveData({ projectId, data: result.data });
+      await updateProjectStep(projectId, stepIndex + 2);
 
-      if (stepIndex < WIZARD_STEPS.length - 1) {
-        const nextStep = WIZARD_STEPS[stepIndex + 1]
-        router.push(`/${projectId}/${nextStep.key}`)
+      if (stepIndex < getTotalSteps() - 1) {
+        const nextStep = WIZARD_STEPS[stepIndex + 1];
+        router.push(`/${projectId}/${nextStep.key}`);
       } else {
-        router.push(`/${projectId}/results`)
+        router.push(`/${projectId}/results`);
       }
     } catch (error) {
-      console.error("❌ Erreur lors de la sauvegarde:", error)
+      console.error("❌ Erreur lors de la sauvegarde:", error);
       alert(
         `Erreur lors de la sauvegarde: ${error instanceof Error ? error.message : "Erreur inconnue"}`
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Naviguer vers l'étape précédente
   const handlePrevious = () => {
     if (stepIndex > 0) {
-      const previousStep = WIZARD_STEPS[stepIndex - 1]
-      router.push(`/${projectId}/${previousStep.key}`)
+      const previousStep = WIZARD_STEPS[stepIndex - 1];
+      router.push(`/${projectId}/${previousStep.key}`);
     } else {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  }
+  };
 
   return {
     formData,
@@ -118,5 +118,5 @@ export const useStepForm = <T extends z.ZodType>({
     handleChange,
     handleSubmit,
     handlePrevious,
-  }
-}
+  };
+};

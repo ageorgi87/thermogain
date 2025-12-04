@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CalculationResults } from "@/types/calculationResults";
 import type { Prisma } from "@prisma/client";
+import { saveProjectResultsParamsSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveProjectResults/saveProjectResultsSchema";
 
 /**
  * Sauvegarde les résultats calculés dans la base de données
@@ -15,6 +16,22 @@ export const saveProjectResults = async (
   projectId: string,
   results: CalculationResults
 ): Promise<void> => {
+  // Validation des paramètres
+  const validation = saveProjectResultsParamsSchema.safeParse({
+    projectId,
+    results,
+  });
+
+  if (!validation.success) {
+    console.error(
+      "[saveProjectResults] Validation error:",
+      validation.error.issues
+    );
+    throw new Error(
+      `Données de résultats invalides: ${validation.error.issues.map((e) => e.message).join(", ")}`
+    );
+  }
+
   try {
     await prisma.projectResults.upsert({
       where: { projectId },

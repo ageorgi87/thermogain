@@ -9,8 +9,7 @@ import {
   type HousingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
 import { getLogementData } from "@/app/(main)/[projectId]/(step)/(content)/logement/queries/getLogementData";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/logement/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function LogementStepPage({
@@ -19,6 +18,8 @@ export default function LogementStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("logement")!;
 
   const {
     formData,
@@ -56,7 +57,7 @@ export default function LogementStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -20,111 +26,107 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
-import { getProjects } from "@/app/(main)/dashboard/actions/getProjects"
-import { deleteProject } from "@/app/(main)/dashboard/actions/deleteProject"
-import { createProject } from "@/app/(main)/dashboard/actions/createProject"
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
-import { getTotalSteps } from "@/lib/wizard/getTotalSteps"
-import { getStepNumber } from "@/app/(main)/dashboard/lib/getStepNumber"
-import { getProjectStatus } from "@/app/(main)/dashboard/lib/getProjectStatus"
-import { getStepKey } from "@/app/(main)/dashboard/lib/getStepKey"
+} from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react";
+import { getProjects } from "@/app/(main)/dashboard/actions/getProjects";
+import { deleteProject } from "@/app/(main)/dashboard/actions/deleteProject";
+import { createProject } from "@/app/(main)/dashboard/actions/createProject";
+import {
+  WIZARD_STEPS,
+  getTotalSteps,
+  getStepKey,
+  getStepNumber,
+} from "@/config/wizardStepsData";
+import { getProjectStatus } from "@/app/(main)/dashboard/lib/getProjectStatus";
 
 type Project = {
-  id: string
-  name: string
-  currentStep: number
-  completed: boolean
-  createdAt: Date
-  updatedAt: Date
-}
+  id: string;
+  name: string;
+  currentStep: number;
+  completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export default function ProjectsPage() {
-  const router = useRouter()
-  const [projects, setProjects] = useState<Project[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
+  const router = useRouter();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    fetchProjects()
-  }, [])
+    fetchProjects();
+  }, []);
 
   const fetchProjects = async () => {
     try {
-      const data = await getProjects()
-      setProjects(data)
+      const data = await getProjects();
+      setProjects(data);
     } catch (error) {
-      console.error("Failed to fetch projects:", error)
+      console.error("Failed to fetch projects:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCreateProject = async () => {
-    setIsCreating(true)
+    setIsCreating(true);
     try {
-      const project = await createProject({ name: "" })
-      const firstStep = WIZARD_STEPS[0].key
-      router.push(`/${project.id}/${firstStep}`)
+      const project = await createProject({ name: "" });
+      const firstStep = WIZARD_STEPS[0].key;
+      router.push(`/${project.id}/${firstStep}`);
     } catch (error) {
-      console.error("Failed to create project:", error)
-      setIsCreating(false)
+      console.error("Failed to create project:", error);
+      setIsCreating(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await deleteProject(deleteId)
-      setProjects(projects.filter((p) => p.id !== deleteId))
-      setDeleteId(null)
+      await deleteProject(deleteId);
+      setProjects(projects.filter((p) => p.id !== deleteId));
+      setDeleteId(null);
     } catch (error) {
-      console.error("Failed to delete project:", error)
+      console.error("Failed to delete project:", error);
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const getProjectEditUrl = (project: Project) => {
     // Si toutes les étapes sont complétées, aller à la première étape
     if (project.completed) {
-      return `/${project.id}/${WIZARD_STEPS[0].key}`
+      return `/${project.id}/${WIZARD_STEPS[0].key}`;
     }
 
     // Sinon, aller à l'étape courante (currentStep est 1-indexed)
-    const stepKey = getStepKey(project.currentStep) || WIZARD_STEPS[0].key
-    return `/${project.id}/${stepKey}`
-  }
+    const stepKey = getStepKey(project.currentStep) || WIZARD_STEPS[0].key;
+    return `/${project.id}/${stepKey}`;
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-foreground">
-            Vos Projets
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground">Vos Projets</h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Gérez vos études de rentabilité pompes à chaleur
           </p>
         </div>
-        <Button
-          onClick={handleCreateProject}
-          size="lg"
-          disabled={isCreating}
-        >
+        <Button onClick={handleCreateProject} size="lg" disabled={isCreating}>
           {isCreating ? (
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
           ) : (
@@ -140,9 +142,12 @@ export default function ProjectsPage() {
             <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-950 rounded-full">
               <Calculator className="h-12 w-12 text-orange-600 dark:text-orange-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Aucun projet pour le moment</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              Aucun projet pour le moment
+            </h3>
             <p className="text-muted-foreground mb-6 text-center max-w-md">
-              Créez votre premier projet pour commencer à évaluer la rentabilité des pompes à chaleur pour vos clients
+              Créez votre premier projet pour commencer à évaluer la rentabilité
+              des pompes à chaleur pour vos clients
             </p>
             <Button
               onClick={handleCreateProject}
@@ -176,7 +181,8 @@ export default function ProjectsPage() {
                   <TableCell className="font-bold">{project.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
-                      Étape {getStepNumber(project.currentStep)}/{getTotalSteps()}
+                      Étape {getStepNumber(project.currentStep)}/
+                      {getTotalSteps()}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -236,7 +242,8 @@ export default function ProjectsPage() {
           <DialogHeader>
             <DialogTitle>Supprimer le projet</DialogTitle>
             <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.
+              Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est
+              irréversible.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -259,5 +266,5 @@ export default function ProjectsPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

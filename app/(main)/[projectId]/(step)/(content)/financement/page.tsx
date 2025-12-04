@@ -3,12 +3,11 @@
 import { use, useState } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
 import { FinancementFields } from "@/app/(main)/[projectId]/(step)/(content)/financement/components/FinancementFields";
-import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData";
-import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/financingSchema";
+import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingData";
+import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
 import { getFinancementData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancementData";
 import { calculateAndSaveResults } from "./lib/calculateAndSaveResults";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/financement/config/stepInfo";
+import { WIZARD_STEPS, getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function FinancementStepPage({
@@ -20,6 +19,8 @@ export default function FinancementStepPage({
 
   const [totalCouts, setTotalCouts] = useState(0);
   const [totalAides, setTotalAides] = useState(0);
+
+  const STEP_INFO = getStepInfo("financement")!;
 
   const {
     formData,
@@ -48,7 +49,7 @@ export default function FinancementStepPage({
 
       // Special handling for last step: trigger results calculation
       const stepIdx = WIZARD_STEPS.findIndex((s) => s.key === STEP_INFO.key);
-      const isLast = stepIdx === WIZARD_STEPS.length - 1;
+      const isLast = stepIdx === getTotalSteps() - 1;
       if (isLast) {
         await calculateAndSaveResults(projectId);
       }
@@ -68,7 +69,7 @@ export default function FinancementStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

@@ -9,7 +9,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 import { FormField } from "@/components/form/FormField"
-import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/financingSchema"
+import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
 import { useEffect } from "react"
 import { calculateMensualite } from "@/lib/loanCalculations"
 import { Separator } from "@/components/ui/separator"

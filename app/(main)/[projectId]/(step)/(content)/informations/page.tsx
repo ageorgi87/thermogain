@@ -9,8 +9,7 @@ import {
   type InformationsData,
 } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/informationsSchema";
 import { getInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getInformationsData";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function InformationsStepPage({
@@ -19,6 +18,8 @@ export default function InformationsStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("informations")!;
 
   const {
     formData,
@@ -59,7 +60,7 @@ export default function InformationsStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

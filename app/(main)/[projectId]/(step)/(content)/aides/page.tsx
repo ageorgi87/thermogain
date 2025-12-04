@@ -9,8 +9,7 @@ import {
   type FinancialAidData,
 } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/financialAidSchema";
 import { getAidesData } from "@/app/(main)/[projectId]/(step)/(content)/aides/queries/getAidesData";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/aides/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function AidesStepPage({
@@ -19,6 +18,8 @@ export default function AidesStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("aides")!;
 
   const [typePac, setTypePac] = useState<string | undefined>();
   const [anneeConstruction, setAnneeConstruction] = useState<
@@ -73,7 +74,7 @@ export default function AidesStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}

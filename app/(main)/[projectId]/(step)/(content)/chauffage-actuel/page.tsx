@@ -11,8 +11,7 @@ import {
   type CurrentHeatingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema";
 import { getChauffageActuelData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/queries/getChauffageActuelData";
-import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
-import { STEP_INFO } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/config/stepInfo";
+import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function ChauffageActuelStepPage({
@@ -21,6 +20,8 @@ export default function ChauffageActuelStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+
+  const STEP_INFO = getStepInfo("chauffage-actuel")!;
 
   const [defaultPrices, setDefaultPrices] = useState<DefaultEnergyPrices>({
     fioul: 0,
@@ -94,7 +95,7 @@ export default function ChauffageActuelStepPage({
       title={STEP_INFO.title}
       description={STEP_INFO.description}
       stepNumber={stepIndex + 1}
-      totalSteps={WIZARD_STEPS.length}
+      totalSteps={getTotalSteps()}
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}
