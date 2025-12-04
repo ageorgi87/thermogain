@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Footer } from "@/components/footer"
+import { Footer } from "@/components/Footer"
 
 export const metadata: Metadata = {
   title: "ThermoGain - Études de Rentabilité Pompe à Chaleur",
@@ -16,7 +16,7 @@ export default function AuthLayout({
       <main className="flex-1">
         {children}
       </main>
-      <Footer />
+      <Footer alwaysShow />
     </div>
   )
 }

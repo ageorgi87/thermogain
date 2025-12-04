@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
-import { ConditionalFooter } from "@/components/ConditionalFooter";
+import { Footer } from "@/components/Footer";
 import { BackToProjectsButton } from "@/components/BackToProjectsButton";
 import type { Metadata } from "next";
 
@@ -56,7 +56,7 @@ export default async function MainLayout({
         </div>
       </nav>
       <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
-      <ConditionalFooter />
+      <Footer />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { ConditionalFooter } from "@/components/ConditionalFooter"
+import { Footer } from "@/components/Footer"
 import { UserMenu } from "@/components/UserMenu"
 import { auth } from "@/lib/auth"
 import { BackToProjectsButton } from "@/components/BackToProjectsButton"
@@ -65,7 +65,7 @@ export default async function FooterPagesLayout({
             {children}
           </div>
         </div>
-        <ConditionalFooter />
+        <Footer />
       </div>
     </>
   )

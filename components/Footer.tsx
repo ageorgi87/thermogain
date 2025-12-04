@@ -1,8 +1,33 @@
+"use client"
+
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Separator } from "@/components/ui/separator"
 
-export function Footer() {
+interface FooterProps {
+  /**
+   * Si true, affiche toujours le footer sans vérification de route
+   * Utile pour les layouts où le footer doit toujours être visible (ex: auth)
+   */
+  alwaysShow?: boolean
+}
+
+export function Footer({ alwaysShow = false }: FooterProps) {
+  const pathname = usePathname()
   const currentYear = new Date().getFullYear()
+
+  // Si alwaysShow est false, vérifier si on doit masquer le footer
+  if (!alwaysShow) {
+    // Hide footer on form pages and results page
+    // Form pages: /projects/[id]/logement, /projects/[id]/chauffage-actuel, etc.
+    // Results page: /projects/[id]/results
+    const isFormPage = /\/projects\/[^/]+\/(logement|chauffage-actuel|projet-pac|couts|aides|evolutions|financement)/.test(pathname)
+    const isResultsPage = pathname.includes("/results")
+
+    if (isFormPage || isResultsPage) {
+      return null
+    }
+  }
 
   return (
     <footer className="w-full border-t bg-background">
