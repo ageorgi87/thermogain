@@ -2,7 +2,7 @@
 
 import { getProjectData } from "@/lib/actions/projects/getProjectData";
 import { calculateAllResults } from "@/app/(main)/[projectId]/calculations/calculateAllResults";
-import { saveProjectResults } from "./saveProjectResults";
+import { saveProjectResults } from "@/lib/actions/results/saveProjectResults";
 
 /**
  * Calcule tous les résultats pour un projet et les sauvegarde en DB
