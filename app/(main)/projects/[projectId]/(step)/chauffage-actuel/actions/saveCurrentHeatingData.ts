@@ -9,12 +9,11 @@ import {
 import { estimateConsumptionByEnergyType } from "@/lib/estimation/estimateConsumptionByEnergyType"
 import { getCachedEnergyPrice } from "@/lib/energy/priceCache/getCachedEnergyPrice"
 import { GAS_SUBSCRIPTION } from "@/config/constants"
-import { calculateEstimatedEfficiency } from "../lib/calculateEstimatedEfficiency"
 import { getDefaultEnergyPrices } from "../lib/getDefaultEnergyPrices"
 import { adjustConsumptionForEfficiency } from "../lib/adjustConsumptionForEfficiency"
 
-// Re-export des fonctions pour garder la compatibilité
-export { calculateEstimatedEfficiency, getDefaultEnergyPrices }
+// Re-export pour garder la compatibilité
+export { getDefaultEnergyPrices }
 
 export async function saveCurrentHeatingData(
   projectId: string,
