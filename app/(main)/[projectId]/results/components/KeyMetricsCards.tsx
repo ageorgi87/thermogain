@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingDown, TrendingUp, Clock, PiggyBank, Zap, Percent } from "lucide-react"
-import { CalculationResults } from "../../calculations"
+import type { CalculationResults } from "@/types/calculationResults"
 
 interface KeyMetricsCardsProps {
   results: CalculationResults

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
-import { YearlyData } from "../../calculations"
+import type { YearlyData } from "@/types/yearlyData"
 
 interface SavingsChartProps {
   yearlyData: YearlyData[]

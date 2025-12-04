@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Calculator, Info } from "lucide-react"
-import { YearlyData, ProjectData } from "../../calculations"
+import type { YearlyData } from "@/types/yearlyData"
+import type { ProjectData } from "@/types/projectData"
 
 interface YearlyBreakdownTableProps {
   yearlyData: YearlyData[]

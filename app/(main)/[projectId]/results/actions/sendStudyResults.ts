@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { resend, EMAIL_FROM } from "@/email/lib/resend";
 import { StudyResultsEmail } from "@/email/templates/StudyResultsEmail";
 import { render } from "@react-email/render";
-import { calculateAllResults } from "@/app/(main)/[projectId]/calculations";
+import { calculateAllResults } from "@/app/(main)/[projectId]/calculations/calculateAllResults";
 import { type ProjectData } from "@/types/projectData";
 
 interface SendStudyResultsParams {

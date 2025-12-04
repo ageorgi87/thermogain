@@ -12,7 +12,7 @@ import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
  * @param data Données du projet
  * @returns Consommation PAC en kWh/an
  */
-export function calculatePacConsumptionKwh(data: ProjectData): number {
+export const calculatePacConsumptionKwh = (data: ProjectData): number => {
   // Get current energy consumption in kWh equivalent
   let currentEnergyKwh = 0;
 

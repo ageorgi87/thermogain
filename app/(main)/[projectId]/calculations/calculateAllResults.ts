@@ -1,14 +1,3 @@
-// Export types
-export type { ProjectData } from "@/types/projectData";
-export type { YearlyData } from "@/types/yearlyData";
-export type { CalculationResults } from "@/types/calculationResults";
-
-// Export all calculation functions
-export * from "./currentCost/currentCost";
-export * from "./pacCost/pacCost";
-export * from "./savings/savings";
-export * from "./roi/roi";
-
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
@@ -31,7 +20,7 @@ import {
  * @param data Données du projet
  * @returns Tous les résultats calculés
  */
-export async function calculateAllResults(data: ProjectData): Promise<CalculationResults> {
+export const calculateAllResults = async (data: ProjectData): Promise<CalculationResults> => {
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentAnnualCost(data);
   const coutAnnuelPac = calculatePacAnnualCost(data);
@@ -48,11 +37,11 @@ export async function calculateAllResults(data: ProjectData): Promise<Calculatio
     data.taux_interet !== undefined &&
     data.duree_credit_mois
   ) {
-    const coutTotalCredit = calculateTotalCreditCost(
-      data.montant_credit,
-      data.taux_interet,
-      data.duree_credit_mois
-    );
+    const coutTotalCredit = calculateTotalCreditCost({
+      montant: data.montant_credit,
+      tauxAnnuel: data.taux_interet,
+      dureeMois: data.duree_credit_mois,
+    });
     investissementReel = coutTotalCredit;
   } else if (
     data.mode_financement === "Mixte" &&
@@ -61,11 +50,11 @@ export async function calculateAllResults(data: ProjectData): Promise<Calculatio
     data.duree_credit_mois &&
     data.apport_personnel
   ) {
-    const coutTotalCredit = calculateTotalCreditCost(
-      data.montant_credit,
-      data.taux_interet,
-      data.duree_credit_mois
-    );
+    const coutTotalCredit = calculateTotalCreditCost({
+      montant: data.montant_credit,
+      tauxAnnuel: data.taux_interet,
+      dureeMois: data.duree_credit_mois,
+    });
     investissementReel = data.apport_personnel + coutTotalCredit;
   }
 
@@ -76,7 +65,7 @@ export async function calculateAllResults(data: ProjectData): Promise<Calculatio
   };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
-  const yearlyData = await calculateYearlyData(dataAjusteeROI, data.duree_vie_pac);
+  const yearlyData = await calculateYearlyData({ data: dataAjusteeROI, years: data.duree_vie_pac });
 
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
   const economiesAnnuelles =
@@ -85,18 +74,18 @@ export async function calculateAllResults(data: ProjectData): Promise<Calculatio
       : coutAnnuelActuel - coutAnnuelPac;
 
   // ROI avec investissement réel (incluant intérêts du crédit)
-  const paybackPeriod = await calculatePaybackPeriod(dataAjusteeROI);
-  const paybackYear = await calculatePaybackYear(dataAjusteeROI);
+  const paybackPeriod = await calculatePaybackPeriod({ data: dataAjusteeROI });
+  const paybackYear = await calculatePaybackYear({ data: dataAjusteeROI });
 
   // Gains totaux sur la durée de vie de la PAC
-  const totalSavingsLifetime = await calculateTotalSavings(
-    dataAjusteeROI,
-    data.duree_vie_pac
-  );
-  const netBenefitLifetime = await calculateNetBenefit(
-    dataAjusteeROI,
-    data.duree_vie_pac
-  );
+  const totalSavingsLifetime = await calculateTotalSavings({
+    data: dataAjusteeROI,
+    years: data.duree_vie_pac,
+  });
+  const netBenefitLifetime = await calculateNetBenefit({
+    data: dataAjusteeROI,
+    years: data.duree_vie_pac,
+  });
 
   // Coûts totaux sur durée de vie
   const coutTotalActuelLifetime = yearlyData.reduce(
@@ -142,16 +131,16 @@ export async function calculateAllResults(data: ProjectData): Promise<Calculatio
     data.taux_interet &&
     data.duree_credit_mois
   ) {
-    mensualiteCredit = calculateMonthlyPayment(
-      data.montant_credit,
-      data.taux_interet,
-      data.duree_credit_mois
-    );
-    coutTotalCredit = calculateTotalCreditCost(
-      data.montant_credit,
-      data.taux_interet,
-      data.duree_credit_mois
-    );
+    mensualiteCredit = calculateMonthlyPayment({
+      montant: data.montant_credit,
+      tauxAnnuel: data.taux_interet,
+      dureeMois: data.duree_credit_mois,
+    });
+    coutTotalCredit = calculateTotalCreditCost({
+      montant: data.montant_credit,
+      tauxAnnuel: data.taux_interet,
+      dureeMois: data.duree_credit_mois,
+    });
   }
 
   return {

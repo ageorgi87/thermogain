@@ -9,7 +9,7 @@ import { GAS_SUBSCRIPTION } from "@/config/constants";
  * @param data Données du projet
  * @returns Coût variable annuel en euros
  */
-export function calculateCurrentVariableCost(data: ProjectData): number {
+export const calculateCurrentVariableCost = (data: ProjectData): number => {
   switch (data.type_chauffage) {
     case "Fioul":
       return (data.conso_fioul_litres || 0) * (data.prix_fioul_litre || 0);
@@ -49,12 +49,12 @@ export function calculateCurrentVariableCost(data: ProjectData): number {
  * @param data Données du projet
  * @returns Objet détaillant les coûts fixes
  */
-export function calculateCurrentFixedCosts(data: ProjectData): {
+export const calculateCurrentFixedCosts = (data: ProjectData): {
   abonnementElec: number;
   abonnementGaz: number;
   entretien: number;
   total: number;
-} {
+} => {
   const puissanceActuelle = data.puissance_souscrite_actuelle || 6;
 
   // Abonnement électricité: uniquement pour les chauffages électriques ou PAC
@@ -92,7 +92,7 @@ export function calculateCurrentFixedCosts(data: ProjectData): {
  * @param data Données du projet
  * @returns Coût total annuel en euros
  */
-export function calculateCurrentAnnualCost(data: ProjectData): number {
+export const calculateCurrentAnnualCost = (data: ProjectData): number => {
   const variableCost = calculateCurrentVariableCost(data);
   const fixedCosts = calculateCurrentFixedCosts(data);
   return variableCost + fixedCosts.total;
@@ -103,7 +103,7 @@ export function calculateCurrentAnnualCost(data: ProjectData): number {
  * @param data Données du projet
  * @returns Taux d'évolution annuel en pourcentage
  */
-export function getCurrentEnergyEvolution(data: ProjectData): number {
+export const getCurrentEnergyEvolution = (data: ProjectData): number => {
   switch (data.type_chauffage) {
     case "Fioul":
       return data.evolution_prix_fioul || 0;
@@ -134,9 +134,9 @@ export function getCurrentEnergyEvolution(data: ProjectData): number {
  * @param data Données du projet
  * @returns Type d'énergie ('gaz' | 'electricite' | 'fioul' | 'bois')
  */
-function getEnergyType(
+const getEnergyType = (
   data: ProjectData
-): "gaz" | "electricite" | "fioul" | "bois" {
+): "gaz" | "electricite" | "fioul" | "bois" => {
   switch (data.type_chauffage) {
     case "Fioul":
     case "GPL":
@@ -160,6 +160,11 @@ function getEnergyType(
   }
 }
 
+interface CalculateCurrentCostForYearParams {
+  data: ProjectData
+  year: number
+}
+
 /**
  * Calcule le coût du chauffage actuel pour une année donnée
  *
@@ -176,14 +181,14 @@ function getEnergyType(
  * IMPORTANT: Seuls les coûts VARIABLES (énergie) évoluent avec le temps.
  * Les coûts FIXES (abonnements, entretien) restent constants en euros constants.
  *
- * @param data Données du projet
- * @param year Année de projection (0 = année actuelle)
+ * @param params.data Données du projet
+ * @param params.year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
-export async function calculateCurrentCostForYear(
-  data: ProjectData,
-  year: number
-): Promise<number> {
+export const calculateCurrentCostForYear = async ({
+  data,
+  year,
+}: CalculateCurrentCostForYearParams): Promise<number> => {
   // Coûts variables: évoluent avec le modèle Mean Reversion
   const variableCost = calculateCurrentVariableCost(data);
   const fixedCosts = calculateCurrentFixedCosts(data);

@@ -12,7 +12,7 @@ import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
  * @param data Données du projet
  * @returns Consommation en kWh
  */
-export function calculateCurrentConsumptionKwh(data: ProjectData): number {
+export const calculateCurrentConsumptionKwh = (data: ProjectData): number => {
   switch (data.type_chauffage) {
     case "Fioul":
       // 1 litre de fioul = 9.96 kWh PCI (Pouvoir Calorifique Inférieur)
@@ -68,7 +68,7 @@ export function calculateCurrentConsumptionKwh(data: ProjectData): number {
  * @param data Données du projet
  * @returns Consommation PAC en kWh
  */
-export function calculatePacConsumptionKwh(data: ProjectData): number {
+export const calculatePacConsumptionKwh = (data: ProjectData): number => {
   const currentConsumptionKwh = calculateCurrentConsumptionKwh(data);
   return currentConsumptionKwh / data.cop_estime;
 }
@@ -78,7 +78,7 @@ export function calculatePacConsumptionKwh(data: ProjectData): number {
  * @param data Données du projet
  * @returns Coût variable annuel en euros
  */
-export function calculatePacVariableCost(data: ProjectData): number {
+export const calculatePacVariableCost = (data: ProjectData): number => {
   const pacConsumption = calculatePacConsumptionKwh(data);
   // Utilise le prix électricité PAC si renseigné, sinon le prix électricité actuel
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
@@ -96,11 +96,11 @@ export function calculatePacVariableCost(data: ProjectData): number {
  * @param data Données du projet
  * @returns Objet détaillant les coûts fixes de la PAC
  */
-export function calculatePacFixedCosts(data: ProjectData): {
+export const calculatePacFixedCosts = (data: ProjectData): {
   abonnementElec: number;
   entretien: number;
   total: number;
-} {
+} => {
   const puissancePac = data.puissance_souscrite_pac || 9;
 
   // Abonnement électricité avec PAC (puissance augmentée)
@@ -123,10 +123,15 @@ export function calculatePacFixedCosts(data: ProjectData): {
  * @param data Données du projet
  * @returns Coût total annuel en euros
  */
-export function calculatePacAnnualCost(data: ProjectData): number {
+export const calculatePacAnnualCost = (data: ProjectData): number => {
   const variableCost = calculatePacVariableCost(data);
   const fixedCosts = calculatePacFixedCosts(data);
   return variableCost + fixedCosts.total;
+}
+
+interface CalculatePacCostForYearParams {
+  data: ProjectData
+  year: number
 }
 
 /**
@@ -143,14 +148,14 @@ export function calculatePacAnnualCost(data: ProjectData): number {
  * IMPORTANT: Seuls les coûts VARIABLES (électricité) évoluent avec le temps.
  * Les coûts FIXES (abonnement, entretien) restent constants en euros constants.
  *
- * @param data Données du projet
- * @param year Année de projection (0 = année actuelle)
+ * @param params.data Données du projet
+ * @param params.year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
-export async function calculatePacCostForYear(
-  data: ProjectData,
-  year: number
-): Promise<number> {
+export const calculatePacCostForYear = async ({
+  data,
+  year,
+}: CalculatePacCostForYearParams): Promise<number> => {
   // Coûts variables: évoluent avec le modèle Mean Reversion
   const variableCost = calculatePacVariableCost(data);
   const fixedCosts = calculatePacFixedCosts(data);
