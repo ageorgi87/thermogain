@@ -8,7 +8,7 @@ import {
   getStepIndex,
   getNextStepKey,
   getPreviousStepKey,
-} from "@/config/wizardStepsData";
+} from "@/lib/wizardStepsData";
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep";
 import { notFound } from "next/navigation";
 

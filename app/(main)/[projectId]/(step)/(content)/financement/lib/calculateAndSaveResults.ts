@@ -1,6 +1,6 @@
 "use server";
 
-import { getProjectData } from "@/lib/actions/projects/getProjectData";
+import { getProjectDataForCalculations } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getProjectDataForCalculations";
 import { calculateAllResults } from "@/app/(main)/[projectId]/calculations/calculateAllResults";
 import { saveProjectResults } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveProjectResults/saveProjectResults";
 
@@ -15,8 +15,8 @@ export const calculateAndSaveResults = async (
   projectId: string
 ): Promise<void> => {
   try {
-    // 1. Récupérer toutes les données du projet
-    const projectData = await getProjectData(projectId);
+    // 1. Récupérer les données nécessaires aux calculs (query optimisée)
+    const projectData = await getProjectDataForCalculations({ projectId });
 
     if (!projectData) {
       throw new Error(`Projet ${projectId} introuvable`);

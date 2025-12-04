@@ -24,7 +24,8 @@ export interface ProjectData {
   // Projet PAC
   type_pac: string
   puissance_pac_kw: number
-  cop_estime: number
+  cop_estime: number // COP nominal du fabricant
+  cop_ajuste: number // COP réel ajusté (température, émetteurs, climat)
   temperature_depart: number
   emetteurs: string
   duree_vie_pac: number

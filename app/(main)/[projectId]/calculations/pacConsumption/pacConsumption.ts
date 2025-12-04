@@ -1,15 +1,11 @@
 import type { ProjectData } from "@/types/projectData";
-import { calculateAdjustedCOP } from "@/lib/pac/calculateAdjustedCOP";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
 /**
  * Calcule la consommation annuelle de la PAC en kWh
- * Prend en compte les ajustements du COP selon :
- * - La température de départ
- * - Le type d'émetteurs
- * - La zone climatique
+ * Utilise le COP ajusté pré-calculé et stocké en DB
  *
- * @param data Données du projet
+ * @param data Données du projet (avec cop_ajuste déjà calculé)
  * @returns Consommation PAC en kWh/an
  */
 export const calculatePacConsumptionKwh = (data: ProjectData): number => {
@@ -50,13 +46,8 @@ export const calculatePacConsumptionKwh = (data: ProjectData): number => {
       break;
   }
 
-  // Calculate adjusted COP based on all factors
-  const copAjuste = calculateAdjustedCOP(
-    data.cop_estime,
-    data.temperature_depart,
-    data.emetteurs,
-    data.code_postal
-  );
+  // Utiliser le COP ajusté déjà calculé et stocké en DB
+  const copAjuste = data.cop_ajuste;
 
   // Calculate PAC consumption using adjusted COP
   const pacConsumptionKwh = currentEnergyKwh / copAjuste;
@@ -71,4 +62,4 @@ export const calculatePacConsumptionKwh = (data: ProjectData): number => {
   );
 
   return Math.round(pacConsumptionKwh);
-}
+};

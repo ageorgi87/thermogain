@@ -11,6 +11,7 @@ model ProjectResults {
   coutAnnuelActuel    Float // Current heating cost (year 1)
   coutAnnuelPac       Float // PAC cost (year 1)
   economiesAnnuelles  Float // Annual savings (year 1)
+  consommationPacKwh  Float // PAC annual electricity consumption (kWh/year)
 
   // Monthly costs
   coutMensuelActuel   Float // Current monthly heating cost

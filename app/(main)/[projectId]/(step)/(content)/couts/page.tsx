@@ -9,10 +9,7 @@ import {
   type CostsData,
 } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema";
 import { getCoutsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/queries/getCoutsData";
-import {
-  getStepInfo,
-  getTotalSteps,
-} from "@/config/wizardStepsData";
+import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function CoutsStepPage({

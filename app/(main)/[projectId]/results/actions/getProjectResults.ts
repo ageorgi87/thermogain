@@ -29,6 +29,7 @@ export const getProjectResults = async (
       coutAnnuelActuel: results.coutAnnuelActuel,
       coutAnnuelPac: results.coutAnnuelPac,
       economiesAnnuelles: results.economiesAnnuelles,
+      consommationPacKwh: results.consommationPacKwh,
 
       // Monthly costs
       coutMensuelActuel: results.coutMensuelActuel,

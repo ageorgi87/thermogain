@@ -9,10 +9,7 @@ import {
   type InformationsData,
 } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/informationsSchema";
 import { getInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getInformationsData";
-import {
-  getStepInfo,
-  getTotalSteps,
-} from "@/config/wizardStepsData";
+import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function InformationsStepPage({

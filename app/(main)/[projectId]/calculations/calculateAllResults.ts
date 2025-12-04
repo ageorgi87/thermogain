@@ -2,7 +2,7 @@
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
 import { calculateCurrentAnnualCost } from "./currentCost/currentCost";
-import { calculatePacAnnualCost } from "./pacCost/pacCost";
+import { calculatePacAnnualCost, calculatePacConsumptionKwh } from "./pacCost/pacCost";
 import {
   calculateYearlyData,
   calculateTotalSavings,
@@ -24,6 +24,9 @@ export const calculateAllResults = async (data: ProjectData): Promise<Calculatio
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentAnnualCost(data);
   const coutAnnuelPac = calculatePacAnnualCost(data);
+
+  // Consommation PAC
+  const consommationPacKwh = calculatePacConsumptionKwh(data);
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
@@ -147,6 +150,7 @@ export const calculateAllResults = async (data: ProjectData): Promise<Calculatio
     coutAnnuelActuel: Math.round(coutAnnuelActuel),
     coutAnnuelPac: Math.round(coutAnnuelPac),
     economiesAnnuelles: Math.round(economiesAnnuelles),
+    consommationPacKwh: Math.round(consommationPacKwh),
     yearlyData,
     paybackPeriod,
     paybackYear,

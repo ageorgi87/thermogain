@@ -5,6 +5,7 @@ export interface CalculationResults {
   coutAnnuelActuel: number
   coutAnnuelPac: number
   economiesAnnuelles: number
+  consommationPacKwh: number // Consommation électrique annuelle de la PAC (kWh/an)
 
   // Projections
   yearlyData: YearlyData[]

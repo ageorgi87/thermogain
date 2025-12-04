@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { heatPumpProjectSchema, type HeatPumpProjectData } from "./heatPumpProjectSchema"
+import { calculateAdjustedCOP } from "@/app/(main)/[projectId]/calculations/pacConsumption/lib/calculateAdjustedCOP"
 
 interface SaveHeatPumpProjectDataParams {
   projectId: string
@@ -23,19 +24,35 @@ export const saveHeatPumpProjectData = async ({
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    include: {
+      logement: true,
+    },
   })
 
   if (!project || project.userId !== session.user.id) {
     throw new Error("Projet non trouvé")
   }
 
+  // Calculer le COP ajusté selon température, émetteurs, et zone climatique
+  const cop_ajuste = calculateAdjustedCOP(
+    validatedData.cop_estime,
+    validatedData.temperature_depart ?? 45,
+    validatedData.emetteurs ?? "Radiateurs basse température",
+    project.logement?.code_postal ?? undefined,
+    validatedData.type_pac
+  )
+
   const projetPac = await prisma.projectProjetPac.upsert({
     where: { projectId },
     create: {
       ...validatedData,
+      cop_ajuste,
       projectId,
     } as any,
-    update: validatedData as any,
+    update: {
+      ...validatedData,
+      cop_ajuste,
+    } as any,
   })
 
   if (project.currentStep === 4) {

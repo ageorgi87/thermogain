@@ -36,7 +36,7 @@ import {
   getStepKey,
   getStepNumber,
   getFirstStepKey,
-} from "@/config/wizardStepsData";
+} from "@/lib/wizardStepsData";
 import { getProjectStatus } from "@/app/(main)/dashboard/lib/getProjectStatus";
 
 type Project = {

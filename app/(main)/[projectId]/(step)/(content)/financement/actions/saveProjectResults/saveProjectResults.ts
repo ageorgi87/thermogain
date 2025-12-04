@@ -40,6 +40,7 @@ export const saveProjectResults = async (
         coutAnnuelActuel: results.coutAnnuelActuel,
         coutAnnuelPac: results.coutAnnuelPac,
         economiesAnnuelles: results.economiesAnnuelles,
+        consommationPacKwh: results.consommationPacKwh,
 
         // Monthly costs
         coutMensuelActuel: results.coutMensuelActuel,
@@ -75,6 +76,7 @@ export const saveProjectResults = async (
         coutAnnuelActuel: results.coutAnnuelActuel,
         coutAnnuelPac: results.coutAnnuelPac,
         economiesAnnuelles: results.economiesAnnuelles,
+        consommationPacKwh: results.consommationPacKwh,
 
         // Monthly costs
         coutMensuelActuel: results.coutMensuelActuel,

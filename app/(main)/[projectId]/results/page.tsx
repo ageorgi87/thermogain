@@ -1,6 +1,5 @@
 import { getProject } from "@/app/(main)/[projectId]/results/actions/getProject";
 import { notFound, redirect } from "next/navigation";
-import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/calculations/pacConsumption/pacConsumption";
 import { ResultsHeader } from "./components/ResultsHeader";
 import { CumulativeCostChart } from "./components/CumulativeCostChart";
 import { ConsumptionCard } from "./components/ConsumptionCard";
@@ -17,7 +16,6 @@ import {
 import { CheckCircle2, XCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getProjectResults } from "@/app/(main)/[projectId]/results/actions/getProjectResults";
-import type { ProjectData } from "@/types/projectData";
 import { formatPaybackPeriod } from "@/lib/formatPaybackPeriod";
 
 interface PageProps {
@@ -62,51 +60,6 @@ export default async function ResultsPage({ params }: PageProps) {
       "Les résultats n'ont pas été calculés. Veuillez compléter toutes les étapes du formulaire."
     );
   }
-
-  // Prepare minimal projectData only for functions that still need it (like calculatePacConsumptionKwh)
-  const prixElecKwh = project.projetPac.prix_elec_kwh || 0;
-  const projectData: ProjectData = {
-    type_chauffage: project.chauffageActuel.type_chauffage,
-    conso_fioul_litres: project.chauffageActuel.conso_fioul_litres || undefined,
-    prix_fioul_litre: project.chauffageActuel.prix_fioul_litre || undefined,
-    conso_gaz_kwh: project.chauffageActuel.conso_gaz_kwh || undefined,
-    prix_gaz_kwh: project.chauffageActuel.prix_gaz_kwh || undefined,
-    conso_gpl_kg: project.chauffageActuel.conso_gpl_kg || undefined,
-    prix_gpl_kg: project.chauffageActuel.prix_gpl_kg || undefined,
-    conso_pellets_kg: project.chauffageActuel.conso_pellets_kg || undefined,
-    prix_pellets_kg: project.chauffageActuel.prix_pellets_kg || undefined,
-    conso_bois_steres: project.chauffageActuel.conso_bois_steres || undefined,
-    prix_bois_stere: project.chauffageActuel.prix_bois_stere || undefined,
-    conso_elec_kwh: project.chauffageActuel.conso_elec_kwh || undefined,
-    prix_elec_kwh: prixElecKwh,
-    cop_actuel: project.chauffageActuel.cop_actuel || undefined,
-    conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
-    puissance_souscrite_actuelle:
-      project.projetPac.puissance_souscrite_actuelle || undefined,
-    abonnement_gaz: project.chauffageActuel.abonnement_gaz || undefined,
-    entretien_annuel: project.chauffageActuel.entretien_annuel || undefined,
-    type_pac: project.projetPac.type_pac,
-    puissance_pac_kw: project.projetPac.puissance_pac_kw,
-    cop_estime: project.projetPac.cop_estime,
-    temperature_depart: project.projetPac.temperature_depart || 45,
-    emetteurs: project.projetPac.emetteurs || "Radiateurs basse température",
-    duree_vie_pac: project.projetPac.duree_vie_pac,
-    puissance_souscrite_pac:
-      project.projetPac.puissance_souscrite_pac || undefined,
-    entretien_pac_annuel: project.projetPac.entretien_pac_annuel || undefined,
-    prix_elec_pac: project.projetPac.prix_elec_pac || undefined,
-    code_postal: project.logement.code_postal || undefined,
-    cout_total: project.couts.cout_total,
-    reste_a_charge: project.couts.cout_total - project.aides.total_aides,
-    mode_financement: project.financement?.mode_financement || undefined,
-    montant_credit: project.financement?.montant_credit || undefined,
-    taux_interet: project.financement?.taux_interet || undefined,
-    duree_credit_mois: project.financement?.duree_credit_mois || undefined,
-    apport_personnel: project.financement?.apport_personnel || undefined,
-  };
-
-  // Calculate PAC consumption for ConsumptionCard (helper function, not a full calculation)
-  const pacConsumptionKwh = calculatePacConsumptionKwh(projectData);
 
   return (
     <div className="container mx-auto py-8 max-w-7xl space-y-8">
@@ -153,7 +106,7 @@ export default async function ResultsPage({ params }: PageProps) {
                   <strong className="text-brand-teal-600 font-semibold">
                     {results.netBenefitLifetime.toLocaleString("fr-FR")} €
                   </strong>{" "}
-                  sur {projectData.duree_vie_pac} ans.
+                  sur {project.projetPac.duree_vie_pac} ans.
                 </p>
               ) : (
                 <p className="text-lg text-foreground">
@@ -161,7 +114,7 @@ export default async function ResultsPage({ params }: PageProps) {
                   <strong className="text-brand-teal-600 font-semibold">
                     {results.netBenefitLifetime.toLocaleString("fr-FR")} €
                   </strong>{" "}
-                  sur {projectData.duree_vie_pac} ans.
+                  sur {project.projetPac.duree_vie_pac} ans.
                 </p>
               )}
             </>
@@ -171,8 +124,8 @@ export default async function ResultsPage({ params }: PageProps) {
               <strong className="text-red-600 font-semibold">
                 {Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €
               </strong>{" "}
-              sur une durée de {projectData.duree_vie_pac} ans. Les économies
-              générées ne couvrent pas l&apos;investissement.
+              sur une durée de {project.projetPac.duree_vie_pac} ans. Les
+              économies générées ne couvrent pas l&apos;investissement.
             </p>
           )}
         </CardContent>
@@ -193,7 +146,7 @@ export default async function ResultsPage({ params }: PageProps) {
       {/* Tableau détaillé année par année */}
       <YearlyBreakdownTable
         yearlyData={results.yearlyData}
-        projectData={projectData}
+        projectData={project}
         investissementReel={results.investissementReel}
         modeFinancement={project.financement?.mode_financement}
         montantCredit={project.financement?.montant_credit || undefined}
@@ -205,16 +158,16 @@ export default async function ResultsPage({ params }: PageProps) {
       {/* Cartes détaillées */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <ConsumptionCard
-          typeChauffage={projectData.type_chauffage}
+          typeChauffage={project.chauffageActuel.type_chauffage}
           typePac={project.projetPac.type_pac}
-          copEstime={projectData.cop_estime}
+          copEstime={project.projetPac.cop_estime}
           coutAnnuelActuel={results.coutAnnuelActuel}
           coutAnnuelPac={results.coutAnnuelPac}
           economiesAnnuelles={results.economiesAnnuelles}
-          pacConsumptionKwh={pacConsumptionKwh}
+          pacConsumptionKwh={results.consommationPacKwh}
           coutTotalActuelLifetime={results.coutTotalActuelLifetime}
           coutTotalPacLifetime={results.coutTotalPacLifetime}
-          dureeVie={projectData.duree_vie_pac}
+          dureeVie={project.projetPac.duree_vie_pac}
         />
         <FinancialSummaryCard
           coutPac={project.couts.cout_pac}
@@ -234,9 +187,9 @@ export default async function ResultsPage({ params }: PageProps) {
           paybackPeriod={results.paybackPeriod}
           paybackYear={results.paybackYear}
           totalSavingsLifetime={results.totalSavingsLifetime}
-          resteACharge={projectData.reste_a_charge}
+          resteACharge={project.couts.cout_total - project.aides.total_aides}
           netBenefit={results.netBenefitLifetime}
-          dureeVie={projectData.duree_vie_pac}
+          dureeVie={project.projetPac.duree_vie_pac}
           tauxRentabilite={results.tauxRentabilite}
         />
       </div>

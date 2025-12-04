@@ -8,7 +8,8 @@ model ProjectProjetPac {
 
   type_pac           String
   puissance_pac_kw   Float
-  cop_estime         Float
+  cop_estime         Float // COP nominal du fabricant (conditions standardisées)
+  cop_ajuste         Float // COP réel ajusté selon température, émetteurs, zone climatique
   temperature_depart Int? // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
   emetteurs          String? // Optional: only for water-based PACs (Air/Eau, Eau/Eau)
 

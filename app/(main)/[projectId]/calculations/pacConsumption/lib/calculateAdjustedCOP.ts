@@ -1,6 +1,6 @@
-import { getTemperatureAdjustment } from "./getTemperatureAdjustment"
-import { getEmitterAdjustment } from "./getEmitterAdjustment"
-import { getCOPAdjustment as getClimateAdjustment } from "@/lib/climate/getCOPAdjustment"
+import { getTemperatureAdjustment } from "./lib/getTemperatureAdjustment";
+import { getEmitterAdjustment } from "./lib/getEmitterAdjustment";
+import { getCOPAdjustment as getClimateAdjustment } from "@/lib/climate/getCOPAdjustment";
 
 /**
  * Calcule le COP réel ajusté selon tous les facteurs
@@ -21,23 +21,28 @@ export const calculateAdjustedCOP = (
 ): number => {
   // Les PAC Air/Air n'ont pas de circuit d'eau
   // Elles ne nécessitent pas d'ajustements température/émetteurs
-  const isAirToAir = typePac === "Air/Air"
+  const isAirToAir = typePac === "Air/Air";
 
   // Facteur température (uniquement pour PAC hydrauliques)
-  const facteurTemperature = isAirToAir ? 1.0 : getTemperatureAdjustment(temperatureDepart)
+  const facteurTemperature = isAirToAir
+    ? 1.0
+    : getTemperatureAdjustment(temperatureDepart);
 
   // Facteur émetteurs (uniquement pour PAC hydrauliques)
-  const facteurEmetteurs = isAirToAir ? 1.0 : getEmitterAdjustment(typeEmetteurs)
+  const facteurEmetteurs = isAirToAir
+    ? 1.0
+    : getEmitterAdjustment(typeEmetteurs);
 
   // Facteur climatique (s'applique à TOUS les types de PAC)
-  let facteurClimatique = 1.0
+  let facteurClimatique = 1.0;
   if (codePostal) {
-    facteurClimatique = getClimateAdjustment(codePostal)
+    facteurClimatique = getClimateAdjustment(codePostal);
   }
 
   // COP ajusté = COP fabricant × tous les facteurs applicables
-  const copAjuste = copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique
+  const copAjuste =
+    copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique;
 
   // Arrondir à 2 décimales
-  return Math.round(copAjuste * 100) / 100
-}
+  return Math.round(copAjuste * 100) / 100;
+};
