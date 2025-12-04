@@ -1,0 +1,133 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { StepLayout } from "@/app/(main)/projects/[projectId]/components/StepLayout"
+import { CoutsFields } from "@/app/(main)/projects/[projectId]/(step)/couts/components/CoutsFields"
+import { saveCostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/saveCostsData"
+import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/costsSchema"
+import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
+import { getProject } from "@/lib/actions/projects/getProject"
+import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { notFound } from "next/navigation"
+
+const STEP_INFO = {
+  key: "couts",
+  title: "Coûts de l'installation",
+  description: "Détaillez les différents coûts de votre projet",
+  explanation:
+    "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
+}
+
+export default function CoutsStepPage({
+  params,
+}: {
+  params: { projectId: string }
+}) {
+  const projectId = params.projectId
+  const router = useRouter()
+  const [formData, setFormData] = useState<Partial<CostsData>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const stepIndex = WIZARD_STEPS.findIndex((s) => s.key === STEP_INFO.key)
+  const isLastStep = stepIndex === WIZARD_STEPS.length - 1
+
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        const project = await getProject(projectId)
+
+        if (!project) {
+          notFound()
+          return
+        }
+
+        setFormData(project.couts || {
+          cout_pac: undefined,
+          cout_installation: undefined,
+          cout_travaux_annexes: undefined,
+          cout_total: 0,
+        })
+      } catch (error) {
+        console.error("❌ Erreur lors du chargement:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProject()
+  }, [projectId])
+
+  const handleChange = (name: keyof CostsData, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    setErrors((prev) => {
+      const newErrors = { ...prev }
+      delete newErrors[name]
+      return newErrors
+    })
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+      const result = costsSchema.safeParse(formData)
+
+      if (!result.success) {
+        const errorMap: Record<string, string> = {}
+        result.error.issues.forEach((issue) => {
+          if (issue.path.length > 0) {
+            errorMap[issue.path[0].toString()] = issue.message
+          }
+        })
+        setErrors(errorMap)
+        return
+      }
+
+      await saveCostsData(projectId, result.data)
+      await updateProjectStep(projectId, stepIndex + 2)
+
+      if (stepIndex < WIZARD_STEPS.length - 1) {
+        const nextStep = WIZARD_STEPS[stepIndex + 1]
+        router.push(`/projects/${projectId}/${nextStep.key}`)
+      } else {
+        router.push(`/projects/${projectId}/results`)
+      }
+    } catch (error) {
+      console.error("❌ Erreur lors de la sauvegarde:", error)
+      alert(`Erreur lors de la sauvegarde: ${error instanceof Error ? error.message : "Erreur inconnue"}`)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handlePrevious = () => {
+    if (stepIndex > 0) {
+      const previousStep = WIZARD_STEPS[stepIndex - 1]
+      router.push(`/projects/${projectId}/${previousStep.key}`)
+    } else {
+      router.push("/projects")
+    }
+  }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Chargement...</div>
+  }
+
+  return (
+    <StepLayout
+      title={STEP_INFO.title}
+      description={STEP_INFO.description}
+      stepNumber={stepIndex + 1}
+      totalSteps={WIZARD_STEPS.length}
+      explanation={STEP_INFO.explanation}
+      isLastStep={isLastStep}
+      isSubmitting={isSubmitting}
+      onPrevious={handlePrevious}
+      onNext={handleSubmit}
+    >
+      <CoutsFields formData={formData} errors={errors} onChange={handleChange} />
+    </StepLayout>
+  )
+}
