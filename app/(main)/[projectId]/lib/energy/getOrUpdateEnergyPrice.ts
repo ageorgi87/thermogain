@@ -1,9 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { isCacheValid } from "@/app/(main)/[projectId]/lib/isCacheValid";
-import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/didoConstants";
-import { calculateEnergyEvolution10y } from "@/app/(main)/[projectId]/lib/calculateEnergyEvolution10y";
+import { isCacheValid } from "@/app/(main)/[projectId]/lib/energy/isCacheValid";
+import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/energy/didoConstants";
+import { calculateEnergyEvolution10y } from "@/app/(main)/[projectId]/lib/energy/calculateEnergyEvolution10y";
 
 /**
  * Récupère l'évolution sur 10 ans pour un type d'énergie spécifique

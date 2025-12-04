@@ -1,6 +1,6 @@
 "use server"
 
-import { getOrUpdateEnergyPrice } from "@/app/(main)/[projectId]/lib/getOrUpdateEnergyPrice"
+import { getOrUpdateEnergyPrice } from "@/app/(main)/[projectId]/lib/energy/getOrUpdateEnergyPrice"
 
 /**
  * Récupère toutes les évolutions de prix en utilisant le système de cache

@@ -1,5 +1,5 @@
 import type { ProjectData } from "@/types/projectData";
-import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateYearlyData";
+import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData";
 
 interface CalculatePaybackPeriodParams {
   data: ProjectData

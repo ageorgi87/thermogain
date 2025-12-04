@@ -1,7 +1,7 @@
 "use server";
 
 import { getProjectDataForCalculations } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getProjectDataForCalculations";
-import { calculateAllResults } from "@/app/(main)/[projectId]/lib/calculateAllResults";
+import { calculateAllResults } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateAllResults";
 import { saveProjectResults } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveProjectResults/saveProjectResults";
 
 /**

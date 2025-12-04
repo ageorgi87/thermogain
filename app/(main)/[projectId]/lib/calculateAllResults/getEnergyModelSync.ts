@@ -1,5 +1,5 @@
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { getOrRefreshEnergyModel } from "@/app/(main)/[projectId]/lib/getOrRefreshEnergyModel";
+import { getOrRefreshEnergyModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/getOrRefreshEnergyModel";
 import { cache } from "react";
 
 /**

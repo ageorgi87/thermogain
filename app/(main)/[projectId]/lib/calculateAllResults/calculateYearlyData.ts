@@ -1,7 +1,7 @@
 import type { ProjectData } from "@/types/projectData";
 import type { YearlyData } from "@/types/yearlyData";
-import { calculateCurrentCostForYear } from "@/app/(main)/[projectId]/lib/calculateCurrentCostForYear";
-import { calculatePacCostForYear } from "@/app/(main)/[projectId]/lib/calculatePacCostForYear";
+import { calculateCurrentCostForYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostForYear";
+import { calculatePacCostForYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostForYear";
 
 interface CalculateYearlyDataParams {
   data: ProjectData;

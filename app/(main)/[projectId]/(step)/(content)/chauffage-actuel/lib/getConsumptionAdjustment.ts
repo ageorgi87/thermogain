@@ -1,5 +1,5 @@
-import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateInfoFromPostalCode"
-import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/climateZonesData"
+import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/climate/getClimateInfoFromPostalCode"
+import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/climate/climateZonesData"
 
 /**
  * Calcule le coefficient d'ajustement de consommation selon la zone climatique

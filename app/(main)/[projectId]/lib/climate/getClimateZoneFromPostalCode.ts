@@ -1,4 +1,4 @@
-import { DEPARTMENT_TO_ZONE, type ClimateZone } from "@/app/(main)/[projectId]/lib/climateZonesData"
+import { DEPARTMENT_TO_ZONE, type ClimateZone } from "@/app/(main)/[projectId]/lib/climate/climateZonesData"
 
 /**
  * Détermine la zone climatique à partir du code postal

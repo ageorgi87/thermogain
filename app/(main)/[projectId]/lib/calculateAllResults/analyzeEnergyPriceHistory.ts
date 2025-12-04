@@ -7,10 +7,10 @@
  * 3. Générer automatiquement le modèle Mean Reversion optimal
  */
 
-import { getDataFileRows } from "@/app/(main)/[projectId]/lib/getDataFileRows";
-import { getEnergyTypeFromColumn } from "@/app/(main)/[projectId]/lib/getEnergyTypeFromColumn";
+import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows";
+import { getEnergyTypeFromColumn } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
 import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
-import type { EnergyType } from "@/app/(main)/[projectId]/lib/getEnergyTypeFromColumn";
+import type { EnergyType } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
 
 /**
  * Calcule le taux d'évolution récent pondéré (70% sur 10 ans + 30% long terme)

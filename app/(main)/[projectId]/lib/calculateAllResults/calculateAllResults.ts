@@ -1,16 +1,16 @@
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
-import { calculateCurrentAnnualCost } from "@/app/(main)/[projectId]/lib/calculateCurrentAnnualCost";
-import { calculatePacAnnualCost } from "@/app/(main)/[projectId]/lib/calculatePacAnnualCost";
-import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculatePacConsumptionKwh";
-import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateYearlyData";
-import { calculateTotalSavings } from "@/app/(main)/[projectId]/lib/calculateTotalSavings";
-import { calculateNetBenefit } from "@/app/(main)/[projectId]/lib/calculateNetBenefit";
-import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculatePaybackPeriod";
-import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculatePaybackYear";
-import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateMonthlyPayment";
-import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateTotalCreditCost";
+import { calculateCurrentAnnualCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentAnnualCost";
+import { calculatePacAnnualCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacAnnualCost";
+import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh";
+import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData";
+import { calculateTotalSavings } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalSavings";
+import { calculateNetBenefit } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateNetBenefit";
+import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackPeriod";
+import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackYear";
+import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment";
+import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost";
 
 /**
  * Fonction principale qui calcule tous les résultats du projet

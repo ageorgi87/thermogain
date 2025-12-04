@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import type { EnergyEvolutionModel } from "@/types/energy"
-import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/didoConstants";
-import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/lib/analyzeEnergyPriceHistory";
+import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/energy/didoConstants";
+import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/lib/calculateAllResults/analyzeEnergyPriceHistory";
 
 /**
  * Génère le modèle Mean Reversion pour un type d'énergie donné

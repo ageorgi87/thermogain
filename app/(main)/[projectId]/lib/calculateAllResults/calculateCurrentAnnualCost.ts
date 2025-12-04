@@ -1,6 +1,6 @@
 import type { ProjectData } from "@/types/projectData";
-import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateCurrentVariableCost";
-import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateCurrentFixedCosts";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentVariableCost";
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts";
 
 /**
  * Calcule le coût annuel TOTAL du chauffage actuel

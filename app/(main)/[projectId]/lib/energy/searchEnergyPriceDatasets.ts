@@ -1,4 +1,4 @@
-import { DIDO_API_BASE_URL, type DidoDataset } from "@/app/(main)/[projectId]/lib/didoConstants"
+import { DIDO_API_BASE_URL, type DidoDataset } from "@/app/(main)/[projectId]/lib/energy/didoConstants"
 
 /**
  * Recherche les datasets liés aux prix de l'énergie

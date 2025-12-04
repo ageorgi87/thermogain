@@ -1,4 +1,4 @@
-import { getDataFileRows } from "@/app/(main)/[projectId]/lib/getDataFileRows";
+import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows";
 
 /**
  * Calcule le taux d'évolution annuel moyen pondéré

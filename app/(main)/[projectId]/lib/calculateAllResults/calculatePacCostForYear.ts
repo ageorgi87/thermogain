@@ -1,8 +1,8 @@
 import type { ProjectData } from "@/types/projectData";
 import { calculatePacVariableCost } from "./calculatePacVariableCost";
 import { calculatePacFixedCosts } from "./calculatePacFixedCosts";
-import { getEnergyModelSync } from "@/app/(main)/[projectId]/lib/getEnergyModelSync";
-import { calculateCostForYear } from "@/app/(main)/[projectId]/lib/calculateCostForYear";
+import { getEnergyModelSync } from "@/app/(main)/[projectId]/lib/calculateAllResults/getEnergyModelSync";
+import { calculateCostForYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCostForYear";
 
 interface CalculatePacCostForYearParams {
   data: ProjectData;
