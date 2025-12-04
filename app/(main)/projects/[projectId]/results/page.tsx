@@ -1,6 +1,5 @@
 import { getProject } from "@/lib/actions/projects/getProject"
 import { notFound, redirect } from "next/navigation"
-import { calculateAllResults, ProjectData } from "../calculations"
 import { calculatePacConsumptionKwh } from "../calculations/pacConsumption/pacConsumption"
 import { ResultsHeader } from "./components/ResultsHeader"
 import { CumulativeCostChart } from "./components/CumulativeCostChart"
@@ -11,6 +10,9 @@ import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, XCircle } from "lucide-react"
 import { prisma } from "@/lib/prisma"
+import { getProjectResults } from "@/lib/actions/results/getProjectResults"
+import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
+import type { ProjectData } from "../calculations"
 
 interface PageProps {
   params: Promise<{
@@ -59,11 +61,22 @@ export default async function ResultsPage({ params }: PageProps) {
     })
   }
 
-  // Le prix de l'électricité est maintenant renseigné dans "Projet PAC"
-  // (obligatoire, nécessaire pour calculer le coût de la PAC)
-  const prixElecKwh = project.projetPac.prix_elec_kwh || 0
+  // Get results from database (calculated when last step was completed)
+  let results = await getProjectResults(projectId)
 
-  // Prepare data for calculations
+  // If no results in DB (e.g., old project or direct access to results page), calculate and save them
+  if (!results) {
+    console.log("⚠️ Aucun résultat en DB, calcul et sauvegarde...")
+    await calculateAndSaveResults(projectId)
+    results = await getProjectResults(projectId)
+
+    if (!results) {
+      throw new Error("Impossible de calculer les résultats du projet")
+    }
+  }
+
+  // Prepare minimal projectData only for functions that still need it (like calculatePacConsumptionKwh)
+  const prixElecKwh = project.projetPac.prix_elec_kwh || 0
   const projectData: ProjectData = {
     type_chauffage: project.chauffageActuel.type_chauffage,
     conso_fioul_litres: project.chauffageActuel.conso_fioul_litres || undefined,
@@ -80,29 +93,21 @@ export default async function ResultsPage({ params }: PageProps) {
     prix_elec_kwh: prixElecKwh,
     cop_actuel: project.chauffageActuel.cop_actuel || undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh || undefined,
-
-    // Nouveaux champs pour coûts fixes système actuel (Novembre 2024)
     puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle || undefined,
     abonnement_gaz: project.chauffageActuel.abonnement_gaz || undefined,
     entretien_annuel: project.chauffageActuel.entretien_annuel || undefined,
-
     type_pac: project.projetPac.type_pac,
     puissance_pac_kw: project.projetPac.puissance_pac_kw,
     cop_estime: project.projetPac.cop_estime,
-    temperature_depart: project.projetPac.temperature_depart || 45, // Fallback si null
-    emetteurs: project.projetPac.emetteurs || "Radiateurs basse température", // Fallback si null
+    temperature_depart: project.projetPac.temperature_depart || 45,
+    emetteurs: project.projetPac.emetteurs || "Radiateurs basse température",
     duree_vie_pac: project.projetPac.duree_vie_pac,
-
-    // Nouveaux champs pour coûts fixes PAC (Novembre 2024)
     puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac || undefined,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel || undefined,
     prix_elec_pac: project.projetPac.prix_elec_pac || undefined,
-
     code_postal: project.logement.code_postal || undefined,
     cout_total: project.couts.cout_total,
     reste_a_charge: project.couts.cout_total - project.aides.total_aides,
-    // Les taux d'évolution ne sont plus passés ici - ils sont calculés automatiquement
-    // via le modèle Mean Reversion depuis l'API DIDO dans les fonctions de calcul
     mode_financement: project.financement?.mode_financement || undefined,
     montant_credit: project.financement?.montant_credit || undefined,
     taux_interet: project.financement?.taux_interet || undefined,
@@ -110,10 +115,7 @@ export default async function ResultsPage({ params }: PageProps) {
     apport_personnel: project.financement?.apport_personnel || undefined,
   }
 
-  // Calculate all results
-  const results = await calculateAllResults(projectData)
-
-  // Calculate PAC consumption for ConsumptionCard
+  // Calculate PAC consumption for ConsumptionCard (helper function, not a full calculation)
   const pacConsumptionKwh = calculatePacConsumptionKwh(projectData)
 
   return (

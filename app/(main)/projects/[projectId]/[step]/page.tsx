@@ -50,6 +50,7 @@ import { saveFinancingData } from "./sections/financing/financingActions"
 import { getProject } from "@/lib/actions/projects/getProject"
 import { updateProjectStep } from "./updateProjectStep"
 import { WIZARD_STEPS as STEPS } from "@/lib/wizard/wizardStepsData"
+import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
 
 const STEP_EXPLANATIONS: Record<string, string> = {
   "informations": "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",
@@ -516,6 +517,13 @@ export default function WizardStepPage() {
       // Update project step to next step (step numbers start at 1)
       const nextStepNumber = currentStepIndex + 2 // +1 for array index, +1 for next step
       await updateProjectStep(projectId, nextStepNumber)
+
+      // If this is the last step, calculate and save results before redirecting
+      const isLastStep = currentStepIndex === STEPS.length - 1
+      if (isLastStep) {
+        console.log("📊 Dernière étape validée, calcul et sauvegarde des résultats...")
+        await calculateAndSaveResults(projectId)
+      }
 
       // Navigate to next step or results
       if (currentStepIndex < STEPS.length - 1) {
