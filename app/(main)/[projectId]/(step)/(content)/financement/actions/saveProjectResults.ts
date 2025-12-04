@@ -1,8 +1,8 @@
-"use server"
+"use server";
 
-import { prisma } from "@/lib/prisma"
-import type { CalculationResults } from "@/types/calculationResults"
-import type { Prisma } from "@prisma/client"
+import { prisma } from "@/lib/prisma";
+import type { CalculationResults } from "@/types/calculationResults";
+import type { Prisma } from "@prisma/client";
 
 /**
  * Sauvegarde les résultats calculés dans la base de données
@@ -50,7 +50,7 @@ export const saveProjectResults = async (
         // Yearly data (stored as JSON)
         yearlyData: results.yearlyData as unknown as Prisma.InputJsonValue,
 
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       create: {
         projectId,
@@ -83,13 +83,14 @@ export const saveProjectResults = async (
         investissementReel: results.investissementReel,
 
         // Yearly data (stored as JSON)
-        yearlyData: results.yearlyData as unknown as Prisma.InputJsonValue
-      }
-    })
-
-    console.log(`✅ Résultats sauvegardés pour le projet ${projectId}`)
+        yearlyData: results.yearlyData as unknown as Prisma.InputJsonValue,
+      },
+    });
   } catch (error) {
-    console.error(`❌ Erreur lors de la sauvegarde des résultats pour le projet ${projectId}:`, error)
-    throw new Error("Impossible de sauvegarder les résultats")
+    console.error(
+      `❌ Erreur lors de la sauvegarde des résultats pour le projet ${projectId}:`,
+      error
+    );
+    throw new Error("Impossible de sauvegarder les résultats");
   }
-}
+};

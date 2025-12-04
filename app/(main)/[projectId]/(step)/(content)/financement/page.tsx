@@ -4,10 +4,7 @@ import { use, useState } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
 import { FinancementFields } from "@/app/(main)/[projectId]/(step)/(content)/financement/components/FinancementFields";
 import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData";
-import {
-  financingSchema,
-  type FinancingData,
-} from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/financingSchema";
+import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/financingSchema";
 import { getFinancementData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancementData";
 import { calculateAndSaveResults } from "./lib/calculateAndSaveResults";
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData";
