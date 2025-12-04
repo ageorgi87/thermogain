@@ -3,7 +3,7 @@
  */
 
 import { CEECategory, SEUILS_PRECARITE_IDF_2024, SEUILS_PRECARITE_PROVINCE_2024 } from '../ceeData'
-import { isIleDeFrance } from './isIleDeFrance'
+import { isIleDeFrance } from '@/lib/geography/isIleDeFrance'
 
 export const determineCEECategory = (
   revenuFiscalReference: number,

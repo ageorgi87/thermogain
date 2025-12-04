@@ -1,7 +1,7 @@
 "use server"
 
 import { getProjectData } from "@/lib/actions/projects/getProjectData"
-import { calculateAllResults } from "@/app/(main)/projects/[projectId]/calculations"
+import { calculateAllResults } from "@/app/(main)/[projectId]/calculations"
 import { saveProjectResults } from "./saveProjectResults"
 
 /**

@@ -4,7 +4,7 @@
 
 import { MaPrimeRenovInput, MaPrimeRenovResult, MONTANTS_PAC_2024 } from './maPrimeRenovData'
 import { determineCategory } from './helpers/determineCategory'
-import { isIleDeFrance } from './helpers/isIleDeFrance'
+import { isIleDeFrance } from '@/lib/geography/isIleDeFrance'
 
 export const calculateMaPrimeRenov = (input: MaPrimeRenovInput): MaPrimeRenovResult => {
   const details: string[] = []

@@ -1,6 +1,6 @@
 "use server"
 
-import { getProject } from "./getProject"
+import { getProject } from "@/app/(main)/[projectId]/results/actions/getProject"
 import type { ProjectData } from "@/types/projectData"
 
 /**
