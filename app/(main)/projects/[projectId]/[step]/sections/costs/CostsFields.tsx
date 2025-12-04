@@ -1,77 +1,57 @@
-import { Separator } from "@/components/ui/separator"
-import { Input } from "@/components/ui/input"
-import { FormField } from "@/components/form/FormField"
-import type { CostsData } from "./actions/costsSchema"
-import { calculateTotalCost, parseInputNumber } from "./costsLogic"
-import { useEffect } from "react"
+import { useEffect } from "react";
+import type { CostsData } from "./actions/costsSchema";
+import { CostsFieldsView } from "./CostsFieldsView";
 
 interface CoutsFieldsProps {
-  formData: Partial<CostsData>
-  errors: Partial<Record<keyof CostsData, string>>
-  onChange: (name: keyof CostsData, value: any) => void
+  formData: Partial<CostsData>;
+  errors: Partial<Record<keyof CostsData, string>>;
+  onChange: (name: keyof CostsData, value: any) => void;
 }
 
-export const CoutsFields = ({ formData, errors, onChange }: CoutsFieldsProps) => {
-  const coutTotal = calculateTotalCost(
-    formData.cout_pac,
-    formData.cout_installation,
-    formData.cout_travaux_annexes
-  )
+/**
+ * Composant parent (container) - gère la logique métier
+ * Calcule le total et synchronise avec formData
+ * Délègue le rendu au composant CostsFieldsView
+ */
+export const CoutsFields = ({
+  formData,
+  errors,
+  onChange,
+}: CoutsFieldsProps) => {
+  // Logique métier : calcul du total
+  const coutTotal =
+    (formData.cout_pac || 0) +
+    (formData.cout_installation || 0) +
+    (formData.cout_travaux_annexes || 0);
 
-  // Synchronise le total calculé avec formData
+  // Logique : synchronisation du total calculé avec formData
   useEffect(() => {
     if (formData.cout_total !== coutTotal) {
-      onChange("cout_total", coutTotal)
+      onChange("cout_total", coutTotal);
     }
-  }, [coutTotal, formData.cout_total, onChange])
+  }, [coutTotal, formData.cout_total, onChange]);
 
+  // Handler unifié pour tous les champs
+  const handleChange = ({
+    field,
+    value,
+  }: {
+    field: keyof CostsData;
+    value: string;
+  }) => {
+    const parsedValue = value === "" ? undefined : parseFloat(value);
+    onChange(field, parsedValue);
+  };
+
+  // Délégation du rendu au composant de présentation
   return (
-    <div className="space-y-4">
-      <FormField label="Coût de la PAC (€)" required error={errors.cout_pac}>
-        <Input
-          type="number"
-          min="0"
-          placeholder="ex: 8000"
-          value={formData.cout_pac ?? ""}
-          onChange={(e) => onChange("cout_pac", parseInputNumber(e.target.value))}
-        />
-      </FormField>
-
-      <FormField
-        label="Coût d'installation (€)"
-        error={errors.cout_installation}
-      >
-        <Input
-          type="number"
-          min="0"
-          placeholder="ex: 5000"
-          value={formData.cout_installation ?? ""}
-          onChange={(e) => onChange("cout_installation", parseInputNumber(e.target.value))}
-        />
-      </FormField>
-
-      <FormField
-        label="Coûts annexes (€)"
-        error={errors.cout_travaux_annexes}
-        description="Peinture, coffrages, etc."
-      >
-        <Input
-          type="number"
-          min="0"
-          placeholder="ex: 1500"
-          value={formData.cout_travaux_annexes ?? ""}
-          onChange={(e) => onChange("cout_travaux_annexes", parseInputNumber(e.target.value))}
-        />
-      </FormField>
-
-      <Separator />
-
-      <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
-        <span className="text-lg font-semibold">Coût total</span>
-        <span className="text-2xl font-bold">
-          {coutTotal.toLocaleString("fr-FR")} €
-        </span>
-      </div>
-    </div>
-  )
-}
+    <CostsFieldsView
+      coutPac={formData.cout_pac}
+      coutInstallation={formData.cout_installation}
+      coutTravauxAnnexes={formData.cout_travaux_annexes}
+      coutTotal={coutTotal}
+      errors={errors}
+      onChange={handleChange}
+    />
+  );
+};
