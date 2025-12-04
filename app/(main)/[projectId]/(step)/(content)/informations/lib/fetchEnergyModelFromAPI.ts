@@ -1,6 +1,6 @@
 import type { EnergyEvolutionModel } from "@/types/energy"
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/energy/didoConstants"
-import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/lib/calculateAllResults/analyzeEnergyPriceHistory"
+import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory"
 import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows"
 
 /**
