@@ -10,7 +10,10 @@ import {
 } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/heatPumpProjectSchema";
 import { getProjetPacData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/queries/getProjetPacData";
 import { getDefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getDefaultEnergyPrices";
-import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getStepInfo,
+  getTotalSteps,
+} from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function ProjetPacStepPage({

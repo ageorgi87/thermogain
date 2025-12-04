@@ -9,7 +9,10 @@ import {
   type HousingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
 import { getLogementData } from "@/app/(main)/[projectId]/(step)/(content)/logement/queries/getLogementData";
-import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getStepInfo,
+  getTotalSteps,
+} from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function LogementStepPage({

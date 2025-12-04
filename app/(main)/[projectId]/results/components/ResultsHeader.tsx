@@ -1,26 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Pencil, CheckCircle, AlertCircle } from "lucide-react"
-import { getFirstStepKey } from "@/config/wizardStepsData"
-import { SendResultsButton } from "./SendResultsButton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Pencil, CheckCircle, AlertCircle } from "lucide-react";
+import { getFirstStepKey } from "@/config/wizardStepsData";
+import { SendResultsButton } from "./SendResultsButton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ResultsHeaderProps {
-  projectId: string
-  userId: string
-  userEmail: string
-  hasRecipientEmails: boolean
+  projectId: string;
+  userId: string;
+  userEmail: string;
+  hasRecipientEmails: boolean;
 }
 
-export function ResultsHeader({ projectId, userId, userEmail, hasRecipientEmails }: ResultsHeaderProps) {
-  const firstStepKey = getFirstStepKey()
-  const [emailStatus, setEmailStatus] = useState<{ emailSent: boolean; error: string | null }>({
+export function ResultsHeader({
+  projectId,
+  userId,
+  userEmail,
+  hasRecipientEmails,
+}: ResultsHeaderProps) {
+  const firstStepKey = getFirstStepKey();
+  const [emailStatus, setEmailStatus] = useState<{
+    emailSent: boolean;
+    error: string | null;
+  }>({
     emailSent: false,
     error: null,
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -52,5 +60,5 @@ export function ResultsHeader({ projectId, userId, userEmail, hasRecipientEmails
         </div>
       </div>
     </div>
-  )
+  );
 }

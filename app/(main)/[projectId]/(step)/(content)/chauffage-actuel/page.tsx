@@ -11,7 +11,10 @@ import {
   type CurrentHeatingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema";
 import { getChauffageActuelData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/queries/getChauffageActuelData";
-import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getStepInfo,
+  getTotalSteps,
+} from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function ChauffageActuelStepPage({

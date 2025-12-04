@@ -9,7 +9,10 @@ import {
   type FinancialAidData,
 } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/financialAidSchema";
 import { getAidesData } from "@/app/(main)/[projectId]/(step)/(content)/aides/queries/getAidesData";
-import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getStepInfo,
+  getTotalSteps,
+} from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function AidesStepPage({

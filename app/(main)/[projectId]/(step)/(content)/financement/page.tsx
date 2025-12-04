@@ -7,7 +7,10 @@ import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/fin
 import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
 import { getFinancementData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancementData";
 import { calculateAndSaveResults } from "./lib/calculateAndSaveResults";
-import { getStepInfo, getTotalSteps } from "@/config/wizardStepsData";
+import {
+  getStepInfo,
+  getTotalSteps,
+} from "@/config/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
 export default function FinancementStepPage({
