@@ -3,7 +3,7 @@
 import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { StepLayout } from "@/app/(main)/projects/[projectId]/components/StepLayout"
-import { CoutsFields } from "@/app/(main)/projects/[projectId]/(step)/couts/components/CoutsFields"
+import { CostsFieldsView } from "@/app/(main)/projects/[projectId]/(step)/couts/components/CoutsFieldsView"
 import { saveCostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/saveCostsData"
 import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/costsSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
@@ -34,6 +34,12 @@ export default function CoutsStepPage({
   const stepIndex = WIZARD_STEPS.findIndex((s) => s.key === STEP_INFO.key)
   const isLastStep = stepIndex === WIZARD_STEPS.length - 1
 
+  // Calcul du total
+  const coutTotal =
+    (formData.cout_pac || 0) +
+    (formData.cout_installation || 0) +
+    (formData.cout_travaux_annexes || 0)
+
   useEffect(() => {
     const loadProject = async () => {
       try {
@@ -60,11 +66,19 @@ export default function CoutsStepPage({
     loadProject()
   }, [projectId])
 
-  const handleChange = (name: keyof CostsData, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  // Synchronisation du total calculé avec formData
+  useEffect(() => {
+    if (formData.cout_total !== coutTotal) {
+      setFormData((prev) => ({ ...prev, cout_total: coutTotal }))
+    }
+  }, [coutTotal, formData.cout_total])
+
+  const handleFieldChange = ({ field, value }: { field: keyof CostsData; value: string }) => {
+    const parsedValue = value === "" ? undefined : parseFloat(value)
+    setFormData((prev) => ({ ...prev, [field]: parsedValue }))
     setErrors((prev) => {
       const newErrors = { ...prev }
-      delete newErrors[name]
+      delete newErrors[field]
       return newErrors
     })
   }
@@ -127,7 +141,14 @@ export default function CoutsStepPage({
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
-      <CoutsFields formData={formData} errors={errors} onChange={handleChange} />
+      <CostsFieldsView
+        coutPac={formData.cout_pac}
+        coutInstallation={formData.cout_installation}
+        coutTravauxAnnexes={formData.cout_travaux_annexes}
+        coutTotal={coutTotal}
+        errors={errors}
+        onChange={handleFieldChange}
+      />
     </StepLayout>
   )
 }
