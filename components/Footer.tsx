@@ -12,7 +12,7 @@ interface FooterProps {
   alwaysShow?: boolean
 }
 
-export function Footer({ alwaysShow = false }: FooterProps) {
+export const Footer = ({ alwaysShow = false }: FooterProps) => {
   const pathname = usePathname()
   const currentYear = new Date().getFullYear()
 

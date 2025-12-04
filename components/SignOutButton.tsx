@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 
-export function SignOutButton() {
+export const SignOutButton = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 

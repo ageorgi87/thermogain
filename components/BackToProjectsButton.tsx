@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 
-export function BackToProjectsButton() {
+export const BackToProjectsButton = () => {
   const pathname = usePathname()
 
   // Afficher le bouton uniquement si on est sur une page de projet

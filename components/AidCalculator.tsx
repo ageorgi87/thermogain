@@ -40,14 +40,14 @@ interface AidCalculatorProps {
   onUseAmounts: (maPrimeRenov: number, cee: number) => void
 }
 
-export function AidCalculator({
+export const AidCalculator = ({
   typePac,
   anneeConstruction,
   codePostal,
   surfaceHabitable,
   nombreOccupants,
   onUseAmounts,
-}: AidCalculatorProps) {
+}: AidCalculatorProps) => {
   const [open, setOpen] = useState(false)
   const [revenuFiscal, setRevenuFiscal] = useState<string>("")
   const [nombrePersonnes, setNombrePersonnes] = useState<string>(nombreOccupants?.toString() || "2")

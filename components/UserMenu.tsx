@@ -34,7 +34,7 @@ interface UserMenuProps {
  * - Responsive : s'adapte au mobile
  * - Animation fluide < 200ms
  */
-export function UserMenu({ userName, userEmail }: UserMenuProps) {
+export const UserMenu = ({ userName, userEmail }: UserMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   // Générer les initiales à partir du nom ou de l'email
