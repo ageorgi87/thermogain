@@ -2,7 +2,7 @@ import type { ProjectData } from "@/types/projectData";
 import { calculateCurrentAnnualCost } from "../currentCost/currentCost";
 import { getDeltaAbonnementElectricite } from "@/lib/subscription/getDeltaAbonnementElectricite";
 import { getAbonnementElectriciteAnnuel } from "@/lib/subscription/getAbonnementElectriciteAnnuel";
-import { getElectricityModelSync } from "@/lib/energy/modelCache/getElectricityModelSync";
+import { getEnergyModelSync } from "@/lib/energy/modelCache/getEnergyModelSync";
 import { calculateCostForYear } from "@/lib/energyEvolution/calculateCostForYear";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 
@@ -161,7 +161,7 @@ export const calculatePacCostForYear = async ({
   const fixedCosts = calculatePacFixedCosts(data);
 
   // Récupérer le modèle Mean Reversion depuis la DB
-  const model = await getElectricityModelSync();
+  const model = await getEnergyModelSync("electricite");
 
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
   return calculateCostForYear(variableCost, fixedCosts.total, year, model);

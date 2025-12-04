@@ -9,7 +9,7 @@ import {
   getNextStepKey,
   getPreviousStepKey,
 } from "@/lib/wizardStepsData";
-import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep";
+import { updateProjectStep } from "@/app/(main)/[projectId]/(step)/mutations/updateProjectStep";
 import { notFound } from "next/navigation";
 
 interface UseStepFormParams<T extends z.ZodType> {

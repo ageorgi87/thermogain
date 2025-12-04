@@ -1,4 +1,4 @@
-import { getClimateInfoFromPostalCode } from "./getClimateInfoFromPostalCode"
+import { getClimateInfoFromPostalCode } from "@/lib/climate/getClimateInfoFromPostalCode"
 
 /**
  * Calcule le coefficient d'ajustement du COP selon la zone climatique

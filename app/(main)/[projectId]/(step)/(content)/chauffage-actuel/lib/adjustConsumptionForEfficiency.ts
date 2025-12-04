@@ -1,4 +1,4 @@
-import { calculateBoilerEfficiency } from "@/lib/heating/calculateBoilerEfficiency";
+import { calculateBoilerEfficiency } from "./calculateBoilerEfficiency";
 import type { EtatInstallation } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/etatInstallation"
 
 interface AdjustedConsumptionResult {

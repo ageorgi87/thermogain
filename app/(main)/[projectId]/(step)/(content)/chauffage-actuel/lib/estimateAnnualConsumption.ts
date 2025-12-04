@@ -1,6 +1,6 @@
 import { getConsumptionCoefficient } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getConsumptionCoefficient";
 import { getOccupancyFactor } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getOccupancyFactor";
-import { getConsumptionAdjustment } from "@/lib/climate/getConsumptionAdjustment";
+import { getConsumptionAdjustment } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getConsumptionAdjustment";
 import type { HousingCharacteristics } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/housingCharacteristics"
 
 /**

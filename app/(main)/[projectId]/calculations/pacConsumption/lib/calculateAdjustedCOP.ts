@@ -1,6 +1,6 @@
 import { getTemperatureAdjustment } from "./lib/getTemperatureAdjustment";
 import { getEmitterAdjustment } from "./lib/getEmitterAdjustment";
-import { getCOPAdjustment as getClimateAdjustment } from "@/lib/climate/getCOPAdjustment";
+import { getCOPAdjustment as getClimateAdjustment } from "./getCOPAdjustment";
 
 /**
  * Calcule le COP réel ajusté selon tous les facteurs
