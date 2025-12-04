@@ -24,6 +24,7 @@ import {
 import { Plus, Pencil, Trash2, Eye, Loader2, Calculator } from "lucide-react"
 import { getProjects } from "@/lib/actions/projects/getProjects"
 import { deleteProject } from "@/lib/actions/projects/deleteProject"
+import { createProject } from "@/lib/actions/projects/createProject"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
 import { getTotalSteps } from "@/lib/wizard/getTotalSteps"
 import { getStepNumber } from "@/lib/wizard/getStepNumber"
@@ -45,6 +46,7 @@ export default function ProjectsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
     fetchProjects()
@@ -58,6 +60,18 @@ export default function ProjectsPage() {
       console.error("Failed to fetch projects:", error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleCreateProject = async () => {
+    setIsCreating(true)
+    try {
+      const project = await createProject({ name: "" })
+      const firstStep = WIZARD_STEPS[0].key
+      router.push(`/projects/${project.id}/${firstStep}`)
+    } catch (error) {
+      console.error("Failed to create project:", error)
+      setIsCreating(false)
     }
   }
 
@@ -107,10 +121,15 @@ export default function ProjectsPage() {
           </p>
         </div>
         <Button
-          onClick={() => router.push("/projects/create")}
+          onClick={handleCreateProject}
           size="lg"
+          disabled={isCreating}
         >
-          <Plus className="mr-2 h-5 w-5" />
+          {isCreating ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-5 w-5" />
+          )}
           Nouveau Projet PAC
         </Button>
       </div>
@@ -126,10 +145,15 @@ export default function ProjectsPage() {
               Créez votre premier projet pour commencer à évaluer la rentabilité des pompes à chaleur pour vos clients
             </p>
             <Button
-              onClick={() => router.push("/projects/create")}
+              onClick={handleCreateProject}
               size="lg"
+              disabled={isCreating}
             >
-              <Plus className="mr-2 h-5 w-5" />
+              {isCreating ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-5 w-5" />
+              )}
               Créer votre premier projet
             </Button>
           </CardContent>

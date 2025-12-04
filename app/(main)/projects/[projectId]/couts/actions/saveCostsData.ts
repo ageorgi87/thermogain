@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/costsSchema";
+import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/couts/actions/costsSchema";
 
 export async function saveCostsData(projectId: string, data: CostsData) {
   const session = await auth();
