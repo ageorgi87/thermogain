@@ -7,7 +7,7 @@ import { isCacheValid } from "./helpers/isCacheValid"
 /**
  * Récupère ou met à jour les données d'évolution de prix pour un type d'énergie
  * Utilise le cache si les données datent du mois en cours, sinon interroge l'API
- * Retourne uniquement l'évolution sur 10 ans (alignée avec l'horizon d'investissement de 17 ans)
+ * Retourne le taux récent (anciennement evolution_10y)
  */
 export const getOrUpdateEnergyPrice = async (energyType: string): Promise<{
   evolution_10y: number
@@ -23,7 +23,7 @@ export const getOrUpdateEnergyPrice = async (energyType: string): Promise<{
     if (cached && isCacheValid(cached.lastUpdated)) {
       console.log(`📦 Cache hit pour ${energyType} (dernière mise à jour: ${cached.lastUpdated.toLocaleDateString()})`)
       return {
-        evolution_10y: cached.evolution_10y,
+        evolution_10y: cached.tauxRecent, // Utiliser tauxRecent au lieu de evolution_10y
         fromCache: true,
       }
     }
@@ -36,13 +36,15 @@ export const getOrUpdateEnergyPrice = async (energyType: string): Promise<{
     const updated = await prisma.energyPriceCache.upsert({
       where: { energyType },
       update: {
-        evolution_10y: evolution10y,
+        tauxRecent: evolution10y, // Utiliser tauxRecent
         lastUpdated: new Date(),
       },
       create: {
         energyType,
         currentPrice: 0,
-        evolution_10y: evolution10y,
+        tauxRecent: evolution10y, // Utiliser tauxRecent
+        tauxEquilibre: 0, // Sera mis à jour par getOrRefreshEnergyModel
+        anneesTransition: 5,
         lastUpdated: new Date(),
       }
     })
@@ -50,7 +52,7 @@ export const getOrUpdateEnergyPrice = async (energyType: string): Promise<{
     console.log(`✅ Cache mis à jour pour ${energyType}`)
 
     return {
-      evolution_10y: updated.evolution_10y,
+      evolution_10y: updated.tauxRecent,
       fromCache: false,
     }
   } catch (error) {
@@ -63,10 +65,10 @@ export const getOrUpdateEnergyPrice = async (energyType: string): Promise<{
         orderBy: { lastUpdated: 'desc' }
       })
 
-      if (mostRecent && mostRecent.evolution_10y > 0) {
-        console.log(`⚠️ Utilisation de l'évolution la plus récente en DB pour ${energyType}: ${mostRecent.evolution_10y}% (date: ${mostRecent.lastUpdated.toLocaleDateString()})`)
+      if (mostRecent && mostRecent.tauxRecent > 0) {
+        console.log(`⚠️ Utilisation de l'évolution la plus récente en DB pour ${energyType}: ${mostRecent.tauxRecent}% (date: ${mostRecent.lastUpdated.toLocaleDateString()})`)
         return {
-          evolution_10y: mostRecent.evolution_10y,
+          evolution_10y: mostRecent.tauxRecent,
           fromCache: true,
         }
       }

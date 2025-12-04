@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import type { EnergyEvolutionModel } from "@/types/energy"
 
 /**
  * Sauvegarde un modèle dans la base de données
@@ -12,13 +12,17 @@ export const saveModelToDb = async (
     await prisma.energyPriceCache.upsert({
       where: { energyType },
       update: {
-        evolution_10y: model.tauxRecent,
+        tauxRecent: model.tauxRecent,
+        tauxEquilibre: model.tauxEquilibre,
+        anneesTransition: model.anneesTransition || 5,
         lastUpdated: new Date()
       },
       create: {
         energyType,
-        currentPrice: 0, // Non utilisé dans ce contexte
-        evolution_10y: model.tauxRecent,
+        currentPrice: 0, // Legacy field
+        tauxRecent: model.tauxRecent,
+        tauxEquilibre: model.tauxEquilibre,
+        anneesTransition: model.anneesTransition || 5,
         lastUpdated: new Date()
       }
     })

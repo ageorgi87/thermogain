@@ -5,8 +5,8 @@
  * Les coûts FIXES (abonnements, entretien) restent constants.
  */
 
-import { EnergyEvolutionModel } from './energyEvolutionData'
-import { calculateCumulativeEvolutionFactor } from './calculateCumulativeEvolutionFactor'
+import type { EnergyEvolutionModel } from '@/types/energy'
+import { meanReversionRate } from './meanReversionRate'
 
 /**
  * Calcule le coût pour une année donnée avec évolution du prix
@@ -23,8 +23,15 @@ export const calculateCostForYear = (
   annee: number,
   model: EnergyEvolutionModel
 ): number => {
-  const facteurEvolution = calculateCumulativeEvolutionFactor(annee, model)
-  const coutVariableAnnee = coutVariable * facteurEvolution
+  // Créer un tableau [0, 1, 2, ..., annee-1] représentant chaque année
+  const annees = [...Array(annee).keys()]
 
-  return coutVariableAnnee + coutsFixes
+  // Calculer le facteur d'évolution (1 + taux%) pour chaque année
+  const facteurs = annees.map(anneeIndex => 1 + meanReversionRate(anneeIndex, model) / 100)
+
+  // Multiplier tous les facteurs pour obtenir le facteur d'évolution cumulé
+  const facteurEvolution = facteurs.reduce((produit, facteur) => produit * facteur, 1)
+
+  // Appliquer l'évolution au coût variable et ajouter les coûts fixes
+  return coutVariable * facteurEvolution + coutsFixes
 }

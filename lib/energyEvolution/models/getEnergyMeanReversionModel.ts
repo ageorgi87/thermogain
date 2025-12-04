@@ -3,9 +3,9 @@
  * basé sur l'historique réel de l'API DIDO
  */
 
-import { DATAFILE_RIDS } from '@/lib/dido/didoConstants'
-import type { EnergyEvolutionModel } from '@/lib/energyEvolution/energyEvolutionData'
-import { analyzeEnergyPriceHistory } from './analyzeEnergyPriceHistory'
+import { DATAFILE_RIDS } from "@/lib/dido/didoConstants";
+import type { EnergyEvolutionModel } from "@/types/energy";
+import { analyzeEnergyPriceHistory } from "./analyzeEnergyPriceHistory";
 
 /**
  * Génère le modèle Mean Reversion pour un type d'énergie donné
@@ -15,53 +15,46 @@ import { analyzeEnergyPriceHistory } from './analyzeEnergyPriceHistory'
  * @throws Error si le type d'énergie est invalide ou si l'API échoue
  */
 export const getEnergyMeanReversionModel = async (
-  energyType: 'gaz' | 'electricite' | 'fioul' | 'bois'
+  energyType: "gaz" | "electricite" | "fioul" | "bois"
 ): Promise<EnergyEvolutionModel> => {
-  let rid: string
-  let priceColumnName: string
-  let label: string
+  let rid: string;
+  let priceColumnName: string;
+  let label: string;
 
   switch (energyType) {
-    case 'gaz':
-      rid = DATAFILE_RIDS.gas
-      priceColumnName = 'PX_GAZ_D_TTES_TRANCHES'
-      label = 'GAZ'
-      break
+    case "gaz":
+      rid = DATAFILE_RIDS.gas;
+      priceColumnName = "PX_GAZ_D_TTES_TRANCHES";
+      label = "GAZ";
+      break;
 
-    case 'electricite':
-      rid = DATAFILE_RIDS.electricity
-      priceColumnName = 'PX_ELE_D_TTES_TRANCHES'
-      label = 'ÉLECTRICITÉ'
-      break
+    case "electricite":
+      rid = DATAFILE_RIDS.electricity;
+      priceColumnName = "PX_ELE_D_TTES_TRANCHES";
+      label = "ÉLECTRICITÉ";
+      break;
 
-    case 'fioul':
-      rid = DATAFILE_RIDS.petroleum
-      priceColumnName = 'PX_PETRO_FOD_100KWH_C1'
-      label = 'FIOUL'
-      break
+    case "fioul":
+      rid = DATAFILE_RIDS.petroleum;
+      priceColumnName = "PX_PETRO_FOD_100KWH_C1";
+      label = "FIOUL";
+      break;
 
-    case 'bois':
-      rid = DATAFILE_RIDS.wood
-      priceColumnName = 'PX_BOIS_GRANVRAC_100KWH'
-      label = 'BOIS'
-      break
+    case "bois":
+      rid = DATAFILE_RIDS.wood;
+      priceColumnName = "PX_BOIS_GRANVRAC_100KWH";
+      label = "BOIS";
+      break;
 
     default:
-      throw new Error(`Type d'énergie invalide: ${energyType}`)
+      throw new Error(`Type d'énergie invalide: ${energyType}`);
   }
 
-  const analysis = await analyzeEnergyPriceHistory(rid, priceColumnName)
-
-  console.log(`\n🎯 Modèle ${label} généré:`)
-  console.log(`   • Taux récent: ${analysis.tauxRecent}%`)
-  console.log(`   • Taux équilibre: ${analysis.tauxEquilibre}%`)
-  console.log(`   • Historique: ${analysis.yearsOfData} ans`)
-  console.log(`   • Crises détectées: ${analysis.crisisYears.length}\n`)
+  const analysis = await analyzeEnergyPriceHistory(rid, priceColumnName);
 
   return {
-    type: 'mean-reversion',
     tauxRecent: analysis.tauxRecent,
     tauxEquilibre: analysis.tauxEquilibre,
-    anneesTransition: 5
-  }
-}
+    anneesTransition: 5,
+  };
+};

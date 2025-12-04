@@ -38,7 +38,9 @@ export const getCachedEnergyPrice = async (energyType: string): Promise<number> 
       create: {
         energyType,
         currentPrice,
-        evolution_10y: 0, // Sera mis à jour par getOrUpdateEnergyPrice
+        tauxRecent: 0, // Sera mis à jour par getOrRefreshEnergyModel
+        tauxEquilibre: 0, // Sera mis à jour par getOrRefreshEnergyModel
+        anneesTransition: 5,
         lastUpdated: new Date(),
       },
       update: {

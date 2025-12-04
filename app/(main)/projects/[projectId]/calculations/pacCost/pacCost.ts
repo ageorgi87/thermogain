@@ -1,4 +1,4 @@
-import { ProjectData } from "../types";
+import type { ProjectData } from "@/types/projectData";
 import { calculateCurrentAnnualCost } from "../currentCost/currentCost";
 import { getDeltaAbonnementElectricite } from "@/lib/subscription/getDeltaAbonnementElectricite";
 import { getAbonnementElectriciteAnnuel } from "@/lib/subscription/getAbonnementElectriciteAnnuel";
@@ -147,16 +147,16 @@ export function calculatePacAnnualCost(data: ProjectData): number {
  * @param year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
-export function calculatePacCostForYear(
+export async function calculatePacCostForYear(
   data: ProjectData,
   year: number
-): number {
+): Promise<number> {
   // Coûts variables: évoluent avec le modèle Mean Reversion
   const variableCost = calculatePacVariableCost(data);
   const fixedCosts = calculatePacFixedCosts(data);
 
-  // Récupérer le modèle Mean Reversion depuis l'API DIDO
-  const model = getElectricityModelSync();
+  // Récupérer le modèle Mean Reversion depuis la DB
+  const model = await getElectricityModelSync();
 
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
   return calculateCostForYear(variableCost, fixedCosts.total, year, model);

@@ -1,97 +1,140 @@
+// Export types
+export type { ProjectData } from "@/types/projectData";
+export type { YearlyData } from "@/types/yearlyData";
+export type { CalculationResults } from "@/types/calculationResults";
+
 // Export all calculation functions
-export * from "./types"
-export * from "./currentCost/currentCost"
-export * from "./pacCost/pacCost"
-export * from "./savings/savings"
-export * from "./roi/roi"
+export * from "./currentCost/currentCost";
+export * from "./pacCost/pacCost";
+export * from "./savings/savings";
+export * from "./roi/roi";
 
 // Main calculation function that orchestrates all calculations
-import { ProjectData, CalculationResults } from "./types"
-import { calculateCurrentAnnualCost } from "./currentCost/currentCost"
-import { calculatePacAnnualCost } from "./pacCost/pacCost"
-import { calculateYearlyData, calculateTotalSavings, calculateNetBenefit } from "./savings/savings"
+import type { ProjectData } from "@/types/projectData";
+import type { CalculationResults } from "@/types/calculationResults";
+import { calculateCurrentAnnualCost } from "./currentCost/currentCost";
+import { calculatePacAnnualCost } from "./pacCost/pacCost";
+import {
+  calculateYearlyData,
+  calculateTotalSavings,
+  calculateNetBenefit,
+} from "./savings/savings";
 import {
   calculatePaybackPeriod,
   calculatePaybackYear,
   calculateMonthlyPayment,
   calculateTotalCreditCost,
-} from "./roi/roi"
+} from "./roi/roi";
 
 /**
  * Fonction principale qui calcule tous les résultats du projet
  * @param data Données du projet
  * @returns Tous les résultats calculés
  */
-export function calculateAllResults(data: ProjectData): CalculationResults {
+export async function calculateAllResults(data: ProjectData): Promise<CalculationResults> {
   // Coûts année 1
-  const coutAnnuelActuel = calculateCurrentAnnualCost(data)
-  const coutAnnuelPac = calculatePacAnnualCost(data)
+  const coutAnnuelActuel = calculateCurrentAnnualCost(data);
+  const coutAnnuelPac = calculatePacAnnualCost(data);
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
   // Mode Crédit : reste_a_charge + intérêts du crédit
   // Mode Mixte : apport_personnel + montant_credit + intérêts
-  let investissementReel = data.reste_a_charge
+  let investissementReel = data.reste_a_charge;
 
-  if (data.mode_financement === "Crédit" && data.montant_credit && data.taux_interet !== undefined && data.duree_credit_mois) {
-    const coutTotalCredit = calculateTotalCreditCost(data.montant_credit, data.taux_interet, data.duree_credit_mois)
-    investissementReel = coutTotalCredit
-  } else if (data.mode_financement === "Mixte" && data.montant_credit && data.taux_interet !== undefined && data.duree_credit_mois && data.apport_personnel) {
-    const coutTotalCredit = calculateTotalCreditCost(data.montant_credit, data.taux_interet, data.duree_credit_mois)
-    investissementReel = data.apport_personnel + coutTotalCredit
+  if (
+    data.mode_financement === "Crédit" &&
+    data.montant_credit &&
+    data.taux_interet !== undefined &&
+    data.duree_credit_mois
+  ) {
+    const coutTotalCredit = calculateTotalCreditCost(
+      data.montant_credit,
+      data.taux_interet,
+      data.duree_credit_mois
+    );
+    investissementReel = coutTotalCredit;
+  } else if (
+    data.mode_financement === "Mixte" &&
+    data.montant_credit &&
+    data.taux_interet !== undefined &&
+    data.duree_credit_mois &&
+    data.apport_personnel
+  ) {
+    const coutTotalCredit = calculateTotalCreditCost(
+      data.montant_credit,
+      data.taux_interet,
+      data.duree_credit_mois
+    );
+    investissementReel = data.apport_personnel + coutTotalCredit;
   }
 
   // Créer un objet ProjectData ajusté avec l'investissement réel
   const dataAjusteeROI: ProjectData = {
     ...data,
-    reste_a_charge: investissementReel
-  }
+    reste_a_charge: investissementReel,
+  };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
-  const yearlyData = calculateYearlyData(dataAjusteeROI, data.duree_vie_pac)
+  const yearlyData = await calculateYearlyData(dataAjusteeROI, data.duree_vie_pac);
 
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
-  const economiesAnnuelles = yearlyData.length > 0
-    ? yearlyData.reduce((sum, y) => sum + y.economie, 0) / yearlyData.length
-    : coutAnnuelActuel - coutAnnuelPac
+  const economiesAnnuelles =
+    yearlyData.length > 0
+      ? yearlyData.reduce((sum, y) => sum + y.economie, 0) / yearlyData.length
+      : coutAnnuelActuel - coutAnnuelPac;
 
   // ROI avec investissement réel (incluant intérêts du crédit)
-  const paybackPeriod = calculatePaybackPeriod(dataAjusteeROI)
-  const paybackYear = calculatePaybackYear(dataAjusteeROI)
+  const paybackPeriod = await calculatePaybackPeriod(dataAjusteeROI);
+  const paybackYear = await calculatePaybackYear(dataAjusteeROI);
 
   // Gains totaux sur la durée de vie de la PAC
-  const totalSavingsLifetime = calculateTotalSavings(dataAjusteeROI, data.duree_vie_pac)
-  const netBenefitLifetime = calculateNetBenefit(dataAjusteeROI, data.duree_vie_pac)
+  const totalSavingsLifetime = await calculateTotalSavings(
+    dataAjusteeROI,
+    data.duree_vie_pac
+  );
+  const netBenefitLifetime = await calculateNetBenefit(
+    dataAjusteeROI,
+    data.duree_vie_pac
+  );
 
   // Coûts totaux sur durée de vie
-  const coutTotalActuelLifetime = yearlyData.reduce((sum, y) => sum + y.coutActuel, 0)
-  const coutTotalPacLifetime = investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0)
+  const coutTotalActuelLifetime = yearlyData.reduce(
+    (sum, y) => sum + y.coutActuel,
+    0
+  );
+  const coutTotalPacLifetime =
+    investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0);
 
   // Taux de rentabilité annuel moyen (utiliser investissement réel)
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
   // Valeur finale = Investissement + Gain net
-  let tauxRentabilite: number | null = null
+  let tauxRentabilite: number | null = null;
   if (investissementReel > 0 && data.duree_vie_pac > 0) {
-    const valeurFinale = investissementReel + netBenefitLifetime
+    const valeurFinale = investissementReel + netBenefitLifetime;
     // Calculer le taux même si négatif (perte annuelle moyenne)
     // Si valeurFinale <= 0, le taux sera négatif
     if (valeurFinale > 0) {
-      tauxRentabilite = (Math.pow(valeurFinale / investissementReel, 1 / data.duree_vie_pac) - 1) * 100
+      tauxRentabilite =
+        (Math.pow(valeurFinale / investissementReel, 1 / data.duree_vie_pac) -
+          1) *
+        100;
     } else {
       // Pour les projets non rentables, calculer la perte annuelle moyenne en pourcentage
       // Perte totale / investissement / nombre d'années * 100
-      tauxRentabilite = (netBenefitLifetime / investissementReel / data.duree_vie_pac) * 100
+      tauxRentabilite =
+        (netBenefitLifetime / investissementReel / data.duree_vie_pac) * 100;
     }
   }
 
   // Coûts mensuels
-  const coutMensuelActuel = coutAnnuelActuel / 12
-  const coutMensuelPac = coutAnnuelPac / 12
-  const economieMensuelle = economiesAnnuelles / 12
+  const coutMensuelActuel = coutAnnuelActuel / 12;
+  const coutMensuelPac = coutAnnuelPac / 12;
+  const economieMensuelle = economiesAnnuelles / 12;
 
   // Financement
-  let mensualiteCredit: number | undefined
-  let coutTotalCredit: number | undefined
+  let mensualiteCredit: number | undefined;
+  let coutTotalCredit: number | undefined;
 
   if (
     data.mode_financement === "Crédit" &&
@@ -103,12 +146,12 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
       data.montant_credit,
       data.taux_interet,
       data.duree_credit_mois
-    )
+    );
     coutTotalCredit = calculateTotalCreditCost(
       data.montant_credit,
       data.taux_interet,
       data.duree_credit_mois
-    )
+    );
   }
 
   return {
@@ -120,14 +163,18 @@ export function calculateAllResults(data: ProjectData): CalculationResults {
     paybackYear,
     totalSavingsLifetime: Math.round(totalSavingsLifetime),
     netBenefitLifetime: Math.round(netBenefitLifetime),
-    tauxRentabilite: tauxRentabilite ? Math.round(tauxRentabilite * 10) / 10 : null,
+    tauxRentabilite: tauxRentabilite
+      ? Math.round(tauxRentabilite * 10) / 10
+      : null,
     coutTotalActuelLifetime: Math.round(coutTotalActuelLifetime),
     coutTotalPacLifetime: Math.round(coutTotalPacLifetime),
     coutMensuelActuel: Math.round(coutMensuelActuel),
     coutMensuelPac: Math.round(coutMensuelPac),
     economieMensuelle: Math.round(economieMensuelle),
-    mensualiteCredit: mensualiteCredit ? Math.round(mensualiteCredit) : undefined,
+    mensualiteCredit: mensualiteCredit
+      ? Math.round(mensualiteCredit)
+      : undefined,
     coutTotalCredit: coutTotalCredit ? Math.round(coutTotalCredit) : undefined,
     investissementReel: Math.round(investissementReel),
-  }
+  };
 }

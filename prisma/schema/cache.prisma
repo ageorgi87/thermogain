@@ -1,19 +1,22 @@
 // Energy Price Cache - External API data caching
-// Stores current prices and evolution rates from DIDO API
-// Data is cached per month and automatically refreshed when outdated
-// Avoids excessive API calls while maintaining up-to-date pricing information
+// Stores Mean Reversion model data from DIDO API
+// Data is refreshed monthly to ensure up-to-date pricing projections
+// Single source of truth for energy price evolution models
 
 model EnergyPriceCache {
   id         String @id @default(cuid())
-  energyType String @unique // "fioul", "gaz", "gpl", "bois", "electricite"
+  energyType String @unique // "fioul", "gaz", "electricite", "bois"
 
-  // Current price (average of last 12 months, in appropriate unit)
-  // Units: €/kWh for most, €/litre for fioul, €/kg for gpl/pellets, €/stère for bois
+  // Mean Reversion Model parameters
+  // tauxRecent: Recent rate influenced by current market (ex: 8.7% for gas)
+  // tauxEquilibre: Long-term equilibrium rate (ex: 3.5% for gas)
+  // anneesTransition: Transition period in years (typically 5)
+  tauxRecent       Float @default(0)
+  tauxEquilibre    Float @default(0)
+  anneesTransition Int   @default(5)
+
+  // Legacy field (deprecated, kept for compatibility)
   currentPrice Float @default(0)
-
-  // Evolution rate over 10 years (% per year)
-  // Used for long-term investment calculations (17-year PAC lifespan)
-  evolution_10y Float
 
   lastUpdated DateTime @default(now())
   createdAt   DateTime @default(now())

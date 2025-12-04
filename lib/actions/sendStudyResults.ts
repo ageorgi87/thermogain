@@ -5,7 +5,7 @@ import { resend, EMAIL_FROM } from "@/email/lib/resend";
 import { StudyResultsEmail } from "@/email/templates/StudyResultsEmail";
 import { render } from "@react-email/render";
 import { calculateAllResults } from "@/app/(main)/projects/[projectId]/calculations";
-import { type ProjectData } from "@/app/(main)/projects/[projectId]/calculations/types";
+import { type ProjectData } from "@/types/projectData";
 
 interface SendStudyResultsParams {
   projectId: string;
@@ -159,7 +159,7 @@ export const sendStudyResults = async ({
     };
 
     // 5. Calculer les résultats financiers
-    const results = calculateAllResults(projectData);
+    const results = await calculateAllResults(projectData);
 
     // 6. Construire l'URL des résultats
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
@@ -268,7 +268,7 @@ export const sendStudyResults = async ({
           : "Erreur inconnue lors de l'envoi",
     };
   }
-}
+};
 
 /**
  * Helper: Récupère le taux d'évolution selon le type de chauffage
@@ -300,4 +300,4 @@ const getEvolutionForEnergyType = (
     default:
       return 5;
   }
-}
+};

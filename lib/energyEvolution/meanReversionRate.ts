@@ -13,7 +13,7 @@
  * - Année 5+: 3.5%
  */
 
-import { EnergyEvolutionModel } from '../energyEvolutionData'
+import type { EnergyEvolutionModel } from '@/types/energy'
 
 export const meanReversionRate = (
   annee: number,

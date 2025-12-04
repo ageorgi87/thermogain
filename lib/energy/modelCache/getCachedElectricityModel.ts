@@ -1,4 +1,4 @@
-import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import type { EnergyEvolutionModel } from "@/types/energy"
 import { getEnergyMeanReversionModel } from "@/lib/energyEvolution/models/getEnergyMeanReversionModel"
 import { getModelFromDb } from "./helpers/getModelFromDb"
 import { saveModelToDb } from "./helpers/saveModelToDb"

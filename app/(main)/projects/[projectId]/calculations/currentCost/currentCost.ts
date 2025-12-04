@@ -1,4 +1,4 @@
-import { ProjectData } from "../types";
+import type { ProjectData } from "@/types/projectData";
 import { getAbonnementElectriciteAnnuel } from "@/lib/subscription/getAbonnementElectriciteAnnuel";
 import { getEnergyModelSync } from "@/lib/energy/modelCache/getEnergyModelSync";
 import { calculateCostForYear } from "@/lib/energyEvolution/calculateCostForYear";
@@ -180,18 +180,17 @@ function getEnergyType(
  * @param year Année de projection (0 = année actuelle)
  * @returns Coût projeté en euros
  */
-export function calculateCurrentCostForYear(
+export async function calculateCurrentCostForYear(
   data: ProjectData,
   year: number
-): number {
+): Promise<number> {
   // Coûts variables: évoluent avec le modèle Mean Reversion
   const variableCost = calculateCurrentVariableCost(data);
   const fixedCosts = calculateCurrentFixedCosts(data);
 
-  // Récupérer le modèle Mean Reversion selon le type d'énergie
-  // Utilise le cache si disponible, sinon valeurs par défaut
+  // Récupérer le modèle Mean Reversion selon le type d'énergie depuis la DB
   const energyType = getEnergyType(data);
-  const model = getEnergyModelSync(energyType);
+  const model = await getEnergyModelSync(energyType);
 
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion
   return calculateCostForYear(variableCost, fixedCosts.total, year, model);

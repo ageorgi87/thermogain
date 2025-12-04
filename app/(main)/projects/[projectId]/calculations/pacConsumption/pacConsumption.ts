@@ -1,4 +1,4 @@
-import { ProjectData } from "../types";
+import type { ProjectData } from "@/types/projectData";
 import { calculateAdjustedCOP } from "@/lib/pac/calculateAdjustedCOP";
 import { ENERGY_CONVERSION_FACTORS } from "@/config/constants";
 

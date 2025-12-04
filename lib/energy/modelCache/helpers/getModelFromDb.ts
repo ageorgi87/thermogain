@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import type { EnergyEvolutionModel } from "@/types/energy"
 
 const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000 // 30 jours en millisecondes
 
@@ -27,10 +27,9 @@ export const getModelFromDb = async (
 
     // Construire le modèle depuis les données DB
     const model: EnergyEvolutionModel = {
-      type: 'mean-reversion',
-      tauxRecent: cached.evolution_10y,
-      tauxEquilibre: 2.5, // Valeur standard pour tous les types
-      anneesTransition: 5  // Valeur standard pour tous les types
+      tauxRecent: cached.tauxRecent,
+      tauxEquilibre: cached.tauxEquilibre,
+      anneesTransition: cached.anneesTransition
     }
 
     console.log(`✅ Modèle ${energyType.toUpperCase()} récupéré depuis DB (cache de ${Math.round(age / (24 * 60 * 60 * 1000))} jours)`)

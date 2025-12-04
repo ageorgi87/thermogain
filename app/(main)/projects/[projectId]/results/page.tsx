@@ -111,7 +111,7 @@ export default async function ResultsPage({ params }: PageProps) {
   }
 
   // Calculate all results
-  const results = calculateAllResults(projectData)
+  const results = await calculateAllResults(projectData)
 
   // Calculate PAC consumption for ConsumptionCard
   const pacConsumptionKwh = calculatePacConsumptionKwh(projectData)

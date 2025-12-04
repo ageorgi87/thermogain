@@ -1,4 +1,4 @@
-import type { EnergyEvolutionModel } from "@/lib/energyEvolution/energyEvolutionData"
+import type { EnergyEvolutionModel } from "@/types/energy"
 
 /**
  * Cache en mémoire pour optimiser les lectures pendant l'exécution
