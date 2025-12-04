@@ -287,6 +287,8 @@ export default formatCurrency
 
 ### TypeScript : Types stricts obligatoires
 
+**RÈGLE ABSOLUE** : **INTERDICTION TOTALE** du type `any`. Toujours créer des types explicites.
+
 ```typescript
 // ✅ BON : Types explicites
 export const calculateROI = (
@@ -314,7 +316,27 @@ export const calculateROI = (investment, annualSavings) => {
 export const sendEmail = async (params: any) => {
   // ...
 }
+
+// ❌ INTERDIT : Utilisation de 'as any' pour contourner les types
+setFormData((data.logement as any) || {})
+
+// ✅ BON : Mapper les données Prisma vers des types stricts
+const logement: Partial<HousingData> | null = project.logement ? {
+  code_postal: project.logement.code_postal,
+  annee_construction: project.logement.annee_construction,
+  surface_habitable: project.logement.surface_habitable,
+  nombre_occupants: project.logement.nombre_occupants,
+  qualite_isolation: project.logement.qualite_isolation as HousingData["qualite_isolation"],
+} : null
+
+setFormData(logement || {})
 ```
+
+**Pourquoi cette règle ?**
+- ✅ `any` annule complètement les bénéfices de TypeScript
+- ✅ Les types stricts préviennent les bugs à la compilation
+- ✅ L'autocomplétion fonctionne correctement avec des types stricts
+- ✅ Le refactoring est plus sûr avec des types explicites
 
 ### Gestion d'erreurs : try/catch explicites
 

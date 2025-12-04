@@ -18,56 +18,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { ENTRETIEN_ANNUEL_MOYEN } from "@/lib/subscription/subscriptionData"
+import { PriceLabelWithTooltip } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/components/PriceLabelWithTooltip"
+import type { DefaultEnergyPrices } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/types/defaultEnergyPrices"
 
 interface ChauffageActuelFieldsProps {
   formData: Partial<CurrentHeatingData>
   errors: Partial<Record<keyof CurrentHeatingData, string>>
   onChange: (name: keyof CurrentHeatingData, value: any) => void
-  defaultPrices?: {
-    fioul: number
-    gaz: number
-    gpl: number
-    bois: number
-    electricite: number
-  }
+  onNumberChange: (name: keyof CurrentHeatingData) => (e: React.ChangeEvent<HTMLInputElement>) => void
+  defaultPrices?: DefaultEnergyPrices
 }
 
-// Helper component for price label with tooltip
-function PriceLabelWithTooltip({ label, price, unit }: { label: string; price?: number; unit: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span>{label}</span>
-      {price && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-[300px]">
-              <p className="text-sm">
-                Ce mois-ci, le prix moyen national est de <span className="font-semibold">{price.toFixed(3)}&nbsp;{unit}</span>.
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </div>
-  )
-}
-
-export function ChauffageActuelFields({ formData, errors, onChange, defaultPrices }: ChauffageActuelFieldsProps) {
+export const ChauffageActuelFields = ({ formData, errors, onChange, onNumberChange, defaultPrices }: ChauffageActuelFieldsProps) => {
   const typeChauffage = formData.type_chauffage
   const connaitConsommation = formData.connait_consommation
-
-  const handleNumberChange = (name: keyof CurrentHeatingData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (value === "") {
-      onChange(name, undefined)
-    } else {
-      const num = parseFloat(value)
-      onChange(name, isNaN(num) ? undefined : num)
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -108,7 +72,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
             min="0"
             placeholder="ex: 10"
             value={formData.age_installation ?? ""}
-            onChange={handleNumberChange("age_installation")}
+            onChange={onNumberChange("age_installation")}
           />
         </FormField>
 
@@ -175,7 +139,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 2000"
                   value={formData.conso_fioul_litres ?? ""}
-                  onChange={handleNumberChange("conso_fioul_litres")}
+                  onChange={onNumberChange("conso_fioul_litres")}
                 />
               </FormField>
 
@@ -190,7 +154,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 1.20"
                   value={formData.prix_fioul_litre ?? ""}
-                  onChange={handleNumberChange("prix_fioul_litre")}
+                  onChange={onNumberChange("prix_fioul_litre")}
                 />
               </FormField>
             </div>
@@ -208,7 +172,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 15000"
                   value={formData.conso_gaz_kwh ?? ""}
-                  onChange={handleNumberChange("conso_gaz_kwh")}
+                  onChange={onNumberChange("conso_gaz_kwh")}
                 />
               </FormField>
 
@@ -223,7 +187,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 0.10"
                   value={formData.prix_gaz_kwh ?? ""}
-                  onChange={handleNumberChange("prix_gaz_kwh")}
+                  onChange={onNumberChange("prix_gaz_kwh")}
                 />
               </FormField>
 
@@ -238,7 +202,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 120"
                   value={formData.abonnement_gaz ?? ""}
-                  onChange={handleNumberChange("abonnement_gaz")}
+                  onChange={onNumberChange("abonnement_gaz")}
                 />
               </FormField>
             </div>
@@ -256,7 +220,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 1500"
                   value={formData.conso_gpl_kg ?? ""}
-                  onChange={handleNumberChange("conso_gpl_kg")}
+                  onChange={onNumberChange("conso_gpl_kg")}
                 />
               </FormField>
 
@@ -271,7 +235,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 2.50"
                   value={formData.prix_gpl_kg ?? ""}
-                  onChange={handleNumberChange("prix_gpl_kg")}
+                  onChange={onNumberChange("prix_gpl_kg")}
                 />
               </FormField>
             </div>
@@ -289,7 +253,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 3000"
                   value={formData.conso_pellets_kg ?? ""}
-                  onChange={handleNumberChange("conso_pellets_kg")}
+                  onChange={onNumberChange("conso_pellets_kg")}
                 />
               </FormField>
 
@@ -304,7 +268,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 0.35"
                   value={formData.prix_pellets_kg ?? ""}
-                  onChange={handleNumberChange("prix_pellets_kg")}
+                  onChange={onNumberChange("prix_pellets_kg")}
                 />
               </FormField>
             </div>
@@ -322,7 +286,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 8"
                   value={formData.conso_bois_steres ?? ""}
-                  onChange={handleNumberChange("conso_bois_steres")}
+                  onChange={onNumberChange("conso_bois_steres")}
                 />
               </FormField>
 
@@ -337,7 +301,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 80"
                   value={formData.prix_bois_stere ?? ""}
-                  onChange={handleNumberChange("prix_bois_stere")}
+                  onChange={onNumberChange("prix_bois_stere")}
                 />
               </FormField>
             </div>
@@ -355,7 +319,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 8000"
                   value={formData.conso_elec_kwh ?? ""}
-                  onChange={handleNumberChange("conso_elec_kwh")}
+                  onChange={onNumberChange("conso_elec_kwh")}
                 />
               </FormField>
 
@@ -370,7 +334,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 0.17"
                   value={formData.prix_elec_kwh ?? ""}
-                  onChange={handleNumberChange("prix_elec_kwh")}
+                  onChange={onNumberChange("prix_elec_kwh")}
                 />
               </FormField>
             </div>
@@ -391,7 +355,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   max="10"
                   placeholder="ex: 3.5"
                   value={formData.cop_actuel ?? ""}
-                  onChange={handleNumberChange("cop_actuel")}
+                  onChange={onNumberChange("cop_actuel")}
                 />
               </FormField>
 
@@ -405,7 +369,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 4000"
                   value={formData.conso_pac_kwh ?? ""}
-                  onChange={handleNumberChange("conso_pac_kwh")}
+                  onChange={onNumberChange("conso_pac_kwh")}
                 />
               </FormField>
 
@@ -421,7 +385,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
                   min="0"
                   placeholder="ex: 0.17"
                   value={formData.prix_elec_kwh ?? ""}
-                  onChange={handleNumberChange("prix_elec_kwh")}
+                  onChange={onNumberChange("prix_elec_kwh")}
                 />
               </FormField>
             </div>
@@ -467,7 +431,7 @@ export function ChauffageActuelFields({ formData, errors, onChange, defaultPrice
           max="500"
           placeholder="ex: 150"
           value={formData.entretien_annuel ?? ""}
-          onChange={handleNumberChange("entretien_annuel")}
+          onChange={onNumberChange("entretien_annuel")}
         />
       </FormField>
     </div>

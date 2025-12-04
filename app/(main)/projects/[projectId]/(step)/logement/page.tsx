@@ -7,17 +7,10 @@ import { HousingFields } from "@/app/(main)/projects/[projectId]/(step)/logement
 import { saveHousingData } from "@/app/(main)/projects/[projectId]/(step)/logement/actions/saveHousingData"
 import { housingSchema, type HousingData } from "@/app/(main)/projects/[projectId]/(step)/logement/actions/housingSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
+import { getLogementData } from "@/app/(main)/projects/[projectId]/(step)/logement/queries/getLogementData"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/logement/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "logement",
-  title: "Votre logement",
-  description: "Caractéristiques de votre habitation",
-  explanation:
-    "Les caractéristiques de votre logement (surface, isolation, année de construction) sont essentielles pour estimer avec précision vos besoins en chauffage, dimensionner correctement la pompe à chaleur, et calculer les économies potentielles.",
-}
 
 export default function LogementStepPage({
   params,
@@ -37,16 +30,12 @@ export default function LogementStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const project = await getProject(projectId)
+        const data = await getLogementData({ projectId })
 
-        if (!project) {
-          notFound()
-          return
-        }
-
-        setFormData(project.logement || {})
+        setFormData(data.logement || {})
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -80,7 +69,7 @@ export default function LogementStepPage({
         return
       }
 
-      await saveHousingData(projectId, result.data)
+      await saveHousingData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       if (stepIndex < WIZARD_STEPS.length - 1) {

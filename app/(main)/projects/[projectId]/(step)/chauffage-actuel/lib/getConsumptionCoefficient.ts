@@ -1,10 +1,15 @@
+interface GetConsumptionCoefficientParams {
+  anneeConstruction: number
+  qualiteIsolation: string
+}
+
 /**
  * Calcule le coefficient de consommation en kWh/m²/an selon l'année de construction et l'isolation
  */
-export const getConsumptionCoefficient = (
-  anneeConstruction: number,
-  qualiteIsolation: string
-): number => {
+export const getConsumptionCoefficient = ({
+  anneeConstruction,
+  qualiteIsolation
+}: GetConsumptionCoefficientParams): number => {
   // Convertir la qualité d'isolation en score numérique
   // "Mauvaise" = 0, "Moyenne" = 1-2, "Bonne" = 3
   let isolationScore: number

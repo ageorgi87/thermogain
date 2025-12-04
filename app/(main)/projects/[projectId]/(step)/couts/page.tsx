@@ -7,17 +7,10 @@ import { CostsFieldsView } from "@/app/(main)/projects/[projectId]/(step)/couts/
 import { saveCostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/saveCostsData"
 import { costsSchema, type CostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/costsSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
+import { getCoutsData } from "@/app/(main)/projects/[projectId]/(step)/couts/queries/getCoutsData"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/couts/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "couts",
-  title: "Coûts de l'installation",
-  description: "Détaillez les différents coûts de votre projet",
-  explanation:
-    "Le détail des coûts (équipement, installation, travaux annexes) permet de calculer votre investissement total et d'évaluer la rentabilité de votre projet sur le long terme.",
-}
 
 export default function CoutsStepPage({
   params,
@@ -43,14 +36,9 @@ export default function CoutsStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const project = await getProject(projectId)
+        const data = await getCoutsData({ projectId })
 
-        if (!project) {
-          notFound()
-          return
-        }
-
-        setFormData(project.couts || {
+        setFormData(data.couts || {
           cout_pac: undefined,
           cout_installation: undefined,
           cout_travaux_annexes: undefined,
@@ -58,6 +46,7 @@ export default function CoutsStepPage({
         })
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -99,7 +88,7 @@ export default function CoutsStepPage({
         return
       }
 
-      await saveCostsData(projectId, result.data)
+      await saveCostsData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       if (stepIndex < WIZARD_STEPS.length - 1) {

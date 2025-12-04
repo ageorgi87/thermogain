@@ -4,7 +4,15 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { informationsSchema, type InformationsData } from "./informationsSchema"
 
-export async function saveInformationsData(projectId: string, data: InformationsData) {
+interface SaveInformationsDataParams {
+  projectId: string
+  data: InformationsData
+}
+
+export const saveInformationsData = async ({
+  projectId,
+  data,
+}: SaveInformationsDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {

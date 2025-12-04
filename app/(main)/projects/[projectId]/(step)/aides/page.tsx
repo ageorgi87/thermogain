@@ -7,17 +7,10 @@ import { AidesFields } from "@/app/(main)/projects/[projectId]/(step)/aides/comp
 import { saveFinancialAidData } from "@/app/(main)/projects/[projectId]/(step)/aides/actions/saveFinancialAidData"
 import { financialAidSchema, type FinancialAidData } from "@/app/(main)/projects/[projectId]/(step)/aides/actions/financialAidSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
+import { getAidesData } from "@/app/(main)/projects/[projectId]/(step)/aides/queries/getAidesData"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/aides/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "aides",
-  title: "Aides financières",
-  description: "Calculez les aides dont vous pouvez bénéficier",
-  explanation:
-    "Les aides financières (MaPrimeRénov', CEE, etc.) peuvent considérablement réduire le coût d'installation de votre pompe à chaleur. Ces informations permettent d'estimer le montant des aides auxquelles vous êtes éligible.",
-}
 
 export default function AidesStepPage({
   params,
@@ -42,21 +35,17 @@ export default function AidesStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const project = await getProject(projectId)
+        const data = await getAidesData({ projectId })
 
-        if (!project) {
-          notFound()
-          return
-        }
-
-        setFormData(project.aides || {})
-        setTypePac(project.projetPac?.type_pac)
-        setAnneeConstruction(project.logement?.annee_construction)
-        setCodePostal(project.logement?.code_postal)
-        setSurfaceHabitable(project.logement?.surface_habitable)
-        setNombreOccupants(project.logement?.nombre_occupants)
+        setFormData(data.aides || {})
+        setTypePac(data.projetPac?.type_pac)
+        setAnneeConstruction(data.logement?.annee_construction)
+        setCodePostal(data.logement?.code_postal)
+        setSurfaceHabitable(data.logement?.surface_habitable)
+        setNombreOccupants(data.logement?.nombre_occupants)
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -90,7 +79,7 @@ export default function AidesStepPage({
         return
       }
 
-      await saveFinancialAidData(projectId, result.data)
+      await saveFinancialAidData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       if (stepIndex < WIZARD_STEPS.length - 1) {

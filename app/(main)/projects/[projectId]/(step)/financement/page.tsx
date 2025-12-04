@@ -7,18 +7,11 @@ import { FinancementFields } from "@/app/(main)/projects/[projectId]/(step)/fina
 import { saveFinancingData } from "@/app/(main)/projects/[projectId]/(step)/financement/actions/saveFinancingData"
 import { financingSchema, type FinancingData } from "@/app/(main)/projects/[projectId]/(step)/financement/actions/financingSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
+import { getFinancementData } from "@/app/(main)/projects/[projectId]/(step)/financement/queries/getFinancementData"
 import { calculateAndSaveResults } from "@/lib/actions/results/calculateAndSaveResults"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/financement/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "financement",
-  title: "Plan de financement",
-  description: "Mode de financement et options de paiement",
-  explanation:
-    "Le plan de financement vous permet de définir comment vous allez financer l'installation de votre pompe à chaleur. Cela affecte les calculs de retour sur investissement et les projections financières à long terme.",
-}
 
 export default function FinancementStepPage({
   params,
@@ -40,18 +33,14 @@ export default function FinancementStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const project = await getProject(projectId)
+        const data = await getFinancementData({ projectId })
 
-        if (!project) {
-          notFound()
-          return
-        }
-
-        setFormData(project.financement || {})
-        setTotalCouts(project.couts?.cout_total || 0)
-        setTotalAides(project.aides?.total_aides || 0)
+        setFormData(data.financement || {})
+        setTotalCouts(data.couts?.cout_total || 0)
+        setTotalAides(data.aides?.total_aides || 0)
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -85,7 +74,7 @@ export default function FinancementStepPage({
         return
       }
 
-      await saveFinancingData(projectId, result.data)
+      await saveFinancingData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       // Special handling for last step: trigger results calculation

@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { FormField } from "@/components/form/FormField"
-import type { CostsData } from "../actions/costsSchema"
+import type { CostsData } from "@/app/(main)/projects/[projectId]/(step)/couts/actions/costsSchema"
 
 interface CostsFieldsViewProps {
   coutPac: number | undefined;

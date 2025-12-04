@@ -1,20 +1,23 @@
-import { estimateAnnualConsumption } from "./estimateAnnualConsumption"
+import { estimateAnnualConsumption } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/lib/estimateAnnualConsumption"
+import type { HousingCharacteristics } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/types/housingCharacteristics"
 
-interface HousingCharacteristics {
-  surface_habitable: number
-  annee_construction: number
-  qualite_isolation: string
-  nombre_occupants: number
-  code_postal?: string
+interface ConsumptionEstimate {
+  value: number
+  unit: string
+}
+
+interface EstimateConsumptionByEnergyTypeParams {
+  housing: HousingCharacteristics
+  energyType: string
 }
 
 /**
  * Estime la consommation selon le type d'énergie (en unités spécifiques)
  */
-export const estimateConsumptionByEnergyType = (
-  housing: HousingCharacteristics,
-  energyType: string
-): { value: number; unit: string } => {
+export const estimateConsumptionByEnergyType = ({
+  housing,
+  energyType
+}: EstimateConsumptionByEnergyTypeParams): ConsumptionEstimate => {
   const consommationKwh = estimateAnnualConsumption(housing)
 
   switch (energyType) {

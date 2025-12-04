@@ -4,7 +4,15 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { heatPumpProjectSchema, type HeatPumpProjectData } from "./heatPumpProjectSchema"
 
-export async function saveHeatPumpProjectData(projectId: string, data: HeatPumpProjectData) {
+interface SaveHeatPumpProjectDataParams {
+  projectId: string
+  data: HeatPumpProjectData
+}
+
+export const saveHeatPumpProjectData = async ({
+  projectId,
+  data,
+}: SaveHeatPumpProjectDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {

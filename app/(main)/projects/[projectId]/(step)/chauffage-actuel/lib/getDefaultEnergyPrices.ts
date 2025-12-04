@@ -1,10 +1,11 @@
 import { getCachedEnergyPrice } from "@/lib/energy/priceCache/getCachedEnergyPrice"
+import type { DefaultEnergyPrices } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/types/defaultEnergyPrices"
 
 /**
  * Récupère les prix par défaut de l'énergie depuis le cache
  * Ces prix sont utilisés comme valeurs par défaut dans le formulaire
  */
-export const getDefaultEnergyPrices = async () => {
+export const getDefaultEnergyPrices = async (): Promise<DefaultEnergyPrices> => {
   try {
     const [fioul, gaz, gpl, bois, electricite] = await Promise.all([
       getCachedEnergyPrice("fioul"),
@@ -15,11 +16,11 @@ export const getDefaultEnergyPrices = async () => {
     ])
 
     return {
-      fioul, // €/litre
-      gaz, // €/kWh
-      gpl, // €/kg
-      bois, // €/kg (pellets)
-      electricite, // €/kWh
+      fioul,
+      gaz,
+      gpl,
+      bois,
+      electricite,
     }
   } catch (error) {
     console.error("Erreur lors de la récupération des prix par défaut:", error)

@@ -7,18 +7,11 @@ import { ProjetPacFields } from "@/app/(main)/projects/[projectId]/(step)/projet
 import { saveHeatPumpProjectData } from "@/app/(main)/projects/[projectId]/(step)/projet-pac/actions/saveHeatPumpProjectData"
 import { heatPumpProjectSchema, type HeatPumpProjectData } from "@/app/(main)/projects/[projectId]/(step)/projet-pac/actions/heatPumpProjectSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
-import { getDefaultEnergyPrices } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/actions/saveCurrentHeatingData"
+import { getProjetPacData } from "@/app/(main)/projects/[projectId]/(step)/projet-pac/queries/getProjetPacData"
+import { getDefaultEnergyPrices } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/lib/getDefaultEnergyPrices"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/projet-pac/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "projet-pac",
-  title: "Projet de pompe à chaleur",
-  description: "Caractéristiques de la PAC envisagée",
-  explanation:
-    "Ces informations permettent de calculer la consommation électrique de la pompe à chaleur, les coûts d'abonnement, et d'estimer les économies d'énergie par rapport à votre système actuel.",
-}
 
 export default function ProjetPacStepPage({
   params,
@@ -48,23 +41,19 @@ export default function ProjetPacStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const [project, prices] = await Promise.all([
-          getProject(projectId),
+        const [data, prices] = await Promise.all([
+          getProjetPacData({ projectId }),
           getDefaultEnergyPrices(),
         ])
 
-        if (!project) {
-          notFound()
-          return
-        }
-
-        setFormData(project.projetPac || {})
+        setFormData(data.projetPac || {})
         setDefaultPrices(prices)
-        setTypeChauffageActuel(project.chauffageActuel?.type_chauffage)
-        setPrixElecKwhActuel(project.chauffageActuel?.prix_elec_kwh)
-        setPuissanceSouscriteActuelle(project.chauffageActuel?.puissance_souscrite_actuelle)
+        setTypeChauffageActuel(data.chauffageActuel?.type_chauffage)
+        setPrixElecKwhActuel(data.chauffageActuel?.prix_elec_kwh ?? undefined)
+        setPuissanceSouscriteActuelle(undefined) // This field doesn't exist in chauffageActuel
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -117,7 +106,7 @@ export default function ProjetPacStepPage({
         }
       }
 
-      await saveHeatPumpProjectData(projectId, result.data)
+      await saveHeatPumpProjectData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       if (stepIndex < WIZARD_STEPS.length - 1) {

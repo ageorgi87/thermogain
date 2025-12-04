@@ -7,17 +7,10 @@ import { InformationsFields } from "@/app/(main)/projects/[projectId]/(step)/inf
 import { saveInformationsData } from "@/app/(main)/projects/[projectId]/(step)/informations/actions/saveInformationsData"
 import { informationsSchema, type InformationsData } from "@/app/(main)/projects/[projectId]/(step)/informations/actions/informationsSchema"
 import { updateProjectStep } from "@/lib/actions/projects/updateProjectStep"
-import { getProject } from "@/lib/actions/projects/getProject"
+import { getInformationsData } from "@/app/(main)/projects/[projectId]/(step)/informations/queries/getInformationsData"
 import { WIZARD_STEPS } from "@/lib/wizard/wizardStepsData"
+import { STEP_INFO } from "@/app/(main)/projects/[projectId]/(step)/informations/config/stepInfo"
 import { notFound } from "next/navigation"
-
-const STEP_INFO = {
-  key: "informations",
-  title: "Informations du projet",
-  description: "Nommez votre projet et renseignez les destinataires",
-  explanation:
-    "Le nom du projet vous permet de le retrouver facilement dans votre liste. Les adresses email recevront automatiquement le rapport de simulation une fois l'analyse terminée.",
-}
 
 export default function InformationsStepPage({
   params,
@@ -37,19 +30,15 @@ export default function InformationsStepPage({
   useEffect(() => {
     const loadProject = async () => {
       try {
-        const project = await getProject(projectId)
-
-        if (!project) {
-          notFound()
-          return
-        }
+        const data = await getInformationsData({ projectId })
 
         setFormData({
-          project_name: project.name || "",
-          recipient_emails: project.recipientEmails || [],
+          project_name: data.name || "",
+          recipient_emails: data.recipientEmails || [],
         })
       } catch (error) {
         console.error("❌ Erreur lors du chargement:", error)
+        notFound()
       } finally {
         setIsLoading(false)
       }
@@ -83,7 +72,7 @@ export default function InformationsStepPage({
         return
       }
 
-      await saveInformationsData(projectId, result.data)
+      await saveInformationsData({ projectId, data: result.data })
       await updateProjectStep(projectId, stepIndex + 2)
 
       if (stepIndex < WIZARD_STEPS.length - 1) {

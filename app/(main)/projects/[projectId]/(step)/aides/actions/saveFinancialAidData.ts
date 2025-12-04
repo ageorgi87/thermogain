@@ -4,7 +4,15 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { financialAidSchema, type FinancialAidData } from "./financialAidSchema"
 
-export async function saveFinancialAidData(projectId: string, data: FinancialAidData) {
+interface SaveFinancialAidDataParams {
+  projectId: string
+  data: FinancialAidData
+}
+
+export const saveFinancialAidData = async ({
+  projectId,
+  data,
+}: SaveFinancialAidDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {

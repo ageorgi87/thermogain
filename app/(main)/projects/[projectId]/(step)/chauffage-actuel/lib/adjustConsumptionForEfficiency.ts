@@ -1,16 +1,29 @@
 import { calculateBoilerEfficiency } from "@/lib/heating/calculateBoilerEfficiency";
+import type { EtatInstallation } from "@/app/(main)/projects/[projectId]/(step)/chauffage-actuel/types/etatInstallation"
+
+interface AdjustedConsumptionResult {
+  adjustedConsumption: number;
+  efficiency: number;
+}
+
+interface AdjustConsumptionForEfficiencyParams {
+  typeChauffage: string
+  ageInstallation: number
+  etatInstallation: EtatInstallation
+  consumptionValue: number
+}
 
 /**
  * Calcule le rendement réel de l'installation actuelle et ajuste la consommation
  * Cette fonction prend en compte l'âge et l'état de l'installation pour calculer
  * le rendement réel, puis ajuste la consommation estimée en conséquence
  */
-export const adjustConsumptionForEfficiency = (
-  typeChauffage: string,
-  ageInstallation: number,
-  etatInstallation: "Bon" | "Moyen" | "Mauvais",
-  consumptionValue: number
-): { adjustedConsumption: number; efficiency: number } => {
+export const adjustConsumptionForEfficiency = ({
+  typeChauffage,
+  ageInstallation,
+  etatInstallation,
+  consumptionValue
+}: AdjustConsumptionForEfficiencyParams): AdjustedConsumptionResult => {
   // Calculer le rendement réel de la chaudière
   const efficiency = calculateBoilerEfficiency(
     typeChauffage,

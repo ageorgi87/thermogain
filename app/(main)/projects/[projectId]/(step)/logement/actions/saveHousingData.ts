@@ -4,7 +4,15 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { housingSchema, type HousingData } from "./housingSchema"
 
-export async function saveHousingData(projectId: string, data: HousingData) {
+interface SaveHousingDataParams {
+  projectId: string
+  data: HousingData
+}
+
+export const saveHousingData = async ({
+  projectId,
+  data,
+}: SaveHousingDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {

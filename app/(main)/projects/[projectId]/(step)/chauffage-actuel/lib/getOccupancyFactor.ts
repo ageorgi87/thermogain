@@ -1,8 +1,14 @@
+interface GetOccupancyFactorParams {
+  nombreOccupants: number
+}
+
 /**
  * Ajuste la consommation selon le nombre d'occupants
  * Plus il y a d'occupants, plus il y a de besoins en chauffage et d'apports internes
  */
-export const getOccupancyFactor = (nombreOccupants: number): number => {
+export const getOccupancyFactor = ({
+  nombreOccupants
+}: GetOccupancyFactorParams): number => {
   // Facteur de correction basé sur les apports internes
   // 1 personne = référence, plus il y a de personnes, moins on chauffe (apports internes)
   if (nombreOccupants === 1) return 1.1
