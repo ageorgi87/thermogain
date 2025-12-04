@@ -54,7 +54,7 @@ import {
   getDefaultEnergyPrices,
 } from "./sections/currentHeating/currentHeatingActions";
 import { saveHeatPumpProjectData } from "./sections/heatPumpProject/heatPumpProjectActions";
-import { saveCostsData } from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/costsActions";
+import { saveCostsData } from "@/app/(main)/projects/[projectId]/[step]/sections/costs/actions/saveCostsData";
 import { saveFinancialAidData } from "./sections/financialAid/financialAidActions";
 import { saveFinancingData } from "./sections/financing/financingActions";
 import { getProject } from "@/lib/actions/projects/getProject";
