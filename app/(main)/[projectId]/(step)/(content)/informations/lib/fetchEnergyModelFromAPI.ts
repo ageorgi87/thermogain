@@ -1,32 +1,32 @@
 import type { EnergyEvolutionModel } from "@/types/energy"
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/lib/energy/didoConstants"
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory"
-import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows"
+import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows"
 
 /**
  * Calcule le prix actuel moyen d'une énergie (moyenne des 12 derniers mois)
- * depuis l'API DIDO
+ * à partir des données déjà récupérées de l'API DIDO
  *
- * @param rid Identifiant du datafile DIDO
+ * @param rows Données brutes de l'API DIDO
  * @param priceColumnName Nom de la colonne contenant le prix
  * @param energyType Type d'énergie
  * @returns Prix moyen en €/kWh
  * @throws Error si les données ne sont pas disponibles
  */
-const calculateCurrentPrice = async (
-  rid: string,
+const calculateCurrentPrice = (
+  rows: any[],
   priceColumnName: string,
   energyType: string
-): Promise<number> => {
-  // Récupérer les 12 derniers mois
-  const rows = await getDataFileRows(rid, 12)
-
+): number => {
   if (rows.length === 0) {
     throw new Error(`Aucune donnée de prix disponible pour ${energyType} depuis l'API DIDO`)
   }
 
+  // Prendre les 12 derniers mois (les plus récents)
+  const recentRows = rows.slice(0, 12)
+
   // Extraire les prix et calculer la moyenne
-  const prices: number[] = rows
+  const prices: number[] = recentRows
     .map((row: any) => parseFloat(row[priceColumnName]))
     .filter((price: number) => !isNaN(price) && price > 0)
 
@@ -49,6 +49,9 @@ const calculateCurrentPrice = async (
 /**
  * Génère le modèle Mean Reversion pour un type d'énergie donné
  * basé sur l'historique réel de l'API DIDO
+ *
+ * Cette fonction appelle l'API DIDO UNE SEULE FOIS pour récupérer tout l'historique,
+ * puis passe ces données aux fonctions d'analyse.
  *
  * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', 'bois')
  * @returns Modèle Mean Reversion optimal calculé depuis l'API DIDO
@@ -85,8 +88,16 @@ export const fetchEnergyModelFromAPI = async (
       throw new Error(`Type d'énergie invalide: ${energyType}`)
   }
 
-  const analysis = await analyzeEnergyPriceHistory(rid, priceColumnName)
-  const currentPrice = await calculateCurrentPrice(rid, priceColumnName, energyType)
+  // ⚠️ APPEL API UNIQUE - Récupérer TOUT l'historique disponible
+  console.log(`📥 Récupération des données ${energyType.toUpperCase()} depuis l'API DIDO...`)
+  const rows = await getDataFileRows(rid, 10000)
+  console.log(`✅ ${rows.length} lignes récupérées depuis l'API DIDO`)
+
+  // Analyser l'historique pour obtenir les taux d'évolution
+  const analysis = await analyzeEnergyPriceHistory(rows, priceColumnName)
+
+  // Calculer le prix actuel moyen
+  const currentPrice = calculateCurrentPrice(rows, priceColumnName, energyType)
 
   return {
     tauxRecent: analysis.tauxRecent,

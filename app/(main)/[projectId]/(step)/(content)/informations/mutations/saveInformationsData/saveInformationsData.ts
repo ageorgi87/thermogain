@@ -2,12 +2,12 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { informationsSchema, type InformationsData } from "./informationsSchema"
+import { saveInformationsDataSchema, type SaveInformationsDataInput } from "./saveInformationsDataSchema"
 import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/refreshEnergyPricesIfNeeded"
 
 interface SaveInformationsDataParams {
   projectId: string
-  data: InformationsData
+  data: SaveInformationsDataInput
 }
 
 export const saveInformationsData = async ({
@@ -20,7 +20,7 @@ export const saveInformationsData = async ({
     throw new Error("Non autorisé")
   }
 
-  const validatedData = informationsSchema.parse(data)
+  const validatedData = saveInformationsDataSchema.parse(data)
 
   // Check if project exists and belongs to user
   const project = await prisma.project.findUnique({

@@ -7,7 +7,6 @@
  * 3. Générer automatiquement le modèle Mean Reversion optimal
  */
 
-import { getDataFileRows } from "@/app/(main)/[projectId]/lib/energy/getDataFileRows";
 import { getEnergyTypeFromColumn } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
 import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
 import type { EnergyType } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
@@ -135,18 +134,15 @@ interface HistoricalAnalysis {
 /**
  * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
  *
- * @param rid Identifiant DIDO du fichier de données
+ * @param rows Données brutes de l'API DIDO (historique complet)
  * @param priceColumnName Nom de la colonne contenant les prix
  * @returns Analyse complète de l'historique
  */
 export const analyzeEnergyPriceHistory = async (
-  rid: string,
+  rows: any[],
   priceColumnName: string
 ): Promise<HistoricalAnalysis> => {
   try {
-    // Récupérer TOUT l'historique disponible
-    const rows = await getDataFileRows(rid, 10000);
-
     if (rows.length < 24) {
       console.warn(`Historique insuffisant pour ${priceColumnName}`);
       throw new Error("Historique insuffisant");

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
-import { InformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/informationsSchema";
+import { InformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/saveInformationsData/saveInformationsDataSchema";
 
 interface InformationsFieldsProps {
   formData: Partial<InformationsData>;

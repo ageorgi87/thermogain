@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { fetchEnergyModelFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchEnergyModelFromAPI"
 import { isDataFresh } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/isDataFresh"
-import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/updateEnergyPriceCache/updateEnergyPriceCache"
+import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache"
 
 /**
  * Rafraîchit les prix énergétiques depuis l'API DIDO si nécessaire

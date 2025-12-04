@@ -3,11 +3,11 @@
 import { use } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
 import { InformationsFields } from "@/app/(main)/[projectId]/(step)/(content)/informations/components/InformationsFields";
-import { saveInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/saveInformationsData";
+import { saveInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/saveInformationsData/saveInformationsData";
 import {
   informationsSchema,
   type InformationsData,
-} from "@/app/(main)/[projectId]/(step)/(content)/informations/actions/informationsSchema";
+} from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/saveInformationsData/saveInformationsDataSchema";
 import { getInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getInformationsData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
