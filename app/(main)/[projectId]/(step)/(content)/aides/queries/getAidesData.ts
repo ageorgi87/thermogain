@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import type { ClasseDPE } from "@/types/dpe"
 
 interface GetAidesDataParams {
   projectId: string
@@ -41,14 +40,9 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
     throw new Error("Projet non trouvé")
   }
 
-  if (!project.logement?.classe_dpe) {
-    throw new Error("DPE manquant - veuillez compléter l'étape logement")
-  }
-
   return {
     aides: project.aides,
     projetPac: project.projetPac,
     logement: project.logement,
-    dpe: project.logement.classe_dpe as ClasseDPE,
   }
 }

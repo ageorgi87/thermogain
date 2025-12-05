@@ -15,12 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react";
-import { calculateMaPrimeRenov } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/maPrimeRenov/calculateMaPrimeRenov";
-import { calculateCEE } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/cee/calculateCEE";
+import { Calculator, Check, X, Loader2, AlertCircle } from "lucide-react";
+import { calculateAidesWithApi } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/calculateAidesWithApi";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getClimateZoneFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateZoneFromPostalCode";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -30,97 +27,86 @@ import {
 import { HelpCircle } from "lucide-react";
 
 interface AidCalculatorProps {
-  // Données déjà connues depuis les étapes précédentes
-  typePac?: string;
-  anneeConstruction?: number;
-  codePostal?: string;
-  surfaceHabitable?: number;
-  nombreOccupants?: number;
+  // ID du projet (nécessaire pour l'API)
+  projectId: string;
   // Callback pour remplir les inputs
   onUseAmounts: (maPrimeRenov: number, cee: number) => void;
 }
 
+interface AidResult {
+  ma_prime_renov: number;
+  cee: number;
+  total_aides: number;
+  eligible_ma_prime_renov: boolean;
+  eligible_cee: boolean;
+  raisons_ineligibilite?: string[];
+}
+
 export const AidCalculator = ({
-  typePac,
-  anneeConstruction,
-  codePostal,
-  surfaceHabitable,
-  nombreOccupants,
+  projectId,
   onUseAmounts,
 }: AidCalculatorProps) => {
   const [open, setOpen] = useState(false);
   const [revenuFiscal, setRevenuFiscal] = useState<string>("");
-  const [nombrePersonnes, setNombrePersonnes] = useState<string>(
-    nombreOccupants?.toString() || "2"
-  );
   const [residencePrincipale, setResidencePrincipale] = useState<string>("oui");
   const [remplacementComplet, setRemplacementComplet] = useState<string>("oui");
 
-  const [mprResult, setMprResult] = useState<ReturnType<
-    typeof calculateMaPrimeRenov
-  > | null>(null);
-  const [ceeResult, setCeeResult] = useState<ReturnType<
-    typeof calculateCEE
-  > | null>(null);
+  const [result, setResult] = useState<AidResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
 
-  const handleCalculate = () => {
-    if (
-      !revenuFiscal ||
-      !nombrePersonnes ||
-      !typePac ||
-      !codePostal ||
-      !anneeConstruction ||
-      !surfaceHabitable
-    ) {
-      alert("Veuillez remplir tous les champs requis");
+  const handleCalculate = async () => {
+    if (!revenuFiscal) {
+      alert("Veuillez remplir le revenu fiscal de référence");
       return;
     }
 
     const rfr = parseInt(revenuFiscal);
-    const nbPersonnes = parseInt(nombrePersonnes);
 
-    // Calculer MaPrimeRénov'
-    const logementPlusde15ans =
-      new Date().getFullYear() - anneeConstruction >= 15;
-    const mprCalculation = calculateMaPrimeRenov({
-      revenuFiscalReference: rfr,
-      nombrePersonnes: nbPersonnes,
-      codePostal,
-      typePac,
-      logementPlusde15ans,
-      residencePrincipale: residencePrincipale === "oui",
-      remplacementComplet: remplacementComplet === "oui",
-    });
+    setIsCalculating(true);
+    setError(null);
 
-    // Calculer CEE
-    const logementPlusde2ans =
-      new Date().getFullYear() - anneeConstruction >= 2;
-    const zoneClimatique = getClimateZoneFromPostalCode(codePostal);
-    const ceeCalculation = calculateCEE({
-      revenuFiscalReference: rfr,
-      nombrePersonnes: nbPersonnes,
-      codePostal,
-      typePac,
-      surfaceHabitable,
-      zoneClimatique,
-      logementPlusde2ans,
-      remplacementComplet: remplacementComplet === "oui",
-    });
+    try {
+      const response = await calculateAidesWithApi({
+        projectId,
+        revenu_fiscal_reference: rfr,
+        residence_principale: residencePrincipale === "oui",
+        remplacement_complet: remplacementComplet === "oui",
+      });
 
-    setMprResult(mprCalculation);
-    setCeeResult(ceeCalculation);
-    setHasCalculated(true);
+      if (response.success && response.data) {
+        setResult(response.data);
+        setHasCalculated(true);
+      } else {
+        setError(
+          response.error ||
+            "Une erreur est survenue lors du calcul des aides"
+        );
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erreur inconnue lors du calcul"
+      );
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const handleUseAmounts = () => {
-    const mprAmount = mprResult?.montant || 0;
-    const ceeAmount = ceeResult?.montant || 0;
-    onUseAmounts(mprAmount, ceeAmount);
-    setOpen(false);
+    if (result) {
+      onUseAmounts(result.ma_prime_renov, result.cee);
+      setOpen(false);
+    }
   };
 
-  const totalAides = (mprResult?.montant || 0) + (ceeResult?.montant || 0);
+  const handleReset = () => {
+    setHasCalculated(false);
+    setResult(null);
+    setError(null);
+  };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -135,8 +121,8 @@ export const AidCalculator = ({
           <DrawerHeader>
             <DrawerTitle>Calculateur d'aides financières</DrawerTitle>
             <DrawerDescription>
-              Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE en une seule
-              fois. Ces aides sont cumulables.
+              Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE via l'API officielle Mes Aides Réno.
+              Ces aides sont cumulables.
             </DrawerDescription>
           </DrawerHeader>
 
@@ -275,10 +261,32 @@ export const AidCalculator = ({
                   )}
                 </div>
 
+                {/* Erreur API */}
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
                 {/* Bouton calculer */}
-                <Button onClick={handleCalculate} className="w-full" size="lg">
-                  <Calculator className="mr-2 h-4 w-4" />
-                  Calculer mes aides
+                <Button
+                  onClick={handleCalculate}
+                  className="w-full"
+                  size="lg"
+                  disabled={isCalculating}
+                >
+                  {isCalculating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Calcul en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Calculator className="mr-2 h-4 w-4" />
+                      Calculer mes aides
+                    </>
+                  )}
                 </Button>
               </div>
             ) : (
@@ -286,70 +294,92 @@ export const AidCalculator = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-lg">Résultats</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setHasCalculated(false)}
-                  >
+                  <Button variant="outline" size="sm" onClick={handleReset}>
                     ← Retour
                   </Button>
                 </div>
 
-                {/* MaPrimeRénov' */}
-                {mprResult && (
-                  <div
-                    className={`p-4 rounded-lg border-2 ${mprResult.eligible ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      {mprResult.eligible ? (
-                        <Check className="h-5 w-5 text-green-600" />
+                {result && (
+                  <>
+                    {/* MaPrimeRénov' */}
+                    <div
+                      className={`p-4 rounded-lg border-2 ${result.eligible_ma_prime_renov ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        {result.eligible_ma_prime_renov ? (
+                          <Check className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <X className="h-5 w-5 text-red-600" />
+                        )}
+                        <p className="font-semibold">MaPrimeRénov'</p>
+                      </div>
+                      {result.eligible_ma_prime_renov ? (
+                        <p className="text-2xl font-bold text-green-700">
+                          {result.ma_prime_renov.toLocaleString("fr-FR")} €
+                        </p>
                       ) : (
-                        <X className="h-5 w-5 text-red-600" />
+                        <p className="text-sm text-red-700">
+                          Non éligible à cette aide
+                        </p>
                       )}
-                      <p className="font-semibold">MaPrimeRénov'</p>
                     </div>
-                    {mprResult.eligible ? (
-                      <p className="text-2xl font-bold text-green-700">
-                        {mprResult.montant.toLocaleString("fr-FR")} €
-                      </p>
-                    ) : (
-                      <p className="text-sm text-red-700">
-                        {mprResult.message.replace(/❌ Non éligible : /g, "")}
-                      </p>
-                    )}
-                  </div>
-                )}
 
-                {/* CEE */}
-                {ceeResult && (
-                  <div
-                    className={`p-4 rounded-lg border-2 ${ceeResult.eligible ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      {ceeResult.eligible ? (
-                        <Check className="h-5 w-5 text-green-600" />
+                    {/* CEE */}
+                    <div
+                      className={`p-4 rounded-lg border-2 ${result.eligible_cee ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        {result.eligible_cee ? (
+                          <Check className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <X className="h-5 w-5 text-red-600" />
+                        )}
+                        <p className="font-semibold">CEE (Certificats d'Économies d'Énergie)</p>
+                      </div>
+                      {result.eligible_cee ? (
+                        <p className="text-2xl font-bold text-green-700">
+                          {result.cee.toLocaleString("fr-FR")} €
+                        </p>
                       ) : (
-                        <X className="h-5 w-5 text-red-600" />
+                        <p className="text-sm text-red-700">
+                          Non éligible à cette aide
+                        </p>
                       )}
-                      <p className="font-semibold">CEE</p>
                     </div>
-                    {ceeResult.eligible ? (
-                      <p className="text-2xl font-bold text-green-700">
-                        {ceeResult.montant.toLocaleString("fr-FR")} €
-                      </p>
-                    ) : (
-                      <p className="text-sm text-red-700">
-                        {ceeResult.message.replace(/❌ Non éligible : /g, "")}
-                      </p>
+
+                    {/* Total */}
+                    {(result.eligible_ma_prime_renov || result.eligible_cee) && (
+                      <div className="p-4 rounded-lg bg-blue-50 border-2 border-blue-200">
+                        <p className="font-semibold mb-1">Total des aides</p>
+                        <p className="text-3xl font-bold text-blue-700">
+                          {result.total_aides.toLocaleString("fr-FR")} €
+                        </p>
+                      </div>
                     )}
-                  </div>
+
+                    {/* Raisons d'inéligibilité */}
+                    {result.raisons_ineligibilite &&
+                      result.raisons_ineligibilite.length > 0 && (
+                        <Alert>
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            <strong>Raisons d'inéligibilité :</strong>
+                            <ul className="list-disc list-inside mt-2">
+                              {result.raisons_ineligibilite.map((raison, index) => (
+                                <li key={index}>{raison}</li>
+                              ))}
+                            </ul>
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                  </>
                 )}
               </div>
             )}
           </div>
 
           <DrawerFooter>
-            {hasCalculated && (mprResult?.eligible || ceeResult?.eligible) && (
+            {hasCalculated && result && (result.eligible_ma_prime_renov || result.eligible_cee) && (
               <Button onClick={handleUseAmounts} className="w-full" size="lg">
                 Compléter le formulaire avec ces aides
               </Button>

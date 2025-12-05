@@ -9,23 +9,15 @@ interface AidesFieldsProps {
   formData: Partial<FinancialAidData>;
   errors: Partial<Record<keyof FinancialAidData, string>>;
   onChange: (name: keyof FinancialAidData, value: any) => void;
-  // Données des étapes précédentes
-  typePac?: string;
-  anneeConstruction?: number;
-  codePostal?: string;
-  surfaceHabitable?: number;
-  nombreOccupants?: number;
+  // Project ID (required for API calls)
+  projectId: string;
 }
 
 export function AidesFields({
   formData,
   errors,
   onChange,
-  typePac,
-  anneeConstruction,
-  codePostal,
-  surfaceHabitable,
-  nombreOccupants,
+  projectId,
 }: AidesFieldsProps) {
   const maPrimeRenov = formData.ma_prime_renov;
   const cee = formData.cee;
@@ -43,19 +35,15 @@ export function AidesFields({
 
   return (
     <div className="space-y-4">
-      {/* Calculateur unifié pour les deux aides */}
+      {/* Calculateur unifié pour les deux aides (API Mes Aides Réno) */}
       <div className="p-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <p className="text-sm mb-3">
           💡 Utilisez le calculateur ci-dessous pour vérifier votre éligibilité
-          et obtenir une estimation automatique des montants MaPrimeRénov' et
-          CEE.
+          via l'API officielle Mes Aides Réno. Les montants MaPrimeRénov' et CEE
+          sont calculés en temps réel selon les barèmes à jour.
         </p>
         <AidCalculator
-          typePac={typePac}
-          anneeConstruction={anneeConstruction}
-          codePostal={codePostal}
-          surfaceHabitable={surfaceHabitable}
-          nombreOccupants={nombreOccupants}
+          projectId={projectId}
           onUseAmounts={(maPrimeRenov, cee) => {
             onChange("ma_prime_renov", maPrimeRenov);
             onChange("cee", cee);

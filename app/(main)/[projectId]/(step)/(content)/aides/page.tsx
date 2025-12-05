@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
 import { AidesFields } from "@/app/(main)/[projectId]/(step)/(content)/aides/components/AidesFields";
 import { saveFinancialAidData } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/saveFinancialAidData";
@@ -21,16 +21,6 @@ export default function AidesStepPage({
 
   const STEP_INFO = getStepInfo("aides")!;
 
-  const [typePac, setTypePac] = useState<string | undefined>();
-  const [anneeConstruction, setAnneeConstruction] = useState<
-    number | undefined
-  >();
-  const [codePostal, setCodePostal] = useState<string | undefined>();
-  const [surfaceHabitable, setSurfaceHabitable] = useState<
-    number | undefined
-  >();
-  const [nombreOccupants, setNombreOccupants] = useState<number | undefined>();
-
   const {
     formData,
     errors,
@@ -47,13 +37,6 @@ export default function AidesStepPage({
     schema: financialAidSchema,
     loadData: async ({ projectId }) => {
       const data = await getAidesData({ projectId });
-
-      setTypePac(data.projetPac?.type_pac);
-      setAnneeConstruction(data.logement?.annee_construction);
-      setCodePostal(data.logement?.code_postal);
-      setSurfaceHabitable(data.logement?.surface_habitable);
-      setNombreOccupants(data.logement?.nombre_occupants);
-
       return data.aides || {};
     },
     saveData: async ({ projectId, data }) => {
@@ -85,11 +68,7 @@ export default function AidesStepPage({
         formData={formData}
         errors={errors}
         onChange={handleChange}
-        typePac={typePac}
-        anneeConstruction={anneeConstruction}
-        codePostal={codePostal}
-        surfaceHabitable={surfaceHabitable}
-        nombreOccupants={nombreOccupants}
+        projectId={projectId}
       />
     </StepWrapper>
   );
