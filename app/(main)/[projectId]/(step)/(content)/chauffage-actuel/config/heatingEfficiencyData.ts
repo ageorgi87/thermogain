@@ -62,6 +62,23 @@ export const MAINTENANCE_FACTORS = {
 }
 
 /**
+ * Rendement moyen de référence utilisé dans l'estimation initiale
+ * Ces valeurs correspondent à une installation de ~10 ans en état moyen
+ * Utilisées pour ajuster la consommation estimée selon le rendement réel
+ */
+export const REFERENCE_EFFICIENCY: Record<string, number> = {
+  Gaz: 0.82,
+  Fioul: 0.68,
+  GPL: 0.82,
+  Pellets: 0.8,
+  Bois: 0.8,
+  Electrique: 1.0,
+  "PAC Air/Air": 1.0,
+  "PAC Air/Eau": 1.0,
+  "PAC Eau/Eau": 1.0,
+}
+
+/**
  * Contenu énergétique des différents combustibles
  * Ces valeurs sont standardisées et validées par ADEME
  */
