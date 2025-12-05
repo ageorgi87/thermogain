@@ -1,6 +1,6 @@
 import type { ProjectData } from "@/types/projectData";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentVariableCost";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors";
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts";
 import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 

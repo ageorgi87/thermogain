@@ -3,10 +3,12 @@ import type { ProjectData } from "@/types/projectData"
 import type { CalculationResults } from "@/types/calculationResults"
 import { EnergyType, type ApiEnergyType } from "@/types/energyType"
 import { FinancingMode } from "@/types/financingMode"
-import { calculateCurrentCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostYear1"
-import { calculatePacCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostYear1"
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts"
+import { calculatePacVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacVariableCost"
+import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts"
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh"
-import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData"
+import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyCostProjections"
 import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackPeriod"
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment"
 import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost"
@@ -60,9 +62,14 @@ export const calculateAllResults = async (
     EnergyType.ELECTRICITE
   );
 
-  // Coûts année 1
-  const coutAnnuelActuel = calculateCurrentCostYear1(data);
-  const coutAnnuelPac = calculatePacCostYear1(data);
+  // Coûts année 1 (inline)
+  const currentVariableCost = calculateCurrentVariableCost(data);
+  const currentFixedCosts = calculateCurrentFixedCosts(data);
+  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total;
+
+  const pacVariableCost = calculatePacVariableCost(data);
+  const pacFixedCosts = calculatePacFixedCosts(data);
+  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total;
 
   // Consommation PAC
   const consommationPacKwh = calculatePacConsumptionKwh(data);
@@ -108,7 +115,7 @@ export const calculateAllResults = async (
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
   // Passer les modèles énergétiques pour éviter de les re-fetch à chaque année
-  const yearlyData = await calculateYearlyData({
+  const yearlyData = await calculateYearlyCostProjections({
     data: dataAjusteeROI,
     years: data.duree_vie_pac,
     currentEnergyModel,

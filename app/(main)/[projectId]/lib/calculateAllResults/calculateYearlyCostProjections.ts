@@ -4,7 +4,7 @@ import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateCurrentCostProjectedYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostProjectedYear";
 import { calculatePacCostProjectedYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostProjectedYear";
 
-interface CalculateYearlyDataParams {
+interface CalculateYearlyCostProjectionsParams {
   data: ProjectData;
   years: number;
   currentEnergyModel: EnergyEvolutionModel;
@@ -12,19 +12,20 @@ interface CalculateYearlyDataParams {
 }
 
 /**
- * Calcule les données année par année sur une période donnée
+ * Calcule les projections de coûts année par année sur une période donnée
+ * Compare les coûts du chauffage actuel vs PAC et calcule les économies
  * @param params.data Données du projet
  * @param params.years Nombre d'années de projection
  * @param params.currentEnergyModel Modèle d'évolution pour le chauffage actuel
  * @param params.pacEnergyModel Modèle d'évolution pour la PAC (électricité)
- * @returns Tableau des données annuelles
+ * @returns Tableau des projections annuelles (coûts, économies, économies cumulées)
  */
-export const calculateYearlyData = async ({
+export const calculateYearlyCostProjections = async ({
   data,
   years,
   currentEnergyModel,
   pacEnergyModel,
-}: CalculateYearlyDataParams): Promise<YearlyData[]> => {
+}: CalculateYearlyCostProjectionsParams): Promise<YearlyData[]> => {
   const yearlyData: YearlyData[] = [];
   let economiesCumulees = 0;
   const currentYear = new Date().getFullYear();

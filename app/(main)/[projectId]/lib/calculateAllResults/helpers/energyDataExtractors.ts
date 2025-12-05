@@ -50,9 +50,9 @@ export const getCurrentConsumptionKwh = (
 }
 
 /**
- * Extrait le coût variable annuel (énergie) selon le type de chauffage actuel
+ * Calcule le coût variable annuel (énergie) selon le type de chauffage actuel
  */
-export const getCurrentVariableCost = (data: ProjectData): number => {
+export const calculateCurrentVariableCost = (data: ProjectData): number => {
   switch (data.type_chauffage) {
     case "Fioul":
       return (data.conso_fioul_litres || 0) * (data.prix_fioul_litre || 0)
