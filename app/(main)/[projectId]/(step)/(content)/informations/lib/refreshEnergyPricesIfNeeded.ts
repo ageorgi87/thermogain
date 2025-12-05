@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma"
 import { fetchAllEnergyModelsFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchAllEnergyModelsFromAPI"
-import { isDataFresh } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/isDataFresh"
 import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache"
 import { EnergyType, type ApiEnergyType } from "@/types/energyType"
 
@@ -43,10 +42,14 @@ export const refreshEnergyPricesIfNeeded = async (): Promise<void> => {
     where: { energyType: EnergyType.ELECTRICITE }
   })
 
-  const needsGlobalUpdate = !globalReference || !isDataFresh(globalReference.lastUpdated)
+  // Vérifier si les données datent de moins de 31 jours
+  if (globalReference) {
+    const now = new Date()
+    const daysDiff = Math.floor((now.getTime() - globalReference.lastUpdated.getTime()) / (1000 * 60 * 60 * 24))
 
-  if (!needsGlobalUpdate) {
-    return
+    if (daysDiff < 31) {
+      return
+    }
   }
 
   // 2. Fetch TOUTES les énergies en parallèle
