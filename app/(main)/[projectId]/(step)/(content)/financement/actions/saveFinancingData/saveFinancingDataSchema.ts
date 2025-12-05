@@ -1,7 +1,8 @@
 import { z } from "zod"
+import { FinancingMode } from "@/types/financingMode"
 
 export const financingSchema = z.object({
-  mode_financement: z.enum(["Comptant", "Crédit", "Mixte"], {
+  mode_financement: z.nativeEnum(FinancingMode, {
     message: "Le mode de financement est requis",
   }),
   apport_personnel: z.number().min(0).optional(),
@@ -10,7 +11,7 @@ export const financingSchema = z.object({
   duree_credit_mois: z.number().min(1).max(360).optional(),
 }).superRefine((data, ctx) => {
   // Si mode = "Crédit" : taux_interet et duree_credit_mois sont obligatoires
-  if (data.mode_financement === "Crédit") {
+  if (data.mode_financement === FinancingMode.CREDIT) {
     if (data.taux_interet === undefined || data.taux_interet <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -28,7 +29,7 @@ export const financingSchema = z.object({
   }
 
   // Si mode = "Mixte" : apport_personnel, taux_interet et duree_credit_mois sont obligatoires
-  if (data.mode_financement === "Mixte") {
+  if (data.mode_financement === FinancingMode.MIXTE) {
     if (data.apport_personnel === undefined || data.apport_personnel <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

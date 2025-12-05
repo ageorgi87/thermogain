@@ -14,6 +14,7 @@ import {
 import { HelpCircle } from "lucide-react";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
+import { FinancingMode } from "@/types/financingMode";
 import { useEffect } from "react";
 import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations";
 import { Separator } from "@/components/ui/separator";
@@ -45,7 +46,7 @@ export function FinancementFields({
 
   // Auto-calculate montant_credit for "Crédit" mode (non-mixte)
   useEffect(() => {
-    if (modeFinancement === "Crédit") {
+    if (modeFinancement === FinancingMode.CREDIT) {
       if (montantCredit !== montantAPayer) {
         onChange("montant_credit", montantAPayer);
       }
@@ -54,7 +55,7 @@ export function FinancementFields({
 
   // For Mixte mode: auto-adjust credit amount when personal contribution changes
   useEffect(() => {
-    if (modeFinancement === "Mixte") {
+    if (modeFinancement === FinancingMode.MIXTE) {
       const apport = apportPersonnel || 0;
       // Credit = Amount to pay - Personal contribution (but not negative)
       const newCredit = Math.max(0, montantAPayer - apport);
@@ -109,16 +110,16 @@ export function FinancementFields({
             <SelectValue placeholder="Sélectionnez le mode de financement" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Comptant">Comptant</SelectItem>
-            <SelectItem value="Crédit">Crédit</SelectItem>
-            <SelectItem value="Mixte">Mixte</SelectItem>
+            <SelectItem value={FinancingMode.COMPTANT}>Comptant</SelectItem>
+            <SelectItem value={FinancingMode.CREDIT}>Crédit</SelectItem>
+            <SelectItem value={FinancingMode.MIXTE}>Mixte</SelectItem>
           </SelectContent>
         </Select>
       </FormField>
 
-      {(modeFinancement === "Crédit" || modeFinancement === "Mixte") && (
+      {(modeFinancement === FinancingMode.CREDIT || modeFinancement === FinancingMode.MIXTE) && (
         <>
-          {modeFinancement === "Mixte" && (
+          {modeFinancement === FinancingMode.MIXTE && (
             <FormField
               label="Apport personnel (€)"
               required
@@ -193,7 +194,7 @@ export function FinancementFields({
           </div>
 
           {/* Total cost of credit (capital + interests) */}
-          {(modeFinancement === "Crédit" || modeFinancement === "Mixte") && (
+          {(modeFinancement === FinancingMode.CREDIT || modeFinancement === FinancingMode.MIXTE) && (
             <>
               <Separator />
 

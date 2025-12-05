@@ -8,19 +8,19 @@ import {
   type CurrentHeatingData,
 } from "./currentHeatingSchema";
 import { estimateConsumptionByEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateConsumptionByEnergyType";
-import { getCurrentEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/energy/getCurrentEnergyPriceFromDB";
+import { getCurrentEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getCurrentEnergyPriceFromDB";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 import { adjustConsumptionForEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/adjustConsumptionForEfficiency";
 import { EnergyType } from "@/types/energyType";
 
 interface SaveCurrentHeatingDataParams {
-  projectId: string
-  data: CurrentHeatingData
+  projectId: string;
+  data: CurrentHeatingData;
 }
 
 export const saveCurrentHeatingData = async ({
   projectId,
-  data
+  data,
 }: SaveCurrentHeatingDataParams): Promise<ProjectChauffageActuel> => {
   const session = await auth();
 
@@ -63,7 +63,7 @@ export const saveCurrentHeatingData = async ({
     // Estimate consumption based on energy type (avec ajustement climatique)
     const estimationInitiale = estimateConsumptionByEnergyType({
       housing: housingData,
-      energyType: validatedData.type_chauffage
+      energyType: validatedData.type_chauffage,
     });
 
     // Ajuster l'estimation selon le rendement réel de l'installation (âge + état)
@@ -71,7 +71,7 @@ export const saveCurrentHeatingData = async ({
       typeChauffage: validatedData.type_chauffage,
       ageInstallation: validatedData.age_installation,
       etatInstallation: validatedData.etat_installation,
-      consumptionValue: estimationInitiale.value
+      consumptionValue: estimationInitiale.value,
     });
 
     // Utiliser la consommation ajustée

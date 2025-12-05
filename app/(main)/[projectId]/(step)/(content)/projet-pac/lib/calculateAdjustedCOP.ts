@@ -1,5 +1,5 @@
-import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/climate/getClimateInfoFromPostalCode"
-import { roundToDecimals } from "@/lib/utils/roundToDecimals"
+import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
@@ -15,14 +15,14 @@ import { roundToDecimals } from "@/lib/utils/roundToDecimals"
  * - 65°C (radiateurs HT) : -35%
  */
 const getTemperatureAdjustment = (temperatureDepart: number): number => {
-  if (temperatureDepart <= 35) return 1.0      // Conditions optimales
-  if (temperatureDepart <= 40) return 0.95     // Plancher + radiateurs BT
-  if (temperatureDepart <= 45) return 0.85     // Radiateurs basse température
-  if (temperatureDepart <= 50) return 0.80     // Radiateurs moyenne température (début)
-  if (temperatureDepart <= 55) return 0.75     // Radiateurs moyenne température
-  if (temperatureDepart <= 60) return 0.70     // Radiateurs haute température (début)
-  return 0.65                                  // Radiateurs haute température
-}
+  if (temperatureDepart <= 35) return 1.0; // Conditions optimales
+  if (temperatureDepart <= 40) return 0.95; // Plancher + radiateurs BT
+  if (temperatureDepart <= 45) return 0.85; // Radiateurs basse température
+  if (temperatureDepart <= 50) return 0.8; // Radiateurs moyenne température (début)
+  if (temperatureDepart <= 55) return 0.75; // Radiateurs moyenne température
+  if (temperatureDepart <= 60) return 0.7; // Radiateurs haute température (début)
+  return 0.65; // Radiateurs haute température
+};
 
 /**
  * Calcule le coefficient d'ajustement selon le type d'émetteurs
@@ -37,26 +37,26 @@ const getEmitterAdjustment = (typeEmetteurs: string): number => {
   switch (typeEmetteurs) {
     case "Plancher chauffant":
       // Optimal : température de départ 35°C
-      return 1.0
+      return 1.0;
 
     case "Radiateurs basse température":
       // Bon : température de départ 45°C
-      return 0.90
+      return 0.9;
 
     case "Ventilo-convecteurs":
       // Très bon : excellent échange thermique
-      return 0.95
+      return 0.95;
 
     case "Radiateurs haute température":
       // Difficile : température de départ 60-65°C
       // COP fortement dégradé
-      return 0.70
+      return 0.7;
 
     default:
       // Valeur conservatrice par défaut
-      return 0.85
+      return 0.85;
   }
-}
+};
 
 /**
  * Calcule le coefficient d'ajustement du COP selon la zone climatique
@@ -66,9 +66,9 @@ const getEmitterAdjustment = (typeEmetteurs: string): number => {
  * @returns Coefficient multiplicateur du COP
  */
 const getClimateAdjustment = (codePostal: string): number => {
-  const info = getClimateInfoFromPostalCode(codePostal)
-  return info.copAdjustment
-}
+  const info = getClimateInfoFromPostalCode(codePostal);
+  return info.copAdjustment;
+};
 
 /**
  * Calcule le COP réel ajusté selon tous les facteurs

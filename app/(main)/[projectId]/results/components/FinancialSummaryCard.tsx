@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Wallet } from "lucide-react"
+import { FinancingMode } from "@/types/financingMode"
 
 interface FinancialSummaryCardProps {
   resteACharge: number
@@ -15,7 +16,7 @@ export function FinancialSummaryCard({
   mensualite,
   dureeCreditMois,
 }: FinancialSummaryCardProps) {
-  const isCredit = modeFinancement && modeFinancement !== "Comptant" && mensualite
+  const isCredit = modeFinancement && modeFinancement !== FinancingMode.COMPTANT && mensualite
 
   return (
     <Card>

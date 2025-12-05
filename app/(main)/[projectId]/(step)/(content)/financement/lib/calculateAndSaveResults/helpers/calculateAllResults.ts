@@ -2,6 +2,7 @@
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
 import { EnergyType, type ApiEnergyType } from "@/types/energyType";
+import { FinancingMode } from "@/types/financingMode";
 import { calculateCurrentCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostYear1";
 import { calculatePacCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostYear1";
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh";
@@ -12,7 +13,7 @@ import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAl
 import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackYear";
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment";
 import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost";
-import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyPriceEvolutionFromDB";
+import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 /**
@@ -21,9 +22,9 @@ import { roundToDecimals } from "@/lib/utils/roundToDecimals";
  * @returns Type d'énergie (ApiEnergyType: 'gaz' | 'electricite' | 'fioul' | 'bois')
  */
 const getEnergyType = (
-  data: ProjectData
+  heatingSolution: ProjectData["type_chauffage"]
 ): ApiEnergyType => {
-  switch (data.type_chauffage) {
+  switch (heatingSolution) {
     case "Fioul":
     case "GPL":
       return EnergyType.FIOUL;
@@ -56,9 +57,11 @@ export const calculateAllResults = async (
 ): Promise<CalculationResults> => {
   // Récupérer les modèles énergétiques UNE SEULE FOIS au début
   // Les données ont été rafraîchies au step 1 (informations) si nécessaire
-  const energyType = getEnergyType(data);
+  const energyType = getEnergyType(data.type_chauffage);
   const currentEnergyModel = await getEnergyPriceEvolutionFromDB(energyType);
-  const pacEnergyModel = await getEnergyPriceEvolutionFromDB(EnergyType.ELECTRICITE);
+  const pacEnergyModel = await getEnergyPriceEvolutionFromDB(
+    EnergyType.ELECTRICITE
+  );
 
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentCostYear1(data);
@@ -74,7 +77,7 @@ export const calculateAllResults = async (
   let investissementReel = data.reste_a_charge;
 
   if (
-    data.mode_financement === "Crédit" &&
+    data.mode_financement === FinancingMode.CREDIT &&
     data.montant_credit &&
     data.taux_interet !== undefined &&
     data.duree_credit_mois
@@ -86,7 +89,7 @@ export const calculateAllResults = async (
     });
     investissementReel = coutTotalCredit;
   } else if (
-    data.mode_financement === "Mixte" &&
+    data.mode_financement === FinancingMode.MIXTE &&
     data.montant_credit &&
     data.taux_interet !== undefined &&
     data.duree_credit_mois &&
@@ -118,7 +121,8 @@ export const calculateAllResults = async (
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
   const economiesAnnuelles =
     yearlyData.length > 0
-      ? yearlyData.reduce((sum: number, y) => sum + y.economie, 0) / yearlyData.length
+      ? yearlyData.reduce((sum: number, y) => sum + y.economie, 0) /
+        yearlyData.length
       : coutAnnuelActuel - coutAnnuelPac;
 
   // ROI avec investissement réel (incluant intérêts du crédit)
@@ -153,7 +157,8 @@ export const calculateAllResults = async (
     0
   );
   const coutTotalPacLifetime =
-    investissementReel + yearlyData.reduce((sum: number, y) => sum + y.coutPac, 0);
+    investissementReel +
+    yearlyData.reduce((sum: number, y) => sum + y.coutPac, 0);
 
   // Taux de rentabilité annuel moyen (utiliser investissement réel)
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
@@ -186,7 +191,7 @@ export const calculateAllResults = async (
   let coutTotalCredit: number | undefined;
 
   if (
-    data.mode_financement === "Crédit" &&
+    data.mode_financement === FinancingMode.CREDIT &&
     data.montant_credit &&
     data.taux_interet &&
     data.duree_credit_mois

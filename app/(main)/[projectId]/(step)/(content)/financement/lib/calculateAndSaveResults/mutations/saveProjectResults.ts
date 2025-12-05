@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import type { CalculationResults } from "@/types/calculationResults";
 import type { Prisma } from "@prisma/client";
-import { saveProjectResultsParamsSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveProjectResults/saveProjectResultsSchema";
+import { saveProjectResultsParamsSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/calculateAndSaveResults/mutations/saveProjectResultsSchema";
 
 /**
  * Sauvegarde les résultats calculés dans la base de données

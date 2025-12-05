@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Calculator, Info } from "lucide-react"
 import type { YearlyData } from "@/types/yearlyData"
 import type { ProjectData } from "@/types/projectData"
+import { FinancingMode } from "@/types/financingMode"
 
 interface YearlyBreakdownTableProps {
   yearlyData: YearlyData[]
@@ -22,7 +23,7 @@ export function YearlyBreakdownTable({
   yearlyData,
   projectData,
   investissementReel,
-  modeFinancement = "Comptant",
+  modeFinancement = FinancingMode.COMPTANT,
   montantCredit = 0,
   tauxInteret = 0,
   dureeCreditMois = 0,
@@ -30,12 +31,12 @@ export function YearlyBreakdownTable({
 }: YearlyBreakdownTableProps) {
   // Calcul de la mensualité si crédit
   const mensualiteCredit =
-    modeFinancement && modeFinancement !== "Comptant" && montantCredit && tauxInteret && dureeCreditMois
+    modeFinancement && modeFinancement !== FinancingMode.COMPTANT && montantCredit && tauxInteret && dureeCreditMois
       ? (montantCredit * (tauxInteret / 100 / 12) * Math.pow(1 + tauxInteret / 100 / 12, dureeCreditMois)) /
         (Math.pow(1 + tauxInteret / 100 / 12, dureeCreditMois) - 1)
       : 0
 
-  const isCredit = modeFinancement && modeFinancement !== "Comptant" && mensualiteCredit > 0
+  const isCredit = modeFinancement && modeFinancement !== FinancingMode.COMPTANT && mensualiteCredit > 0
 
   // Calcul des positions cumulées pour chaque année
   type YearlyDataWithCumulative = YearlyData & {

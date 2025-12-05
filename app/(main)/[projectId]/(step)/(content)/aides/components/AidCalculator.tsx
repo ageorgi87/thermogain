@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -11,33 +11,33 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react"
-import { calculateMaPrimeRenov } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/maPrimeRenov/calculateMaPrimeRenov"
-import { calculateCEE } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/cee/calculateCEE"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { getClimateZoneFromPostalCode } from "@/app/(main)/[projectId]/lib/climate/getClimateZoneFromPostalCode"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Calculator, Check, X, ArrowRight, XIcon } from "lucide-react";
+import { calculateMaPrimeRenov } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/maPrimeRenov/calculateMaPrimeRenov";
+import { calculateCEE } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/cee/calculateCEE";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getClimateZoneFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateZoneFromPostalCode";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { HelpCircle } from "lucide-react"
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 
 interface AidCalculatorProps {
   // Données déjà connues depuis les étapes précédentes
-  typePac?: string
-  anneeConstruction?: number
-  codePostal?: string
-  surfaceHabitable?: number
-  nombreOccupants?: number
+  typePac?: string;
+  anneeConstruction?: number;
+  codePostal?: string;
+  surfaceHabitable?: number;
+  nombreOccupants?: number;
   // Callback pour remplir les inputs
-  onUseAmounts: (maPrimeRenov: number, cee: number) => void
+  onUseAmounts: (maPrimeRenov: number, cee: number) => void;
 }
 
 export const AidCalculator = ({
@@ -48,27 +48,41 @@ export const AidCalculator = ({
   nombreOccupants,
   onUseAmounts,
 }: AidCalculatorProps) => {
-  const [open, setOpen] = useState(false)
-  const [revenuFiscal, setRevenuFiscal] = useState<string>("")
-  const [nombrePersonnes, setNombrePersonnes] = useState<string>(nombreOccupants?.toString() || "2")
-  const [residencePrincipale, setResidencePrincipale] = useState<string>("oui")
-  const [remplacementComplet, setRemplacementComplet] = useState<string>("oui")
+  const [open, setOpen] = useState(false);
+  const [revenuFiscal, setRevenuFiscal] = useState<string>("");
+  const [nombrePersonnes, setNombrePersonnes] = useState<string>(
+    nombreOccupants?.toString() || "2"
+  );
+  const [residencePrincipale, setResidencePrincipale] = useState<string>("oui");
+  const [remplacementComplet, setRemplacementComplet] = useState<string>("oui");
 
-  const [mprResult, setMprResult] = useState<ReturnType<typeof calculateMaPrimeRenov> | null>(null)
-  const [ceeResult, setCeeResult] = useState<ReturnType<typeof calculateCEE> | null>(null)
-  const [hasCalculated, setHasCalculated] = useState(false)
+  const [mprResult, setMprResult] = useState<ReturnType<
+    typeof calculateMaPrimeRenov
+  > | null>(null);
+  const [ceeResult, setCeeResult] = useState<ReturnType<
+    typeof calculateCEE
+  > | null>(null);
+  const [hasCalculated, setHasCalculated] = useState(false);
 
   const handleCalculate = () => {
-    if (!revenuFiscal || !nombrePersonnes || !typePac || !codePostal || !anneeConstruction || !surfaceHabitable) {
-      alert("Veuillez remplir tous les champs requis")
-      return
+    if (
+      !revenuFiscal ||
+      !nombrePersonnes ||
+      !typePac ||
+      !codePostal ||
+      !anneeConstruction ||
+      !surfaceHabitable
+    ) {
+      alert("Veuillez remplir tous les champs requis");
+      return;
     }
 
-    const rfr = parseInt(revenuFiscal)
-    const nbPersonnes = parseInt(nombrePersonnes)
+    const rfr = parseInt(revenuFiscal);
+    const nbPersonnes = parseInt(nombrePersonnes);
 
     // Calculer MaPrimeRénov'
-    const logementPlusde15ans = new Date().getFullYear() - anneeConstruction >= 15
+    const logementPlusde15ans =
+      new Date().getFullYear() - anneeConstruction >= 15;
     const mprCalculation = calculateMaPrimeRenov({
       revenuFiscalReference: rfr,
       nombrePersonnes: nbPersonnes,
@@ -77,11 +91,12 @@ export const AidCalculator = ({
       logementPlusde15ans,
       residencePrincipale: residencePrincipale === "oui",
       remplacementComplet: remplacementComplet === "oui",
-    })
+    });
 
     // Calculer CEE
-    const logementPlusde2ans = new Date().getFullYear() - anneeConstruction >= 2
-    const zoneClimatique = getClimateZoneFromPostalCode(codePostal)
+    const logementPlusde2ans =
+      new Date().getFullYear() - anneeConstruction >= 2;
+    const zoneClimatique = getClimateZoneFromPostalCode(codePostal);
     const ceeCalculation = calculateCEE({
       revenuFiscalReference: rfr,
       nombrePersonnes: nbPersonnes,
@@ -91,21 +106,21 @@ export const AidCalculator = ({
       zoneClimatique,
       logementPlusde2ans,
       remplacementComplet: remplacementComplet === "oui",
-    })
+    });
 
-    setMprResult(mprCalculation)
-    setCeeResult(ceeCalculation)
-    setHasCalculated(true)
-  }
+    setMprResult(mprCalculation);
+    setCeeResult(ceeCalculation);
+    setHasCalculated(true);
+  };
 
   const handleUseAmounts = () => {
-    const mprAmount = mprResult?.montant || 0
-    const ceeAmount = ceeResult?.montant || 0
-    onUseAmounts(mprAmount, ceeAmount)
-    setOpen(false)
-  }
+    const mprAmount = mprResult?.montant || 0;
+    const ceeAmount = ceeResult?.montant || 0;
+    onUseAmounts(mprAmount, ceeAmount);
+    setOpen(false);
+  };
 
-  const totalAides = (mprResult?.montant || 0) + (ceeResult?.montant || 0)
+  const totalAides = (mprResult?.montant || 0) + (ceeResult?.montant || 0);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -120,7 +135,8 @@ export const AidCalculator = ({
           <DrawerHeader>
             <DrawerTitle>Calculateur d'aides financières</DrawerTitle>
             <DrawerDescription>
-              Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE en une seule fois. Ces aides sont cumulables.
+              Vérifiez votre éligibilité à MaPrimeRénov' et aux CEE en une seule
+              fois. Ces aides sont cumulables.
             </DrawerDescription>
           </DrawerHeader>
 
@@ -129,109 +145,141 @@ export const AidCalculator = ({
               /* Formulaire */
               <div className="space-y-4">
                 {/* Revenu Fiscal de Référence */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="revenu">Revenu fiscal de référence (RFR)</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[300px]">
-                        <p className="text-sm">
-                          Figurant sur votre avis d'imposition 2023. Le RFR détermine votre catégorie pour les deux aides (MaPrimeRénov' et CEE).
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="revenu">
+                      Revenu fiscal de référence (RFR)
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[300px]">
+                          <p className="text-sm">
+                            Figurant sur votre avis d'imposition 2023. Le RFR
+                            détermine votre catégorie pour les deux aides
+                            (MaPrimeRénov' et CEE).
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <Input
+                    id="revenu"
+                    type="number"
+                    placeholder="Ex: 35000"
+                    value={revenuFiscal}
+                    onChange={(e) => setRevenuFiscal(e.target.value)}
+                  />
                 </div>
-                <Input
-                  id="revenu"
-                  type="number"
-                  placeholder="Ex: 35000"
-                  value={revenuFiscal}
-                  onChange={(e) => setRevenuFiscal(e.target.value)}
-                />
-              </div>
 
-              {/* Résidence principale */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Le logement est-il votre résidence principale ?</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[300px]">
-                        <p className="text-sm">
-                          Résidence principale = occupée au moins 8 mois par an. Requis pour MaPrimeRénov' uniquement.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                {/* Résidence principale */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label>
+                      Le logement est-il votre résidence principale ?
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[300px]">
+                          <p className="text-sm">
+                            Résidence principale = occupée au moins 8 mois par
+                            an. Requis pour MaPrimeRénov' uniquement.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <RadioGroup
+                    value={residencePrincipale}
+                    onValueChange={setResidencePrincipale}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="oui" id="res-oui" />
+                      <Label
+                        htmlFor="res-oui"
+                        className="font-normal cursor-pointer"
+                      >
+                        Oui
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="non" id="res-non" />
+                      <Label
+                        htmlFor="res-non"
+                        className="font-normal cursor-pointer"
+                      >
+                        Non
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
-                <RadioGroup value={residencePrincipale} onValueChange={setResidencePrincipale}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="oui" id="res-oui" />
-                    <Label htmlFor="res-oui" className="font-normal cursor-pointer">
-                      Oui
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="non" id="res-non" />
-                    <Label htmlFor="res-non" className="font-normal cursor-pointer">
-                      Non
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
 
-              {/* Remplacement complet */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Souhaitez-vous remplacer complètement votre système de chauffage actuel ?</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[300px]">
-                        <p className="text-sm">
-                          Le remplacement complet est requis pour bénéficier des aides MaPrimeRénov' et CEE. Une installation en complément n'est pas éligible.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                {/* Remplacement complet */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label>
+                      Souhaitez-vous remplacer complètement votre système de
+                      chauffage actuel ?
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[300px]">
+                          <p className="text-sm">
+                            Le remplacement complet est requis pour bénéficier
+                            des aides MaPrimeRénov' et CEE. Une installation en
+                            complément n'est pas éligible.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <RadioGroup
+                    value={remplacementComplet}
+                    onValueChange={setRemplacementComplet}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="oui" id="remp-oui" />
+                      <Label
+                        htmlFor="remp-oui"
+                        className="font-normal cursor-pointer"
+                      >
+                        Oui
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="non" id="remp-non" />
+                      <Label
+                        htmlFor="remp-non"
+                        className="font-normal cursor-pointer"
+                      >
+                        Non
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  {remplacementComplet === "non" && (
+                    <Alert variant="destructive" className="mt-2">
+                      <AlertDescription>
+                        <strong>⚠️ Attention :</strong> Une installation en
+                        complément ne vous rendra pas éligible aux aides
+                        MaPrimeRénov&apos; et CEE.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
-                <RadioGroup value={remplacementComplet} onValueChange={setRemplacementComplet}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="oui" id="remp-oui" />
-                    <Label htmlFor="remp-oui" className="font-normal cursor-pointer">
-                      Oui
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="non" id="remp-non" />
-                    <Label htmlFor="remp-non" className="font-normal cursor-pointer">
-                      Non
-                    </Label>
-                  </div>
-                </RadioGroup>
-                {remplacementComplet === "non" && (
-                  <Alert variant="destructive" className="mt-2">
-                    <AlertDescription>
-                      <strong>⚠️ Attention :</strong> Une installation en complément ne vous rendra pas éligible aux aides MaPrimeRénov&apos; et CEE.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
 
-              {/* Bouton calculer */}
-              <Button onClick={handleCalculate} className="w-full" size="lg">
-                <Calculator className="mr-2 h-4 w-4" />
-                Calculer mes aides
-              </Button>
+                {/* Bouton calculer */}
+                <Button onClick={handleCalculate} className="w-full" size="lg">
+                  <Calculator className="mr-2 h-4 w-4" />
+                  Calculer mes aides
+                </Button>
               </div>
             ) : (
               /* Résultats */
@@ -249,7 +297,9 @@ export const AidCalculator = ({
 
                 {/* MaPrimeRénov' */}
                 {mprResult && (
-                  <div className={`p-4 rounded-lg border-2 ${mprResult.eligible ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                  <div
+                    className={`p-4 rounded-lg border-2 ${mprResult.eligible ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       {mprResult.eligible ? (
                         <Check className="h-5 w-5 text-green-600" />
@@ -263,14 +313,18 @@ export const AidCalculator = ({
                         {mprResult.montant.toLocaleString("fr-FR")} €
                       </p>
                     ) : (
-                      <p className="text-sm text-red-700">{mprResult.message.replace(/❌ Non éligible : /g, '')}</p>
+                      <p className="text-sm text-red-700">
+                        {mprResult.message.replace(/❌ Non éligible : /g, "")}
+                      </p>
                     )}
                   </div>
                 )}
 
                 {/* CEE */}
                 {ceeResult && (
-                  <div className={`p-4 rounded-lg border-2 ${ceeResult.eligible ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                  <div
+                    className={`p-4 rounded-lg border-2 ${ceeResult.eligible ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       {ceeResult.eligible ? (
                         <Check className="h-5 w-5 text-green-600" />
@@ -284,7 +338,9 @@ export const AidCalculator = ({
                         {ceeResult.montant.toLocaleString("fr-FR")} €
                       </p>
                     ) : (
-                      <p className="text-sm text-red-700">{ceeResult.message.replace(/❌ Non éligible : /g, '')}</p>
+                      <p className="text-sm text-red-700">
+                        {ceeResult.message.replace(/❌ Non éligible : /g, "")}
+                      </p>
                     )}
                   </div>
                 )}
@@ -305,5 +361,5 @@ export const AidCalculator = ({
         </div>
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};

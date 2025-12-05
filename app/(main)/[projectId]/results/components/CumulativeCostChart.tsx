@@ -5,6 +5,7 @@ import { ChartTooltip } from "@/components/ui/chart"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Label } from "recharts"
 import type { YearlyData } from "@/types/yearlyData"
+import { FinancingMode } from "@/types/financingMode"
 import { Info, TrendingUp } from "lucide-react"
 
 interface CumulativeCostChartProps {
@@ -23,7 +24,7 @@ export function CumulativeCostChart({
   investmentCost,
   paybackYear,
   paybackPeriod,
-  modeFinancement = "Comptant",
+  modeFinancement = FinancingMode.COMPTANT,
   montantCredit = 0,
   dureeCreditMois = 0,
   apportPersonnel = 0,
@@ -59,12 +60,12 @@ export function CumulativeCostChart({
 
   // Description selon le mode de financement
   const getFinancementDescription = () => {
-    if (modeFinancement === "Comptant") {
+    if (modeFinancement === FinancingMode.COMPTANT) {
       return `Investissement total en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
-    } else if (modeFinancement === "Crédit" && dureeCreditMois) {
+    } else if (modeFinancement === FinancingMode.CREDIT && dureeCreditMois) {
       const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
       return `Investissement total (crédit ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''} + intérêts) en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
-    } else if (modeFinancement === "Mixte" && apportPersonnel && dureeCreditMois) {
+    } else if (modeFinancement === FinancingMode.MIXTE && apportPersonnel && dureeCreditMois) {
       const dureeCreditAnnees = Math.ceil(dureeCreditMois / 12)
       return `Investissement total (apport + crédit ${dureeCreditAnnees} an${dureeCreditAnnees > 1 ? 's' : ''} + intérêts) en année 1 : ${investissementReel.toLocaleString("fr-FR")} €`
     }
@@ -189,7 +190,7 @@ export function CumulativeCostChart({
           <div className="flex items-center gap-2">
             <div className="w-8 h-0.5 bg-blue-500"></div>
             <span className="text-sm text-muted-foreground">
-              Avec PAC ({modeFinancement === "Crédit" ? "crédit" : modeFinancement === "Mixte" ? "mixte" : "comptant"} + électricité)
+              Avec PAC ({modeFinancement === FinancingMode.CREDIT ? "crédit" : modeFinancement === FinancingMode.MIXTE ? "mixte" : "comptant"} + électricité)
             </span>
           </div>
         </div>
