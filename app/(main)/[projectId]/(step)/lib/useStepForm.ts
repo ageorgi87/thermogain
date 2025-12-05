@@ -70,6 +70,8 @@ export const useStepForm = <T extends z.ZodType>({
   // Soumettre le formulaire
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setErrors({}); // Clear previous errors
+
     try {
       const result = schema.safeParse(formData);
 
@@ -81,6 +83,7 @@ export const useStepForm = <T extends z.ZodType>({
           }
         });
         setErrors(errorMap);
+        setIsSubmitting(false); // Reset submitting state on validation error
         return;
       }
 
