@@ -9,6 +9,7 @@ interface CalculateYearlyCostProjectionsParams {
   years: number;
   currentEnergyModel: EnergyEvolutionModel;
   pacEnergyModel: EnergyEvolutionModel;
+  pacConsumptionKwh: number;
 }
 
 /**
@@ -18,6 +19,7 @@ interface CalculateYearlyCostProjectionsParams {
  * @param params.years Nombre d'années de projection
  * @param params.currentEnergyModel Modèle d'évolution pour le chauffage actuel
  * @param params.pacEnergyModel Modèle d'évolution pour la PAC (électricité)
+ * @param params.pacConsumptionKwh Consommation PAC précalculée (pour éviter 17 recalculs)
  * @returns Tableau des projections annuelles (coûts, économies, économies cumulées)
  */
 export const calculateYearlyCostProjections = async ({
@@ -25,6 +27,7 @@ export const calculateYearlyCostProjections = async ({
   years,
   currentEnergyModel,
   pacEnergyModel,
+  pacConsumptionKwh,
 }: CalculateYearlyCostProjectionsParams): Promise<YearlyData[]> => {
   const yearlyData: YearlyData[] = [];
   let economiesCumulees = 0;
@@ -39,7 +42,8 @@ export const calculateYearlyCostProjections = async ({
     const coutPac = await calculatePacCostProjectedYear({
       data,
       year: i,
-      energyModel: pacEnergyModel
+      energyModel: pacEnergyModel,
+      pacConsumptionKwh,
     });
     const economie = coutActuel - coutPac;
     economiesCumulees += economie;

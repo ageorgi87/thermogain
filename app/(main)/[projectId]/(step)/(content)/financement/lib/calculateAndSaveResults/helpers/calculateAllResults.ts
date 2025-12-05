@@ -6,7 +6,7 @@ import { FinancingMode } from "@/types/financingMode"
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts"
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts"
-import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh"
+import { getCurrentConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
 import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyCostProjections"
 import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackPeriod"
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment"
@@ -65,8 +65,10 @@ export const calculateAllResults = async (
   const currentFixedCosts = calculateCurrentFixedCosts(data);
   const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total;
 
-  // Consommation PAC (calculée UNE SEULE FOIS)
-  const consommationPacKwh = calculatePacConsumptionKwh(data);
+  // Consommation PAC (calculée UNE SEULE FOIS, inline)
+  // Formule: Consommation PAC = Besoins énergétiques / COP ajusté
+  const currentConsumptionKwh = getCurrentConsumptionKwh(data, true);
+  const consommationPacKwh = currentConsumptionKwh / data.cop_ajuste;
 
   // Coût variable PAC (inline pour éviter de recalculer la consommation)
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
@@ -117,12 +119,13 @@ export const calculateAllResults = async (
   };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
-  // Passer les modèles énergétiques pour éviter de les re-fetch à chaque année
+  // Passer les modèles énergétiques ET la consommation PAC pour éviter les recalculs
   const yearlyData = await calculateYearlyCostProjections({
     data: dataAjusteeROI,
     years: data.duree_vie_pac,
     currentEnergyModel,
     pacEnergyModel,
+    pacConsumptionKwh: consommationPacKwh,
   });
 
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)

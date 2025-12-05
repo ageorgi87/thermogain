@@ -1,6 +1,5 @@
 import type { ProjectData } from "@/types/projectData";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { calculatePacConsumptionKwh } from "./calculatePacConsumptionKwh";
 import { calculatePacFixedCosts } from "./calculatePacFixedCosts";
 import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 
@@ -8,6 +7,7 @@ interface CalculatePacCostProjectedYearParams {
   data: ProjectData;
   year: number;
   energyModel: EnergyEvolutionModel;
+  pacConsumptionKwh: number;
 }
 
 /**
@@ -27,17 +27,18 @@ interface CalculatePacCostProjectedYearParams {
  * @param params.data Données du projet
  * @param params.year Année de projection (0 = année 1, 1 = année 2, etc.)
  * @param params.energyModel Modèle d'évolution des prix de l'électricité
+ * @param params.pacConsumptionKwh Consommation PAC précalculée (pour éviter recalculs)
  * @returns Coût projeté en euros
  */
 export const calculatePacCostProjectedYear = async ({
   data,
   year,
   energyModel,
+  pacConsumptionKwh,
 }: CalculatePacCostProjectedYearParams): Promise<number> => {
   // Coûts variables: évoluent avec le modèle Mean Reversion
-  const pacConsumption = calculatePacConsumptionKwh(data);
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
-  const variableCost = pacConsumption * prixElec;
+  const variableCost = pacConsumptionKwh * prixElec;
 
   const fixedCosts = calculatePacFixedCosts(data);
 
