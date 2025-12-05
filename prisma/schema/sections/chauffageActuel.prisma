@@ -10,10 +10,7 @@ model ProjectChauffageActuel {
   age_installation  Int
   etat_installation String
 
-  // Does user know their consumption? (determines which fields to collect)
-  connait_consommation Boolean
-
-  // Consumption data - conditional based on type_chauffage and connait_consommation
+  // Consumption data - conditional based on type_chauffage
   conso_fioul_litres Float?
   prix_fioul_litre   Float?
   conso_gaz_kwh      Float?

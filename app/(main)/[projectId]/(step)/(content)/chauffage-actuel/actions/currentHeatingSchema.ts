@@ -21,17 +21,12 @@ export const currentHeatingSchema = z.object({
   etat_installation: z.enum(["Bon", "Moyen", "Mauvais"], {
     message: "L'état de l'installation est requis",
   }),
-  connait_consommation: z.boolean({
-    message: "Veuillez indiquer si vous connaissez votre consommation",
-  }),
   entretien_annuel: z
     .number({ message: "Le coût d'entretien annuel est requis" })
     .min(0)
     .max(500),
 
-  // Tous les champs de consommation sont optionnels de base
-  // Ils deviennent requis selon le type de chauffage ET si connait_consommation = true
-  // .nullable() permet d'accepter null (qui sera transformé en undefined)
+  // Champs de consommation optionnels - deviennent requis selon le type de chauffage
   conso_fioul_litres: z.number().min(0).max(50000).nullable().optional(),
   prix_fioul_litre: z.number().min(0).max(10).nullable().optional(),
   conso_gaz_kwh: z.number().min(0).max(100000).nullable().optional(),
@@ -48,12 +43,7 @@ export const currentHeatingSchema = z.object({
   conso_pac_kwh: z.number().min(0).max(100000).nullable().optional(),
   abonnement_gaz: z.number().min(0).max(1000).nullable().optional(),
 }).superRefine((data, ctx) => {
-  // Si l'utilisateur ne connaît pas sa consommation, on ne valide rien de plus
-  if (!data.connait_consommation) {
-    return
-  }
-
-  // Si connait_consommation = true, on valide selon le type de chauffage
+  // Validation selon le type de chauffage
   const type = data.type_chauffage
 
   // Fioul

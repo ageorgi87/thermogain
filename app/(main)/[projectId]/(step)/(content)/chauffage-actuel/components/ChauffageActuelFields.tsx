@@ -6,11 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { CurrentHeatingData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -53,7 +51,6 @@ export const ChauffageActuelFields = ({
   defaultPrices,
 }: ChauffageActuelFieldsProps) => {
   const typeChauffage = formData.type_chauffage;
-  const connaitConsommation = formData.connait_consommation;
 
   return (
     <div className="space-y-6">
@@ -129,46 +126,8 @@ export const ChauffageActuelFields = ({
         </FormField>
       </div>
 
-      {/* Question: connaît sa consommation? */}
-      <FormField
-        label="Connaissez-vous votre consommation énergétique actuelle ?"
-        required
-        error={errors.connait_consommation}
-      >
-        <RadioGroup
-          onValueChange={(value: string) =>
-            onChange("connait_consommation", value === "true")
-          }
-          value={
-            formData.connait_consommation === undefined
-              ? undefined
-              : formData.connait_consommation
-                ? "true"
-                : "false"
-          }
-          className="flex flex-col space-y-1"
-        >
-          <div className="flex items-center space-x-3 space-y-0">
-            <RadioGroupItem value="true" />
-            <label className="text-sm font-normal cursor-pointer">
-              Oui, je connais ma consommation annuelle et le prix
-            </label>
-          </div>
-          <div className="flex items-center space-x-3 space-y-0">
-            <RadioGroupItem value="false" />
-            <label className="text-sm font-normal cursor-pointer">
-              Non, j&apos;aimerais l&apos;estimer à partir des caractéristiques
-              de mon logement
-            </label>
-          </div>
-        </RadioGroup>
-      </FormField>
-
-      {/* If user KNOWS consumption: show consumption fields */}
-      {connaitConsommation === true && (
-        <>
-          {/* Consumption fields - conditional based on type_chauffage */}
-          {typeChauffage === "Fioul" && (
+      {/* Consumption fields - conditional based on type_chauffage */}
+      {typeChauffage === "Fioul" && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 label="Consommation (litres/an)"
@@ -475,22 +434,8 @@ export const ChauffageActuelFields = ({
               </FormField>
             </div>
           )}
-        </>
-      )}
 
-      {/* If user DOESN'T know consumption: show info alert */}
-      {connaitConsommation === false && (
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            Les calculs seront basés sur une estimation à partir des
-            caractéristiques de votre logement (surface, isolation, etc.)
-            renseignées à l&apos;étape précédente.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Entretien annuel - shown for all users */}
+      {/* Entretien annuel */}
       <FormField
         label={
           <div className="flex items-center gap-2">
