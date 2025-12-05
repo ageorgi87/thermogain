@@ -12,7 +12,7 @@ import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAl
 import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackYear";
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment";
 import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost";
-import { getEnergyModelFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyModelFromDB";
+import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyPriceEvolutionFromDB";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -56,8 +56,8 @@ export const calculateAllResults = async (
   // Récupérer les modèles énergétiques UNE SEULE FOIS au début
   // Les données ont été rafraîchies au step 1 (informations) si nécessaire
   const energyType = getEnergyType(data);
-  const currentEnergyModel = await getEnergyModelFromDB(energyType);
-  const pacEnergyModel = await getEnergyModelFromDB(EnergyType.ELECTRICITE);
+  const currentEnergyModel = await getEnergyPriceEvolutionFromDB(energyType);
+  const pacEnergyModel = await getEnergyPriceEvolutionFromDB(EnergyType.ELECTRICITE);
 
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentCostYear1(data);

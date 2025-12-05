@@ -8,7 +8,7 @@ import {
   type CurrentHeatingData,
 } from "./currentHeatingSchema";
 import { estimateConsumptionByEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateConsumptionByEnergyType";
-import { getEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyPriceFromDB";
+import { getCurrentEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/energy/getCurrentEnergyPriceFromDB";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
 import { adjustConsumptionForEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/adjustConsumptionForEfficiency";
 import { EnergyType } from "@/types/energyType";
@@ -85,25 +85,25 @@ export const saveCurrentHeatingData = async ({
 
     switch (validatedData.type_chauffage) {
       case "Fioul":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.FIOUL);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.FIOUL);
         validatedData.conso_fioul_litres = estimation.value;
         validatedData.prix_fioul_litre = energyPrice;
         break;
       case "Gaz":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.GAZ);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.GAZ);
         validatedData.conso_gaz_kwh = estimation.value;
         validatedData.prix_gaz_kwh = energyPrice;
         // Assigner l'abonnement gaz par défaut (moyenne nationale)
         validatedData.abonnement_gaz = GAS_SUBSCRIPTION.ANNUAL_AVERAGE;
         break;
       case "GPL":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.GPL);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.GPL);
         validatedData.conso_gpl_kg = estimation.value;
         validatedData.prix_gpl_kg = energyPrice;
         break;
       case "Pellets":
       case "Bois":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.BOIS);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.BOIS);
         if (validatedData.type_chauffage === "Pellets") {
           validatedData.conso_pellets_kg = estimation.value;
           validatedData.prix_pellets_kg = energyPrice;
@@ -113,14 +113,14 @@ export const saveCurrentHeatingData = async ({
         }
         break;
       case "Electrique":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.ELECTRICITE);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.ELECTRICITE);
         validatedData.conso_elec_kwh = estimation.value;
         validatedData.prix_elec_kwh = energyPrice;
         break;
       case "PAC Air/Air":
       case "PAC Air/Eau":
       case "PAC Eau/Eau":
-        energyPrice = await getEnergyPriceFromDB(EnergyType.ELECTRICITE);
+        energyPrice = await getCurrentEnergyPriceFromDB(EnergyType.ELECTRICITE);
         validatedData.conso_pac_kwh = estimation.value;
         validatedData.prix_elec_kwh = energyPrice;
         // Set a default COP for existing PACs (estimated average)

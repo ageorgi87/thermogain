@@ -5,16 +5,16 @@ import type { EnergyEvolutionModel } from "@/types/energy"
 import type { ApiEnergyType } from "@/types/energyType"
 
 /**
- * Récupère le modèle d'évolution énergétique depuis la DB
+ * Récupère les données d'évolution des prix énergétiques depuis la DB
  *
  * IMPORTANT: Cette fonction ne fait que lire la DB.
  * Les données sont rafraîchies au step 1 (informations) par refreshEnergyPricesIfNeeded().
  *
  * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', 'bois')
- * @returns Modèle d'évolution depuis la DB
+ * @returns Données d'évolution des prix depuis la DB
  * @throws Error si les données ne sont pas en DB
  */
-export const getEnergyModelFromDB = async (
+export const getEnergyPriceEvolutionFromDB = async (
   energyType: ApiEnergyType
 ): Promise<EnergyEvolutionModel> => {
   const energyData = await prisma.energyPriceCache.findUnique({

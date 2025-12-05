@@ -39,7 +39,7 @@ const convertPriceToUnit = (pricePerKwh: number, energyType: EnergyType): number
  * @returns Prix dans l'unité appropriée
  * @throws Error si les données ne sont pas en DB
  */
-export const getEnergyPriceFromDB = async (
+export const getCurrentEnergyPriceFromDB = async (
   energyType: EnergyType
 ): Promise<number> => {
   // GPL n'a pas de données directes, on utilise le fioul × 1.39

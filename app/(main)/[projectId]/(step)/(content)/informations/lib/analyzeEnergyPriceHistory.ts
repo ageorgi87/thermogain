@@ -7,9 +7,9 @@
  * 3. Générer automatiquement le modèle Mean Reversion optimal
  */
 
-import { getEnergyTypeFromColumn } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
+import { parseDidoColumnToEnergyType } from "@/app/(main)/[projectId]/lib/energy/parseDidoColumnToEnergyType";
 import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
-import type { DidoEnergyType } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
+import type { DidoEnergyType } from "@/app/(main)/[projectId]/lib/energy/parseDidoColumnToEnergyType";
 
 /**
  * Calcule le taux d'évolution récent pondéré (70% sur 10 ans + 30% long terme)
@@ -188,7 +188,7 @@ export const analyzeEnergyPriceHistory = async (
     const crisisYears = detectCrisisYears(annualEvolutions);
 
     // 3. Calcul du taux d'équilibre
-    const energyType = getEnergyTypeFromColumn(priceColumnName);
+    const energyType = parseDidoColumnToEnergyType(priceColumnName);
     const tauxEquilibre = calculateEquilibriumRate(
       energyType,
       annualEvolutions,

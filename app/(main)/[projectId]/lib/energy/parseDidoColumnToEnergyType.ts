@@ -1,10 +1,10 @@
 /**
- * Détermine le type d'énergie à partir du nom de colonne de l'API DIDO
+ * Parse le nom de colonne de l'API DIDO pour déterminer le type d'énergie
  */
 
 export type DidoEnergyType = 'ELECTRICITE' | 'GAZ' | 'BOIS' | 'PETROLEUM'
 
-export const getEnergyTypeFromColumn = (priceColumnName: string): DidoEnergyType => {
+export const parseDidoColumnToEnergyType = (priceColumnName: string): DidoEnergyType => {
   if (priceColumnName.includes('ELE')) {
     return 'ELECTRICITE'
   } else if (priceColumnName.includes('GAZ')) {
