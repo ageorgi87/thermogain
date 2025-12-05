@@ -1,8 +1,8 @@
 "use server";
 
-import { getProjectDataForCalculations } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/calculateAndSaveResults/queries/getProjectDataForCalculations";
-import { calculateAllResults } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/calculateAndSaveResults/helpers/calculateAllResults";
-import { saveProjectResults } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/calculateAndSaveResults/mutations/saveProjectResults";
+import { getProjectDataForCalculations } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/queries/getProjectDataForCalculations";
+import { calculateAllResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateAllResults";
+import { saveProjectResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/mutations/saveProjectResults";
 
 /**
  * Calcule tous les résultats pour un projet et les sauvegarde en DB

@@ -1,9 +1,9 @@
 import type { ProjectData } from "@/types/projectData";
 import type { YearlyData } from "@/types/yearlyData";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors";
-import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts";
-import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateCurrentFixedCosts";
+import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePacFixedCosts";
 
 interface CalculateYearlyCostProjectionsParams {
   data: ProjectData;

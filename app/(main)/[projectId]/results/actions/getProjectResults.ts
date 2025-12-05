@@ -1,8 +1,8 @@
-"use server"
+"use server";
 
-import { prisma } from "@/lib/prisma"
-import type { CalculationResults } from "@/types/calculationResults"
-import type { YearlyData } from "@/types/yearlyData"
+import { prisma } from "@/lib/prisma";
+import type { CalculationResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/types/calculationResults";
+import type { YearlyData } from "@/types/yearlyData";
 
 /**
  * Récupère les résultats calculés depuis la base de données
@@ -16,11 +16,11 @@ export const getProjectResults = async (
 ): Promise<CalculationResults | null> => {
   try {
     const results = await prisma.projectResults.findUnique({
-      where: { projectId }
-    })
+      where: { projectId },
+    });
 
     if (!results) {
-      return null
+      return null;
     }
 
     // Convert DB data to CalculationResults type
@@ -55,10 +55,13 @@ export const getProjectResults = async (
       // Financing
       mensualiteCredit: results.mensualiteCredit ?? undefined,
       coutTotalCredit: results.coutTotalCredit ?? undefined,
-      investissementReel: results.investissementReel
-    }
+      investissementReel: results.investissementReel,
+    };
   } catch (error) {
-    console.error(`❌ Erreur lors de la récupération des résultats pour le projet ${projectId}:`, error)
-    return null
+    console.error(
+      `❌ Erreur lors de la récupération des résultats pour le projet ${projectId}:`,
+      error
+    );
+    return null;
   }
-}
+};

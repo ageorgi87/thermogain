@@ -1,6 +1,6 @@
 import type { ProjectData } from "@/types/projectData"
 import { ELECTRICITY_SUBSCRIPTION_ANNUAL, GAS_SUBSCRIPTION } from "@/config/constants"
-import { isElectricHeating, requiresGasSubscription } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyTypeDetectors"
+import { isElectricHeating, requiresGasSubscription } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyTypeDetectors"
 
 /**
  * Calcule les coûts FIXES annuels du système actuel

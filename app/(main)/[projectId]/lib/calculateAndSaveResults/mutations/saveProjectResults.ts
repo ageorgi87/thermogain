@@ -1,9 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { CalculationResults } from "@/types/calculationResults";
+import type { CalculationResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/types/calculationResults";
 import type { Prisma } from "@prisma/client";
-import { saveProjectResultsParamsSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/calculateAndSaveResults/mutations/saveProjectResultsSchema";
+import { saveProjectResultsParamsSchema } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/mutations/saveProjectResultsSchema";
 
 /**
  * Sauvegarde les résultats calculés dans la base de données

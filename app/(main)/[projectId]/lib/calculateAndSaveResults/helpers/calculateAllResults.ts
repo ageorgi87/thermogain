@@ -1,17 +1,17 @@
 // Main calculation function that orchestrates all calculations
-import type { ProjectData } from "@/types/projectData"
-import type { CalculationResults } from "@/types/calculationResults"
-import { EnergyType, type ApiEnergyType } from "@/types/energyType"
-import { FinancingMode } from "@/types/financingMode"
-import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
-import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts"
-import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts"
-import { getCurrentConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
-import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyCostProjections"
-import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackPeriod"
-import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment"
-import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB"
-import { roundToDecimals } from "@/lib/utils/roundToDecimals"
+import type { ProjectData } from "@/types/projectData";
+import type { CalculationResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/types/calculationResults";
+import { EnergyType, type ApiEnergyType } from "@/types/energyType";
+import { FinancingMode } from "@/types/financingMode";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateCurrentFixedCosts";
+import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePacFixedCosts";
+import { getCurrentConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
+import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateYearlyCostProjections";
+import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePaybackPeriod";
+import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateMonthlyPayment";
+import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -94,7 +94,10 @@ export const calculateAllResults = async (
       tauxAnnuel: data.taux_interet,
       dureeMois: data.duree_credit_mois,
     });
-    const coutTotalCredit = roundToDecimals(mensualite * data.duree_credit_mois, 2);
+    const coutTotalCredit = roundToDecimals(
+      mensualite * data.duree_credit_mois,
+      2
+    );
     investissementReel = coutTotalCredit;
   } else if (
     data.mode_financement === FinancingMode.MIXTE &&
@@ -108,7 +111,10 @@ export const calculateAllResults = async (
       tauxAnnuel: data.taux_interet,
       dureeMois: data.duree_credit_mois,
     });
-    const coutTotalCredit = roundToDecimals(mensualite * data.duree_credit_mois, 2);
+    const coutTotalCredit = roundToDecimals(
+      mensualite * data.duree_credit_mois,
+      2
+    );
     investissementReel = data.apport_personnel + coutTotalCredit;
   }
 
@@ -137,20 +143,25 @@ export const calculateAllResults = async (
 
   // ROI avec investissement réel (incluant intérêts du crédit)
   // Utiliser yearlyData déjà calculé au lieu de le recalculer
-  const paybackPeriod = calculatePaybackPeriod(yearlyData, investissementReel)
+  const paybackPeriod = calculatePaybackPeriod(yearlyData, investissementReel);
 
   // Calculer l'année calendaire du ROI (inline)
   const paybackYear = paybackPeriod
     ? new Date().getFullYear() + Math.floor(paybackPeriod)
-    : null
+    : null;
 
   // Gains totaux sur la durée de vie de la PAC (inline)
-  const totalSavingsLifetime = yearlyData[yearlyData.length - 1]?.economiesCumulees || 0
+  const totalSavingsLifetime =
+    yearlyData[yearlyData.length - 1]?.economiesCumulees || 0;
 
   // Coûts totaux sur durée de vie et bénéfice net (inline)
-  const coutTotalActuelLifetime = yearlyData.reduce((sum, y) => sum + y.coutActuel, 0)
-  const coutTotalPacLifetime = investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0)
-  const netBenefitLifetime = coutTotalActuelLifetime - coutTotalPacLifetime
+  const coutTotalActuelLifetime = yearlyData.reduce(
+    (sum, y) => sum + y.coutActuel,
+    0
+  );
+  const coutTotalPacLifetime =
+    investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0);
+  const netBenefitLifetime = coutTotalActuelLifetime - coutTotalPacLifetime;
 
   // Taux de rentabilité annuel moyen (utiliser investissement réel)
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
@@ -194,7 +205,10 @@ export const calculateAllResults = async (
       dureeMois: data.duree_credit_mois,
     });
     // Inline: mensualite * duree
-    coutTotalCredit = roundToDecimals(mensualiteCredit * data.duree_credit_mois, 2);
+    coutTotalCredit = roundToDecimals(
+      mensualiteCredit * data.duree_credit_mois,
+      2
+    );
   }
 
   return {
