@@ -1,3 +1,5 @@
+import type { EtatInstallation } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/etatInstallation";
+
 /**
  * Tables de rendement par type de chauffage et âge
  * Les valeurs sont basées sur les études ADEME et les normes européennes
@@ -55,7 +57,7 @@ export const WOOD_PELLET_EFFICIENCY = {
 
 // Facteurs de correction selon l'état d'entretien
 // Basé sur les études UK Energy Saving Trust
-export const MAINTENANCE_FACTORS = {
+export const MAINTENANCE_FACTORS: Record<EtatInstallation, number> = {
   Bon: 1.0,      // Entretien régulier, pas de pénalité
   Moyen: 0.93,   // Entretien occasionnel, -7% de rendement
   Mauvais: 0.85, // Pas d'entretien, -15% de rendement
