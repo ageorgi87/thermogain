@@ -2,7 +2,7 @@ import type { EnergyEvolutionModel } from "@/types/energy";
 import { EnergyType, type ApiEnergyType } from "@/types/energyType";
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids";
 import { getDidoColumnNameFromEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoColumnMappings";
-import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory";
+import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/helpers/analyzeEnergyPriceHistory";
 import { getDidoMonthlyEnergyPriceData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDidoMonthlyEnergyPriceData";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 

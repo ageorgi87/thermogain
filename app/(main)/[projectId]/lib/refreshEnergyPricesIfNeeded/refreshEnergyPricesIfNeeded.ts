@@ -1,8 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { fetchAllEnergyDataFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchAllEnergyDataFromAPI";
-import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache";
+import { fetchAllEnergyDataFromAPI } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/helpers/fetchAllEnergyDataFromAPI";
+import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/mutations/updateEnergyPriceCache";
 import { EnergyType } from "@/types/energyType";
 import { API_ENERGY_TYPES } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/apiEnergyTypes";
 

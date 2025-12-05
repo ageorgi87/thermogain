@@ -1,6 +1,6 @@
 import type { ApiEnergyType } from "@/types/energyType";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { fetchOneEnergyDataFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchOneEnergyDataFromAPI";
+import { fetchOneEnergyDataFromAPI } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/helpers/fetchOneEnergyDataFromAPI";
 import { API_ENERGY_TYPES } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/apiEnergyTypes";
 
 /**
