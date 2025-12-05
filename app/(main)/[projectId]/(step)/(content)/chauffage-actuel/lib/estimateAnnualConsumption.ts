@@ -1,6 +1,7 @@
 import { getConsumptionCoefficient } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getConsumptionCoefficient";
 import { getOccupancyFactor } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getOccupancyFactor";
-import { getConsumptionAdjustment } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getConsumptionAdjustment";
+import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
+import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/getClimateData/config/climateZones";
 import type { HousingCharacteristics } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/housingCharacteristics"
 
 /**
@@ -18,9 +19,12 @@ export const estimateAnnualConsumption = (
   const facteurOccupation = getOccupancyFactor({ nombreOccupants: housing.nombre_occupants });
 
   // Ajustement selon la zone climatique (si code postal fourni)
+  // Inline: La consommation est proportionnelle aux DJU (Degrés Jours Unifiés)
   let facteurClimatique = 1.0;
   if (housing.code_postal) {
-    facteurClimatique = getConsumptionAdjustment(housing.code_postal);
+    const climateInfo = getClimateInfoFromPostalCode(housing.code_postal);
+    const djuReference = CLIMATE_ZONES["H2a"].dju; // 2200 DJU (zone de référence)
+    facteurClimatique = climateInfo.dju / djuReference;
   }
 
   // Consommation estimée = Surface × Coefficient × Facteur occupation × Facteur climatique
