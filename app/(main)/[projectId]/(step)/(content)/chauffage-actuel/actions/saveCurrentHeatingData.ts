@@ -13,6 +13,7 @@ import { GAS_SUBSCRIPTION } from "@/config/constants";
 import { calculateBoilerEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/calculateBoilerEfficiency";
 import { REFERENCE_EFFICIENCY } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/config/heatingEfficiencyData";
 import { EnergyType } from "@/types/energyType";
+import { QualiteIsolation } from "@/types/isolation";
 
 interface SaveCurrentHeatingDataParams {
   projectId: string;
@@ -56,7 +57,7 @@ export const saveCurrentHeatingData = async ({
     const housingData = {
       surface_habitable: logement.surface_habitable,
       annee_construction: logement.annee_construction,
-      qualite_isolation: logement.qualite_isolation,
+      qualite_isolation: logement.qualite_isolation as QualiteIsolation,
       nombre_occupants: logement.nombre_occupants,
       code_postal: logement.code_postal, // Code postal pour zone climatique
     };

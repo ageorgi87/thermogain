@@ -1,6 +1,8 @@
+import { QualiteIsolation } from "@/types/isolation"
+
 interface GetConsumptionCoefficientParams {
   anneeConstruction: number
-  qualiteIsolation: string
+  qualiteIsolation: QualiteIsolation
 }
 
 /**
@@ -13,9 +15,9 @@ export const getConsumptionCoefficient = ({
   // Convertir la qualité d'isolation en score numérique
   // "Mauvaise" = 0, "Moyenne" = 1-2, "Bonne" = 3
   let isolationScore: number
-  if (qualiteIsolation === "Mauvaise") {
+  if (qualiteIsolation === QualiteIsolation.Mauvaise) {
     isolationScore = 0
-  } else if (qualiteIsolation === "Moyenne") {
+  } else if (qualiteIsolation === QualiteIsolation.Moyenne) {
     isolationScore = 1.5 // Moyenne entre 1 et 2
   } else {
     isolationScore = 3
