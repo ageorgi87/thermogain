@@ -4,7 +4,6 @@ import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors";
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts";
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts";
-import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 
 interface CalculateYearlyCostProjectionsParams {
   data: ProjectData;
@@ -24,6 +23,43 @@ interface CalculateYearlyCostProjectionsParams {
  * @param params.pacConsumptionKwh Consommation PAC précalculée (pour éviter 17 recalculs)
  * @returns Tableau des projections annuelles (coûts, économies, économies cumulées)
  */
+/**
+ * Calcule le taux d'évolution selon le modèle de Mean Reversion
+ * Le taux décroît linéairement du taux récent vers le taux d'équilibre
+ */
+const meanReversionRate = (
+  annee: number,
+  model: EnergyEvolutionModel
+): number => {
+  const { tauxRecent, tauxEquilibre, anneesTransition = 5 } = model;
+
+  if (annee < anneesTransition) {
+    const progression = annee / anneesTransition;
+    return tauxRecent - (tauxRecent - tauxEquilibre) * progression;
+  }
+
+  return tauxEquilibre;
+};
+
+/**
+ * Pré-calcule les facteurs d'évolution cumulés pour toutes les années
+ * Optimisation: Calcule une seule fois pour éviter 272 recalculs
+ */
+const preCalculateEvolutionFactors = (
+  years: number,
+  model: EnergyEvolutionModel
+): number[] => {
+  const factors: number[] = [1]; // Année 0: pas d'évolution
+
+  for (let i = 1; i < years; i++) {
+    // Facteur d'évolution cumulé = facteur année précédente × (1 + taux%)
+    const rate = meanReversionRate(i - 1, model);
+    factors.push(factors[i - 1] * (1 + rate / 100));
+  }
+
+  return factors;
+};
+
 export const calculateYearlyCostProjections = async ({
   data,
   years,
@@ -44,22 +80,16 @@ export const calculateYearlyCostProjections = async ({
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
   const pacVariableCostYear1 = pacConsumptionKwh * prixElec;
 
-  for (let i = 0; i < years; i++) {
-    // Inline calculateCurrentCostProjectedYear
-    const coutActuel = applyCostEvolutionModel(
-      currentVariableCostYear1,
-      currentFixedCosts.total,
-      i,
-      currentEnergyModel
-    );
+  // PRÉ-CALCULER tous les facteurs d'évolution UNE SEULE FOIS
+  // Au lieu de recalculer 136 fois par modèle = 272 fois total
+  const currentEvolutionFactors = preCalculateEvolutionFactors(years, currentEnergyModel);
+  const pacEvolutionFactors = preCalculateEvolutionFactors(years, pacEnergyModel);
 
-    // Inline calculatePacCostProjectedYear
-    const coutPac = applyCostEvolutionModel(
-      pacVariableCostYear1,
-      pacFixedCosts.total,
-      i,
-      pacEnergyModel
-    );
+  for (let i = 0; i < years; i++) {
+    // Appliquer le facteur d'évolution pré-calculé (lookup O(1) au lieu de calcul O(n))
+    const coutActuel = currentVariableCostYear1 * currentEvolutionFactors[i] + currentFixedCosts.total;
+    const coutPac = pacVariableCostYear1 * pacEvolutionFactors[i] + pacFixedCosts.total;
+
     const economie = coutActuel - coutPac;
     economiesCumulees += economie;
 
