@@ -7,9 +7,9 @@
  * 3. Générer automatiquement le modèle Mean Reversion optimal
  */
 
-import { parseDidoColumnToEnergyType } from "@/app/(main)/[projectId]/lib/energy/parseDidoColumnToEnergyType";
+import { getDidoColumnNameFromEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoColumnMappings"
 import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
-import type { DidoEnergyType } from "@/app/(main)/[projectId]/lib/energy/parseDidoColumnToEnergyType";
+import type { ApiEnergyType } from "@/types/energyType"
 
 /**
  * Calcule le taux d'évolution récent pondéré (70% sur 10 ans + 30% long terme)
@@ -79,7 +79,7 @@ const detectCrisisYears = (annualEvolutions: number[]): number[] => {
  * - Moins les gains d'efficacité (ENR pour électricité, efficacité extraction pour gaz)
  */
 const calculateEquilibriumRate = (
-  energyType: DidoEnergyType,
+  energyType: ApiEnergyType,
   annualEvolutions: number[],
   crisisYears: number[]
 ): number => {
@@ -135,16 +135,19 @@ interface HistoricalAnalysis {
  * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
  *
  * @param rows Données brutes de l'API DIDO (historique complet)
- * @param priceColumnName Nom de la colonne contenant les prix
+ * @param energyType Type d'énergie (utilisé pour obtenir le nom de colonne et les taux)
  * @returns Analyse complète de l'historique
  */
 export const analyzeEnergyPriceHistory = async (
   rows: any[],
-  priceColumnName: string
+  energyType: ApiEnergyType
 ): Promise<HistoricalAnalysis> => {
   try {
+    // Conversion early: obtenir le nom de colonne depuis les mappings centralisés
+    const priceColumnName = getDidoColumnNameFromEnergyType(energyType)
+
     if (rows.length < 24) {
-      console.warn(`Historique insuffisant pour ${priceColumnName}`);
+      console.warn(`Historique insuffisant pour ${energyType}`);
       throw new Error("Historique insuffisant");
     }
 
@@ -156,7 +159,7 @@ export const analyzeEnergyPriceHistory = async (
     const yearsOfData = monthlyPrices.length / 12;
 
     console.log(
-      `📊 Analyse historique ${priceColumnName}: ${monthlyPrices.length} mois (${yearsOfData.toFixed(1)} ans)`
+      `📊 Analyse historique ${energyType}: ${monthlyPrices.length} mois (${yearsOfData.toFixed(1)} ans)`
     );
 
     // Calculer les moyennes annuelles pour détecter les crises
@@ -187,8 +190,7 @@ export const analyzeEnergyPriceHistory = async (
     // 2. Détection des années de crise
     const crisisYears = detectCrisisYears(annualEvolutions);
 
-    // 3. Calcul du taux d'équilibre
-    const energyType = parseDidoColumnToEnergyType(priceColumnName);
+    // 3. Calcul du taux d'équilibre (utilise directement energyType)
     const tauxEquilibre = calculateEquilibriumRate(
       energyType,
       annualEvolutions,
@@ -213,7 +215,7 @@ export const analyzeEnergyPriceHistory = async (
       crisisYears,
     };
   } catch (error) {
-    console.error(`Erreur analyse historique ${priceColumnName}:`, error);
+    console.error(`Erreur analyse historique ${energyType}:`, error);
     throw error;
   }
 };

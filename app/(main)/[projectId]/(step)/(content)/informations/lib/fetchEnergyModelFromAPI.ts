@@ -1,8 +1,9 @@
-import type { EnergyEvolutionModel } from "@/types/energy"
-import { EnergyType, type ApiEnergyType } from "@/types/energyType"
-import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids"
-import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory"
-import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows"
+import type { EnergyEvolutionModel } from "@/types/energy";
+import { EnergyType, type ApiEnergyType } from "@/types/energyType";
+import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids";
+import { getDidoColumnNameFromEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoColumnMappings";
+import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory";
+import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows";
 
 /**
  * Calcule le prix actuel moyen d'une énergie (moyenne des 12 derniers mois)
@@ -20,32 +21,37 @@ const calculateCurrentPrice = (
   energyType: string
 ): number => {
   if (rows.length === 0) {
-    throw new Error(`Aucune donnée de prix disponible pour ${energyType} depuis l'API DIDO`)
+    throw new Error(
+      `Aucune donnée de prix disponible pour ${energyType} depuis l'API DIDO`
+    );
   }
 
   // Prendre les 12 derniers mois (les plus récents)
-  const recentRows = rows.slice(0, 12)
+  const recentRows = rows.slice(0, 12);
 
   // Extraire les prix et calculer la moyenne
   const prices: number[] = recentRows
     .map((row: any) => parseFloat(row[priceColumnName]))
-    .filter((price: number) => !isNaN(price) && price > 0)
+    .filter((price: number) => !isNaN(price) && price > 0);
 
   if (prices.length === 0) {
-    throw new Error(`Aucun prix valide trouvé pour ${energyType} dans les données DIDO`)
+    throw new Error(
+      `Aucun prix valide trouvé pour ${energyType} dans les données DIDO`
+    );
   }
 
   // Calculer la moyenne des prix des 12 derniers mois
-  const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length
+  const averagePrice =
+    prices.reduce((sum, price) => sum + price, 0) / prices.length;
 
   // Les prix dans l'API sont en €/100kWh, donc diviser par 100 pour avoir €/kWh
-  const pricePerKwh = averagePrice / 100
+  const pricePerKwh = averagePrice / 100;
 
-  console.log(`💰 Prix moyen ${energyType}: ${pricePerKwh.toFixed(4)} €/kWh`)
+  console.log(`💰 Prix moyen ${energyType}: ${pricePerKwh.toFixed(4)} €/kWh`);
 
   // Arrondir à 4 décimales
-  return Math.round(pricePerKwh * 10000) / 10000
-}
+  return Math.round(pricePerKwh * 10000) / 10000;
+};
 
 /**
  * Génère le modèle Mean Reversion pour un type d'énergie donné
@@ -61,49 +67,45 @@ const calculateCurrentPrice = (
 export const fetchEnergyModelFromAPI = async (
   energyType: ApiEnergyType
 ): Promise<EnergyEvolutionModel> => {
-  let rid: string
-  let priceColumnName: string
+  // Utiliser les mappings centralisés pour obtenir le nom de colonne DIDO
+  const priceColumnName = getDidoColumnNameFromEnergyType(energyType);
+
+  let rid: string;
 
   switch (energyType) {
     case EnergyType.GAZ:
-      rid = DATAFILE_RIDS.gas
-      priceColumnName = "PX_GAZ_D_TTES_TRANCHES"
-      break
+      rid = DATAFILE_RIDS.gas;
+      break;
 
     case EnergyType.ELECTRICITE:
-      rid = DATAFILE_RIDS.electricity
-      priceColumnName = "PX_ELE_D_TTES_TRANCHES"
-      break
+      rid = DATAFILE_RIDS.electricity;
+      break;
 
     case EnergyType.FIOUL:
-      rid = DATAFILE_RIDS.petroleum
-      priceColumnName = "PX_PETRO_FOD_100KWH_C1"
-      break
+      rid = DATAFILE_RIDS.petroleum;
+      break;
 
     case EnergyType.BOIS:
-      rid = DATAFILE_RIDS.wood
-      priceColumnName = "PX_BOIS_GRANVRAC_100KWH"
-      break
+      rid = DATAFILE_RIDS.wood;
+      break;
 
     default:
-      throw new Error(`Type d'énergie invalide: ${energyType}`)
+      throw new Error(`Type d'énergie invalide: ${energyType}`);
   }
 
   // ⚠️ APPEL API UNIQUE - Récupérer TOUT l'historique disponible
-  console.log(`📥 Récupération des données ${energyType.toUpperCase()} depuis l'API DIDO...`)
-  const rows = await getDataFileRows(rid, 10000)
-  console.log(`✅ ${rows.length} lignes récupérées depuis l'API DIDO`)
+  const rows = await getDataFileRows(rid, 10000);
 
-  // Analyser l'historique pour obtenir les taux d'évolution
-  const analysis = await analyzeEnergyPriceHistory(rows, priceColumnName)
+  // Analyser l'historique pour obtenir les taux d'évolution (passer energyType directement)
+  const analysis = await analyzeEnergyPriceHistory(rows, energyType);
 
   // Calculer le prix actuel moyen
-  const currentPrice = calculateCurrentPrice(rows, priceColumnName, energyType)
+  const currentPrice = calculateCurrentPrice(rows, priceColumnName, energyType);
 
   return {
     tauxRecent: analysis.tauxRecent,
     tauxEquilibre: analysis.tauxEquilibre,
     anneesTransition: 5,
     currentPrice,
-  }
-}
+  };
+};

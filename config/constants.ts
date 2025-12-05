@@ -352,28 +352,28 @@ export const ENERGY_ANALYSIS_PARAMS = {
      * = Inflation (2%) + Baisse ENR (-0.5%) + Croissance demande (1%)
      * Facteur baissier: Coûts marginaux renouvelables en diminution
      */
-    ELECTRICITE: 2.5,
+    electricite: 2.5,
 
     /**
      * Gaz naturel: 3.5%/an
      * = Inflation (2%) + Risque géopolitique (1%) + Transition énergétique (0.5%)
      * Facteur haussier: Dépendance géopolitique, décarbonation progressive
      */
-    GAZ: 3.5,
+    gaz: 3.5,
 
     /**
      * Bois énergie: 2.0%/an
      * = Inflation (2%) + Stabilité ressource locale (0%)
      * Facteur stable: Ressource locale, peu sensible aux crises internationales
      */
-    BOIS: 2.0,
+    bois: 2.0,
 
     /**
      * Fioul/Pétrole: 2.5%/an
      * = Inflation (2%) + Transition énergétique (0.5%)
      * Facteur modéré: Corrélé au pétrole, en déclin progressif
      */
-    PETROLEUM: 2.5,
+    fioul: 2.5,
   },
 } as const
 
