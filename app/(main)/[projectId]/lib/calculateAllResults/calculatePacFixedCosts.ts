@@ -1,5 +1,5 @@
 import type { ProjectData } from "@/types/projectData";
-import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel";
+import { ELECTRICITY_SUBSCRIPTION_ANNUAL } from "@/config/constants";
 
 /**
  * Calcule les coûts FIXES annuels de la PAC
@@ -20,7 +20,10 @@ export const calculatePacFixedCosts = (data: ProjectData): {
   const puissancePac = data.puissance_souscrite_pac || 9;
 
   // Abonnement électricité avec PAC (puissance augmentée)
-  const abonnementElec = getAbonnementElectriciteAnnuel(puissancePac);
+  const abonnementElec =
+    ELECTRICITY_SUBSCRIPTION_ANNUAL[
+      puissancePac as keyof typeof ELECTRICITY_SUBSCRIPTION_ANNUAL
+    ];
 
   // Entretien PAC
   const entretien = data.entretien_pac_annuel || 120;

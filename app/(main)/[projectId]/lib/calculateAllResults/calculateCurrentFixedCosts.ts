@@ -1,6 +1,5 @@
 import type { ProjectData } from "@/types/projectData";
-import { getAbonnementElectriciteAnnuel } from "@/app/(main)/[projectId]/lib/getAbonnementElectriciteAnnuel";
-import { GAS_SUBSCRIPTION } from "@/config/constants";
+import { ELECTRICITY_SUBSCRIPTION_ANNUAL, GAS_SUBSCRIPTION } from "@/config/constants";
 
 /**
  * Calcule les coûts FIXES annuels du système actuel
@@ -28,7 +27,9 @@ export const calculateCurrentFixedCosts = (data: ProjectData): {
     "PAC Eau/Eau",
   ].includes(data.type_chauffage || "");
   const abonnementElec = isElectricHeating
-    ? getAbonnementElectriciteAnnuel(puissanceActuelle)
+    ? ELECTRICITY_SUBSCRIPTION_ANNUAL[
+        puissanceActuelle as keyof typeof ELECTRICITY_SUBSCRIPTION_ANNUAL
+      ]
     : 0;
 
   // Abonnement gaz: uniquement pour chauffage au gaz
