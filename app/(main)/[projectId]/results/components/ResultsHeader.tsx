@@ -3,22 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Pencil, CheckCircle, AlertCircle } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { getFirstStepKey } from "@/lib/wizardStepsData";
 import { SendResultsButton } from "./SendResultsButton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ResultsHeaderProps {
   projectId: string;
   userId: string;
-  userEmail: string;
   hasRecipientEmails: boolean;
 }
 
 export function ResultsHeader({
   projectId,
   userId,
-  userEmail,
   hasRecipientEmails,
 }: ResultsHeaderProps) {
   const firstStepKey = getFirstStepKey();
@@ -46,7 +43,6 @@ export function ResultsHeader({
             <SendResultsButton
               projectId={projectId}
               userId={userId}
-              userEmail={userEmail}
               onStatusChange={setEmailStatus}
             />
           )}

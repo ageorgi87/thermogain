@@ -8,7 +8,6 @@ import { sendStudyResults } from "@/app/(main)/[projectId]/results/actions/sendS
 interface SendResultsButtonProps {
   projectId: string
   userId: string
-  userEmail: string
   onStatusChange?: (status: { emailSent: boolean; error: string | null }) => void
 }
 

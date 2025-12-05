@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartTooltip } from "@/components/ui/chart"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Label } from "recharts"
 import type { YearlyData } from "@/types/yearlyData"
@@ -51,17 +51,6 @@ export function CumulativeCostChart({
       coutCumulePac: Math.round(coutCumulePac),
     }
   })
-
-  const chartConfig = {
-    coutCumuleActuel: {
-      label: "Coût cumulé actuel",
-      color: "hsl(var(--destructive))",
-    },
-    coutCumulePac: {
-      label: "Coût cumulé PAC",
-      color: "hsl(var(--primary))",
-    },
-  }
 
   // Calculer l'année exacte du break-even avec la fraction
   // pour placer la ligne verticale exactement au croisement des courbes

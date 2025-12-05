@@ -3,14 +3,6 @@ import { Separator } from "@/components/ui/separator"
 import { Wallet } from "lucide-react"
 
 interface FinancialSummaryCardProps {
-  coutPac: number
-  coutInstallation: number
-  coutTravauxAnnexes?: number
-  coutTotal: number
-  maPrimeRenov?: number
-  cee?: number
-  autresAides?: number
-  totalAides: number
   resteACharge: number
   modeFinancement?: string
   mensualite?: number

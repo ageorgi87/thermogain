@@ -6,8 +6,6 @@ import { formatPaybackPeriod } from "@/app/(main)/[projectId]/results/lib/format
 interface ProfitabilityCardProps {
   paybackPeriod: number | null
   paybackYear: number | null
-  totalSavingsLifetime: number
-  resteACharge: number
   netBenefit: number
   dureeVie: number
   tauxRentabilite: number | null

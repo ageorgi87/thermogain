@@ -3,13 +3,7 @@ import { Separator } from "@/components/ui/separator"
 import { PiggyBank } from "lucide-react"
 
 interface ConsumptionCardProps {
-  typeChauffage: string
-  typePac: string | null
-  copEstime: number
-  coutAnnuelActuel: number
-  coutAnnuelPac: number
   economiesAnnuelles: number
-  pacConsumptionKwh: number
   coutTotalActuelLifetime: number
   coutTotalPacLifetime: number
   dureeVie: number

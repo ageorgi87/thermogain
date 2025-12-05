@@ -9,7 +9,6 @@ import { YearlyBreakdownTable } from "./components/YearlyBreakdownTable";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -66,7 +65,6 @@ export default async function ResultsPage({ params }: PageProps) {
       <ResultsHeader
         projectId={project.id}
         userId={project.userId}
-        userEmail={project.user.email || ""}
         hasRecipientEmails={
           project.recipientEmails && project.recipientEmails.length > 0
         }
@@ -158,26 +156,12 @@ export default async function ResultsPage({ params }: PageProps) {
       {/* Cartes détaillées */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <ConsumptionCard
-          typeChauffage={project.chauffageActuel.type_chauffage}
-          typePac={project.projetPac.type_pac}
-          copEstime={project.projetPac.cop_estime}
-          coutAnnuelActuel={results.coutAnnuelActuel}
-          coutAnnuelPac={results.coutAnnuelPac}
           economiesAnnuelles={results.economiesAnnuelles}
-          pacConsumptionKwh={results.consommationPacKwh}
           coutTotalActuelLifetime={results.coutTotalActuelLifetime}
           coutTotalPacLifetime={results.coutTotalPacLifetime}
           dureeVie={project.projetPac.duree_vie_pac}
         />
         <FinancialSummaryCard
-          coutPac={project.couts.cout_pac}
-          coutInstallation={project.couts.cout_installation}
-          coutTravauxAnnexes={project.couts.cout_travaux_annexes || undefined}
-          coutTotal={project.couts.cout_total}
-          maPrimeRenov={project.aides.ma_prime_renov || undefined}
-          cee={project.aides.cee || undefined}
-          autresAides={project.aides.autres_aides || undefined}
-          totalAides={project.aides.total_aides}
           resteACharge={project.couts.cout_total - project.aides.total_aides}
           modeFinancement={project.financement?.mode_financement || undefined}
           mensualite={results.mensualiteCredit}
@@ -186,8 +170,6 @@ export default async function ResultsPage({ params }: PageProps) {
         <ProfitabilityCard
           paybackPeriod={results.paybackPeriod}
           paybackYear={results.paybackYear}
-          totalSavingsLifetime={results.totalSavingsLifetime}
-          resteACharge={project.couts.cout_total - project.aides.total_aides}
           netBenefit={results.netBenefitLifetime}
           dureeVie={project.projetPac.duree_vie_pac}
           tauxRentabilite={results.tauxRentabilite}

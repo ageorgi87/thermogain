@@ -9,7 +9,7 @@
 
 import { getEnergyTypeFromColumn } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
 import { ENERGY_ANALYSIS_PARAMS } from '@/config/constants'
-import type { EnergyType } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
+import type { DidoEnergyType } from "@/app/(main)/[projectId]/lib/energy/getEnergyTypeFromColumn";
 
 /**
  * Calcule le taux d'évolution récent pondéré (70% sur 10 ans + 30% long terme)
@@ -79,7 +79,7 @@ const detectCrisisYears = (annualEvolutions: number[]): number[] => {
  * - Moins les gains d'efficacité (ENR pour électricité, efficacité extraction pour gaz)
  */
 const calculateEquilibriumRate = (
-  energyType: EnergyType,
+  energyType: DidoEnergyType,
   annualEvolutions: number[],
   crisisYears: number[]
 ): number => {
