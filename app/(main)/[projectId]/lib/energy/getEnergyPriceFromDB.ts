@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import type { EnergyType } from "@/types/energyType";
 
 /**
  * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie
@@ -39,7 +40,7 @@ const convertPriceToUnit = (pricePerKwh: number, energyType: string): number => 
  * @throws Error si les données ne sont pas en DB
  */
 export const getEnergyPriceFromDB = async (
-  energyType: "fioul" | "gaz" | "gpl" | "bois" | "electricite"
+  energyType: EnergyType
 ): Promise<number> => {
   // GPL n'a pas de données directes, on utilise le fioul × 1.39
   if (energyType === "gpl") {

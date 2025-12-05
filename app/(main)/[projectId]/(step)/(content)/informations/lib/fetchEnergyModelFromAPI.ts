@@ -1,4 +1,5 @@
 import type { EnergyEvolutionModel } from "@/types/energy"
+import type { ApiEnergyType } from "@/types/energyType"
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids"
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory"
 import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows"
@@ -58,7 +59,7 @@ const calculateCurrentPrice = (
  * @throws Error si le type d'énergie est invalide ou si l'API échoue
  */
 export const fetchEnergyModelFromAPI = async (
-  energyType: "gaz" | "electricite" | "fioul" | "bois"
+  energyType: ApiEnergyType
 ): Promise<EnergyEvolutionModel> => {
   let rid: string
   let priceColumnName: string

@@ -1,9 +1,10 @@
 import { z } from "zod"
 
 /**
- * Schéma de validation pour les types d'énergie supportés
+ * Schéma de validation pour les types d'énergie supportés par l'API DIDO
+ * (gaz, electricite, fioul, bois - sans GPL qui est calculé depuis fioul)
  */
-export const energyTypeSchema = z.enum(["gaz", "electricite", "fioul", "bois"])
+export const apiEnergyTypeSchema = z.enum(["gaz", "electricite", "fioul", "bois"])
 
 /**
  * Schéma de validation pour le modèle d'évolution énergétique
@@ -30,10 +31,9 @@ export const energyEvolutionModelSchema = z.object({
  * Schéma de validation pour les paramètres de mise à jour du cache
  */
 export const updateEnergyPriceCacheSchema = z.object({
-  energyType: energyTypeSchema,
+  energyType: apiEnergyTypeSchema,
   model: energyEvolutionModelSchema
 })
 
-export type EnergyType = z.infer<typeof energyTypeSchema>
 export type EnergyEvolutionModelInput = z.infer<typeof energyEvolutionModelSchema>
 export type UpdateEnergyPriceCacheInput = z.infer<typeof updateEnergyPriceCacheSchema>

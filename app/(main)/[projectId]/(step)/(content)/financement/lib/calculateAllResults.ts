@@ -1,6 +1,7 @@
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
+import type { ApiEnergyType } from "@/types/energyType";
 import { calculateCurrentCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostYear1";
 import { calculatePacCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostYear1";
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh";
@@ -16,11 +17,11 @@ import { getEnergyModelFromDB } from "@/app/(main)/[projectId]/lib/energy/getEne
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
  * @param data Données du projet
- * @returns Type d'énergie ('gaz' | 'electricite' | 'fioul' | 'bois')
+ * @returns Type d'énergie (ApiEnergyType: 'gaz' | 'electricite' | 'fioul' | 'bois')
  */
 const getEnergyType = (
   data: ProjectData
-): "gaz" | "electricite" | "fioul" | "bois" => {
+): ApiEnergyType => {
   switch (data.type_chauffage) {
     case "Fioul":
     case "GPL":

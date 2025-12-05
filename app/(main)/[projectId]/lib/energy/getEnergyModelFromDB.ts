@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import type { EnergyEvolutionModel } from "@/types/energy"
+import type { ApiEnergyType } from "@/types/energyType"
 
 /**
  * Récupère le modèle d'évolution énergétique depuis la DB
@@ -14,7 +15,7 @@ import type { EnergyEvolutionModel } from "@/types/energy"
  * @throws Error si les données ne sont pas en DB
  */
 export const getEnergyModelFromDB = async (
-  energyType: "gaz" | "electricite" | "fioul" | "bois"
+  energyType: ApiEnergyType
 ): Promise<EnergyEvolutionModel> => {
   const energyData = await prisma.energyPriceCache.findUnique({
     where: { energyType }

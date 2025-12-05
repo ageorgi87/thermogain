@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import type { EnergyEvolutionModel } from "@/types/energy"
+import type { ApiEnergyType } from "@/types/energyType"
 import { updateEnergyPriceCacheSchema } from "./updateEnergyPriceCacheSchema"
 
 /**
@@ -12,7 +13,7 @@ import { updateEnergyPriceCacheSchema } from "./updateEnergyPriceCacheSchema"
  * @throws Error si les données sont invalides
  */
 export const updateEnergyPriceCache = async (
-  energyType: "gaz" | "electricite" | "fioul" | "bois",
+  energyType: ApiEnergyType,
   model: EnergyEvolutionModel
 ): Promise<void> => {
   // Validation avec Zod
