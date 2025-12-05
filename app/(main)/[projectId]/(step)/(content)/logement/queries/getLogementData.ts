@@ -34,6 +34,7 @@ export const getLogementData = async ({ projectId }: GetLogementDataParams) => {
     surface_habitable: project.logement.surface_habitable,
     nombre_occupants: project.logement.nombre_occupants,
     qualite_isolation: project.logement.qualite_isolation as HousingData["qualite_isolation"],
+    classe_dpe: project.logement.classe_dpe as HousingData["classe_dpe"],
   } : null
 
   return {

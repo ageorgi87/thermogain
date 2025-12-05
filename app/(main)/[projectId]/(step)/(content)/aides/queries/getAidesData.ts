@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import type { ClasseDPE } from "@/types/dpe"
 
 interface GetAidesDataParams {
   projectId: string
@@ -30,6 +31,7 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
           code_postal: true,
           surface_habitable: true,
           nombre_occupants: true,
+          classe_dpe: true,
         },
       },
     },
@@ -39,9 +41,14 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
     throw new Error("Projet non trouvé")
   }
 
+  if (!project.logement?.classe_dpe) {
+    throw new Error("DPE manquant - veuillez compléter l'étape logement")
+  }
+
   return {
     aides: project.aides,
     projetPac: project.projetPac,
     logement: project.logement,
+    dpe: project.logement.classe_dpe as ClasseDPE,
   }
 }

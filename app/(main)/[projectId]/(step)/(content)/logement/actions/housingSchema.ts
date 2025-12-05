@@ -25,7 +25,9 @@ export const housingSchema = z.object({
   qualite_isolation: z.nativeEnum(QualiteIsolation, {
     message: "La qualité de l'isolation est requise",
   }),
-  classe_dpe: z.nativeEnum(ClasseDPE).nullable().optional(),
+  classe_dpe: z.nativeEnum(ClasseDPE, {
+    message: "La classe DPE est requise",
+  }),
 })
 
 export type HousingData = z.infer<typeof housingSchema>

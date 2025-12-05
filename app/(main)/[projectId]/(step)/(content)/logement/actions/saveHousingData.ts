@@ -3,7 +3,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { housingSchema, type HousingData } from "./housingSchema";
-import { estimateDPE } from "@/lib/dpe/estimateDPE";
 
 interface SaveHousingDataParams {
   projectId: string;
@@ -31,27 +30,14 @@ export const saveHousingData = async ({
     throw new Error("Projet non trouvé");
   }
 
-  // Si le DPE n'est pas fourni, on l'estime automatiquement
-  let finalData = { ...validatedData };
-
-  if (!validatedData.classe_dpe) {
-    const dpeEstime = estimateDPE({
-      annee_construction: validatedData.annee_construction,
-      qualite_isolation: validatedData.qualite_isolation,
-      surface_habitable: validatedData.surface_habitable,
-    });
-
-    finalData.classe_dpe = dpeEstime;
-  }
-
   // Upsert logement data
   const logement = await prisma.projectLogement.upsert({
     where: { projectId },
     create: {
-      ...finalData,
+      ...validatedData,
       projectId,
     } as any,
-    update: finalData as any,
+    update: validatedData as any,
   });
 
   // Update project's current step if needed

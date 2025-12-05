@@ -142,25 +142,19 @@ export function HousingFields({
 
       <FormField
         label="Classe DPE (Diagnostic de Performance Énergétique)"
-        required={false}
+        required={true}
         error={errors.classe_dpe}
-        description="Optionnel - Si non fourni, le DPE sera estimé automatiquement"
       >
         <Select
           onValueChange={(value) => {
-            if (value === "none") {
-              onChange("classe_dpe", undefined);
-            } else {
-              onChange("classe_dpe", value as HousingData["classe_dpe"]);
-            }
+            onChange("classe_dpe", value as HousingData["classe_dpe"]);
           }}
-          value={formData.classe_dpe ?? "none"}
+          value={formData.classe_dpe}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez la classe DPE (optionnel)" />
+            <SelectValue placeholder="Sélectionnez la classe DPE" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">Non renseigné (estimation automatique)</SelectItem>
             <SelectItem value={ClasseDPE.A}>A - Excellent (≤ 50 kWh/m²/an)</SelectItem>
             <SelectItem value={ClasseDPE.B}>B - Très bien (51 à 90 kWh/m²/an)</SelectItem>
             <SelectItem value={ClasseDPE.C}>C - Bien (91 à 150 kWh/m²/an)</SelectItem>
