@@ -1,4 +1,4 @@
-import { ABONNEMENT_ELECTRICITE_ANNUEL } from "@/app/(main)/[projectId]/lib/subscriptionData"
+import { ELECTRICITY_SUBSCRIPTION_ANNUAL } from "@/config/constants"
 
 /**
  * Récupère le coût d'abonnement électrique annuel selon la puissance souscrite
@@ -7,14 +7,14 @@ import { ABONNEMENT_ELECTRICITE_ANNUEL } from "@/app/(main)/[projectId]/lib/subs
  */
 export const getAbonnementElectriciteAnnuel = (puissanceKva: number): number => {
   const tarif =
-    ABONNEMENT_ELECTRICITE_ANNUEL[
-      puissanceKva as keyof typeof ABONNEMENT_ELECTRICITE_ANNUEL
+    ELECTRICITY_SUBSCRIPTION_ANNUAL[
+      puissanceKva as keyof typeof ELECTRICITY_SUBSCRIPTION_ANNUAL
     ]
   if (!tarif) {
     console.warn(
       `Puissance ${puissanceKva} kVA non reconnue, utilisation 6 kVA par défaut`
     )
-    return ABONNEMENT_ELECTRICITE_ANNUEL[6]
+    return ELECTRICITY_SUBSCRIPTION_ANNUAL[6]
   }
   return tarif
 }

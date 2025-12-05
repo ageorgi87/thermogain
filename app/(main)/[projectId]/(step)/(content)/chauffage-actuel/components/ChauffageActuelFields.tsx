@@ -17,9 +17,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ENTRETIEN_ANNUEL_MOYEN } from "@/app/(main)/[projectId]/lib/subscriptionData";
+import { MAINTENANCE_COSTS_ANNUAL } from "@/config/constants";
 import { PriceLabelWithTooltip } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/components/PriceLabelWithTooltip";
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices";
+
+// Mapping pour afficher les coûts d'entretien moyens
+const MAINTENANCE_DISPLAY: Record<string, number> = {
+  Gaz: MAINTENANCE_COSTS_ANNUAL.GAZ,
+  Fioul: MAINTENANCE_COSTS_ANNUAL.FIOUL,
+  GPL: MAINTENANCE_COSTS_ANNUAL.GPL,
+  Pellets: MAINTENANCE_COSTS_ANNUAL.PELLETS,
+  Bois: MAINTENANCE_COSTS_ANNUAL.BOIS,
+  Électricité: MAINTENANCE_COSTS_ANNUAL.ELECTRIQUE,
+  Electrique: MAINTENANCE_COSTS_ANNUAL.ELECTRIQUE,
+  "PAC Air/Air": MAINTENANCE_COSTS_ANNUAL.PAC,
+  "PAC Air/Eau": MAINTENANCE_COSTS_ANNUAL.PAC,
+  "PAC Eau/Eau": MAINTENANCE_COSTS_ANNUAL.PAC,
+};
 
 interface ChauffageActuelFieldsProps {
   formData: Partial<CurrentHeatingData>;
@@ -494,9 +508,7 @@ export const ChauffageActuelFields = ({
                     </span>{" "}
                     :{" "}
                     <span className="font-semibold">
-                      {ENTRETIEN_ANNUEL_MOYEN[
-                        typeChauffage as keyof typeof ENTRETIEN_ANNUEL_MOYEN
-                      ] || 0}
+                      {MAINTENANCE_DISPLAY[typeChauffage || ""] || 0}
                       €/an
                     </span>
                   </p>
