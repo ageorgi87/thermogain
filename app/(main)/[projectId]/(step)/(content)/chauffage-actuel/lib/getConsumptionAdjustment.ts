@@ -1,5 +1,5 @@
-import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/climate/getClimateInfoFromPostalCode"
-import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/climate/climateZonesData"
+import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
+import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/getClimateData/config/climateZones";
 
 /**
  * Calcule le coefficient d'ajustement de consommation selon la zone climatique
@@ -9,9 +9,9 @@ import { CLIMATE_ZONES } from "@/app/(main)/[projectId]/lib/climate/climateZones
  * @returns Coefficient multiplicateur (1.0 = référence H2a)
  */
 export const getConsumptionAdjustment = (codePostal: string): number => {
-  const info = getClimateInfoFromPostalCode(codePostal)
-  const djuReference = CLIMATE_ZONES["H2a"].dju // 2200 DJU
+  const info = getClimateInfoFromPostalCode(codePostal);
+  const djuReference = CLIMATE_ZONES["H2a"].dju; // 2200 DJU
 
   // La consommation est proportionnelle aux DJU
-  return info.dju / djuReference
-}
+  return info.dju / djuReference;
+};
