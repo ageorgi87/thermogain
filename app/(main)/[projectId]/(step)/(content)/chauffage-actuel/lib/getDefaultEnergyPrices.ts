@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma"
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
 import { EnergyType } from "@/types/energyType"
