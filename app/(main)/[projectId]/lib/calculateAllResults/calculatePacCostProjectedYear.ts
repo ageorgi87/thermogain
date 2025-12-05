@@ -1,6 +1,6 @@
 import type { ProjectData } from "@/types/projectData";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { calculatePacVariableCost } from "./calculatePacVariableCost";
+import { calculatePacConsumptionKwh } from "./calculatePacConsumptionKwh";
 import { calculatePacFixedCosts } from "./calculatePacFixedCosts";
 import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 
@@ -35,7 +35,10 @@ export const calculatePacCostProjectedYear = async ({
   energyModel,
 }: CalculatePacCostProjectedYearParams): Promise<number> => {
   // Coûts variables: évoluent avec le modèle Mean Reversion
-  const variableCost = calculatePacVariableCost(data);
+  const pacConsumption = calculatePacConsumptionKwh(data);
+  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  const variableCost = pacConsumption * prixElec;
+
   const fixedCosts = calculatePacFixedCosts(data);
 
   // Utiliser la fonction de calcul qui applique le modèle Mean Reversion

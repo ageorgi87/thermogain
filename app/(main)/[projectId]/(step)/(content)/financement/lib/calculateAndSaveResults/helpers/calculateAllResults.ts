@@ -5,13 +5,11 @@ import { EnergyType, type ApiEnergyType } from "@/types/energyType"
 import { FinancingMode } from "@/types/financingMode"
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors"
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts"
-import { calculatePacVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacVariableCost"
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts"
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh"
 import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyCostProjections"
 import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePaybackPeriod"
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment"
-import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost"
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB"
 import { roundToDecimals } from "@/lib/utils/roundToDecimals"
 
@@ -67,12 +65,15 @@ export const calculateAllResults = async (
   const currentFixedCosts = calculateCurrentFixedCosts(data);
   const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total;
 
-  const pacVariableCost = calculatePacVariableCost(data);
+  // Consommation PAC (calculée UNE SEULE FOIS)
+  const consommationPacKwh = calculatePacConsumptionKwh(data);
+
+  // Coût variable PAC (inline pour éviter de recalculer la consommation)
+  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  const pacVariableCost = consommationPacKwh * prixElec;
+
   const pacFixedCosts = calculatePacFixedCosts(data);
   const coutAnnuelPac = pacVariableCost + pacFixedCosts.total;
-
-  // Consommation PAC
-  const consommationPacKwh = calculatePacConsumptionKwh(data);
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
@@ -86,11 +87,12 @@ export const calculateAllResults = async (
     data.taux_interet !== undefined &&
     data.duree_credit_mois
   ) {
-    const coutTotalCredit = calculateTotalCreditCost({
+    const mensualite = calculateMonthlyPayment({
       montant: data.montant_credit,
       tauxAnnuel: data.taux_interet,
       dureeMois: data.duree_credit_mois,
     });
+    const coutTotalCredit = roundToDecimals(mensualite * data.duree_credit_mois, 2);
     investissementReel = coutTotalCredit;
   } else if (
     data.mode_financement === FinancingMode.MIXTE &&
@@ -99,11 +101,12 @@ export const calculateAllResults = async (
     data.duree_credit_mois &&
     data.apport_personnel
   ) {
-    const coutTotalCredit = calculateTotalCreditCost({
+    const mensualite = calculateMonthlyPayment({
       montant: data.montant_credit,
       tauxAnnuel: data.taux_interet,
       dureeMois: data.duree_credit_mois,
     });
+    const coutTotalCredit = roundToDecimals(mensualite * data.duree_credit_mois, 2);
     investissementReel = data.apport_personnel + coutTotalCredit;
   }
 
@@ -172,7 +175,7 @@ export const calculateAllResults = async (
   const coutMensuelPac = coutAnnuelPac / 12;
   const economieMensuelle = economiesAnnuelles / 12;
 
-  // Financement
+  // Financement (pour affichage uniquement, déjà calculé dans investissementReel)
   let mensualiteCredit: number | undefined;
   let coutTotalCredit: number | undefined;
 
@@ -187,11 +190,8 @@ export const calculateAllResults = async (
       tauxAnnuel: data.taux_interet,
       dureeMois: data.duree_credit_mois,
     });
-    coutTotalCredit = calculateTotalCreditCost({
-      montant: data.montant_credit,
-      tauxAnnuel: data.taux_interet,
-      dureeMois: data.duree_credit_mois,
-    });
+    // Inline: mensualite * duree
+    coutTotalCredit = roundToDecimals(mensualiteCredit * data.duree_credit_mois, 2);
   }
 
   return {
