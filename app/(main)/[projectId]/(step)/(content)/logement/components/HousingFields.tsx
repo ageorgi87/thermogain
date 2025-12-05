@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/select";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
+import { QualiteIsolation } from "@/types/isolation";
+import { ClasseDPE } from "@/types/dpe";
 
 interface HousingFieldsProps {
   formData: Partial<HousingData>;
@@ -125,15 +127,47 @@ export function HousingFields({
             <SelectValue placeholder="Sélectionnez la qualité de l'isolation" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Mauvaise">
+            <SelectItem value={QualiteIsolation.Mauvaise}>
               Mauvaise - Aucune isolation ou isolation minimale
             </SelectItem>
-            <SelectItem value="Moyenne">
+            <SelectItem value={QualiteIsolation.Moyenne}>
               Moyenne - Isolation partielle (quelques éléments isolés)
             </SelectItem>
-            <SelectItem value="Bonne">
+            <SelectItem value={QualiteIsolation.Bonne}>
               Bonne - Logement bien isolé (la plupart des éléments isolés)
             </SelectItem>
+          </SelectContent>
+        </Select>
+      </FormField>
+
+      <FormField
+        label="Classe DPE (Diagnostic de Performance Énergétique)"
+        required={false}
+        error={errors.classe_dpe}
+        description="Optionnel - Si non fourni, le DPE sera estimé automatiquement"
+      >
+        <Select
+          onValueChange={(value) => {
+            if (value === "none") {
+              onChange("classe_dpe", undefined);
+            } else {
+              onChange("classe_dpe", value as HousingData["classe_dpe"]);
+            }
+          }}
+          value={formData.classe_dpe ?? "none"}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez la classe DPE (optionnel)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Non renseigné (estimation automatique)</SelectItem>
+            <SelectItem value={ClasseDPE.A}>A - Excellent (≤ 50 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.B}>B - Très bien (51 à 90 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.C}>C - Bien (91 à 150 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.D}>D - Moyen (151 à 230 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.E}>E - Passable (231 à 330 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.F}>F - Médiocre (331 à 450 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.G}>G - Mauvais (&gt; 450 kWh/m²/an)</SelectItem>
           </SelectContent>
         </Select>
       </FormField>

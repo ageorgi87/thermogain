@@ -10,7 +10,8 @@ model ProjectLogement {
   annee_construction Int
   surface_habitable  Float
   nombre_occupants   Int
-  qualite_isolation  String 
+  qualite_isolation  String
+  classe_dpe         String? // DPE class (A-G), optional - auto-estimated if not provided
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

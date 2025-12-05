@@ -1,4 +1,6 @@
 import { z } from "zod"
+import { QualiteIsolation } from "@/types/isolation"
+import { ClasseDPE } from "@/types/dpe"
 
 // Validation du code postal français (métropole, Corse, DOM-TOM)
 const codePostalRegex = /^(?:0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-8])\d{3}$/
@@ -20,9 +22,10 @@ export const housingSchema = z.object({
     .number({ message: "Le nombre d'occupants est requis" })
     .min(1, "Il doit y avoir au moins 1 occupant")
     .max(20, "Le nombre d'occupants ne peut pas dépasser 20"),
-  qualite_isolation: z.enum(["Mauvaise", "Moyenne", "Bonne"], {
+  qualite_isolation: z.nativeEnum(QualiteIsolation, {
     message: "La qualité de l'isolation est requise",
   }),
+  classe_dpe: z.nativeEnum(ClasseDPE).nullable().optional(),
 })
 
 export type HousingData = z.infer<typeof housingSchema>
