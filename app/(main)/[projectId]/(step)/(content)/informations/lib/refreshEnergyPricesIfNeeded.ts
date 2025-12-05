@@ -1,9 +1,10 @@
-"use server"
+"use server";
 
-import { prisma } from "@/lib/prisma"
-import { fetchAllEnergyModelsFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchAllEnergyModelsFromAPI"
-import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache"
-import { EnergyType, type ApiEnergyType } from "@/types/energyType"
+import { prisma } from "@/lib/prisma";
+import { fetchAllEnergyDataFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchAllEnergyDataFromAPI";
+import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache";
+import { EnergyType } from "@/types/energyType";
+import { API_ENERGY_TYPES } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/apiEnergyTypes";
 
 /**
  * Rafraîchit les prix énergétiques depuis l'API DIDO si nécessaire
@@ -30,36 +31,32 @@ import { EnergyType, type ApiEnergyType } from "@/types/energyType"
  * avant de passer à la step suivante.
  */
 export const refreshEnergyPricesIfNeeded = async (): Promise<void> => {
-  const energyTypes: ApiEnergyType[] = [
-    EnergyType.GAZ,
-    EnergyType.ELECTRICITE,
-    EnergyType.FIOUL,
-    EnergyType.BOIS
-  ]
-
   // 1. Vérifier la date de mise à jour GLOBALE (via electricite comme référence)
   const globalReference = await prisma.energyPriceCache.findUnique({
-    where: { energyType: EnergyType.ELECTRICITE }
-  })
+    where: { energyType: EnergyType.ELECTRICITE },
+  });
 
   // Vérifier si les données datent de moins de 31 jours
   if (globalReference) {
-    const now = new Date()
-    const daysDiff = Math.floor((now.getTime() - globalReference.lastUpdated.getTime()) / (1000 * 60 * 60 * 24))
+    const now = new Date();
+    const daysDiff = Math.floor(
+      (now.getTime() - globalReference.lastUpdated.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
 
     if (daysDiff < 31) {
-      return
+      return;
     }
   }
 
   // 2. Fetch TOUTES les énergies en parallèle
-  const allModels = await fetchAllEnergyModelsFromAPI()
+  const allEnergyData = await fetchAllEnergyDataFromAPI();
 
   // 3. Sauvegarder TOUTES les énergies (update global)
   await Promise.all(
-    energyTypes.map(async (energyType) => {
-      const freshModel = allModels[energyType]
-      await updateEnergyPriceCache(energyType, freshModel)
+    API_ENERGY_TYPES.map(async (energyType) => {
+      const energyData = allEnergyData[energyType];
+      await updateEnergyPriceCache(energyType, energyData);
     })
-  )
-}
+  );
+};

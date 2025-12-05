@@ -1,6 +1,7 @@
 import type { ProjectData } from "@/types/projectData";
 import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateYearlyData } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateYearlyData";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 interface CalculatePaybackPeriodParams {
   data: ProjectData
@@ -46,7 +47,7 @@ export const calculatePaybackPeriod = async ({
       const fractionOfYear = remainingAmount / yearSavings;
       // Le croisement se produit PENDANT l'année i, donc on part de l'index i-1
       // et on ajoute la fraction. Cela donne le nombre d'années depuis l'année 0.
-      return Math.round((i - 1 + fractionOfYear) * 10) / 10; // Arrondi à 1 décimale
+      return roundToDecimals(i - 1 + fractionOfYear, 1); // Arrondi à 1 décimale
     }
   }
 

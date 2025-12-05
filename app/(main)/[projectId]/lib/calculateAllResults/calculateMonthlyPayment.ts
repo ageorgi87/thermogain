@@ -1,3 +1,5 @@
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
+
 interface CalculateMonthlyPaymentParams {
   montant: number
   tauxAnnuel: number
@@ -25,5 +27,5 @@ export const calculateMonthlyPayment = ({
   const mensualite =
     (montant * tauxMensuel) / (1 - Math.pow(1 + tauxMensuel, -dureeMois));
 
-  return Math.round(mensualite * 100) / 100;
+  return roundToDecimals(mensualite, 2);
 }

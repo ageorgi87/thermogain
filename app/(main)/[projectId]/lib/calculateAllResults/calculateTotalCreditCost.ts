@@ -1,4 +1,5 @@
 import { calculateMonthlyPayment } from "./calculateMonthlyPayment";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 interface CalculateTotalCreditCostParams {
   montant: number
@@ -19,5 +20,5 @@ export const calculateTotalCreditCost = ({
   dureeMois,
 }: CalculateTotalCreditCostParams): number => {
   const mensualite = calculateMonthlyPayment({ montant, tauxAnnuel, dureeMois });
-  return Math.round(mensualite * dureeMois * 100) / 100;
+  return roundToDecimals(mensualite * dureeMois, 2);
 }

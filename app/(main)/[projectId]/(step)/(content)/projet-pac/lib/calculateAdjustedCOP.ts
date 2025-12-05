@@ -1,4 +1,5 @@
 import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/climate/getClimateInfoFromPostalCode"
+import { roundToDecimals } from "@/lib/utils/roundToDecimals"
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
@@ -111,5 +112,5 @@ export const calculateAdjustedCOP = (
     copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique;
 
   // Arrondir à 2 décimales
-  return Math.round(copAjuste * 100) / 100;
+  return roundToDecimals(copAjuste, 2);
 };

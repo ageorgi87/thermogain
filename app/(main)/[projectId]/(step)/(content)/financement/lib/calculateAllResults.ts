@@ -13,6 +13,7 @@ import { calculatePaybackYear } from "@/app/(main)/[projectId]/lib/calculateAllR
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateMonthlyPayment";
 import { calculateTotalCreditCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateTotalCreditCost";
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/energy/getEnergyPriceEvolutionFromDB";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -213,7 +214,7 @@ export const calculateAllResults = async (
     totalSavingsLifetime: Math.round(totalSavingsLifetime),
     netBenefitLifetime: Math.round(netBenefitLifetime),
     tauxRentabilite: tauxRentabilite
-      ? Math.round(tauxRentabilite * 10) / 10
+      ? roundToDecimals(tauxRentabilite, 1)
       : null,
     coutTotalActuelLifetime: Math.round(coutTotalActuelLifetime),
     coutTotalPacLifetime: Math.round(coutTotalPacLifetime),

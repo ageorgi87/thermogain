@@ -4,6 +4,7 @@ import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informa
 import { getDidoColumnNameFromEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoColumnMappings";
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory";
 import { getDidoMonthlyEnergyPriceData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDidoMonthlyEnergyPriceData";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 /**
  * Calcule le prix actuel moyen d'une énergie (moyenne des 12 derniers mois)
@@ -47,24 +48,21 @@ const calculateCurrentPrice = (
   // Les prix dans l'API sont en €/100kWh, donc diviser par 100 pour avoir €/kWh
   const pricePerKwh = averagePrice / 100;
 
-  console.log(`💰 Prix moyen ${energyType}: ${pricePerKwh.toFixed(4)} €/kWh`);
-
-  // Arrondir à 4 décimales
-  return Math.round(pricePerKwh * 10000) / 10000;
+  // Arrondir à 3 décimales
+  return roundToDecimals(pricePerKwh, 3);
 };
 
 /**
- * Génère le modèle Mean Reversion pour un type d'énergie donné
- * basé sur l'historique réel de l'API DIDO
+ * Récupère les données énergétiques pour UNE SEULE énergie depuis l'API DIDO
  *
  * Cette fonction appelle l'API DIDO UNE SEULE FOIS pour récupérer tout l'historique,
- * puis passe ces données aux fonctions d'analyse.
+ * puis passe ces données aux fonctions d'analyse pour calculer le modèle Mean Reversion.
  *
  * @param energyType Type d'énergie ('gaz', 'electricite', 'fioul', 'bois')
  * @returns Modèle Mean Reversion optimal calculé depuis l'API DIDO
  * @throws Error si le type d'énergie est invalide ou si l'API échoue
  */
-export const fetchEnergyModelFromAPI = async (
+export const fetchOneEnergyDataFromAPI = async (
   energyType: ApiEnergyType
 ): Promise<EnergyEvolutionModel> => {
   // Utiliser les mappings centralisés pour obtenir le nom de colonne DIDO
@@ -94,13 +92,23 @@ export const fetchEnergyModelFromAPI = async (
   }
 
   // ⚠️ APPEL API UNIQUE - Récupérer TOUT l'historique disponible
-  const didoMonthlyEnergyPriceData = await getDidoMonthlyEnergyPriceData(rid, 10000);
+  const didoMonthlyEnergyPriceData = await getDidoMonthlyEnergyPriceData(
+    rid,
+    10000
+  );
 
   // Analyser l'historique pour obtenir les taux d'évolution (passer energyType directement)
-  const analysis = await analyzeEnergyPriceHistory(didoMonthlyEnergyPriceData, energyType);
+  const analysis = await analyzeEnergyPriceHistory(
+    didoMonthlyEnergyPriceData,
+    energyType
+  );
 
   // Calculer le prix actuel moyen
-  const currentPrice = calculateCurrentPrice(didoMonthlyEnergyPriceData, priceColumnName, energyType);
+  const currentPrice = calculateCurrentPrice(
+    didoMonthlyEnergyPriceData,
+    priceColumnName,
+    energyType
+  );
 
   return {
     tauxRecent: analysis.tauxRecent,

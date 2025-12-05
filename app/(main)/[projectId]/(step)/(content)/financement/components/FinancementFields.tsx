@@ -17,6 +17,7 @@ import { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/finance
 import { useEffect } from "react";
 import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations";
 import { Separator } from "@/components/ui/separator";
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
 interface FinancementFieldsProps {
   formData: Partial<FinancingData>;
@@ -82,7 +83,7 @@ export function FinancementFields({
       dureeCreditMois
     );
     const totalPaye = mensualite * dureeCreditMois;
-    return Math.round(totalPaye * 100) / 100;
+    return roundToDecimals(totalPaye, 2);
   };
 
   const totalCreditCost = calculateTotalCreditCost();

@@ -1,5 +1,6 @@
 import { estimateAnnualConsumption } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateAnnualConsumption"
 import type { HousingCharacteristics } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/housingCharacteristics"
+import { roundToDecimals } from "@/lib/utils/roundToDecimals"
 
 interface ConsumptionEstimate {
   value: number
@@ -52,7 +53,7 @@ export const estimateConsumptionByEnergyType = ({
     case "Bois":
       // 1 stère ≈ 2000 kWh
       return {
-        value: Math.round((consommationKwh / 2000) * 10) / 10, // Arrondi à 1 décimale
+        value: roundToDecimals(consommationKwh / 2000, 1), // Arrondi à 1 décimale
         unit: "stères/an",
       }
 

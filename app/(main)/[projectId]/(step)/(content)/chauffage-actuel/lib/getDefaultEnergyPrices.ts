@@ -1,27 +1,36 @@
 import { prisma } from "@/lib/prisma"
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
 import { EnergyType } from "@/types/energyType"
+import { ENERGY_CONVERSION_FACTORS } from "@/config/constants"
+import { roundToDecimals } from "@/lib/utils/roundToDecimals"
+
+/**
+ * Coefficient multiplicateur GPL/Fioul
+ * Le GPL est environ 39% plus cher que le fioul au kWh
+ */
+const GPL_TO_FIOUL_RATIO = 1.39
 
 /**
  * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie
+ * Tous les prix sont arrondis à 3 décimales
  */
 const convertPriceToUnit = (pricePerKwh: number, energyType: EnergyType): number => {
   switch (energyType) {
     case EnergyType.FIOUL:
-      // Fioul: 10 kWh/litre → prix en €/litre
-      return Math.round(pricePerKwh * 10 * 1000) / 1000 // Arrondir à 3 décimales
+      // Fioul: 9.96 kWh/litre → prix en €/litre
+      return roundToDecimals(pricePerKwh * ENERGY_CONVERSION_FACTORS.FIOUL_KWH_PER_LITRE, 3)
     case EnergyType.GAZ:
-      // Gaz: prix en €/kWh
-      return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
+      // Gaz: prix en €/kWh (pas de conversion)
+      return roundToDecimals(pricePerKwh, 3)
     case EnergyType.GPL:
       // GPL: 12.8 kWh/kg → prix en €/kg
-      return Math.round(pricePerKwh * 12.8 * 1000) / 1000 // Arrondir à 3 décimales
+      return roundToDecimals(pricePerKwh * ENERGY_CONVERSION_FACTORS.GPL_KWH_PER_KG, 3)
     case EnergyType.BOIS:
-      // Bois (granulés): 4.8 kWh/kg → prix en €/kg
-      return Math.round(pricePerKwh * 4.8 * 1000) / 1000 // Arrondir à 3 décimales
+      // Bois (granulés): 4.6 kWh/kg → prix en €/kg
+      return roundToDecimals(pricePerKwh * ENERGY_CONVERSION_FACTORS.PELLETS_KWH_PER_KG, 3)
     case EnergyType.ELECTRICITE:
-      // Électricité: prix en €/kWh
-      return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
+      // Électricité: prix en €/kWh (pas de conversion)
+      return roundToDecimals(pricePerKwh, 3)
     default:
       return pricePerKwh
   }
@@ -77,8 +86,8 @@ export const getDefaultEnergyPrices = async (): Promise<DefaultEnergyPrices> => 
     throw new Error(`Données énergétiques incomplètes en DB`)
   }
 
-  // GPL: calculé depuis le fioul
-  const gpl = Math.round(prices.fioul * 1.39 * 1000) / 1000 // GPL ≈ 39% plus cher que le fioul
+  // GPL: calculé depuis le fioul (GPL ≈ 39% plus cher)
+  const gpl = roundToDecimals(prices.fioul * GPL_TO_FIOUL_RATIO, 3)
 
   return {
     fioul: prices.fioul,

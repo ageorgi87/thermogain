@@ -1,3 +1,5 @@
+import { roundToDecimals } from "@/lib/utils/roundToDecimals";
+
 /**
  * Calculate monthly payment for a loan using the standard amortization formula
  * Formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
@@ -26,5 +28,5 @@ export const calculateMensualite = (
     (Math.pow(1 + tauxMensuel, dureeMois) - 1)
 
   // Round to 2 decimal places
-  return Math.round(mensualite * 100) / 100
+  return roundToDecimals(mensualite, 2)
 }
