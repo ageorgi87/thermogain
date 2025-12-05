@@ -7,12 +7,9 @@ model ProjectLogement {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   code_postal        String
-  type_logement      String
   annee_construction Int
-  surface_habitable  Float
   nombre_occupants   Int
-  qualite_isolation  String
-  classe_dpe         String? // DPE class (A-G), optional - auto-estimated if not provided
+  classe_dpe         String? // DPE class (A-G), required for API Aides
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

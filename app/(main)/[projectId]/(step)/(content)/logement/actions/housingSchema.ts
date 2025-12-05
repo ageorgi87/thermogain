@@ -1,7 +1,5 @@
 import { z } from "zod";
-import { QualiteIsolation } from "@/types/isolation";
 import { ClasseDPE } from "@/types/dpe";
-import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
 // Validation du code postal français (métropole, Corse, DOM-TOM)
 const codePostalRegex = /^(?:0[1-9]|[1-8]\d|9[0-5]|2[AB]|97[1-8])\d{3}$/;
@@ -11,9 +9,6 @@ export const housingSchema = z.object({
     .string({ message: "Le code postal est requis" })
     .min(1, "Le code postal est requis")
     .regex(codePostalRegex, "Code postal invalide (ex: 75001, 20000, 97400)"),
-  type_logement: z.nativeEnum(TypeLogement, {
-    message: "Le type de logement est requis",
-  }),
   annee_construction: z
     .number({ message: "L'année de construction est requise" })
     .min(1800, "L'année doit être supérieure à 1800")
@@ -21,17 +16,10 @@ export const housingSchema = z.object({
       new Date().getFullYear() + 2,
       "L'année ne peut pas être dans le futur"
     ),
-  surface_habitable: z
-    .number({ message: "La surface habitable est requise" })
-    .min(10, "La surface doit être d'au moins 10 m²")
-    .max(1000, "La surface ne peut pas dépasser 1000 m²"),
   nombre_occupants: z
     .number({ message: "Le nombre d'occupants est requis" })
     .min(1, "Il doit y avoir au moins 1 occupant")
     .max(20, "Le nombre d'occupants ne peut pas dépasser 20"),
-  qualite_isolation: z.nativeEnum(QualiteIsolation, {
-    message: "La qualité de l'isolation est requise",
-  }),
   classe_dpe: z.nativeEnum(ClasseDPE, {
     message: "La classe DPE est requise",
   }),

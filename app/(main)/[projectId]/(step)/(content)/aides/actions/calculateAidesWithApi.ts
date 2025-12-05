@@ -3,13 +3,6 @@
 import { calculateAidesWithAPI } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/mesAidesRenoClient";
 import { prepareApiParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/prepareApiParams";
 
-interface CalculateAidesInput {
-  projectId: string;
-  revenu_fiscal_reference: number;
-  residence_principale: boolean;
-  remplacement_complet: boolean;
-}
-
 interface CalculateAidesResult {
   success: boolean;
   data?: {
@@ -26,16 +19,17 @@ interface CalculateAidesResult {
 /**
  * Calcule les aides financières (MaPrimeRénov' et CEE) via l'API Mes Aides Réno
  * Action serveur appelée depuis le composant AidCalculator
+ * Toutes les données nécessaires sont récupérées depuis la DB via projectId
  *
- * @param props - Paramètres du projet et du foyer
+ * @param props - ID du projet
  * @returns Résultat du calcul avec montants des aides
  */
 export const calculateAidesWithApi = async (
-  props: CalculateAidesInput
+  projectId: string
 ): Promise<CalculateAidesResult> => {
   try {
-    // Préparer les paramètres API à partir des données projet
-    const apiParams = await prepareApiParams(props);
+    // Préparer les paramètres API à partir des données en DB
+    const apiParams = await prepareApiParams(projectId);
 
     // Appeler l'API Mes Aides Réno (avec cache)
     const apiResponse = await calculateAidesWithAPI(apiParams);

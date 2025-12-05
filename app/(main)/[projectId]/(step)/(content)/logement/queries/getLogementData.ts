@@ -31,9 +31,7 @@ export const getLogementData = async ({ projectId }: GetLogementDataParams) => {
   const logement: Partial<HousingData> | null = project.logement ? {
     code_postal: project.logement.code_postal,
     annee_construction: project.logement.annee_construction,
-    surface_habitable: project.logement.surface_habitable,
     nombre_occupants: project.logement.nombre_occupants,
-    qualite_isolation: project.logement.qualite_isolation as HousingData["qualite_isolation"],
     classe_dpe: project.logement.classe_dpe as HousingData["classe_dpe"],
   } : null
 

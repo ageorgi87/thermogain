@@ -8,9 +8,7 @@ import {
 } from "@/components/ui/select";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
-import { QualiteIsolation } from "@/types/isolation";
 import { ClasseDPE } from "@/types/dpe";
-import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
 interface HousingFieldsProps {
   formData: Partial<HousingData>;
@@ -42,72 +40,27 @@ export function HousingFields({
         />
       </FormField>
 
-      <FormField label="Type de logement" required error={errors.type_logement}>
-        <Select
-          onValueChange={(value) =>
-            onChange("type_logement", value as HousingData["type_logement"])
-          }
-          value={formData.type_logement}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez le type de logement" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TypeLogement.MAISON}>
-              Maison individuelle
-            </SelectItem>
-            <SelectItem value={TypeLogement.APPARTEMENT}>
-              Appartement
-            </SelectItem>
-          </SelectContent>
-        </Select>
+      <FormField
+        label="Année de construction"
+        required
+        error={errors.annee_construction}
+      >
+        <Input
+          type="number"
+          min="1600"
+          placeholder="ex: 1990, 2010"
+          value={formData.annee_construction ?? ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "") {
+              onChange("annee_construction", undefined);
+            } else {
+              const num = parseFloat(value);
+              onChange("annee_construction", isNaN(num) ? undefined : num);
+            }
+          }}
+        />
       </FormField>
-
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          label="Année de construction"
-          required
-          error={errors.annee_construction}
-        >
-          <Input
-            type="number"
-            min="0"
-            placeholder="ex: 1990, 2010"
-            value={formData.annee_construction ?? ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === "") {
-                onChange("annee_construction", undefined);
-              } else {
-                const num = parseFloat(value);
-                onChange("annee_construction", isNaN(num) ? undefined : num);
-              }
-            }}
-          />
-        </FormField>
-
-        <FormField
-          label="Surface habitable (m²)"
-          required
-          error={errors.surface_habitable}
-        >
-          <Input
-            type="number"
-            min="0"
-            placeholder="ex: 100"
-            value={formData.surface_habitable ?? ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === "") {
-                onChange("surface_habitable", undefined);
-              } else {
-                const num = parseFloat(value);
-                onChange("surface_habitable", isNaN(num) ? undefined : num);
-              }
-            }}
-          />
-        </FormField>
-      </div>
 
       <FormField
         label="Nombre d'occupants"
@@ -129,37 +82,6 @@ export function HousingFields({
             }
           }}
         />
-      </FormField>
-
-      <FormField
-        label="Qualité globale de l'isolation"
-        required
-        error={errors.qualite_isolation}
-      >
-        <Select
-          onValueChange={(value) =>
-            onChange(
-              "qualite_isolation",
-              value as HousingData["qualite_isolation"]
-            )
-          }
-          value={formData.qualite_isolation}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez la qualité de l'isolation" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={QualiteIsolation.Mauvaise}>
-              Mauvaise - Aucune isolation ou isolation minimale
-            </SelectItem>
-            <SelectItem value={QualiteIsolation.Moyenne}>
-              Moyenne - Isolation partielle (quelques éléments isolés)
-            </SelectItem>
-            <SelectItem value={QualiteIsolation.Bonne}>
-              Bonne - Logement bien isolé (la plupart des éléments isolés)
-            </SelectItem>
-          </SelectContent>
-        </Select>
       </FormField>
 
       <FormField

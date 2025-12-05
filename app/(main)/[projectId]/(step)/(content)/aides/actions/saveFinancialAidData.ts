@@ -31,6 +31,10 @@ export const saveFinancialAidData = async ({
 
   // Convert undefined values to 0 for Prisma (which doesn't accept undefined for Float fields)
   const prismaData = {
+    type_logement: validatedData.type_logement,
+    revenu_fiscal_reference: validatedData.revenu_fiscal_reference,
+    residence_principale: validatedData.residence_principale,
+    remplacement_complet: validatedData.remplacement_complet,
     ma_prime_renov: validatedData.ma_prime_renov ?? 0,
     cee: validatedData.cee ?? 0,
     autres_aides: validatedData.autres_aides ?? 0,

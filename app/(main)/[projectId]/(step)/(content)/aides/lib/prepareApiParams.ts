@@ -7,13 +7,6 @@ import type { MesAidesRenoRequestParams } from "@/app/(main)/[projectId]/(step)/
 import type { ClasseDPE } from "@/types/dpe";
 import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
-interface PrepareApiParamsInput {
-  projectId: string;
-  revenu_fiscal_reference: number;
-  residence_principale: boolean;
-  remplacement_complet: boolean;
-}
-
 /**
  * Mappe le type de PAC ThermoGain vers le type attendu par l'API Mes Aides Réno
  */
@@ -30,19 +23,13 @@ const mapTypePacToApiType = (typePac: string): string => {
 /**
  * Prépare les paramètres pour l'appel API Mes Aides Réno à partir des données projet
  *
- * @param input - Données du projet et du foyer
+ * @param projectId - ID du projet
  * @returns Paramètres formatés pour l'API
  * @throws Error si des données requises sont manquantes
  */
 export const prepareApiParams = async (
-  input: PrepareApiParamsInput
+  projectId: string
 ): Promise<MesAidesRenoRequestParams> => {
-  const {
-    projectId,
-    revenu_fiscal_reference,
-    residence_principale,
-    remplacement_complet,
-  } = input;
 
   // Récupérer toutes les données nécessaires du projet
   const project = await prisma.project.findUnique({
@@ -51,10 +38,17 @@ export const prepareApiParams = async (
       logement: {
         select: {
           code_postal: true,
-          type_logement: true,
           annee_construction: true,
           nombre_occupants: true,
           classe_dpe: true,
+        },
+      },
+      aides: {
+        select: {
+          type_logement: true,
+          revenu_fiscal_reference: true,
+          residence_principale: true,
+          remplacement_complet: true,
         },
       },
       chauffageActuel: {
@@ -93,10 +87,6 @@ export const prepareApiParams = async (
     throw new Error("Classe DPE manquante");
   }
 
-  if (!project.logement.type_logement) {
-    throw new Error("Type de logement manquant");
-  }
-
   if (!project.projetPac) {
     throw new Error("Données PAC manquantes");
   }
@@ -105,18 +95,38 @@ export const prepareApiParams = async (
     throw new Error("Données coûts manquantes");
   }
 
+  if (!project.aides) {
+    throw new Error("Données aides manquantes");
+  }
+
+  if (!project.aides.type_logement) {
+    throw new Error("Type de logement manquant");
+  }
+
+  if (!project.aides.revenu_fiscal_reference) {
+    throw new Error("Revenu fiscal de référence manquant");
+  }
+
+  if (project.aides.residence_principale === null || project.aides.residence_principale === undefined) {
+    throw new Error("Résidence principale manquante");
+  }
+
+  if (project.aides.remplacement_complet === null || project.aides.remplacement_complet === undefined) {
+    throw new Error("Remplacement complet manquant");
+  }
+
   // Convertir code postal en code INSEE
   const code_insee = await postalCodeToInsee(project.logement.code_postal);
 
   // Calculer le coût total du projet
   const cout_projet = project.couts.cout_pac + project.couts.cout_installation;
 
-  // Construire les paramètres API
+  // Construire les paramètres API (toutes les données proviennent de la DB)
   const params: MesAidesRenoRequestParams = {
     code_insee,
-    revenu_fiscal_reference,
+    revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
     nombre_personnes_menage: project.logement.nombre_occupants,
-    type_logement: project.logement.type_logement as TypeLogement,
+    type_logement: project.aides.type_logement as TypeLogement,
     annee_construction: project.logement.annee_construction,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
     type_chauffage_actuel: project.chauffageActuel?.type_chauffage,

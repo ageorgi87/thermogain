@@ -16,8 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calculator, Check, X, Loader2, AlertCircle } from "lucide-react";
-import { calculateAidesWithApi } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/calculateAidesWithApi";
+import { saveCriteriaAndCalculate } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/saveCriteriaAndCalculate";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 import {
   Tooltip,
   TooltipContent,
@@ -47,6 +49,7 @@ export const AidCalculator = ({
   onUseAmounts,
 }: AidCalculatorProps) => {
   const [open, setOpen] = useState(false);
+  const [typeLogement, setTypeLogement] = useState<string>("");
   const [revenuFiscal, setRevenuFiscal] = useState<string>("");
   const [residencePrincipale, setResidencePrincipale] = useState<string>("oui");
   const [remplacementComplet, setRemplacementComplet] = useState<string>("oui");
@@ -57,20 +60,27 @@ export const AidCalculator = ({
   const [hasCalculated, setHasCalculated] = useState(false);
 
   const handleCalculate = async () => {
-    if (!revenuFiscal) {
-      alert("Veuillez remplir le revenu fiscal de référence");
-      return;
-    }
-
-    const rfr = parseInt(revenuFiscal);
-
     setIsCalculating(true);
     setError(null);
 
+    // Validation
+    if (!typeLogement) {
+      setError("Veuillez sélectionner le type de logement");
+      setIsCalculating(false);
+      return;
+    }
+
+    if (!revenuFiscal || parseFloat(revenuFiscal) < 0) {
+      setError("Veuillez saisir un revenu fiscal de référence valide");
+      setIsCalculating(false);
+      return;
+    }
+
     try {
-      const response = await calculateAidesWithApi({
+      const response = await saveCriteriaAndCalculate({
         projectId,
-        revenu_fiscal_reference: rfr,
+        type_logement: typeLogement,
+        revenu_fiscal_reference: parseFloat(revenuFiscal),
         residence_principale: residencePrincipale === "oui",
         remplacement_complet: remplacementComplet === "oui",
       });
@@ -130,6 +140,20 @@ export const AidCalculator = ({
             {!hasCalculated ? (
               /* Formulaire */
               <div className="space-y-4">
+                {/* Type de logement */}
+                <div className="space-y-2">
+                  <Label htmlFor="type-logement">Type de logement</Label>
+                  <Select value={typeLogement} onValueChange={setTypeLogement}>
+                    <SelectTrigger id="type-logement">
+                      <SelectValue placeholder="Sélectionnez le type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={TypeLogement.MAISON}>Maison</SelectItem>
+                      <SelectItem value={TypeLogement.APPARTEMENT}>Appartement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Revenu Fiscal de Référence */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">

@@ -9,7 +9,6 @@ interface AidesFieldsProps {
   formData: Partial<FinancialAidData>;
   errors: Partial<Record<keyof FinancialAidData, string>>;
   onChange: (name: keyof FinancialAidData, value: any) => void;
-  // Project ID (required for API calls)
   projectId: string;
 }
 

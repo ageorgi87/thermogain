@@ -18,19 +18,12 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
     where: { id: projectId },
     select: {
       userId: true,
-      aides: true,
-      projetPac: {
+      aides: {
         select: {
-          type_pac: true,
-        },
-      },
-      logement: {
-        select: {
-          annee_construction: true,
-          code_postal: true,
-          surface_habitable: true,
-          nombre_occupants: true,
-          classe_dpe: true,
+          ma_prime_renov: true,
+          cee: true,
+          autres_aides: true,
+          total_aides: true,
         },
       },
     },
@@ -42,7 +35,5 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
 
   return {
     aides: project.aides,
-    projetPac: project.projetPac,
-    logement: project.logement,
   }
 }
