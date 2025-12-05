@@ -1,24 +1,25 @@
 import { prisma } from "@/lib/prisma"
 import type { DefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/defaultEnergyPrices"
+import { EnergyType } from "@/types/energyType"
 
 /**
  * Convertit le prix de l'API (€/kWh) vers l'unité appropriée selon le type d'énergie
  */
-const convertPriceToUnit = (pricePerKwh: number, energyType: string): number => {
+const convertPriceToUnit = (pricePerKwh: number, energyType: EnergyType): number => {
   switch (energyType) {
-    case "fioul":
+    case EnergyType.FIOUL:
       // Fioul: 10 kWh/litre → prix en €/litre
       return Math.round(pricePerKwh * 10 * 1000) / 1000 // Arrondir à 3 décimales
-    case "gaz":
+    case EnergyType.GAZ:
       // Gaz: prix en €/kWh
       return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
-    case "gpl":
+    case EnergyType.GPL:
       // GPL: 12.8 kWh/kg → prix en €/kg
       return Math.round(pricePerKwh * 12.8 * 1000) / 1000 // Arrondir à 3 décimales
-    case "bois":
+    case EnergyType.BOIS:
       // Bois (granulés): 4.8 kWh/kg → prix en €/kg
       return Math.round(pricePerKwh * 4.8 * 1000) / 1000 // Arrondir à 3 décimales
-    case "electricite":
+    case EnergyType.ELECTRICITE:
       // Électricité: prix en €/kWh
       return Math.round(pricePerKwh * 10000) / 10000 // Arrondir à 4 décimales
     default:
@@ -40,7 +41,7 @@ export const getDefaultEnergyPrices = async (): Promise<DefaultEnergyPrices> => 
   const energyPrices = await prisma.energyPriceCache.findMany({
     where: {
       energyType: {
-        in: ["fioul", "gaz", "bois", "electricite"]
+        in: [EnergyType.FIOUL, EnergyType.GAZ, EnergyType.BOIS, EnergyType.ELECTRICITE]
       }
     }
   })
@@ -53,19 +54,19 @@ export const getDefaultEnergyPrices = async (): Promise<DefaultEnergyPrices> => 
       throw new Error(`Prix ${energyData.energyType} manquant ou invalide en DB`)
     }
 
-    const convertedPrice = convertPriceToUnit(energyData.currentPrice, energyData.energyType)
+    const convertedPrice = convertPriceToUnit(energyData.currentPrice, energyData.energyType as EnergyType)
 
     switch (energyData.energyType) {
-      case "fioul":
+      case EnergyType.FIOUL:
         prices.fioul = convertedPrice
         break
-      case "gaz":
+      case EnergyType.GAZ:
         prices.gaz = convertedPrice
         break
-      case "bois":
+      case EnergyType.BOIS:
         prices.bois = convertedPrice
         break
-      case "electricite":
+      case EnergyType.ELECTRICITE:
         prices.electricite = convertedPrice
         break
     }

@@ -1,5 +1,5 @@
 import type { EnergyEvolutionModel } from "@/types/energy"
-import type { ApiEnergyType } from "@/types/energyType"
+import { EnergyType, type ApiEnergyType } from "@/types/energyType"
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids"
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory"
 import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows"
@@ -65,22 +65,22 @@ export const fetchEnergyModelFromAPI = async (
   let priceColumnName: string
 
   switch (energyType) {
-    case "gaz":
+    case EnergyType.GAZ:
       rid = DATAFILE_RIDS.gas
       priceColumnName = "PX_GAZ_D_TTES_TRANCHES"
       break
 
-    case "electricite":
+    case EnergyType.ELECTRICITE:
       rid = DATAFILE_RIDS.electricity
       priceColumnName = "PX_ELE_D_TTES_TRANCHES"
       break
 
-    case "fioul":
+    case EnergyType.FIOUL:
       rid = DATAFILE_RIDS.petroleum
       priceColumnName = "PX_PETRO_FOD_100KWH_C1"
       break
 
-    case "bois":
+    case EnergyType.BOIS:
       rid = DATAFILE_RIDS.wood
       priceColumnName = "PX_BOIS_GRANVRAC_100KWH"
       break

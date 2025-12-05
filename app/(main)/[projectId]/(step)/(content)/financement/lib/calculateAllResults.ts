@@ -1,7 +1,7 @@
 // Main calculation function that orchestrates all calculations
 import type { ProjectData } from "@/types/projectData";
 import type { CalculationResults } from "@/types/calculationResults";
-import type { ApiEnergyType } from "@/types/energyType";
+import { EnergyType, type ApiEnergyType } from "@/types/energyType";
 import { calculateCurrentCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostYear1";
 import { calculatePacCostYear1 } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostYear1";
 import { calculatePacConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacConsumptionKwh";
@@ -25,23 +25,23 @@ const getEnergyType = (
   switch (data.type_chauffage) {
     case "Fioul":
     case "GPL":
-      return "fioul";
+      return EnergyType.FIOUL;
 
     case "Gaz":
-      return "gaz";
+      return EnergyType.GAZ;
 
     case "Pellets":
     case "Bois":
-      return "bois";
+      return EnergyType.BOIS;
 
     case "Electrique":
     case "PAC Air/Air":
     case "PAC Air/Eau":
     case "PAC Eau/Eau":
-      return "electricite";
+      return EnergyType.ELECTRICITE;
 
     default:
-      return "gaz"; // Fallback
+      return EnergyType.GAZ; // Fallback
   }
 };
 
@@ -57,7 +57,7 @@ export const calculateAllResults = async (
   // Les données ont été rafraîchies au step 1 (informations) si nécessaire
   const energyType = getEnergyType(data);
   const currentEnergyModel = await getEnergyModelFromDB(energyType);
-  const pacEnergyModel = await getEnergyModelFromDB("electricite");
+  const pacEnergyModel = await getEnergyModelFromDB(EnergyType.ELECTRICITE);
 
   // Coûts année 1
   const coutAnnuelActuel = calculateCurrentCostYear1(data);

@@ -1,10 +1,16 @@
 import { z } from "zod"
+import { EnergyType } from "@/types/energyType"
 
 /**
  * Schéma de validation pour les types d'énergie supportés par l'API DIDO
  * (gaz, electricite, fioul, bois - sans GPL qui est calculé depuis fioul)
  */
-export const apiEnergyTypeSchema = z.enum(["gaz", "electricite", "fioul", "bois"])
+export const apiEnergyTypeSchema = z.enum([
+  EnergyType.GAZ,
+  EnergyType.ELECTRICITE,
+  EnergyType.FIOUL,
+  EnergyType.BOIS
+])
 
 /**
  * Schéma de validation pour le modèle d'évolution énergétique

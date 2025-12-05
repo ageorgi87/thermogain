@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { fetchEnergyModelFromAPI } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/fetchEnergyModelFromAPI"
 import { isDataFresh } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/isDataFresh"
 import { updateEnergyPriceCache } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/updateEnergyPriceCache/updateEnergyPriceCache"
-import type { ApiEnergyType } from "@/types/energyType"
+import { EnergyType, type ApiEnergyType } from "@/types/energyType"
 
 /**
  * Rafraîchit les prix énergétiques depuis l'API DIDO si nécessaire
@@ -20,10 +20,10 @@ import type { ApiEnergyType } from "@/types/energyType"
  */
 export const refreshEnergyPricesIfNeeded = async (): Promise<void> => {
   const energyTypes: Array<ApiEnergyType> = [
-    "gaz",
-    "electricite",
-    "fioul",
-    "bois"
+    EnergyType.GAZ,
+    EnergyType.ELECTRICITE,
+    EnergyType.FIOUL,
+    EnergyType.BOIS
   ]
 
   for (const energyType of energyTypes) {
