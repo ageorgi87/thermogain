@@ -61,7 +61,16 @@ export default function ChauffageActuelStepPage({
           updatedAt,
           ...formFields
         } = data.chauffageActuel;
-        return formFields;
+
+        // Convertir tous les null en undefined pour la validation Zod
+        const cleanedFields = Object.fromEntries(
+          Object.entries(formFields).map(([key, value]) => [
+            key,
+            value === null ? undefined : value,
+          ])
+        );
+
+        return cleanedFields;
       }
       return {};
     },

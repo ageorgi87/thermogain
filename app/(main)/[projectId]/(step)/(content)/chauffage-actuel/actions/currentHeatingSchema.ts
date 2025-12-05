@@ -31,21 +31,22 @@ export const currentHeatingSchema = z.object({
 
   // Tous les champs de consommation sont optionnels de base
   // Ils deviennent requis selon le type de chauffage ET si connait_consommation = true
-  conso_fioul_litres: z.number().min(0).max(50000).optional(),
-  prix_fioul_litre: z.number().min(0).max(10).optional(),
-  conso_gaz_kwh: z.number().min(0).max(100000).optional(),
-  prix_gaz_kwh: z.number().min(0).max(1).optional(),
-  conso_gpl_kg: z.number().min(0).max(10000).optional(),
-  prix_gpl_kg: z.number().min(0).max(10).optional(),
-  conso_pellets_kg: z.number().min(0).max(20000).optional(),
-  prix_pellets_kg: z.number().min(0).max(2).optional(),
-  conso_bois_steres: z.number().min(0).max(100).optional(),
-  prix_bois_stere: z.number().min(0).max(500).optional(),
-  conso_elec_kwh: z.number().min(0).max(100000).optional(),
-  prix_elec_kwh: z.number().min(0).max(1).optional(),
-  cop_actuel: z.number().min(1).max(10).optional(),
-  conso_pac_kwh: z.number().min(0).max(100000).optional(),
-  abonnement_gaz: z.number().min(0).max(1000).optional(),
+  // .nullable() permet d'accepter null (qui sera transformé en undefined)
+  conso_fioul_litres: z.number().min(0).max(50000).nullable().optional(),
+  prix_fioul_litre: z.number().min(0).max(10).nullable().optional(),
+  conso_gaz_kwh: z.number().min(0).max(100000).nullable().optional(),
+  prix_gaz_kwh: z.number().min(0).max(1).nullable().optional(),
+  conso_gpl_kg: z.number().min(0).max(10000).nullable().optional(),
+  prix_gpl_kg: z.number().min(0).max(10).nullable().optional(),
+  conso_pellets_kg: z.number().min(0).max(20000).nullable().optional(),
+  prix_pellets_kg: z.number().min(0).max(2).nullable().optional(),
+  conso_bois_steres: z.number().min(0).max(100).nullable().optional(),
+  prix_bois_stere: z.number().min(0).max(500).nullable().optional(),
+  conso_elec_kwh: z.number().min(0).max(100000).nullable().optional(),
+  prix_elec_kwh: z.number().min(0).max(1).nullable().optional(),
+  cop_actuel: z.number().min(1).max(10).nullable().optional(),
+  conso_pac_kwh: z.number().min(0).max(100000).nullable().optional(),
+  abonnement_gaz: z.number().min(0).max(1000).nullable().optional(),
 }).superRefine((data, ctx) => {
   // Si l'utilisateur ne connaît pas sa consommation, on ne valide rien de plus
   if (!data.connait_consommation) {
@@ -57,14 +58,14 @@ export const currentHeatingSchema = z.object({
 
   // Fioul
   if (type === "Fioul") {
-    if (data.conso_fioul_litres === undefined) {
+    if (data.conso_fioul_litres === undefined || data.conso_fioul_litres === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de fioul est requise",
         path: ["conso_fioul_litres"],
       })
     }
-    if (data.prix_fioul_litre === undefined) {
+    if (data.prix_fioul_litre === undefined || data.prix_fioul_litre === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix du fioul est requis",
