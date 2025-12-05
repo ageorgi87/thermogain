@@ -10,6 +10,7 @@ import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField"
 import { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
 import { QualiteIsolation } from "@/types/isolation";
 import { ClasseDPE } from "@/types/dpe";
+import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
 interface HousingFieldsProps {
   formData: Partial<HousingData>;
@@ -39,6 +40,27 @@ export function HousingFields({
             onChange("code_postal", value === "" ? undefined : value);
           }}
         />
+      </FormField>
+
+      <FormField label="Type de logement" required error={errors.type_logement}>
+        <Select
+          onValueChange={(value) =>
+            onChange("type_logement", value as HousingData["type_logement"])
+          }
+          value={formData.type_logement}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez le type de logement" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={TypeLogement.MAISON}>
+              Maison individuelle
+            </SelectItem>
+            <SelectItem value={TypeLogement.APPARTEMENT}>
+              Appartement
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
@@ -155,13 +177,27 @@ export function HousingFields({
             <SelectValue placeholder="Sélectionnez la classe DPE" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ClasseDPE.A}>A - Excellent (≤ 50 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.B}>B - Très bien (51 à 90 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.C}>C - Bien (91 à 150 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.D}>D - Moyen (151 à 230 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.E}>E - Passable (231 à 330 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.F}>F - Médiocre (331 à 450 kWh/m²/an)</SelectItem>
-            <SelectItem value={ClasseDPE.G}>G - Mauvais (&gt; 450 kWh/m²/an)</SelectItem>
+            <SelectItem value={ClasseDPE.A}>
+              A - Excellent (≤ 50 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.B}>
+              B - Très bien (51 à 90 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.C}>
+              C - Bien (91 à 150 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.D}>
+              D - Moyen (151 à 230 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.E}>
+              E - Passable (231 à 330 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.F}>
+              F - Médiocre (331 à 450 kWh/m²/an)
+            </SelectItem>
+            <SelectItem value={ClasseDPE.G}>
+              G - Mauvais (&gt; 450 kWh/m²/an)
+            </SelectItem>
           </SelectContent>
         </Select>
       </FormField>

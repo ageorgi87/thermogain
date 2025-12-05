@@ -7,6 +7,7 @@ model ProjectLogement {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   code_postal        String
+  type_logement      String
   annee_construction Int
   surface_habitable  Float
   nombre_occupants   Int

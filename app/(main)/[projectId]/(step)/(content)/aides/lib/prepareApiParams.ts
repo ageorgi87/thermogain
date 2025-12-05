@@ -5,6 +5,7 @@ import { postalCodeToInsee } from "@/app/(main)/[projectId]/(step)/(content)/aid
 import type { MesAidesRenoRequestParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/types/types";
 
 import type { ClasseDPE } from "@/types/dpe";
+import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
 interface PrepareApiParamsInput {
   projectId: string;
@@ -24,15 +25,6 @@ const mapTypePacToApiType = (typePac: string): string => {
   };
 
   return mapping[typePac] || "pac_air_eau"; // Fallback
-};
-
-/**
- * Détermine le type de logement selon l'API
- * Note: L'information n'est pas collectée actuellement, on suppose "maison" par défaut
- */
-const determineTypeLogement = (): "maison" | "appartement" => {
-  // TODO: Ajouter cette information dans le step "logement" si nécessaire
-  return "maison";
 };
 
 /**
@@ -59,6 +51,7 @@ export const prepareApiParams = async (
       logement: {
         select: {
           code_postal: true,
+          type_logement: true,
           annee_construction: true,
           nombre_occupants: true,
           classe_dpe: true,
@@ -100,6 +93,10 @@ export const prepareApiParams = async (
     throw new Error("Classe DPE manquante");
   }
 
+  if (!project.logement.type_logement) {
+    throw new Error("Type de logement manquant");
+  }
+
   if (!project.projetPac) {
     throw new Error("Données PAC manquantes");
   }
@@ -119,7 +116,7 @@ export const prepareApiParams = async (
     code_insee,
     revenu_fiscal_reference,
     nombre_personnes_menage: project.logement.nombre_occupants,
-    type_logement: determineTypeLogement(),
+    type_logement: project.logement.type_logement as TypeLogement,
     annee_construction: project.logement.annee_construction,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
     type_chauffage_actuel: project.chauffageActuel?.type_chauffage,
