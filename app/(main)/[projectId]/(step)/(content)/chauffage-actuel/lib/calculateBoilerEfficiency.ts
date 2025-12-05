@@ -2,6 +2,7 @@ import { ELECTRIC_EFFICIENCY } from "../config/heatingEfficiencyData";
 import { calculateGasBoilerEfficiency } from "./helpers/calculateGasBoilerEfficiency";
 import { calculateOilBoilerEfficiency } from "./helpers/calculateOilBoilerEfficiency";
 import { calculateWoodPelletEfficiency } from "./helpers/calculateWoodPelletEfficiency";
+import type { EtatInstallation } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/etatInstallation";
 
 /**
  * Calcule le rendement réel d'un système de chauffage
@@ -15,7 +16,7 @@ import { calculateWoodPelletEfficiency } from "./helpers/calculateWoodPelletEffi
 export const calculateBoilerEfficiency = (
   heatingType: string,
   age: number,
-  condition: "Bon" | "Moyen" | "Mauvais",
+  condition: EtatInstallation,
   isCondensing?: boolean
 ): number => {
   // Valider l'état d'entretien

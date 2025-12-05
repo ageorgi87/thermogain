@@ -6,7 +6,7 @@ import { FinancementFields } from "@/app/(main)/[projectId]/(step)/(content)/fin
 import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingData";
 import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
 import { getFinancementData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancementData";
-import { calculateAndSaveResults } from "./lib/calculateAndSaveResults";
+import { calculateAndSaveResults } from "./lib/calculateAndSaveResults/calculateAndSaveResults";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 

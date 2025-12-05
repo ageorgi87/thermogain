@@ -3,13 +3,14 @@ import {
   MAINTENANCE_FACTORS,
 } from "../../config/heatingEfficiencyData";
 import { getAgeRange } from "./getAgeRange";
+import type { EtatInstallation } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/types/etatInstallation";
 
 /**
  * Calcule le rendement réel d'une chaudière à gaz
  */
 export const calculateGasBoilerEfficiency = (
   age: number,
-  condition: "Bon" | "Moyen" | "Mauvais",
+  condition: EtatInstallation,
   isCondensing: boolean = true // Par défaut, on assume condensation (plus courant depuis 2000)
 ): number => {
   const ageRange = getAgeRange(age);
