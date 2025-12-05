@@ -1,8 +1,10 @@
 import type { ProjectData } from "@/types/projectData";
 import type { YearlyData } from "@/types/yearlyData";
 import type { EnergyEvolutionModel } from "@/types/energy";
-import { calculateCurrentCostProjectedYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentCostProjectedYear";
-import { calculatePacCostProjectedYear } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacCostProjectedYear";
+import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAllResults/helpers/energyDataExtractors";
+import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculateCurrentFixedCosts";
+import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAllResults/calculatePacFixedCosts";
+import { applyCostEvolutionModel } from "@/app/(main)/[projectId]/lib/calculateAllResults/applyCostEvolutionModel";
 
 interface CalculateYearlyCostProjectionsParams {
   data: ProjectData;
@@ -33,18 +35,31 @@ export const calculateYearlyCostProjections = async ({
   let economiesCumulees = 0;
   const currentYear = new Date().getFullYear();
 
+  // Calculer les coûts fixes UNE SEULE FOIS (constants sur toute la période)
+  const currentFixedCosts = calculateCurrentFixedCosts(data);
+  const pacFixedCosts = calculatePacFixedCosts(data);
+
+  // Coûts variables année 1 (pour évolution)
+  const currentVariableCostYear1 = calculateCurrentVariableCost(data);
+  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  const pacVariableCostYear1 = pacConsumptionKwh * prixElec;
+
   for (let i = 0; i < years; i++) {
-    const coutActuel = await calculateCurrentCostProjectedYear({
-      data,
-      year: i,
-      energyModel: currentEnergyModel
-    });
-    const coutPac = await calculatePacCostProjectedYear({
-      data,
-      year: i,
-      energyModel: pacEnergyModel,
-      pacConsumptionKwh,
-    });
+    // Inline calculateCurrentCostProjectedYear
+    const coutActuel = applyCostEvolutionModel(
+      currentVariableCostYear1,
+      currentFixedCosts.total,
+      i,
+      currentEnergyModel
+    );
+
+    // Inline calculatePacCostProjectedYear
+    const coutPac = applyCostEvolutionModel(
+      pacVariableCostYear1,
+      pacFixedCosts.total,
+      i,
+      pacEnergyModel
+    );
     const economie = coutActuel - coutPac;
     economiesCumulees += economie;
 
