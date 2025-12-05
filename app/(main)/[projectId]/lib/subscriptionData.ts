@@ -7,7 +7,6 @@
 
 import {
   ELECTRICITY_SUBSCRIPTION_ANNUAL,
-  GAS_SUBSCRIPTION,
   MAINTENANCE_COSTS_ANNUAL,
 } from "@/config/constants"
 
@@ -16,22 +15,6 @@ import {
  * Source: EDF Tarif Bleu - En vigueur depuis 1er août 2025
  */
 export const ABONNEMENT_ELECTRICITE_ANNUEL = ELECTRICITY_SUBSCRIPTION_ANNUAL
-
-/**
- * Coût moyen annuel d'abonnement gaz naturel
- * Source: Engie Tarif Réglementé - Novembre 2024
- */
-export const ABONNEMENT_GAZ_ANNUEL_MOYEN = GAS_SUBSCRIPTION.ANNUAL_AVERAGE
-
-/**
- * Barème détaillé abonnement gaz selon consommation annuelle
- */
-export const ABONNEMENT_GAZ_PAR_TRANCHE: Record<string, number> = {
-  base: GAS_SUBSCRIPTION.BY_CONSUMPTION.BASE,
-  B0: GAS_SUBSCRIPTION.BY_CONSUMPTION.B0,
-  B1: GAS_SUBSCRIPTION.BY_CONSUMPTION.B1,
-  B2i: GAS_SUBSCRIPTION.BY_CONSUMPTION.B2I,
-}
 
 /**
  * Coûts moyens d'entretien annuel par type de chauffage
