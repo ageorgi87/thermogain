@@ -3,34 +3,34 @@ import { EnergyType, type ApiEnergyType } from "@/types/energyType";
 import { DATAFILE_RIDS } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/datafileRids";
 import { getDidoColumnNameFromEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoColumnMappings";
 import { analyzeEnergyPriceHistory } from "@/app/(main)/[projectId]/(step)/(content)/informations/lib/analyzeEnergyPriceHistory";
-import { getDataFileRows } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDataFileRows";
+import { getDidoMonthlyEnergyPriceData } from "@/app/(main)/[projectId]/(step)/(content)/informations/queries/getDidoMonthlyEnergyPriceData";
 
 /**
  * Calcule le prix actuel moyen d'une énergie (moyenne des 12 derniers mois)
  * à partir des données déjà récupérées de l'API DIDO
  *
- * @param rows Données brutes de l'API DIDO
+ * @param didoMonthlyEnergyPriceData Données mensuelles de prix énergétiques de l'API DIDO
  * @param priceColumnName Nom de la colonne contenant le prix
  * @param energyType Type d'énergie
  * @returns Prix moyen en €/kWh
  * @throws Error si les données ne sont pas disponibles
  */
 const calculateCurrentPrice = (
-  rows: any[],
+  didoMonthlyEnergyPriceData: any[],
   priceColumnName: string,
   energyType: string
 ): number => {
-  if (rows.length === 0) {
+  if (didoMonthlyEnergyPriceData.length === 0) {
     throw new Error(
       `Aucune donnée de prix disponible pour ${energyType} depuis l'API DIDO`
     );
   }
 
   // Prendre les 12 derniers mois (les plus récents)
-  const recentRows = rows.slice(0, 12);
+  const recentData = didoMonthlyEnergyPriceData.slice(0, 12);
 
   // Extraire les prix et calculer la moyenne
-  const prices: number[] = recentRows
+  const prices: number[] = recentData
     .map((row: any) => parseFloat(row[priceColumnName]))
     .filter((price: number) => !isNaN(price) && price > 0);
 
@@ -94,13 +94,13 @@ export const fetchEnergyModelFromAPI = async (
   }
 
   // ⚠️ APPEL API UNIQUE - Récupérer TOUT l'historique disponible
-  const rows = await getDataFileRows(rid, 10000);
+  const didoMonthlyEnergyPriceData = await getDidoMonthlyEnergyPriceData(rid, 10000);
 
   // Analyser l'historique pour obtenir les taux d'évolution (passer energyType directement)
-  const analysis = await analyzeEnergyPriceHistory(rows, energyType);
+  const analysis = await analyzeEnergyPriceHistory(didoMonthlyEnergyPriceData, energyType);
 
   // Calculer le prix actuel moyen
-  const currentPrice = calculateCurrentPrice(rows, priceColumnName, energyType);
+  const currentPrice = calculateCurrentPrice(didoMonthlyEnergyPriceData, priceColumnName, energyType);
 
   return {
     tauxRecent: analysis.tauxRecent,

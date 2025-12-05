@@ -1,9 +1,13 @@
 import { DIDO_API_BASE_URL } from "@/app/(main)/[projectId]/(step)/(content)/informations/config/didoApiBaseUrl"
 
 /**
- * Récupère les données d'un fichier spécifique en format CSV et les convertit en JSON
+ * Récupère les données mensuelles de prix énergétiques depuis l'API DIDO
+ *
+ * @param rid Identifiant du datafile DIDO
+ * @param limit Nombre maximum de lignes à récupérer (par défaut 100)
+ * @returns Tableau de données mensuelles de prix énergétiques
  */
-export const getDataFileRows = async (rid: string, limit: number = 100): Promise<any[]> => {
+export const getDidoMonthlyEnergyPriceData = async (rid: string, limit: number = 100): Promise<any[]> => {
   try {
     // Essayer d'abord l'endpoint JSON
     let response = await fetch(
@@ -17,8 +21,8 @@ export const getDataFileRows = async (rid: string, limit: number = 100): Promise
     const data = await response.json()
 
     // Limiter le nombre de lignes
-    const rows = Array.isArray(data) ? data : (data.data || [])
-    return rows.slice(0, limit)
+    const didoMonthlyEnergyPriceData = Array.isArray(data) ? data : (data.data || [])
+    return didoMonthlyEnergyPriceData.slice(0, limit)
   } catch (error) {
     console.error("Erreur lors de la récupération des données:", error)
     return []

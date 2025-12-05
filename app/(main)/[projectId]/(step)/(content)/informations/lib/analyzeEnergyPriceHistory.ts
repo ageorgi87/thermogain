@@ -134,25 +134,25 @@ interface HistoricalAnalysis {
 /**
  * Analyse l'historique complet des prix pour extraire taux récent et d'équilibre
  *
- * @param rows Données brutes de l'API DIDO (historique complet)
+ * @param didoMonthlyEnergyPriceData Données mensuelles de prix énergétiques de l'API DIDO (historique complet)
  * @param energyType Type d'énergie (utilisé pour obtenir le nom de colonne et les taux)
  * @returns Analyse complète de l'historique
  */
 export const analyzeEnergyPriceHistory = async (
-  rows: any[],
+  didoMonthlyEnergyPriceData: any[],
   energyType: ApiEnergyType
 ): Promise<HistoricalAnalysis> => {
   try {
     // Conversion early: obtenir le nom de colonne depuis les mappings centralisés
     const priceColumnName = getDidoColumnNameFromEnergyType(energyType)
 
-    if (rows.length < 24) {
+    if (didoMonthlyEnergyPriceData.length < 24) {
       console.warn(`Historique insuffisant pour ${energyType}`);
       throw new Error("Historique insuffisant");
     }
 
     // Extraire les prix mensuels (du plus récent au plus ancien)
-    const monthlyPrices: number[] = rows
+    const monthlyPrices: number[] = didoMonthlyEnergyPriceData
       .map((row: any) => parseFloat(row[priceColumnName]))
       .filter((price: number) => !isNaN(price) && price > 0);
 
