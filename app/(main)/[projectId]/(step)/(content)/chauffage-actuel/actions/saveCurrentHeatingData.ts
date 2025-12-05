@@ -10,7 +10,8 @@ import {
 import { estimateConsumptionByEnergyType } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/estimateConsumptionByEnergyType";
 import { getCurrentEnergyPriceFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getCurrentEnergyPriceFromDB";
 import { GAS_SUBSCRIPTION } from "@/config/constants";
-import { adjustConsumptionForEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/adjustConsumptionForEfficiency";
+import { calculateBoilerEfficiency } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/calculateBoilerEfficiency";
+import { REFERENCE_EFFICIENCY } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/config/heatingEfficiencyData";
 import { EnergyType } from "@/types/energyType";
 
 interface SaveCurrentHeatingDataParams {
@@ -67,12 +68,17 @@ export const saveCurrentHeatingData = async ({
     });
 
     // Ajuster l'estimation selon le rendement réel de l'installation (âge + état)
-    const { adjustedConsumption, efficiency } = adjustConsumptionForEfficiency({
-      typeChauffage: validatedData.type_chauffage,
-      ageInstallation: validatedData.age_installation,
-      etatInstallation: validatedData.etat_installation,
-      consumptionValue: estimationInitiale.value,
-    });
+    // Inline: Calculer le rendement réel puis ajuster la consommation
+    const efficiency = calculateBoilerEfficiency(
+      validatedData.type_chauffage,
+      validatedData.age_installation,
+      validatedData.etat_installation
+    );
+
+    const refEfficiency = REFERENCE_EFFICIENCY[validatedData.type_chauffage] || 0.75;
+    const adjustedConsumption = Math.round(
+      estimationInitiale.value * (refEfficiency / efficiency)
+    );
 
     // Utiliser la consommation ajustée
     const estimation = {
