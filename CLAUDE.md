@@ -1157,6 +1157,7 @@ Si création de `components/CLAUDE.md` pour documenter les composants :
   - [calculsConsommation.md](docs/calculsConsommation.md) - Calculs de consommation PAC
   - [calculsEconomieRoi.md](docs/calculsEconomieRoi.md) - Économies et ROI
   - [guideTheming.md](docs/guideTheming.md) - Guide du système de thème
+  - [apiMesAidesReno.md](docs/apiMesAidesReno.md) - API Mes Aides Réno (MaPrimeRénov' et CEE)
 - **[config/constants.ts](config/constants.ts)** - Source unique de vérité pour toutes les constantes
 - **[prisma/CLAUDE.md](prisma/CLAUDE.md)** - Directives Prisma schema
 - **[email/CLAUDE.md](email/CLAUDE.md)** - Directives système email

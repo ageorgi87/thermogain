@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { calculateAidesWithAPI } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/mesAidesRenoClient";
+import { calculateAidesWithPublicodesAPI } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/mesAidesRenoPublicodesClient";
 import { prepareApiParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/prepareApiParams";
 
 interface SaveCriteriaParams {
@@ -84,13 +84,57 @@ export const saveCriteriaAndCalculate = async (
     // Préparer les paramètres API (récupère tout depuis la DB)
     const apiParams = await prepareApiParams(params.projectId);
 
-    // Appeler l'API Mes Aides Réno
-    const apiResponse = await calculateAidesWithAPI(apiParams);
+    // Appeler l'API Mes Aides Réno (Publicodes)
+    const apiResponse = await calculateAidesWithPublicodesAPI(apiParams);
 
-    // Extraire les montants des aides
-    const ma_prime_renov = apiResponse.aides.ma_prime_renov?.montant || 0;
-    const cee = apiResponse.aides.cee?.montant || 0;
-    const total_aides = apiResponse.total_aides;
+    // Extraire les montants depuis la réponse
+    // Le field "gestes.chauffage.PAC.air-eau.montant" retourne le total avec détails
+    const gesteField = apiResponse["gestes.chauffage.PAC.air-eau.montant"];
+
+    if (!gesteField) {
+      throw new Error("Réponse API invalide : field montant manquant");
+    }
+
+    // Le total est dans rawValue
+    const total_aides = gesteField.rawValue || 0;
+
+    // Les détails MPR et CEE sont dans le champ "details"
+    let ma_prime_renov = 0;
+    let cee = 0;
+
+    if (gesteField.details && Array.isArray(gesteField.details)) {
+      // Trouver MPR dans les détails
+      const mprDetail = gesteField.details.find((d: any) => d.MPR);
+      if (mprDetail?.MPR?.rawValue) {
+        ma_prime_renov = Math.round(mprDetail.MPR.rawValue);
+      }
+
+      // Trouver CEE ou Coup de pouce dans les détails
+      const ceeDetail = gesteField.details.find((d: any) => d.CEE);
+      if (ceeDetail?.CEE?.rawValue) {
+        cee = Math.round(ceeDetail.CEE.rawValue);
+      }
+
+      // Si pas de CEE, chercher Coup de pouce
+      if (cee === 0) {
+        const coupDePouceDetail = gesteField.details.find((d: any) => d["Coup de pouce"]);
+        if (coupDePouceDetail?.["Coup de pouce"]?.rawValue) {
+          cee = Math.round(coupDePouceDetail["Coup de pouce"].rawValue);
+        }
+      }
+    }
+
+    // Vérifier l'éligibilité
+    const eligible_ma_prime_renov = ma_prime_renov > 0;
+    const eligible_cee = cee > 0;
+
+    // Collecter les raisons d'inéligibilité depuis missingVariables
+    const raisons_ineligibilite: string[] = [];
+    if (gesteField.missingVariables && gesteField.missingVariables.length > 0) {
+      raisons_ineligibilite.push(
+        `Variables manquantes pour le calcul complet: ${gesteField.missingVariables.join(", ")}`
+      );
+    }
 
     return {
       success: true,
@@ -98,10 +142,10 @@ export const saveCriteriaAndCalculate = async (
         ma_prime_renov,
         cee,
         total_aides,
-        eligible_ma_prime_renov:
-          apiResponse.eligibilite.eligible_ma_prime_renov,
-        eligible_cee: apiResponse.eligibilite.eligible_cee,
-        raisons_ineligibilite: apiResponse.eligibilite.raisons_ineligibilite,
+        eligible_ma_prime_renov,
+        eligible_cee,
+        raisons_ineligibilite:
+          raisons_ineligibilite.length > 0 ? raisons_ineligibilite : undefined,
       },
     };
   } catch (error) {

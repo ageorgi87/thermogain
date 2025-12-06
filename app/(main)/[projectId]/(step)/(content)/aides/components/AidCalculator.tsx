@@ -371,16 +371,6 @@ export const AidCalculator = ({
                       )}
                     </div>
 
-                    {/* Total */}
-                    {(result.eligible_ma_prime_renov || result.eligible_cee) && (
-                      <div className="p-4 rounded-lg bg-blue-50 border-2 border-blue-200">
-                        <p className="font-semibold mb-1">Total des aides</p>
-                        <p className="text-3xl font-bold text-blue-700">
-                          {result.total_aides.toLocaleString("fr-FR")} €
-                        </p>
-                      </div>
-                    )}
-
                     {/* Raisons d'inéligibilité */}
                     {result.raisons_ineligibilite &&
                       result.raisons_ineligibilite.length > 0 && (
