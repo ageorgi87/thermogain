@@ -10,10 +10,6 @@
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate --schema=prisma/schema"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts",
-    "schema": "prisma/schema"
-  },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^6.19.0",
