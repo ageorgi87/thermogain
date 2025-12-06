@@ -1,7 +1,6 @@
 "use server";
 
 import type { MesAidesRenoRequestParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/types/types";
-import { ClasseDPE } from "@/types/dpe";
 
 /**
  * URL de l'API Mes Aides Réno (Beta.gouv) - Publicodes
@@ -55,62 +54,41 @@ const convertAnneeConstruction = (annee?: number): string => {
 };
 
 /**
- * Convertit une classe DPE (lettre) en numéro pour l'API
- */
-const convertClasseDPEToNumber = (classe?: string): string => {
-  const mapping: Record<ClasseDPE, string> = {
-    [ClasseDPE.A]: "1",
-    [ClasseDPE.B]: "2",
-    [ClasseDPE.C]: "3",
-    [ClasseDPE.D]: "4",
-    [ClasseDPE.E]: "5",
-    [ClasseDPE.F]: "6",
-    [ClasseDPE.G]: "7",
-  };
-  return classe && mapping[classe as ClasseDPE] ? mapping[classe as ClasseDPE] : "5"; // Défaut: E
-};
-
-/**
  * Construit les paramètres Publicodes pour l'API
  * IMPORTANT : Les valeurs STRING doivent être entre guillemets simples
+ * Seuls les champs OBLIGATOIRES sont inclus (testés et validés)
  */
 const buildPublicodesParams = (
   params: MesAidesRenoRequestParams
 ): Record<string, string> => {
   return {
-    // Propriétaire - STRING entre guillemets simples
+    // OBLIGATOIRE - Propriétaire
     "vous.propriétaire.statut": "'propriétaire'",
 
-    // Ménage - NOMBRES sans guillemets
+    // OBLIGATOIRE - Ménage
     "ménage.personnes": params.nombre_personnes_menage.toString(),
     "ménage.revenu": params.revenu_fiscal_reference.toString(),
-    "ménage.commune": `'${params.code_insee}'`,
 
-    // Logement
+    // OBLIGATOIRE - Logement
     "logement.type": `'${params.type_logement}'`,
-    "logement.surface": "100",
+    "logement.surface": "100", // TODO: récupérer depuis params
     "logement.période de construction": `'${convertAnneeConstruction(params.annee_construction)}'`,
     "logement.propriétaire occupant": "'oui'",
-    "logement.résidence principale propriétaire": "'oui'", // Propriétaire occupant de sa résidence principale
-    "logement.résidence principale locataire": "'non'",
+    "logement.résidence principale propriétaire": "'oui'",
     "logement.commune": `'${params.code_insee}'`,
     "logement.adresse": `'Code INSEE ${params.code_insee}'`,
 
-    // DPE
-    "DPE.actuel": convertClasseDPEToNumber(params.classe_dpe),
-    "projet.DPE visé": "2", // Objectif B après travaux
-
-    // Parcours d'aide - STRING
+    // OBLIGATOIRE - Parcours d'aide
     "parcours d'aide": "'non accompagné'",
 
-    // Geste PAC air-eau
-    "gestes.chauffage.PAC.air-eau": "oui", // Boolean Publicodes SANS guillemets
+    // OBLIGATOIRE - Geste PAC air-eau
+    "gestes.chauffage.PAC.air-eau": "oui",
     "gestes.chauffage.PAC.air-eau.CEE.usage": "'chauffage et eau chaude'",
     "gestes.chauffage.PAC.air-eau.CEE.Etas": "'supérieur à 200 %'",
 
-    // CEE
+    // OBLIGATOIRE - CEE
     "CEE.projet.remplacement chaudière thermique":
-      params.type_chauffage_actuel?.includes("chaudière") ? "oui" : "non", // Boolean SANS guillemets
+      params.type_chauffage_actuel?.includes("chaudière") ? "oui" : "non",
   };
 };
 
