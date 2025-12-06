@@ -133,6 +133,7 @@ export const prepareApiParams = async (
     nombre_personnes_menage: project.logement.nombre_occupants,
     type_logement: project.aides.type_logement as TypeLogement,
     surface_logement: project.aides.surface_logement,
+    residence_principale: project.aides.residence_principale,
     annee_construction: project.logement.annee_construction,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
     type_chauffage_actuel: project.chauffageActuel?.type_chauffage,

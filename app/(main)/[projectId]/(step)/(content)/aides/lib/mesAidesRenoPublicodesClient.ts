@@ -61,6 +61,7 @@ const convertAnneeConstruction = (annee?: number): string => {
 const buildPublicodesParams = (
   params: MesAidesRenoRequestParams
 ): Record<string, string> => {
+
   return {
     // OBLIGATOIRE - Propriétaire
     "vous.propriétaire.statut": "'propriétaire'",
@@ -73,8 +74,8 @@ const buildPublicodesParams = (
     "logement.type": `'${params.type_logement}'`,
     "logement.surface": params.surface_logement.toString(),
     "logement.période de construction": `'${convertAnneeConstruction(params.annee_construction)}'`,
-    "logement.propriétaire occupant": "'oui'",
-    "logement.résidence principale propriétaire": "'oui'",
+    "logement.propriétaire occupant": params.residence_principale ? "'oui'" : "'non'";,
+    "logement.résidence principale propriétaire": params.residence_principale ? "'oui'" : "'non'";,
     "logement.commune": `'${params.code_insee}'`,
     "logement.adresse": `'Code INSEE ${params.code_insee}'`,
 

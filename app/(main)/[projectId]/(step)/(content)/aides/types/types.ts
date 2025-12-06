@@ -14,6 +14,7 @@ export interface MesAidesRenoRequestParams {
   nombre_personnes_menage: number // Nombre de personnes dans le foyer
   type_logement: "maison" | "appartement"
   surface_logement: number // Surface habitable du logement (m²) - OBLIGATOIRE
+  residence_principale: boolean // Le logement est-il la résidence principale ?
   annee_construction?: number // Année de construction du logement
   classe_dpe?: ClasseDPE // Classe DPE actuelle
   type_chauffage_actuel?: string // Type de chauffage actuel
