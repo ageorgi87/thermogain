@@ -288,6 +288,32 @@ console.log("CEE:", cee);
 
 ## Changelog
 
+### 2024-12-06 - Ajout champ surface logement
+
+**Amélioration** : La surface du logement n'est plus hardcodée
+
+**Modifications appliquées** :
+1. ✅ Ajout du champ `surface_logement` dans le schéma Prisma (ProjectAides)
+2. ✅ Ajout du champ dans l'interface `MesAidesRenoRequestParams`
+3. ✅ Ajout du champ surface dans le formulaire `AidCalculator.tsx`
+4. ✅ Récupération de `surface_logement` depuis la DB dans `prepareApiParams.ts`
+5. ✅ Utilisation de `params.surface_logement` dans l'API au lieu de "100" hardcodé
+
+**Résultat** :
+- Les utilisateurs DOIVENT saisir la surface exacte de leur logement (champ obligatoire)
+- L'API reçoit la vraie surface pour un calcul plus précis
+- Pas de fallback : la surface est obligatoire dans le formulaire et dans l'API
+
+**Fichiers modifiés** :
+- `aides.prisma`
+- `types.ts`
+- `AidCalculator.tsx`
+- `saveCriteriaAndCalculate.ts`
+- `prepareApiParams.ts`
+- `mesAidesRenoPublicodesClient.ts`
+
+---
+
 ### 2024-12-06 - Correction majeure
 
 **Problème** : API retournait "Variables manquantes" systématiquement
@@ -310,6 +336,9 @@ console.log("CEE:", cee);
 - `saveCriteriaAndCalculate.ts`
 - `AidCalculator.tsx`
 - `tsconfig.json`
+- `aides.prisma` (ajout surface_logement)
+- `prepareApiParams.ts` (récupération surface depuis DB)
+- `types.ts` (ajout surface_logement à interface)
 
 ---
 

@@ -8,6 +8,7 @@ model ProjectAides {
 
   // Critères d'éligibilité (remplis dans le calculateur)
   type_logement           String?
+  surface_logement        Int?
   revenu_fiscal_reference Int?
   residence_principale    Boolean?
   remplacement_complet    Boolean? 

@@ -13,6 +13,7 @@ export interface MesAidesRenoRequestParams {
   revenu_fiscal_reference: number // Revenu fiscal de référence (RFR)
   nombre_personnes_menage: number // Nombre de personnes dans le foyer
   type_logement: "maison" | "appartement"
+  surface_logement: number // Surface habitable du logement (m²) - OBLIGATOIRE
   annee_construction?: number // Année de construction du logement
   classe_dpe?: ClasseDPE // Classe DPE actuelle
   type_chauffage_actuel?: string // Type de chauffage actuel

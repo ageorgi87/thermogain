@@ -46,6 +46,7 @@ export const prepareApiParams = async (
       aides: {
         select: {
           type_logement: true,
+          surface_logement: true,
           revenu_fiscal_reference: true,
           residence_principale: true,
           remplacement_complet: true,
@@ -103,6 +104,10 @@ export const prepareApiParams = async (
     throw new Error("Type de logement manquant");
   }
 
+  if (!project.aides.surface_logement) {
+    throw new Error("Surface du logement manquante");
+  }
+
   if (!project.aides.revenu_fiscal_reference) {
     throw new Error("Revenu fiscal de référence manquant");
   }
@@ -127,6 +132,7 @@ export const prepareApiParams = async (
     revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
     nombre_personnes_menage: project.logement.nombre_occupants,
     type_logement: project.aides.type_logement as TypeLogement,
+    surface_logement: project.aides.surface_logement,
     annee_construction: project.logement.annee_construction,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
     type_chauffage_actuel: project.chauffageActuel?.type_chauffage,

@@ -71,7 +71,7 @@ const buildPublicodesParams = (
 
     // OBLIGATOIRE - Logement
     "logement.type": `'${params.type_logement}'`,
-    "logement.surface": "100", // TODO: récupérer depuis params
+    "logement.surface": params.surface_logement.toString(),
     "logement.période de construction": `'${convertAnneeConstruction(params.annee_construction)}'`,
     "logement.propriétaire occupant": "'oui'",
     "logement.résidence principale propriétaire": "'oui'",

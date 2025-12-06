@@ -50,6 +50,7 @@ export const AidCalculator = ({
 }: AidCalculatorProps) => {
   const [open, setOpen] = useState(false);
   const [typeLogement, setTypeLogement] = useState<string>("");
+  const [surfaceLogement, setSurfaceLogement] = useState<string>("");
   const [revenuFiscal, setRevenuFiscal] = useState<string>("");
   const [residencePrincipale, setResidencePrincipale] = useState<string>("oui");
   const [remplacementComplet, setRemplacementComplet] = useState<string>("oui");
@@ -70,6 +71,12 @@ export const AidCalculator = ({
       return;
     }
 
+    if (!surfaceLogement || parseFloat(surfaceLogement) <= 0) {
+      setError("Veuillez saisir une surface valide");
+      setIsCalculating(false);
+      return;
+    }
+
     if (!revenuFiscal || parseFloat(revenuFiscal) < 0) {
       setError("Veuillez saisir un revenu fiscal de référence valide");
       setIsCalculating(false);
@@ -80,6 +87,7 @@ export const AidCalculator = ({
       const response = await saveCriteriaAndCalculate({
         projectId,
         type_logement: typeLogement,
+        surface_logement: parseFloat(surfaceLogement),
         revenu_fiscal_reference: parseFloat(revenuFiscal),
         residence_principale: residencePrincipale === "oui",
         remplacement_complet: remplacementComplet === "oui",
@@ -152,6 +160,18 @@ export const AidCalculator = ({
                       <SelectItem value={TypeLogement.APPARTEMENT}>Appartement</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Surface du logement */}
+                <div className="space-y-2">
+                  <Label htmlFor="surface">Surface habitable (m²)</Label>
+                  <Input
+                    id="surface"
+                    type="number"
+                    placeholder="Ex: 100"
+                    value={surfaceLogement}
+                    onChange={(e) => setSurfaceLogement(e.target.value)}
+                  />
                 </div>
 
                 {/* Revenu Fiscal de Référence */}
