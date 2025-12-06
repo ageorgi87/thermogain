@@ -51,7 +51,7 @@ export const calculationResultsSchema = z.object({
  * Schéma Zod pour les paramètres de saveProjectResults
  */
 export const saveProjectResultsParamsSchema = z.object({
-  projectId: z.string().uuid(),
+  projectId: z.string().cuid(),
   results: calculationResultsSchema,
 });
 
