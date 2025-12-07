@@ -1,36 +1,22 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { postalCodeToInsee } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/postalCodeToInsee";
-import type { MesAidesRenoRequestParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/types/types";
-
+import type { ProjectDataForAides } from "@/app/(main)/[projectId]/(step)/(content)/aides/types/types";
 import type { ClasseDPE } from "@/types/dpe";
-import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement/types/logement";
 
 /**
- * Mappe le type de PAC ThermoGain vers le type attendu par l'API Mes Aides Réno
- */
-const mapTypePacToApiType = (typePac: string): string => {
-  const mapping: Record<string, string> = {
-    "PAC Air/Eau": "pac_air_eau",
-    "PAC Eau/Eau": "pac_eau_eau",
-    "PAC Air/Air": "pac_air_air",
-  };
-
-  return mapping[typePac] || "pac_air_eau"; // Fallback
-};
-
-/**
- * Prépare les paramètres pour l'appel API Mes Aides Réno à partir des données projet
+ * Récupère les données brutes du projet depuis la DB pour le calcul des aides
+ *
+ * Cette fonction ne fait AUCUNE transformation - elle retourne les données telles quelles.
+ * Le formatage pour l'API Mes Aides Réno est fait dans chaque calculateAidesXXX.
  *
  * @param projectId - ID du projet
- * @returns Paramètres formatés pour l'API
+ * @returns Données brutes du projet
  * @throws Error si des données requises sont manquantes
  */
-export const prepareApiParams = async (
+export const getProjectDataForAides = async (
   projectId: string
-): Promise<MesAidesRenoRequestParams> => {
-
+): Promise<ProjectDataForAides> => {
   // Récupérer toutes les données nécessaires du projet
   const project = await prisma.project.findUnique({
     where: { id: projectId },
@@ -49,7 +35,6 @@ export const prepareApiParams = async (
           surface_logement: true,
           revenu_fiscal_reference: true,
           residence_principale: true,
-          remplacement_complet: true,
         },
       },
       chauffageActuel: {
@@ -112,34 +97,35 @@ export const prepareApiParams = async (
     throw new Error("Revenu fiscal de référence manquant");
   }
 
-  if (project.aides.residence_principale === null || project.aides.residence_principale === undefined) {
+  if (
+    project.aides.residence_principale === null ||
+    project.aides.residence_principale === undefined
+  ) {
     throw new Error("Résidence principale manquante");
   }
 
-  if (project.aides.remplacement_complet === null || project.aides.remplacement_complet === undefined) {
-    throw new Error("Remplacement complet manquant");
-  }
-
-  // Convertir code postal en code INSEE
-  const code_insee = await postalCodeToInsee(project.logement.code_postal);
-
-  // Calculer le coût total du projet
-  const cout_projet = project.couts.cout_pac + project.couts.cout_installation;
-
-  // Construire les paramètres API (toutes les données proviennent de la DB)
-  const params: MesAidesRenoRequestParams = {
-    code_insee,
-    revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
-    nombre_personnes_menage: project.logement.nombre_occupants,
-    type_logement: project.aides.type_logement as TypeLogement,
-    surface_logement: project.aides.surface_logement,
-    residence_principale: project.aides.residence_principale,
+  // Retourner les données brutes (pas de transformation)
+  return {
+    // Logement
+    code_postal: project.logement.code_postal,
     annee_construction: project.logement.annee_construction,
+    nombre_occupants: project.logement.nombre_occupants,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
-    type_chauffage_actuel: project.chauffageActuel?.type_chauffage,
-    type_travaux: mapTypePacToApiType(project.projetPac.type_pac),
-    cout_projet,
-  };
 
-  return params;
+    // Aides
+    type_logement: project.aides.type_logement as "maison" | "appartement",
+    surface_logement: project.aides.surface_logement,
+    revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
+    residence_principale: project.aides.residence_principale,
+
+    // Chauffage actuel
+    type_chauffage_actuel: project.chauffageActuel?.type_chauffage || null,
+
+    // Projet PAC
+    type_pac: project.projetPac.type_pac,
+
+    // Coûts
+    cout_pac: project.couts.cout_pac,
+    cout_installation: project.couts.cout_installation,
+  };
 };

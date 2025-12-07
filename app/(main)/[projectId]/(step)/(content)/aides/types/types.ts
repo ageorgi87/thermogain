@@ -6,20 +6,31 @@ import type { ClasseDPE } from "@/types/dpe"
  */
 
 /**
- * Paramètres d'entrée pour l'API Mes Aides Réno
+ * Données brutes du projet récupérées depuis la DB
+ * Pour être passées aux fonctions calculateAidesXXX
  */
-export interface MesAidesRenoRequestParams {
-  code_insee: string // Code INSEE de la commune
-  revenu_fiscal_reference: number // Revenu fiscal de référence (RFR)
-  nombre_personnes_menage: number // Nombre de personnes dans le foyer
+export interface ProjectDataForAides {
+  // Logement
+  code_postal: string
+  annee_construction: number | null
+  nombre_occupants: number
+  classe_dpe: ClasseDPE
+
+  // Aides (critères utilisateur)
   type_logement: "maison" | "appartement"
-  surface_logement: number // Surface habitable du logement (m²) - OBLIGATOIRE
-  residence_principale: boolean // Le logement est-il la résidence principale ?
-  annee_construction?: number // Année de construction du logement
-  classe_dpe?: ClasseDPE // Classe DPE actuelle
-  type_chauffage_actuel?: string // Type de chauffage actuel
-  type_travaux: string // Type de travaux (ex: "pac_air_eau", "pac_air_air", etc.)
-  cout_projet: number // Coût total du projet (€ TTC)
+  surface_logement: number
+  revenu_fiscal_reference: number
+  residence_principale: boolean
+
+  // Chauffage actuel
+  type_chauffage_actuel: string | null
+
+  // Projet PAC
+  type_pac: string // Format ThermoGain: "Air/Eau", "Eau/Eau", "Air/Air"
+
+  // Coûts
+  cout_pac: number
+  cout_installation: number
 }
 
 /**

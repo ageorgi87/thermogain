@@ -2,8 +2,10 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { calculateAidesWithPublicodesAPI } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/mesAidesRenoPublicodesClient";
-import { prepareApiParams } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/prepareApiParams";
+import { getProjectDataForAides } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/getProjectDataForAides";
+import { calculateAidesAirEau } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesAirEau";
+import { calculateAidesAirAir } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesAirAir";
+import { calculateAidesGeothermique } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesGeothermique";
 
 interface SaveCriteriaParams {
   projectId: string;
@@ -84,72 +86,32 @@ export const saveCriteriaAndCalculate = async (
       },
     });
 
-    // Préparer les paramètres API (récupère tout depuis la DB)
-    const apiParams = await prepareApiParams(params.projectId);
+    // Récupérer les données brutes du projet depuis la DB
+    const projectData = await getProjectDataForAides(params.projectId);
 
-    // Appeler l'API Mes Aides Réno (Publicodes)
-    const apiResponse = await calculateAidesWithPublicodesAPI(apiParams);
+    // Dispatcher : Appeler la fonction de calcul appropriée selon le type de PAC
+    let result;
 
-    // Extraire les montants depuis la réponse
-    // Le field "gestes.chauffage.PAC.air-eau.montant" retourne le total avec détails
-    const gesteField = apiResponse["gestes.chauffage.PAC.air-eau.montant"];
+    switch (projectData.type_pac) {
+      case "Air/Eau":
+        result = await calculateAidesAirEau(projectData);
+        break;
 
-    if (!gesteField) {
-      throw new Error("Réponse API invalide : field montant manquant");
-    }
+      case "Air/Air":
+        result = await calculateAidesAirAir(projectData);
+        break;
 
-    // Le total est dans rawValue
-    const total_aides = gesteField.rawValue || 0;
+      case "Eau/Eau":
+        result = await calculateAidesGeothermique(projectData);
+        break;
 
-    // Les détails MPR et CEE sont dans le champ "details"
-    let ma_prime_renov = 0;
-    let cee = 0;
-
-    if (gesteField.details && Array.isArray(gesteField.details)) {
-      // Trouver MPR dans les détails
-      const mprDetail = gesteField.details.find((d: any) => d.MPR);
-      if (mprDetail?.MPR?.rawValue) {
-        ma_prime_renov = Math.round(mprDetail.MPR.rawValue);
-      }
-
-      // Trouver CEE ou Coup de pouce dans les détails
-      const ceeDetail = gesteField.details.find((d: any) => d.CEE);
-      if (ceeDetail?.CEE?.rawValue) {
-        cee = Math.round(ceeDetail.CEE.rawValue);
-      }
-
-      // Si pas de CEE, chercher Coup de pouce
-      if (cee === 0) {
-        const coupDePouceDetail = gesteField.details.find((d: any) => d["Coup de pouce"]);
-        if (coupDePouceDetail?.["Coup de pouce"]?.rawValue) {
-          cee = Math.round(coupDePouceDetail["Coup de pouce"].rawValue);
-        }
-      }
-    }
-
-    // Vérifier l'éligibilité
-    const eligible_ma_prime_renov = ma_prime_renov > 0;
-    const eligible_cee = cee > 0;
-
-    // Collecter les raisons d'inéligibilité depuis missingVariables
-    const raisons_ineligibilite: string[] = [];
-    if (gesteField.missingVariables && gesteField.missingVariables.length > 0) {
-      raisons_ineligibilite.push(
-        `Variables manquantes pour le calcul complet: ${gesteField.missingVariables.join(", ")}`
-      );
+      default:
+        throw new Error(`Type de PAC non supporté: ${projectData.type_pac}`);
     }
 
     return {
       success: true,
-      data: {
-        ma_prime_renov,
-        cee,
-        total_aides,
-        eligible_ma_prime_renov,
-        eligible_cee,
-        raisons_ineligibilite:
-          raisons_ineligibilite.length > 0 ? raisons_ineligibilite : undefined,
-      },
+      data: result,
     };
   } catch (error) {
     console.error("❌ Erreur lors du calcul des aides:", error);
