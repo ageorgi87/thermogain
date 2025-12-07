@@ -45,6 +45,7 @@ export const getProjectDataForAides = async (
       projetPac: {
         select: {
           type_pac: true,
+          cop_estime: true,
         },
       },
       couts: {
@@ -123,6 +124,7 @@ export const getProjectDataForAides = async (
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,
+    cop_estime: project.projetPac.cop_estime,
 
     // Coûts
     cout_pac: project.couts.cout_pac,

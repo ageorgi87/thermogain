@@ -8,6 +8,7 @@ import type {
 } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/types";
 import { convertAnneeConstruction } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/helpers/convertAnneeConstruction";
 import { extractAidesFromResponse } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/helpers/extractAidesFromResponse";
+import { getEtasCategory } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/helpers/getEtasCategory";
 
 /**
  * URL de l'API Mes Aides Réno (Beta.gouv) - Publicodes
@@ -21,7 +22,7 @@ const MES_AIDES_RENO_API_URL = "https://mesaidesreno.beta.gouv.fr/api/v1/";
  * Cette fonction :
  * 1. Convertit les données brutes du projet en paramètres API
  * 2. Construit l'URL API spécifique pour les PAC Air/Eau avec :
- *    - Paramètres CEE : usage "chauffage et eau chaude" + Etas "supérieur à 200%"
+ *    - Paramètres CEE : usage "chauffage et eau chaude" + catégorie Etas calculée depuis COP
  *    - Field de calcul : gestes.chauffage.PAC.air-eau.montant
  * 3. Appelle l'API et extrait les montants MPR + CEE
  *
@@ -73,7 +74,7 @@ export const calculateAidesAirEau = async (
 
       // SPÉCIFIQUE PAC AIR/EAU - Paramètres CEE
       [`${gesteKey}.CEE.usage`]: "'chauffage et eau chaude'",
-      [`${gesteKey}.CEE.Etas`]: "'supérieur à 200 %'",
+      [`${gesteKey}.CEE.Etas`]: getEtasCategory(projectData.cop_estime),
     };
 
     // Construire la query string

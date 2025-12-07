@@ -27,6 +27,7 @@ export interface ProjectDataForAides {
 
   // Projet PAC
   type_pac: string // Format ThermoGain: "Air/Eau", "Eau/Eau", "Air/Air"
+  cop_estime: number // COP nominal du fabricant (pour calcul Etas)
 
   // Coûts
   cout_pac: number

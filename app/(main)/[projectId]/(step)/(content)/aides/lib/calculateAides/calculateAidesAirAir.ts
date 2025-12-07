@@ -21,7 +21,7 @@ const MES_AIDES_RENO_API_URL = "https://mesaidesreno.beta.gouv.fr/api/v1/";
  * Cette fonction :
  * 1. Convertit les données brutes du projet en paramètres API
  * 2. Construit l'URL API spécifique pour les PAC Air/Air avec :
- *    - PAS de paramètres CEE.usage/Etas (contrairement aux PAC air-eau)
+ *    - Paramètre CEE.SCOP = COP estimé (contrairement aux PAC air-eau qui utilisent CEE.Etas)
  *    - Field de calcul : gestes.chauffage.PAC.air-air.montant
  * 3. Appelle l'API et extrait les montants MPR + CEE
  *
@@ -41,8 +41,6 @@ export const calculateAidesAirAir = async (
     const code_insee = await postalCodeToInsee(projectData.code_postal);
 
     // Construction des paramètres API pour PAC Air/Air
-    // NOTE: PAC Air/Air n'a PAS de paramètres CEE.usage/Etas additionnels
-    // (contrairement aux PAC air-eau qui ont des params CEE spécifiques)
     const apiParams: Record<string, string> = {
       // OBLIGATOIRE - Propriétaire
       "vous.propriétaire.statut": "'propriétaire'",
@@ -72,6 +70,9 @@ export const calculateAidesAirAir = async (
       // OBLIGATOIRE - CEE
       "CEE.projet.remplacement chaudière thermique":
         projectData.type_chauffage_actuel?.includes("chaudière") ? "oui" : "non",
+
+      // SPÉCIFIQUE PAC AIR/AIR - Paramètre CEE SCOP
+      "CEE.SCOP": projectData.cop_estime.toString(),
     };
 
     // Construire la query string
