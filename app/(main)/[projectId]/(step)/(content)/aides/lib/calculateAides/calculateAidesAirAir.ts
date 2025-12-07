@@ -72,7 +72,7 @@ export const calculateAidesAirAir = async (
         projectData.type_chauffage_actuel?.includes("chaudière") ? "oui" : "non",
 
       // SPÉCIFIQUE PAC AIR/AIR - Paramètre CEE SCOP
-      "CEE.SCOP": projectData.cop_estime.toString(),
+      [`${gesteKey}.CEE.SCOP`]: projectData.cop_estime.toString(),
     };
 
     // Construire la query string
