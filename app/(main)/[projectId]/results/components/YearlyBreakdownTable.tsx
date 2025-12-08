@@ -17,6 +17,8 @@ interface YearlyBreakdownTableProps {
   tauxInteret?: number
   dureeCreditMois?: number
   apportPersonnel?: number
+  paybackPeriod?: number | null
+  paybackYear?: number | null
 }
 
 export function YearlyBreakdownTable({
@@ -28,6 +30,8 @@ export function YearlyBreakdownTable({
   tauxInteret = 0,
   dureeCreditMois = 0,
   apportPersonnel = 0,
+  paybackPeriod = null,
+  paybackYear = null,
 }: YearlyBreakdownTableProps) {
   // Calcul de la mensualité si crédit
   const mensualiteCredit =
@@ -58,8 +62,11 @@ export function YearlyBreakdownTable({
     })
   })
 
-  // Trouver l'année de retour sur investissement (si elle existe)
-  const paybackYearIndex = yearlyDataWithCumulative.findIndex((year) => year.positionCumulee >= 0)
+  // Utiliser l'année de ROI calculée (depuis calculatePaybackPeriod)
+  // On ne recalcule pas ici pour éviter les incohérences
+  const paybackYearIndex = paybackYear
+    ? yearlyDataWithCumulative.findIndex((year) => year.year === paybackYear)
+    : -1
 
   // Calcul des totaux
   const totalCoutActuel = yearlyData.reduce((sum, year) => sum + year.coutActuel, 0)

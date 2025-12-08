@@ -151,6 +151,8 @@ export default async function ResultsPage({ params }: PageProps) {
         tauxInteret={project.financement?.taux_interet || undefined}
         dureeCreditMois={project.financement?.duree_credit_mois || undefined}
         apportPersonnel={project.financement?.apport_personnel || undefined}
+        paybackPeriod={results.paybackPeriod}
+        paybackYear={results.paybackYear}
       />
 
       {/* Cartes détaillées */}
