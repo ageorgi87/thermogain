@@ -1,17 +1,8 @@
 import { z } from "zod"
+import { TypeChauffageActuel } from "@/types/typeChauffageActuel"
 
 export const currentHeatingSchema = z.object({
-  type_chauffage: z.enum([
-    "Fioul",
-    "Gaz",
-    "GPL",
-    "Pellets",
-    "Bois",
-    "Electrique",
-    "PAC Air/Air",
-    "PAC Air/Eau",
-    "PAC Eau/Eau",
-  ], {
+  type_chauffage: z.nativeEnum(TypeChauffageActuel, {
     message: "Le type de chauffage est requis",
   }),
   age_installation: z
@@ -53,7 +44,7 @@ export const currentHeatingSchema = z.object({
   const type = data.type_chauffage
 
   // Fioul
-  if (type === "Fioul") {
+  if (type === TypeChauffageActuel.FIOUL) {
     if (data.conso_fioul_litres === undefined || data.conso_fioul_litres === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -71,7 +62,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // Gaz
-  if (type === "Gaz") {
+  if (type === TypeChauffageActuel.GAZ) {
     if (data.conso_gaz_kwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -96,7 +87,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // GPL
-  if (type === "GPL") {
+  if (type === TypeChauffageActuel.GPL) {
     if (data.conso_gpl_kg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -114,7 +105,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // Pellets
-  if (type === "Pellets") {
+  if (type === TypeChauffageActuel.PELLETS) {
     if (data.conso_pellets_kg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -132,7 +123,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // Bois
-  if (type === "Bois") {
+  if (type === TypeChauffageActuel.BOIS) {
     if (data.conso_bois_steres === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -150,7 +141,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // Electrique
-  if (type === "Electrique") {
+  if (type === TypeChauffageActuel.ELECTRIQUE) {
     if (data.conso_elec_kwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -168,7 +159,7 @@ export const currentHeatingSchema = z.object({
   }
 
   // PAC (Air/Air, Air/Eau, Eau/Eau) - tous ont les mêmes champs
-  if (type === "PAC Air/Air" || type === "PAC Air/Eau" || type === "PAC Eau/Eau") {
+  if (type === TypeChauffageActuel.PAC_AIR_AIR || type === TypeChauffageActuel.PAC_AIR_EAU || type === TypeChauffageActuel.PAC_EAU_EAU) {
     if (data.cop_actuel === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

@@ -18,6 +18,7 @@ import { HeatPumpProjectData } from "@/app/(main)/[projectId]/(step)/(content)/p
 import { getPuissanceSouscritePacRecommandee } from "../lib/getPuissanceSouscritePacRecommandee";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { PacType } from "@/types/pacType";
+import { TypeChauffageActuel } from "@/types/typeChauffageActuel";
 
 interface ProjetPacFieldsProps {
   formData: Partial<HeatPumpProjectData>;
@@ -94,10 +95,10 @@ export function ProjetPacFields({
   // Si le prix de l'électricité est déjà renseigné dans chauffage actuel ET que le type est électrique,
   // on masque le champ prix_elec_kwh
   const isElectricHeating =
-    typeChauffageActuel === "Electrique" ||
-    typeChauffageActuel === "PAC Air/Air" ||
-    typeChauffageActuel === "PAC Air/Eau" ||
-    typeChauffageActuel === "PAC Eau/Eau";
+    typeChauffageActuel === TypeChauffageActuel.ELECTRIQUE ||
+    typeChauffageActuel === TypeChauffageActuel.PAC_AIR_AIR ||
+    typeChauffageActuel === TypeChauffageActuel.PAC_AIR_EAU ||
+    typeChauffageActuel === TypeChauffageActuel.PAC_EAU_EAU;
   const shouldHideElectricityPrice =
     isElectricHeating && prixElecKwhActuel && prixElecKwhActuel > 0;
 
