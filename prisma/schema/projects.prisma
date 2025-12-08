@@ -15,6 +15,7 @@ model Project {
   // Relations to section tables (one-to-one relationships)
   logement        ProjectLogement?
   chauffageActuel ProjectChauffageActuel?
+  ecs             ProjectEcs? // DHW (Domestic Hot Water) - only if ecs_integrated = false
   projetPac       ProjectProjetPac?
   couts           ProjectCouts?
   aides           ProjectAides?

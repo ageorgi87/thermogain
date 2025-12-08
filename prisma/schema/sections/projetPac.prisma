@@ -37,6 +37,20 @@ model ProjectProjetPac {
   // Optional: for off-peak rates or other specific contracts
   prix_elec_pac Float?
 
+  // DHW (Domestic Hot Water) management with PAC
+  // Only applicable for water-based PACs (Air/Eau, Eau/Eau)
+  // null for Air/Air PACs
+  gestion_ecs String? // "Oui - PAC avec ECS intégrée" or "Non - Chauffage uniquement"
+
+  // DHW storage tank volume (liters)
+  // Only if gestion_ecs = "Oui - PAC avec ECS intégrée"
+  volume_ballon_ecs Int?
+
+  // COP for DHW production (automatically calculated: cop_estime × 0.85)
+  // Lower than heating COP due to higher water temperature (55-60°C vs 35-45°C)
+  // Only if gestion_ecs = "Oui - PAC avec ECS intégrée"
+  cop_ecs Float?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

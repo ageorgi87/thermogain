@@ -10,6 +10,10 @@ model ProjectChauffageActuel {
   age_installation  Int
   etat_installation String
 
+  // DHW (Domestic Hot Water) integration
+  // true = DHW integrated in heating system (mixed boiler), false = separate DHW system
+  ecs_integrated Boolean
+
   // Consumption data - conditional based on type_chauffage
   conso_fioul_litres Float?
   prix_fioul_litre   Float?
