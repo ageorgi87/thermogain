@@ -1,49 +1,65 @@
-"use server"
+"use server";
 
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { saveInformationsDataSchema, type SaveInformationsDataInput } from "./saveInformationsDataSchema"
-import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/refreshEnergyPricesIfNeeded"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import {
+  saveInformationsDataSchema,
+  type SaveInformationsDataInput,
+} from "./saveInformationsDataSchema";
+import { refreshEnergyPricesIfNeeded } from "@/app/(main)/[projectId]/lib/refreshEnergyPricesIfNeeded/refreshEnergyPricesIfNeeded";
 
 interface SaveInformationsDataParams {
-  projectId: string
-  data: SaveInformationsDataInput
+  projectId: string;
+  data: SaveInformationsDataInput;
 }
 
 export const saveInformationsData = async ({
   projectId,
   data,
 }: SaveInformationsDataParams) => {
-  const session = await auth()
+  const session = await auth();
 
   if (!session?.user?.id) {
-    throw new Error("Non autorisé")
+    throw new Error("Non autorisé");
   }
 
-  const validatedData = saveInformationsDataSchema.parse(data)
+  const validatedData = saveInformationsDataSchema.parse(data);
 
   // Check if project exists and belongs to user
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-  })
+  });
 
   if (!project || project.userId !== session.user.id) {
-    throw new Error("Projet non trouvé")
+    throw new Error("Projet non trouvé");
   }
 
   // Refresh energy prices if needed (< 31 days)
   // This ensures all subsequent steps have fresh energy data
-  await refreshEnergyPricesIfNeeded()
+  await refreshEnergyPricesIfNeeded();
 
   // Update project name and recipientEmails directly in Project table
-  const updatedProject = await prisma.project.update({
+  await prisma.project.update({
     where: { id: projectId },
     data: {
       name: validatedData.project_name,
       recipientEmails: validatedData.recipient_emails,
       currentStep: project.currentStep === 0 ? 1 : project.currentStep, // Move to step 1 if on step 0
     },
-  })
+  });
 
-  return updatedProject
-}
+  // Upsert ProjectProjetPac with type_pac and with_ecs_management
+  // Other fields will be filled in step 3 (projet-pac)
+  await prisma.projectProjetPac.upsert({
+    where: { projectId },
+    create: {
+      projectId,
+      type_pac: validatedData.type_pac,
+      with_ecs_management: validatedData.with_ecs_management,
+    },
+    update: {
+      type_pac: validatedData.type_pac,
+      with_ecs_management: validatedData.with_ecs_management,
+    },
+  });
+};

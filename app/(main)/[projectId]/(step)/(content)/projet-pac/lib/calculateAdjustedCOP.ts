@@ -1,5 +1,6 @@
 import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
+import { PacType } from "@/types/pacType";
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
@@ -89,7 +90,7 @@ export const calculateAdjustedCOP = (
 ): number => {
   // Les PAC Air/Air n'ont pas de circuit d'eau
   // Elles ne nécessitent pas d'ajustements température/émetteurs
-  const isAirToAir = typePac === "Air/Air";
+  const isAirToAir = typePac === PacType.AIR_AIR;
 
   // Facteur température (uniquement pour PAC hydrauliques)
   const facteurTemperature = isAirToAir

@@ -1,7 +1,8 @@
 import { z } from "zod"
+import { PacType } from "@/types/pacType"
 
 export const heatPumpProjectSchema = z.object({
-  type_pac: z.enum(["Air/Eau", "Eau/Eau", "Air/Air"], {
+  type_pac: z.nativeEnum(PacType, {
     message: "Le type de PAC est requis",
   }),
 
@@ -66,7 +67,7 @@ export const heatPumpProjectSchema = z.object({
   // Pour les PAC hydrauliques (Air/Eau et Eau/Eau), température et émetteurs sont REQUIS
   // Note: Cette validation n'est jamais exécutée si d'autres champs obligatoires sont invalides
   // La validation réelle de ces champs est gérée manuellement dans page.tsx
-  const isWaterBased = data.type_pac === "Air/Eau" || data.type_pac === "Eau/Eau"
+  const isWaterBased = data.type_pac === PacType.AIR_EAU || data.type_pac === PacType.EAU_EAU
 
   if (isWaterBased) {
     if (data.temperature_depart === undefined) {

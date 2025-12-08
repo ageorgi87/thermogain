@@ -12,6 +12,7 @@ import { getProjetPacData } from "@/app/(main)/[projectId]/(step)/(content)/proj
 import { getDefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getDefaultEnergyPrices";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
+import { PacType } from "@/types/pacType";
 
 export default function ProjetPacStepPage({
   params,
@@ -69,7 +70,7 @@ export default function ProjetPacStepPage({
     saveData: async ({ projectId, data }) => {
       // Manual validation for water-based PACs
       const typePac = data.type_pac;
-      if (typePac === "Air/Eau" || typePac === "Eau/Eau") {
+      if (typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU) {
         if (!data.temperature_depart) {
           throw new Error(
             "La température de départ est requise pour une PAC à eau"

@@ -40,6 +40,8 @@ export default function InformationsStepPage({
       return {
         project_name: data.name || "",
         recipient_emails: data.recipientEmails || [],
+        type_pac: data.typePac,
+        with_ecs_management: data.withEcsManagement,
       };
     },
     saveData: async ({ projectId, data }) => {

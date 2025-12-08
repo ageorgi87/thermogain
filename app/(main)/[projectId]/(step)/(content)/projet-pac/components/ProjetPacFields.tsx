@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { HeatPumpProjectData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/heatPumpProjectSchema";
 import { getPuissanceSouscritePacRecommandee } from "../lib/getPuissanceSouscritePacRecommandee";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
+import { PacType } from "@/types/pacType";
 
 interface ProjetPacFieldsProps {
   formData: Partial<HeatPumpProjectData>;
@@ -73,8 +74,8 @@ export function ProjetPacFields({
   typeChauffageActuel,
 }: ProjetPacFieldsProps) {
   const typePac = formData.type_pac;
-  const isWaterBased = typePac === "Air/Eau" || typePac === "Eau/Eau";
-  const isAirToAir = typePac === "Air/Air";
+  const isWaterBased = typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU;
+  const isAirToAir = typePac === PacType.AIR_AIR;
   const puissancePacKw = formData.puissance_pac_kw;
   const puissanceSouscriteActuelle = formData.puissance_souscrite_actuelle;
 
@@ -136,9 +137,9 @@ export function ProjetPacFields({
             <SelectValue placeholder="Sélectionnez le type de PAC" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Air/Eau">Air/Eau</SelectItem>
-            <SelectItem value="Eau/Eau">Eau/Eau</SelectItem>
-            <SelectItem value="Air/Air">Air/Air</SelectItem>
+            <SelectItem value={PacType.AIR_EAU}>Air/Eau</SelectItem>
+            <SelectItem value={PacType.EAU_EAU}>Eau/Eau</SelectItem>
+            <SelectItem value={PacType.AIR_AIR}>Air/Air</SelectItem>
           </SelectContent>
         </Select>
       </FormField>
