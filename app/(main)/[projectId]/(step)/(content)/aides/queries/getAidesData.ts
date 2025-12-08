@@ -20,10 +20,17 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
       userId: true,
       aides: {
         select: {
+          // Montants des aides
           ma_prime_renov: true,
           cee: true,
           autres_aides: true,
           total_aides: true,
+          // Critères d'éligibilité sauvegardés
+          type_logement: true,
+          surface_logement: true,
+          revenu_fiscal_reference: true,
+          residence_principale: true,
+          remplacement_complet: true,
         },
       },
     },

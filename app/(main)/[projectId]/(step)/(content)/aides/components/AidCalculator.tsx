@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -28,11 +28,21 @@ import {
 } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
 
+interface SavedCriteria {
+  type_logement?: string;
+  surface_logement?: number;
+  revenu_fiscal_reference?: number;
+  residence_principale?: boolean;
+  remplacement_complet?: boolean;
+}
+
 interface AidCalculatorProps {
   // ID du projet (nécessaire pour l'API)
   projectId: string;
   // Callback pour remplir les inputs
   onUseAmounts: (maPrimeRenov: number, cee: number) => void;
+  // Critères sauvegardés depuis la base de données
+  savedCriteria?: SavedCriteria;
 }
 
 interface AidResult {
@@ -47,6 +57,7 @@ interface AidResult {
 export const AidCalculator = ({
   projectId,
   onUseAmounts,
+  savedCriteria,
 }: AidCalculatorProps) => {
   const [open, setOpen] = useState(false);
   const [typeLogement, setTypeLogement] = useState<string>("");
@@ -59,6 +70,27 @@ export const AidCalculator = ({
   const [error, setError] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
+
+  // Charger les critères sauvegardés quand le drawer s'ouvre
+  useEffect(() => {
+    if (open && savedCriteria) {
+      if (savedCriteria.type_logement) {
+        setTypeLogement(savedCriteria.type_logement);
+      }
+      if (savedCriteria.surface_logement !== undefined) {
+        setSurfaceLogement(savedCriteria.surface_logement.toString());
+      }
+      if (savedCriteria.revenu_fiscal_reference !== undefined) {
+        setRevenuFiscal(savedCriteria.revenu_fiscal_reference.toString());
+      }
+      if (savedCriteria.residence_principale !== undefined) {
+        setResidencePrincipale(savedCriteria.residence_principale ? "oui" : "non");
+      }
+      if (savedCriteria.remplacement_complet !== undefined) {
+        setRemplacementComplet(savedCriteria.remplacement_complet ? "oui" : "non");
+      }
+    }
+  }, [open, savedCriteria]);
 
   const handleCalculate = async () => {
     setIsCalculating(true);

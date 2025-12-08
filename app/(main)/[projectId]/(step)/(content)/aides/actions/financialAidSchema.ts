@@ -4,6 +4,7 @@ import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement
 export const financialAidSchema = z.object({
   // Critères d'éligibilité (optionnels car renseignés dans le calculateur)
   type_logement: z.nativeEnum(TypeLogement).optional(),
+  surface_logement: z.number().min(0).optional(),
   revenu_fiscal_reference: z.number().min(0).optional(),
   residence_principale: z.boolean().optional(),
   remplacement_complet: z.boolean().optional(),
