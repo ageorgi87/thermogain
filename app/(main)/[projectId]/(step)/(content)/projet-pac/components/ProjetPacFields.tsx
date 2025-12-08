@@ -194,7 +194,7 @@ export function ProjetPacFields({
           <Input
             type="number"
             min="0"
-            placeholder="ex: 15"
+            placeholder="ex: 17"
             value={formData.duree_vie_pac ?? ""}
             onChange={handleNumberChange("duree_vie_pac")}
           />
