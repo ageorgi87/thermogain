@@ -22,7 +22,7 @@ export const createProject = async (data?: { name?: string }): Promise<Project> 
       },
     })
 
-    revalidatePath("/projects")
+    revalidatePath("/dashboard")
     return project
   } catch (error) {
     console.error("[createProject] Error:", error)

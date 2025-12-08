@@ -23,7 +23,7 @@ export const deleteProject = async (id: string): Promise<{ success: boolean }> =
       throw new Error("Projet non trouvé")
     }
 
-    revalidatePath("/projects")
+    revalidatePath("/dashboard")
     return { success: true }
   } catch (error) {
     console.error("[deleteProject] Error:", error)

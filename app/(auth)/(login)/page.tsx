@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ type Step = "email" | "login" | "register" | "verify-email";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,6 +39,13 @@ export default function LoginPage() {
   const [company, setCompany] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +82,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Mot de passe invalide");
       } else {
-        router.push("/projects");
+        router.push("/dashboard");
         router.refresh();
       }
     } catch (error) {
