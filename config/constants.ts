@@ -405,7 +405,29 @@ export const FORM_DEFAULTS = {
 } as const
 
 // ============================================================================
-// 10. MÉTADONNÉES DE MAINTENANCE
+// 10. ESTIMATION ECS (EAU CHAUDE SANITAIRE)
+// ============================================================================
+
+/**
+ * Paramètres pour l'estimation de consommation d'eau chaude sanitaire
+ *
+ * Source: ADEME - Guide de l'eau chaude sanitaire
+ * Utilisé dans: app/(main)/[projectId]/(step)/(content)/ecs-actuel/lib/estimateEcsConsumption.ts
+ * Dernière mise à jour: Décembre 2024
+ *
+ * L'ADEME estime qu'une personne consomme en moyenne 800 kWh/an pour l'eau chaude sanitaire.
+ * Cette valeur est utilisée pour estimer la consommation ECS si l'utilisateur ne la connaît pas.
+ */
+export const ECS_ESTIMATION = {
+  /**
+   * Consommation moyenne d'eau chaude sanitaire par personne et par an
+   * Source: ADEME - 800 kWh/personne/an
+   */
+  KWH_PER_PERSON_PER_YEAR: 800,
+} as const
+
+// ============================================================================
+// 11. MÉTADONNÉES DE MAINTENANCE
 // ============================================================================
 
 /**

@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import {
-  getTotalSteps,
-  getStepIndex,
-  getNextStepKey,
-  getPreviousStepKey,
-} from "@/lib/wizardStepsData";
+import { getTotalSteps, getStepIndex } from "@/lib/wizardStepsData";
 import { updateProjectStep } from "@/app/(main)/[projectId]/(step)/mutations/updateProjectStep";
 import { notFound } from "next/navigation";
+import {
+  getNextStep,
+  getPreviousStep,
+} from "@/app/(main)/[projectId]/(step)/lib/getConditionalNavigation";
 
 interface UseStepFormParams<T extends z.ZodType> {
   projectId: string;
@@ -90,7 +89,8 @@ export const useStepForm = <T extends z.ZodType>({
       await saveData({ projectId, data: result.data });
       await updateProjectStep(projectId, stepIndex + 2);
 
-      const nextStepKey = getNextStepKey(stepKey);
+      // Utiliser la navigation conditionnelle
+      const nextStepKey = await getNextStep(stepKey, projectId);
       if (nextStepKey) {
         router.push(`/${projectId}/${nextStepKey}`);
       } else {
@@ -107,8 +107,9 @@ export const useStepForm = <T extends z.ZodType>({
   };
 
   // Naviguer vers l'étape précédente
-  const handlePrevious = () => {
-    const previousStepKey = getPreviousStepKey(stepKey);
+  const handlePrevious = async () => {
+    // Utiliser la navigation conditionnelle
+    const previousStepKey = await getPreviousStep(stepKey, projectId);
     if (previousStepKey) {
       router.push(`/${projectId}/${previousStepKey}`);
     } else {
