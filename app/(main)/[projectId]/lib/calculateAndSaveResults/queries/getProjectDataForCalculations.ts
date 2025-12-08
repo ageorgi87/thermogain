@@ -79,20 +79,20 @@ export const getProjectDataForCalculations = async ({
     prix_elec_kwh: project.chauffageActuel.prix_elec_kwh ?? undefined,
     cop_actuel: project.chauffageActuel.cop_actuel ?? undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh ?? undefined,
-    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle,
+    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
     abonnement_gaz: project.chauffageActuel.abonnement_gaz ?? undefined,
     entretien_annuel: project.chauffageActuel.entretien_annuel,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,
-    puissance_pac_kw: project.projetPac.puissance_pac_kw,
-    cop_estime: project.projetPac.cop_estime,
-    cop_ajuste: project.projetPac.cop_ajuste, // COP réel ajusté stocké en DB
+    puissance_pac_kw: project.projetPac.puissance_pac_kw!,
+    cop_estime: project.projetPac.cop_estime!,
+    cop_ajuste: project.projetPac.cop_ajuste!, // COP réel ajusté stocké en DB
     temperature_depart: project.projetPac.temperature_depart ?? 45, // Valeur par défaut
     emetteurs: project.projetPac.emetteurs ?? "Radiateurs basse température", // Valeur par défaut
-    duree_vie_pac: project.projetPac.duree_vie_pac,
-    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac,
-    entretien_pac_annuel: project.projetPac.entretien_pac_annuel,
+    duree_vie_pac: project.projetPac.duree_vie_pac!,
+    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac!,
+    entretien_pac_annuel: project.projetPac.entretien_pac_annuel!,
     prix_elec_pac: project.projetPac.prix_elec_pac ?? undefined,
 
     // Code postal pour ajustement climatique

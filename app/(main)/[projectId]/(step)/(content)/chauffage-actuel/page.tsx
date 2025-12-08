@@ -13,6 +13,7 @@ import {
 import { getChauffageActuelData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/queries/getChauffageActuelData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
+import { PacType } from "@/types/pacType";
 
 export default function ChauffageActuelStepPage({
   params,
@@ -30,6 +31,9 @@ export default function ChauffageActuelStepPage({
     bois: 0,
     electricite: 0,
   });
+
+  // Determine if we should ask about ECS integration based on step 1 data
+  const [shouldAskEcsIntegrated, setShouldAskEcsIntegrated] = useState(false);
 
   const {
     formData,
@@ -52,6 +56,14 @@ export default function ChauffageActuelStepPage({
       ]);
 
       setDefaultPrices(prices);
+
+      // Check if we should ask about ECS integration
+      // Only if future PAC is water-based (Air/Eau or Eau/Eau) AND will manage DHW
+      const isWaterBasedPac =
+        data.pacInfo.typePac === PacType.AIR_EAU ||
+        data.pacInfo.typePac === PacType.EAU_EAU;
+      const pacWillManageDhw = data.pacInfo.withEcsManagement === true;
+      setShouldAskEcsIntegrated(isWaterBasedPac && pacWillManageDhw);
 
       if (data.chauffageActuel) {
         const {
@@ -117,6 +129,7 @@ export default function ChauffageActuelStepPage({
         onChange={handleChange}
         onNumberChange={handleNumberChange}
         defaultPrices={defaultPrices}
+        shouldAskEcsIntegrated={shouldAskEcsIntegrated}
       />
     </StepWrapper>
   );

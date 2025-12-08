@@ -41,6 +41,7 @@ interface ChauffageActuelFieldsProps {
     name: keyof CurrentHeatingData
   ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   defaultPrices?: DefaultEnergyPrices;
+  shouldAskEcsIntegrated: boolean;
 }
 
 export const ChauffageActuelFields = ({
@@ -49,6 +50,7 @@ export const ChauffageActuelFields = ({
   onChange,
   onNumberChange,
   defaultPrices,
+  shouldAskEcsIntegrated,
 }: ChauffageActuelFieldsProps) => {
   const typeChauffage = formData.type_chauffage;
 
@@ -125,6 +127,38 @@ export const ChauffageActuelFields = ({
           </Select>
         </FormField>
       </div>
+
+      {/* ECS Integration - Only if future PAC will manage DHW */}
+      {shouldAskEcsIntegrated && (
+        <FormField
+          label="Votre système de chauffage actuel gère-t-il l'eau chaude sanitaire ?"
+          required
+          error={errors.ecs_integrated}
+        >
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="ecs_integrated"
+                checked={formData.ecs_integrated === true}
+                onChange={() => onChange("ecs_integrated", true)}
+                className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+              />
+              <span className="text-sm">Oui</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="ecs_integrated"
+                checked={formData.ecs_integrated === false}
+                onChange={() => onChange("ecs_integrated", false)}
+                className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+              />
+              <span className="text-sm">Non</span>
+            </label>
+          </div>
+        </FormField>
+      )}
 
       {/* Consumption fields - conditional based on type_chauffage */}
       {typeChauffage === "Fioul" && (

@@ -10,10 +10,14 @@ interface GetChauffageActuelDataParams {
 
 interface GetChauffageActuelDataResult {
   chauffageActuel: ProjectChauffageActuel | null
+  pacInfo: {
+    typePac: string | null
+    withEcsManagement: boolean | null
+  }
 }
 
 /**
- * Récupère uniquement les données de chauffage actuel pour un projet
+ * Récupère les données de chauffage actuel et les infos PAC pour un projet
  * Query optimisée pour la page chauffage-actuel
  */
 export const getChauffageActuelData = async ({
@@ -31,6 +35,12 @@ export const getChauffageActuelData = async ({
     select: {
       userId: true,
       chauffageActuel: true,
+      projetPac: {
+        select: {
+          type_pac: true,
+          with_ecs_management: true,
+        },
+      },
     },
   })
 
@@ -44,5 +54,9 @@ export const getChauffageActuelData = async ({
 
   return {
     chauffageActuel: project.chauffageActuel,
+    pacInfo: {
+      typePac: project.projetPac?.type_pac || null,
+      withEcsManagement: project.projetPac?.with_ecs_management ?? null,
+    },
   }
 }

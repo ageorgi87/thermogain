@@ -21,6 +21,12 @@ export const currentHeatingSchema = z.object({
   etat_installation: z.enum(["Bon", "Moyen", "Mauvais"], {
     message: "L'état de l'installation est requis",
   }),
+
+  // DHW (Domestic Hot Water) integration
+  // true = DHW integrated in heating system (mixed boiler), false = separate DHW system
+  // Only asked if future PAC will manage DHW (from step 1: with_ecs_management = true)
+  ecs_integrated: z.boolean().optional(),
+
   entretien_annuel: z
     .number({ message: "Le coût d'entretien annuel est requis" })
     .min(0)

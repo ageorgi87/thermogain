@@ -121,30 +121,7 @@ export function ProjetPacFields({
 
   return (
     <div className="space-y-6">
-      {/* Section 1: Type de PAC */}
-      <FormField
-        label="Type de pompe à chaleur"
-        required
-        error={errors.type_pac}
-      >
-        <Select
-          onValueChange={(value) =>
-            onChange("type_pac", value as HeatPumpProjectData["type_pac"])
-          }
-          value={formData.type_pac}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez le type de PAC" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={PacType.AIR_EAU}>Air/Eau</SelectItem>
-            <SelectItem value={PacType.EAU_EAU}>Eau/Eau</SelectItem>
-            <SelectItem value={PacType.AIR_AIR}>Air/Air</SelectItem>
-          </SelectContent>
-        </Select>
-      </FormField>
-
-      {/* Section 2: Caractéristiques de la PAC */}
+      {/* Section 1: Caractéristiques de la PAC */}
       <div className="space-y-4 pt-2">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           Caractéristiques de la PAC

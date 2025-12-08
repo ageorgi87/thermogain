@@ -12,7 +12,8 @@ model ProjectChauffageActuel {
 
   // DHW (Domestic Hot Water) integration
   // true = DHW integrated in heating system (mixed boiler), false = separate DHW system
-  ecs_integrated Boolean
+  // Only relevant if future PAC will manage DHW (with_ecs_management = true)
+  ecs_integrated Boolean?
 
   // Consumption data - conditional based on type_chauffage
   conso_fioul_litres Float?
