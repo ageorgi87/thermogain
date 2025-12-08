@@ -20,6 +20,13 @@ export interface ProjectData {
   puissance_souscrite_actuelle?: number  // Puissance souscrite électrique actuelle (kVA)
   abonnement_gaz?: number                // Abonnement gaz annuel (€/an) - pour type_chauffage = "Gaz"
   entretien_annuel?: number              // Coût d'entretien annuel système actuel (€/an)
+  ecs_integrated?: boolean               // ECS intégrée au chauffage actuel ? (chaudière mixte)
+
+  // ECS séparé (si ecs_integrated = false) - Décembre 2024
+  type_ecs?: string                      // Type de système ECS ("Ballon électrique", "Thermodynamique", etc.)
+  conso_ecs_kwh?: number                 // Consommation ECS annuelle (kWh/an)
+  prix_ecs_kwh?: number                  // Prix énergie ECS (€/kWh)
+  entretien_ecs?: number                 // Entretien ECS annuel (€/an)
 
   // Projet PAC
   type_pac: string
@@ -34,6 +41,13 @@ export interface ProjectData {
   puissance_souscrite_pac?: number     // Puissance souscrite électrique pour PAC (kVA)
   entretien_pac_annuel?: number        // Coût d'entretien annuel PAC (€/an)
   prix_elec_pac?: number               // Prix électricité pour PAC (€/kWh), si différent du prix actuel
+
+  // Gestion ECS par la PAC (Décembre 2024)
+  with_ecs_management?: boolean        // La PAC gérera-t-elle l'ECS ?
+  cop_ecs?: number                     // COP PAC pour production ECS (≈ cop_estime × 0.85)
+
+  // Logement (pour estimation ECS) - Décembre 2024
+  nombre_occupants?: number            // Nombre d'occupants (pour estimation besoins ECS)
 
   // Code postal pour ajustement climatique COP
   code_postal?: string

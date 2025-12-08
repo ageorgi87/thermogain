@@ -412,7 +412,9 @@ export const FORM_DEFAULTS = {
  * Paramètres pour l'estimation de consommation d'eau chaude sanitaire
  *
  * Source: ADEME - Guide de l'eau chaude sanitaire
- * Utilisé dans: app/(main)/[projectId]/(step)/(content)/ecs-actuel/lib/estimateEcsConsumption.ts
+ * Utilisé dans:
+ * - app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/lib/estimateEcsConsumption.ts
+ * - app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts.ts
  * Dernière mise à jour: Décembre 2024
  *
  * L'ADEME estime qu'une personne consomme en moyenne 800 kWh/an pour l'eau chaude sanitaire.
@@ -424,6 +426,22 @@ export const ECS_ESTIMATION = {
    * Source: ADEME - 800 kWh/personne/an
    */
   KWH_PER_PERSON_PER_YEAR: 800,
+
+  /**
+   * Ratio de répartition chauffage/ECS pour système mixte (chaudière)
+   * Utilisé comme fallback si l'estimation ADEME dépasse la consommation totale
+   * Source: Valeurs typiques secteur résidentiel
+   */
+  HEATING_TO_TOTAL_RATIO: 0.8, // 80% chauffage
+  DHW_TO_TOTAL_RATIO: 0.2,     // 20% ECS
+
+  /**
+   * Facteur de réduction du COP pour production ECS
+   * Le COP ECS est inférieur au COP chauffage car température plus élevée (55-60°C vs 35-45°C)
+   * Source: Documentation technique PAC, études ADEME
+   * Valeur par défaut si cop_ecs non spécifié : cop_chauffage × 0.85
+   */
+  COP_REDUCTION_FACTOR: 0.85,
 } as const
 
 // ============================================================================

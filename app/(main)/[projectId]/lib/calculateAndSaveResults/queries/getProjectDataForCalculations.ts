@@ -36,6 +36,7 @@ export const getProjectDataForCalculations = async ({
     include: {
       logement: true,
       chauffageActuel: true,
+      ecs: true, // Données ECS séparé (si ecs_integrated = false)
       projetPac: true,
       couts: true,
       aides: true,
@@ -82,6 +83,13 @@ export const getProjectDataForCalculations = async ({
     puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
     abonnement_gaz: project.chauffageActuel.abonnement_gaz ?? undefined,
     entretien_annuel: project.chauffageActuel.entretien_annuel,
+    ecs_integrated: project.chauffageActuel.ecs_integrated ?? undefined,
+
+    // ECS séparé (si ecs_integrated = false)
+    type_ecs: project.ecs?.type_ecs ?? undefined,
+    conso_ecs_kwh: project.ecs?.conso_ecs_kwh ?? undefined,
+    prix_ecs_kwh: project.ecs?.prix_ecs_kwh ?? undefined,
+    entretien_ecs: project.ecs?.entretien_ecs ?? undefined,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,
@@ -94,6 +102,11 @@ export const getProjectDataForCalculations = async ({
     puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac!,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel!,
     prix_elec_pac: project.projetPac.prix_elec_pac ?? undefined,
+    with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
+    cop_ecs: project.projetPac.cop_ecs ?? undefined,
+
+    // Logement (pour estimation ECS)
+    nombre_occupants: project.logement.nombre_occupants ?? undefined,
 
     // Code postal pour ajustement climatique
     code_postal: project.logement.code_postal ?? undefined,

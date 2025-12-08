@@ -12,6 +12,7 @@ import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAn
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateMonthlyPayment";
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
+import { calculateEcsCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -60,10 +61,13 @@ export const calculateAllResults = async (
     EnergyType.ELECTRICITE
   );
 
-  // Coûts année 1 (inline)
+  // Calculer les coûts ECS (avant/après)
+  const ecsCosts = calculateEcsCosts(data);
+
+  // Coûts année 1 - Chauffage actuel
   const currentVariableCost = calculateCurrentVariableCost(data);
   const currentFixedCosts = calculateCurrentFixedCosts(data);
-  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total;
+  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + ecsCosts.currentEcsCost;
 
   // Consommation PAC (calculée UNE SEULE FOIS, inline)
   // Formule: Consommation PAC = Besoins énergétiques / COP ajusté
@@ -75,7 +79,7 @@ export const calculateAllResults = async (
   const pacVariableCost = consommationPacKwh * prixElec;
 
   const pacFixedCosts = calculatePacFixedCosts(data);
-  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total;
+  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total + ecsCosts.futureEcsCost;
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge
