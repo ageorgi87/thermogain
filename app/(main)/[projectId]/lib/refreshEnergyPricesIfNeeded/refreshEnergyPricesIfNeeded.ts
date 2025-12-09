@@ -11,7 +11,7 @@ import { API_ENERGY_TYPES } from "@/app/(main)/[projectId]/(step)/(content)/info
  *
  * Logique globale optimisée:
  * 1. Vérifie la date de dernière mise à jour GLOBALE (via electricite comme référence)
- * 2. Si obsolète (>31 jours) → Fetch TOUTES les 4 énergies en parallèle
+ * 2. Si obsolète (>1 jour) → Fetch TOUTES les 4 énergies en parallèle
  * 3. Met à jour TOUTES les 4 énergies ensemble
  *
  * IMPORTANT: La mise à jour est GLOBALE, pas par énergie individuelle.
@@ -36,7 +36,7 @@ export const refreshEnergyPricesIfNeeded = async (): Promise<void> => {
     where: { energyType: EnergyType.ELECTRICITE },
   });
 
-  // Vérifier si les données datent de moins de 31 jours
+  // Vérifier si les données datent de moins de 1 jour
   if (globalReference) {
     const now = new Date();
     const daysDiff = Math.floor(
@@ -44,7 +44,7 @@ export const refreshEnergyPricesIfNeeded = async (): Promise<void> => {
         (1000 * 60 * 60 * 24)
     );
 
-    if (daysDiff < 31) {
+    if (daysDiff < 1) {
       return;
     }
   }
