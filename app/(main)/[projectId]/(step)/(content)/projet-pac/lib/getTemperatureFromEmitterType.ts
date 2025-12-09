@@ -1,4 +1,5 @@
 import { EMITTER_WATER_TEMPERATURE } from "@/config/constants";
+import { EmitterType } from "@/types/emitterType";
 
 /**
  * Retourne la température de départ standard selon le type d'émetteur
@@ -11,21 +12,21 @@ import { EMITTER_WATER_TEMPERATURE } from "@/config/constants";
  * @param typeEmetteurs - Type d'émetteur de chaleur installé
  * @returns Température de départ en °C
  */
-export const getTemperatureFromEmitterType = (typeEmetteurs: string): number => {
+export const getTemperatureFromEmitterType = (typeEmetteurs: EmitterType): number => {
   switch (typeEmetteurs) {
-    case "Plancher chauffant":
+    case EmitterType.PLANCHER_CHAUFFANT:
       return EMITTER_WATER_TEMPERATURE.PLANCHER_CHAUFFANT;
 
-    case "Radiateurs basse température":
+    case EmitterType.RADIATEURS_BASSE_TEMP:
       return EMITTER_WATER_TEMPERATURE.RADIATEURS_BASSE_TEMP;
 
-    case "Ventilo-convecteurs":
+    case EmitterType.VENTILO_CONVECTEURS:
       return EMITTER_WATER_TEMPERATURE.VENTILO_CONVECTEURS;
 
-    case "Radiateurs moyenne température":
+    case EmitterType.RADIATEURS_MOYENNE_TEMP:
       return EMITTER_WATER_TEMPERATURE.RADIATEURS_MOYENNE_TEMP;
 
-    case "Radiateurs haute température":
+    case EmitterType.RADIATEURS_HAUTE_TEMP:
       return EMITTER_WATER_TEMPERATURE.RADIATEURS_HAUTE_TEMP;
 
     default:

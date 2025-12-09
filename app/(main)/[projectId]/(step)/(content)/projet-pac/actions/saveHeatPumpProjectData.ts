@@ -7,6 +7,7 @@ import {
   type HeatPumpProjectData,
 } from "./heatPumpProjectSchema";
 import { calculateAdjustedCOP } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/lib/calculateAdjustedCOP";
+import { EmitterType } from "@/types/emitterType";
 
 interface SaveHeatPumpProjectDataParams {
   projectId: string;
@@ -40,7 +41,7 @@ export const saveHeatPumpProjectData = async ({
   // La température de départ est automatiquement déduite du type d'émetteur
   const cop_ajuste = calculateAdjustedCOP(
     validatedData.cop_estime,
-    validatedData.emetteurs ?? "Radiateurs basse température",
+    validatedData.emetteurs ?? EmitterType.RADIATEURS_BASSE_TEMP,
     project.logement?.code_postal ?? undefined,
     validatedData.type_pac
   );

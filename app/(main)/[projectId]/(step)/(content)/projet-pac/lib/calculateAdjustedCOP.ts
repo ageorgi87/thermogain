@@ -1,6 +1,7 @@
 import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 import { PacType } from "@/types/pacType";
+import { EmitterType } from "@/types/emitterType";
 import { getTemperatureFromEmitterType } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/lib/getTemperatureFromEmitterType";
 
 /**
@@ -55,7 +56,7 @@ const getClimateAdjustment = (codePostal: string): number => {
  */
 export const calculateAdjustedCOP = (
   copFabricant: number,
-  typeEmetteurs: string,
+  typeEmetteurs: EmitterType,
   codePostal?: string,
   typePac?: string
 ): number => {

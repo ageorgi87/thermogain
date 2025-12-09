@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { PacType } from "@/types/pacType"
+import { EmitterType } from "@/types/emitterType"
 
 export const heatPumpProjectSchema = z.object({
   type_pac: z.nativeEnum(PacType, {
@@ -57,13 +58,7 @@ export const heatPumpProjectSchema = z.object({
 
   // Émetteurs - optionnel de base mais requis pour PAC hydrauliques
   // La température de départ est automatiquement déduite du type d'émetteur
-  emetteurs: z.enum([
-    "Radiateurs haute température",
-    "Radiateurs basse température",
-    "Radiateurs moyenne température",
-    "Plancher chauffant",
-    "Ventilo-convecteurs",
-  ]).optional(),
+  emetteurs: z.nativeEnum(EmitterType).optional(),
 }).superRefine((data, ctx) => {
   // Pour les PAC hydrauliques (Air/Eau et Eau/Eau), émetteurs est REQUIS
   const isWaterBased = data.type_pac === PacType.AIR_EAU || data.type_pac === PacType.EAU_EAU

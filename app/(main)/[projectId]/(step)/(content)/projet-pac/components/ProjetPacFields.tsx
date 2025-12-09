@@ -19,6 +19,7 @@ import { getPuissanceSouscritePacRecommandee } from "../lib/getPuissanceSouscrit
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { PacType } from "@/types/pacType";
 import { TypeChauffageActuel } from "@/types/typeChauffageActuel";
+import { EmitterType } from "@/types/emitterType";
 
 interface ProjetPacFieldsProps {
   formData: Partial<HeatPumpProjectData>;
@@ -105,8 +106,8 @@ export function ProjetPacFields({
 
   // Automatically set emetteurs to "Ventilo-convecteurs" for Air/Air PACs
   useEffect(() => {
-    if (isAirToAir && formData.emetteurs !== "Ventilo-convecteurs") {
-      onChange("emetteurs", "Ventilo-convecteurs");
+    if (isAirToAir && formData.emetteurs !== EmitterType.VENTILO_CONVECTEURS) {
+      onChange("emetteurs", EmitterType.VENTILO_CONVECTEURS);
     }
   }, [isAirToAir, formData.emetteurs, onChange]);
 
@@ -218,25 +219,26 @@ export function ProjetPacFields({
               onValueChange={(value) =>
                 onChange("emetteurs", value as HeatPumpProjectData["emetteurs"])
               }
-              value={formData.emetteurs}
+              value={formData.emetteurs ?? ""}
+              defaultValue=""
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type d'émetteurs" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Plancher chauffant">
+                <SelectItem value={EmitterType.PLANCHER_CHAUFFANT}>
                   Plancher chauffant (35°C)
                 </SelectItem>
-                <SelectItem value="Ventilo-convecteurs">
+                <SelectItem value={EmitterType.VENTILO_CONVECTEURS}>
                   Ventilo-convecteurs (45°C)
                 </SelectItem>
-                <SelectItem value="Radiateurs basse température">
+                <SelectItem value={EmitterType.RADIATEURS_BASSE_TEMP}>
                   Radiateurs basse température (45°C)
                 </SelectItem>
-                <SelectItem value="Radiateurs moyenne température">
+                <SelectItem value={EmitterType.RADIATEURS_MOYENNE_TEMP}>
                   Radiateurs moyenne température (55°C)
                 </SelectItem>
-                <SelectItem value="Radiateurs haute température">
+                <SelectItem value={EmitterType.RADIATEURS_HAUTE_TEMP}>
                   Radiateurs haute température (65°C)
                 </SelectItem>
               </SelectContent>
