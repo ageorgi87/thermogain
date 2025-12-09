@@ -47,7 +47,7 @@ export function ResultsHeader({
             />
           )}
 
-          <Link href={`/projects/${projectId}/${firstStepKey}`}>
+          <Link href={`/${projectId}/${firstStepKey}`}>
             <Button variant="outline" className="h-10">
               <Pencil className="mr-2 h-4 w-4" />
               Modifier le projet
