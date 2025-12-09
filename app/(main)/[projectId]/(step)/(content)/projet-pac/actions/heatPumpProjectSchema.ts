@@ -55,35 +55,25 @@ export const heatPumpProjectSchema = z.object({
     }, "Le prix ne peut pas avoir plus de 3 décimales")
     .optional(),
 
-  // Température et émetteurs - optionnels de base mais requis pour PAC hydrauliques
-  temperature_depart: z.number().min(30, "La température doit être d'au moins 30°C").max(80, "La température ne peut pas dépasser 80°C").optional(),
+  // Émetteurs - optionnel de base mais requis pour PAC hydrauliques
+  // La température de départ est automatiquement déduite du type d'émetteur
   emetteurs: z.enum([
     "Radiateurs haute température",
     "Radiateurs basse température",
+    "Radiateurs moyenne température",
     "Plancher chauffant",
     "Ventilo-convecteurs",
   ]).optional(),
 }).superRefine((data, ctx) => {
-  // Pour les PAC hydrauliques (Air/Eau et Eau/Eau), température et émetteurs sont REQUIS
-  // Note: Cette validation n'est jamais exécutée si d'autres champs obligatoires sont invalides
-  // La validation réelle de ces champs est gérée manuellement dans page.tsx
+  // Pour les PAC hydrauliques (Air/Eau et Eau/Eau), émetteurs est REQUIS
   const isWaterBased = data.type_pac === PacType.AIR_EAU || data.type_pac === PacType.EAU_EAU
 
-  if (isWaterBased) {
-    if (data.temperature_depart === undefined) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "La température de départ est requise pour les PAC hydrauliques",
-        path: ["temperature_depart"],
-      })
-    }
-    if (data.emetteurs === undefined) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Le type d'émetteurs est requis pour les PAC hydrauliques",
-        path: ["emetteurs"],
-      })
-    }
+  if (isWaterBased && data.emetteurs === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Le type d'émetteurs est requis pour les PAC hydrauliques",
+      path: ["emetteurs"],
+    })
   }
 })
 

@@ -96,8 +96,7 @@ export const getProjectDataForCalculations = async ({
     puissance_pac_kw: project.projetPac.puissance_pac_kw!,
     cop_estime: project.projetPac.cop_estime!,
     cop_ajuste: project.projetPac.cop_ajuste!, // COP réel ajusté stocké en DB
-    temperature_depart: project.projetPac.temperature_depart ?? 45, // Valeur par défaut
-    emetteurs: project.projetPac.emetteurs ?? "Radiateurs basse température", // Valeur par défaut
+    emetteurs: project.projetPac.emetteurs ?? "Radiateurs basse température", // Valeur par défaut (détermine auto la température)
     duree_vie_pac: project.projetPac.duree_vie_pac!,
     puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac!,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel!,

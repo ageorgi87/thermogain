@@ -204,7 +204,58 @@ export const HEAT_PUMP_COP = {
 } as const
 
 // ============================================================================
-// 6. DURÉE DE VIE DES ÉQUIPEMENTS
+// 6. TEMPÉRATURES DE DÉPART PAR TYPE D'ÉMETTEUR
+// ============================================================================
+
+/**
+ * Températures de départ standard selon le type d'émetteur
+ *
+ * Ces valeurs définissent la température de l'eau nécessaire pour chaque type
+ * d'émetteur de chaleur. Plus la température est élevée, plus le COP de la PAC
+ * diminue.
+ *
+ * Source: DTU 65.14, Guides ADEME, Normes fabricants PAC
+ * Utilisé dans: Calcul automatique du COP ajusté
+ * Dernière mise à jour: Décembre 2024
+ *
+ * IMPORTANT: Ces températures sont directement liées au facteur de dégradation
+ * du COP. C'est pourquoi on les déclare ici plutôt que de les laisser éparpillées.
+ */
+export const EMITTER_WATER_TEMPERATURE = {
+  /**
+   * Plancher chauffant: 35°C
+   * Optimal pour PAC - grande surface de diffusion permet basse température
+   */
+  PLANCHER_CHAUFFANT: 35,
+
+  /**
+   * Radiateurs basse température: 45°C
+   * Conçus pour PAC - dimensionnés pour fonctionner à basse température
+   */
+  RADIATEURS_BASSE_TEMP: 45,
+
+  /**
+   * Ventilo-convecteurs: 45°C
+   * Excellent échange thermique grâce à la ventilation forcée
+   */
+  VENTILO_CONVECTEURS: 45,
+
+  /**
+   * Radiateurs moyenne température: 55°C
+   * Compromis entre radiateurs BT et HT
+   */
+  RADIATEURS_MOYENNE_TEMP: 55,
+
+  /**
+   * Radiateurs haute température: 65°C
+   * Anciens radiateurs en fonte - petite surface nécessite haute température
+   * Non recommandé pour PAC (COP fortement dégradé)
+   */
+  RADIATEURS_HAUTE_TEMP: 65,
+} as const
+
+// ============================================================================
+// 7. DURÉE DE VIE DES ÉQUIPEMENTS
 // ============================================================================
 
 /**

@@ -32,9 +32,8 @@ export interface ProjectData {
   type_pac: string
   puissance_pac_kw: number
   cop_estime: number // COP nominal du fabricant
-  cop_ajuste: number // COP réel ajusté (température, émetteurs, climat)
-  temperature_depart: number
-  emetteurs: string
+  cop_ajuste: number // COP réel ajusté (émetteurs, climat)
+  emetteurs: string  // Type d'émetteurs (détermine automatiquement la température de départ)
   duree_vie_pac: number
 
   // Nouveaux champs PAC pour coûts fixes (Novembre 2024)

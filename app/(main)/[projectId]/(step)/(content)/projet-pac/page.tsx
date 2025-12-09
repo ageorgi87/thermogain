@@ -71,13 +71,8 @@ export default function ProjetPacStepPage({
       // Manual validation for water-based PACs
       const typePac = data.type_pac;
       if (typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU) {
-        if (!data.temperature_depart) {
-          throw new Error(
-            "La température de départ est requise pour une PAC à eau"
-          );
-        }
         if (!data.emetteurs || data.emetteurs.length === 0) {
-          throw new Error("Au moins un émetteur est requis pour une PAC à eau");
+          throw new Error("Le type d'émetteurs est requis pour une PAC hydraulique");
         }
       }
 

@@ -36,10 +36,10 @@ export const saveHeatPumpProjectData = async ({
     throw new Error("Projet non trouvé");
   }
 
-  // Calculer le COP ajusté selon température, émetteurs, et zone climatique
+  // Calculer le COP ajusté selon émetteurs et zone climatique
+  // La température de départ est automatiquement déduite du type d'émetteur
   const cop_ajuste = calculateAdjustedCOP(
     validatedData.cop_estime,
-    validatedData.temperature_depart ?? 45,
     validatedData.emetteurs ?? "Radiateurs basse température",
     project.logement?.code_postal ?? undefined,
     validatedData.type_pac

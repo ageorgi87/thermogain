@@ -39,7 +39,6 @@ export const getProjetPacData = async ({ projectId }: GetProjetPacDataParams) =>
     puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac ?? undefined,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel ?? undefined,
     prix_elec_pac: project.projetPac.prix_elec_pac ?? undefined,
-    temperature_depart: project.projetPac.temperature_depart ?? undefined,
     emetteurs: project.projetPac.emetteurs as HeatPumpProjectData["emetteurs"] ?? undefined,
   } : null
 

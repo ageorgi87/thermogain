@@ -1,6 +1,7 @@
 import { getClimateInfoFromPostalCode } from "@/app/(main)/[projectId]/lib/getClimateData/getClimateInfoFromPostalCode";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 import { PacType } from "@/types/pacType";
+import { getTemperatureFromEmitterType } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/lib/getTemperatureFromEmitterType";
 
 /**
  * Calcule le coefficient d'ajustement selon la température de départ
@@ -25,39 +26,6 @@ const getTemperatureAdjustment = (temperatureDepart: number): number => {
   return 0.65; // Radiateurs haute température
 };
 
-/**
- * Calcule le coefficient d'ajustement selon le type d'émetteurs
- * Certains émetteurs nécessitent des températures plus élevées
- *
- * ⚠️ Ne s'applique QUE aux PAC avec circuit d'eau (Air/Eau, Eau/Eau)
- * Les PAC Air/Air diffusent directement l'air donc ce facteur = 1.0
- *
- * Référence : DTU 65.14 et guides ADEME
- */
-const getEmitterAdjustment = (typeEmetteurs: string): number => {
-  switch (typeEmetteurs) {
-    case "Plancher chauffant":
-      // Optimal : température de départ 35°C
-      return 1.0;
-
-    case "Radiateurs basse température":
-      // Bon : température de départ 45°C
-      return 0.9;
-
-    case "Ventilo-convecteurs":
-      // Très bon : excellent échange thermique
-      return 0.95;
-
-    case "Radiateurs haute température":
-      // Difficile : température de départ 60-65°C
-      // COP fortement dégradé
-      return 0.7;
-
-    default:
-      // Valeur conservatrice par défaut
-      return 0.85;
-  }
-};
 
 /**
  * Calcule le coefficient d'ajustement du COP selon la zone climatique
@@ -74,16 +42,19 @@ const getClimateAdjustment = (codePostal: string): number => {
 /**
  * Calcule le COP réel ajusté selon tous les facteurs
  *
+ * Basé sur recherche ADEME (décembre 2024) :
+ * - La température de l'eau impacte directement le COP
+ * - Le type d'émetteur détermine cette température
+ * - Pas de double pénalité (température + émetteur)
+ *
  * @param copFabricant - COP nominal du fabricant (conditions 7°C/-35°C)
- * @param temperatureDepart - Température de départ eau chauffage (°C) - ignoré pour Air/Air
- * @param typeEmetteurs - Type d'émetteurs de chaleur - ignoré pour Air/Air
+ * @param typeEmetteurs - Type d'émetteurs de chaleur (détermine automatiquement la température)
  * @param codePostal - Code postal pour ajustement climatique (optionnel)
  * @param typePac - Type de PAC (Air/Eau, Eau/Eau, Air/Air) - détermine les ajustements applicables
  * @returns COP ajusté réel
  */
 export const calculateAdjustedCOP = (
   copFabricant: number,
-  temperatureDepart: number,
   typeEmetteurs: string,
   codePostal?: string,
   typePac?: string
@@ -93,14 +64,11 @@ export const calculateAdjustedCOP = (
   const isAirToAir = typePac === PacType.AIR_AIR;
 
   // Facteur température (uniquement pour PAC hydrauliques)
+  // La température est automatiquement déduite du type d'émetteur
+  // C'est le SEUL facteur lié aux émetteurs (pas de double pénalité)
   const facteurTemperature = isAirToAir
     ? 1.0
-    : getTemperatureAdjustment(temperatureDepart);
-
-  // Facteur émetteurs (uniquement pour PAC hydrauliques)
-  const facteurEmetteurs = isAirToAir
-    ? 1.0
-    : getEmitterAdjustment(typeEmetteurs);
+    : getTemperatureAdjustment(getTemperatureFromEmitterType(typeEmetteurs));
 
   // Facteur climatique (s'applique à TOUS les types de PAC)
   let facteurClimatique = 1.0;
@@ -108,9 +76,9 @@ export const calculateAdjustedCOP = (
     facteurClimatique = getClimateAdjustment(codePostal);
   }
 
-  // COP ajusté = COP fabricant × tous les facteurs applicables
-  const copAjuste =
-    copFabricant * facteurTemperature * facteurEmetteurs * facteurClimatique;
+  // COP ajusté = COP nominal × température × climat
+  // Note : Pas de facteur émetteur séparé pour éviter la double pénalité
+  const copAjuste = copFabricant * facteurTemperature * facteurClimatique;
 
   // Arrondir à 2 décimales
   return roundToDecimals(copAjuste, 2);

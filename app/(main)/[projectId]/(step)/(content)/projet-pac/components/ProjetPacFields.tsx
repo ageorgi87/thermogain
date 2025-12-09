@@ -75,7 +75,8 @@ export function ProjetPacFields({
   typeChauffageActuel,
 }: ProjetPacFieldsProps) {
   const typePac = formData.type_pac;
-  const isWaterBased = typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU;
+  const isWaterBased =
+    typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU;
   const isAirToAir = typePac === PacType.AIR_AIR;
   const puissancePacKw = formData.puissance_pac_kw;
   const puissanceSouscriteActuelle = formData.puissance_souscrite_actuelle;
@@ -208,55 +209,39 @@ export function ProjetPacFields({
             Configuration du système
           </h3>
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              label="Température de départ (°C)"
-              required
-              error={errors.temperature_depart}
+          <FormField
+            label="Type d'émetteurs"
+            required
+            error={errors.emetteurs}
+          >
+            <Select
+              onValueChange={(value) =>
+                onChange("emetteurs", value as HeatPumpProjectData["emetteurs"])
+              }
+              value={formData.emetteurs}
             >
-              <Input
-                type="number"
-                min="0"
-                placeholder="ex: 45"
-                value={formData.temperature_depart ?? ""}
-                onChange={handleNumberChange("temperature_depart")}
-              />
-            </FormField>
-
-            <FormField
-              label="Type d'émetteurs"
-              required
-              error={errors.emetteurs}
-            >
-              <Select
-                onValueChange={(value) =>
-                  onChange(
-                    "emetteurs",
-                    value as HeatPumpProjectData["emetteurs"]
-                  )
-                }
-                value={formData.emetteurs}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le type d'émetteurs" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Radiateurs haute température">
-                    Radiateurs haute température
-                  </SelectItem>
-                  <SelectItem value="Radiateurs basse température">
-                    Radiateurs basse température
-                  </SelectItem>
-                  <SelectItem value="Plancher chauffant">
-                    Plancher chauffant
-                  </SelectItem>
-                  <SelectItem value="Ventilo-convecteurs">
-                    Ventilo-convecteurs
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </FormField>
-          </div>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez le type d'émetteurs" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Plancher chauffant">
+                  Plancher chauffant (35°C)
+                </SelectItem>
+                <SelectItem value="Ventilo-convecteurs">
+                  Ventilo-convecteurs (45°C)
+                </SelectItem>
+                <SelectItem value="Radiateurs basse température">
+                  Radiateurs basse température (45°C)
+                </SelectItem>
+                <SelectItem value="Radiateurs moyenne température">
+                  Radiateurs moyenne température (55°C)
+                </SelectItem>
+                <SelectItem value="Radiateurs haute température">
+                  Radiateurs haute température (65°C)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
       )}
 
