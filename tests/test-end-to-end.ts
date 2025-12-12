@@ -1,0 +1,428 @@
+/**
+ * Script de test end-to-end : crée des projets réalistes et vérifie les résultats
+ */
+
+import { prisma } from '@/lib/prisma'
+import { calculateAndSaveResults } from '../app/(main)/[projectId]/lib/calculateAndSaveResults/calculateAndSaveResults'
+
+// Créer un utilisateur de test
+const createTestUser = async () => {
+  const testEmail = `test-e2e-${Date.now()}@thermogain.test`
+
+  const user = await prisma.user.upsert({
+    where: { email: testEmail },
+    update: {},
+    create: {
+      email: testEmail,
+      password: 'test-password-hash',
+      firstName: 'Test',
+      lastName: 'E2E',
+      company: 'ThermoGain Test Suite',
+      phone: '0600000000',
+      siret: '12345678900001',
+      emailVerified: new Date(),
+    },
+  })
+
+  console.log(`✅ Utilisateur de test créé: ${user.email}`)
+  return user
+}
+
+// Scénario 1: Maison fioul - Cas favorable
+const createScenario1 = async (userId: string) => {
+  console.log(`\n📋 Scénario 1 : Maison fioul 150m² - ROI favorable`)
+
+  const project = await prisma.project.create({
+    data: {
+      name: "Test E2E - Maison fioul 150m²",
+      userId,
+      currentStep: 8, // Étape results
+      completed: true,
+
+      logement: {
+        create: {
+          code_postal: "75001",
+          annee_construction: 1990,
+          surface_habitable: 150,
+          nombre_occupants: 4,
+          qualite_isolation: "moyenne",
+          altitude: 100,
+        }
+      },
+
+      chauffageActuel: {
+        create: {
+          type_chauffage: "Fioul",
+          conso_fioul_litres: 1800, // ~18 000 kWh
+          prix_fioul_litre: 1.50,
+          puissance_souscrite_actuelle: 6,
+          entretien_annuel: 150,
+          type_emetteur: "radiateurs",
+          temperature_depart: 75,
+        }
+      },
+
+      ecs: {
+        create: {
+          type_production_ecs: "ballon_electrique",
+          nombre_douches: 2,
+          nombre_bains: 1,
+        }
+      },
+
+      projetPac: {
+        create: {
+          type_pac: "Air/Eau",
+          puissance_pac: 12,
+          cop_constructeur: 3.5,
+          cop_ajuste: 3.2, // Zone froide
+          type_emetteur_projet: "radiateurs_basse_temperature",
+          temperature_depart_projet: 55,
+          duree_vie_pac: 17,
+          prix_elec_kwh: 0.2516,
+          prix_elec_pac: 0.2276, // Heures creuses
+          puissance_souscrite_pac: 9,
+          entretien_pac_annuel: 200,
+          with_ecs_management: true,
+        }
+      },
+
+      couts: {
+        create: {
+          cout_pac: 15000,
+          cout_installation: 4000,
+          cout_travaux_chauffage: 3000,
+          cout_total: 22000,
+        }
+      },
+
+      aides: {
+        create: {
+          ma_prime_renov: 5000,
+          cee: 3000,
+          total_aides: 8000,
+        }
+      },
+
+      financement: {
+        create: {
+          mode_financement: "MIXTE",
+          apport_personnel: 4000,
+          montant_credit: 10000,
+          taux_interet: 3.0,
+          duree_credit_mois: 84, // 7 ans
+        }
+      },
+    },
+  })
+
+  console.log(`   Projet créé: ${project.id}`)
+
+  // Calculer les résultats
+  await calculateAndSaveResults(project.id)
+
+  // Récupérer les résultats
+  const results = await prisma.project.findUnique({
+    where: { id: project.id },
+    include: { results: true },
+  })
+
+  if (!results?.results) {
+    console.log(`   ❌ Pas de résultats calculés`)
+    return null
+  }
+
+  const r = results.results
+  console.log(`\n   💰 Économies annuelles: ${r.economies_annuelles.toLocaleString('fr-FR')} €`)
+  console.log(`   📊 ROI: ${r.payback_period?.toFixed(1) ?? 'N/A'} ans`)
+  console.log(`   💵 Bénéfice net 17 ans: ${r.net_benefit_lifetime.toLocaleString('fr-FR')} €`)
+
+  // Validation
+  const isValid =
+    r.economies_annuelles >= 1200 && r.economies_annuelles <= 2000 &&
+    r.payback_period !== null && r.payback_period >= 5 && r.payback_period <= 10
+
+  console.log(`\n   ${isValid ? '✅' : '❌'} Validation: ${isValid ? 'PASS' : 'FAIL'}`)
+  console.log(`      Attendu: Économies 1200-2000€, ROI 5-10 ans`)
+
+  return { projectId: project.id, isValid, results: r }
+}
+
+// Scénario 2: Appartement gaz - Cas limite
+const createScenario2 = async (userId: string) => {
+  console.log(`\n📋 Scénario 2 : Appartement gaz 70m² - ROI limite`)
+
+  const project = await prisma.project.create({
+    data: {
+      name: "Test E2E - Appartement gaz 70m²",
+      userId,
+      currentStep: 8,
+      completed: true,
+
+      logement: {
+        create: {
+          code_postal: "06000", // Nice
+          annee_construction: 2015,
+          surface_habitable: 70,
+          nombre_occupants: 2,
+          qualite_isolation: "bonne",
+          altitude: 20,
+        }
+      },
+
+      chauffageActuel: {
+        create: {
+          type_chauffage: "Gaz",
+          conso_gaz_kwh: 4500,
+          prix_gaz_kwh: 0.10,
+          abonnement_gaz: 120,
+          puissance_souscrite_actuelle: 3,
+          entretien_annuel: 100,
+          type_emetteur: "radiateurs",
+          temperature_depart: 60,
+        }
+      },
+
+      ecs: {
+        create: {
+          type_production_ecs: "chauffe_eau_gaz",
+          nombre_douches: 1,
+          nombre_bains: 0,
+        }
+      },
+
+      projetPac: {
+        create: {
+          type_pac: "Air/Eau",
+          puissance_pac: 5,
+          cop_constructeur: 4.5,
+          cop_ajuste: 4.5, // Climat méditerranéen
+          type_emetteur_projet: "radiateurs_basse_temperature",
+          temperature_depart_projet: 45,
+          duree_vie_pac: 17,
+          prix_elec_kwh: 0.2516,
+          prix_elec_pac: 0.2276,
+          puissance_souscrite_pac: 6,
+          entretien_pac_annuel: 180,
+          with_ecs_management: true,
+        }
+      },
+
+      couts: {
+        create: {
+          cout_pac: 8000,
+          cout_installation: 2000,
+          cout_travaux_chauffage: 1500,
+          cout_total: 11500,
+        }
+      },
+
+      aides: {
+        create: {
+          ma_prime_renov: 1500,
+          cee: 1000,
+          total_aides: 2500,
+        }
+      },
+
+      financement: {
+        create: {
+          mode_financement: "COMPTANT",
+          apport_personnel: 9000,
+        }
+      },
+    },
+  })
+
+  console.log(`   Projet créé: ${project.id}`)
+
+  await calculateAndSaveResults(project.id)
+
+  const results = await prisma.project.findUnique({
+    where: { id: project.id },
+    include: { results: true },
+  })
+
+  if (!results?.results) {
+    console.log(`   ❌ Pas de résultats calculés`)
+    return null
+  }
+
+  const r = results.results
+  console.log(`\n   💰 Économies annuelles: ${r.economies_annuelles.toLocaleString('fr-FR')} €`)
+  console.log(`   📊 ROI: ${r.payback_period?.toFixed(1) ?? 'N/A'} ans`)
+  console.log(`   💵 Bénéfice net 17 ans: ${r.net_benefit_lifetime.toLocaleString('fr-FR')} €`)
+
+  // Validation - ROI limite attendu (15-25 ans)
+  const isValid =
+    r.economies_annuelles >= 200 && r.economies_annuelles <= 500 &&
+    r.payback_period !== null && r.payback_period >= 15 && r.payback_period <= 30
+
+  console.log(`\n   ${isValid ? '✅' : '⚠️ '} Validation: ${isValid ? 'PASS' : 'LIMITE (normal)'}`)
+  console.log(`      Attendu: Économies 200-500€, ROI 15-30 ans (cas limite)`)
+
+  return { projectId: project.id, isValid, results: r }
+}
+
+// Scénario 3: Maison propane - Excellent ROI
+const createScenario3 = async (userId: string) => {
+  console.log(`\n📋 Scénario 3 : Maison propane 200m² - Excellent ROI`)
+
+  const project = await prisma.project.create({
+    data: {
+      name: "Test E2E - Maison propane 200m²",
+      userId,
+      currentStep: 8,
+      completed: true,
+
+      logement: {
+        create: {
+          code_postal: "68000", // Alsace
+          annee_construction: 1985,
+          surface_habitable: 200,
+          nombre_occupants: 5,
+          qualite_isolation: "mauvaise",
+          altitude: 200,
+        }
+      },
+
+      chauffageActuel: {
+        create: {
+          type_chauffage: "GPL",
+          conso_gpl_kg: 2400, // ~32 000 kWh (13.3 kWh/kg)
+          prix_gpl_kg: 2.00,
+          puissance_souscrite_actuelle: 6,
+          entretien_annuel: 200,
+          type_emetteur: "radiateurs",
+          temperature_depart: 75,
+        }
+      },
+
+      ecs: {
+        create: {
+          type_production_ecs: "ballon_gaz",
+          nombre_douches: 3,
+          nombre_bains: 1,
+        }
+      },
+
+      projetPac: {
+        create: {
+          type_pac: "Air/Eau",
+          puissance_pac: 18,
+          cop_constructeur: 3.2,
+          cop_ajuste: 3.0, // Grande puissance + climat froid
+          type_emetteur_projet: "radiateurs_basse_temperature",
+          temperature_depart_projet: 55,
+          duree_vie_pac: 17,
+          prix_elec_kwh: 0.2516,
+          prix_elec_pac: 0.2276,
+          puissance_souscrite_pac: 12,
+          entretien_pac_annuel: 250,
+          with_ecs_management: true,
+        }
+      },
+
+      couts: {
+        create: {
+          cout_pac: 18000,
+          cout_installation: 5000,
+          cout_travaux_chauffage: 4000,
+          cout_total: 27000,
+        }
+      },
+
+      aides: {
+        create: {
+          ma_prime_renov: 6000,
+          cee: 4000,
+          total_aides: 10000,
+        }
+      },
+
+      financement: {
+        create: {
+          mode_financement: "CREDIT",
+          montant_credit: 17000,
+          taux_interet: 3.5,
+          duree_credit_mois: 120, // 10 ans
+        }
+      },
+    },
+  })
+
+  console.log(`   Projet créé: ${project.id}`)
+
+  await calculateAndSaveResults(project.id)
+
+  const results = await prisma.project.findUnique({
+    where: { id: project.id },
+    include: { results: true },
+  })
+
+  if (!results?.results) {
+    console.log(`   ❌ Pas de résultats calculés`)
+    return null
+  }
+
+  const r = results.results
+  console.log(`\n   💰 Économies annuelles: ${r.economies_annuelles.toLocaleString('fr-FR')} €`)
+  console.log(`   📊 ROI: ${r.payback_period?.toFixed(1) ?? 'N/A'} ans`)
+  console.log(`   💵 Bénéfice net 17 ans: ${r.net_benefit_lifetime.toLocaleString('fr-FR')} €`)
+
+  // Validation - Excellent ROI attendu (4-8 ans)
+  const isValid =
+    r.economies_annuelles >= 2000 && r.economies_annuelles <= 3500 &&
+    r.payback_period !== null && r.payback_period >= 4 && r.payback_period <= 8
+
+  console.log(`\n   ${isValid ? '✅' : '❌'} Validation: ${isValid ? 'PASS' : 'FAIL'}`)
+  console.log(`      Attendu: Économies 2000-3500€, ROI 4-8 ans (excellent)`)
+
+  return { projectId: project.id, isValid, results: r }
+}
+
+// Main test runner
+const runTests = async () => {
+  console.log(`\n${'='.repeat(80)}`)
+  console.log(`🧪 Tests End-to-End ThermoGain`)
+  console.log(`${'='.repeat(80)}\n`)
+
+  try {
+    const user = await createTestUser()
+
+    const results = [
+      await createScenario1(user.id),
+      await createScenario2(user.id),
+      await createScenario3(user.id),
+    ]
+
+    console.log(`\n${'='.repeat(80)}`)
+    console.log(`📊 RÉSUMÉ`)
+    console.log(`${'='.repeat(80)}\n`)
+
+    const validCount = results.filter(r => r?.isValid).length
+    console.log(`✅ Tests réussis: ${validCount}/${results.length}`)
+    console.log(`❌ Tests échoués: ${results.length - validCount}/${results.length}`)
+
+    if (validCount === results.length) {
+      console.log(`\n🎉 Tous les tests sont passés avec succès!\n`)
+    } else {
+      console.log(`\n⚠️  Certains tests ont échoué. Vérifier les résultats ci-dessus.\n`)
+    }
+
+    console.log(`${'='.repeat(80)}\n`)
+
+    // Cleanup: supprimer l'utilisateur de test et ses projets
+    console.log(`🧹 Nettoyage...`)
+    await prisma.user.delete({ where: { id: user.id } })
+    console.log(`✅ Utilisateur de test supprimé\n`)
+
+  } catch (error) {
+    console.error(`\n❌ Erreur fatale:`, error)
+    process.exit(1)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+runTests()

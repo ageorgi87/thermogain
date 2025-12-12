@@ -4,6 +4,7 @@ import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateCurrentFixedCosts";
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePacFixedCosts";
+import { calculateEcsCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts";
 import { ENERGY_ANALYSIS_PARAMS } from "@/config/constants";
 
 interface CalculateYearlyCostProjectionsParams {
@@ -91,6 +92,9 @@ export const calculateYearlyCostProjections = async ({
   const currentFixedCosts = calculateCurrentFixedCosts(data);
   const pacFixedCosts = calculatePacFixedCosts(data);
 
+  // Calculer les coûts ECS UNE SEULE FOIS (année 1)
+  const ecsCosts = calculateEcsCosts(data);
+
   // Coûts variables année 1 (pour évolution)
   const currentVariableCostYear1 = calculateCurrentVariableCost(data);
   // Prix élec PAC: vient de data.prix_elec_pac (mappé depuis projetPac.prix_elec_pac ou projetPac.prix_elec_kwh)
@@ -111,7 +115,8 @@ export const calculateYearlyCostProjections = async ({
     const coutActuelAbonnementElec = currentFixedCosts.abonnementElec * currentEvolutionFactors[i];
     const coutActuelAbonnementGaz = currentFixedCosts.abonnementGaz * currentEvolutionFactors[i];
     const coutActuelEntretien = currentFixedCosts.entretien * inflationFactors[i];
-    const coutActuel = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien;
+    const coutActuelEcs = ecsCosts.currentEcsCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
+    const coutActuel = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien + coutActuelEcs;
 
     // PAC
     // Variables + Abonnement électricité → évolution énergétique (électricité)
@@ -119,7 +124,8 @@ export const calculateYearlyCostProjections = async ({
     const coutPacVariable = pacVariableCostYear1 * pacEvolutionFactors[i];
     const coutPacAbonnement = pacFixedCosts.abonnementElec * pacEvolutionFactors[i];
     const coutPacEntretien = pacFixedCosts.entretien * inflationFactors[i];
-    const coutPac = coutPacVariable + coutPacAbonnement + coutPacEntretien;
+    const coutPacEcs = ecsCosts.futureEcsCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
+    const coutPac = coutPacVariable + coutPacAbonnement + coutPacEntretien + coutPacEcs;
 
     const economie = coutActuel - coutPac;
     economiesCumulees += economie;
