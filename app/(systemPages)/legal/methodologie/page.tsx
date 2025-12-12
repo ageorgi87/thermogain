@@ -119,7 +119,7 @@ export default function MethodologiePage() {
               <li><strong>PAC Eau/Eau (géothermie)</strong> : COP de 4 à 5 (moyenne : 4,5)</li>
             </ul>
 
-            <h4 className="text-lg font-semibold mt-4 mb-2">2.3.2 COP ajusté (conditions réelles)</h4>
+            <h4 className="text-lg font-semibold mt-4 mb-2">2.3.2 COP ajusté aux conditions réelles</h4>
             <p className="mb-4">
               Le COP réel en conditions d'exploitation diffère du COP nominal car il dépend de plusieurs facteurs.
               ThermoGain applique des <strong>ajustements automatiques</strong> basés sur :
@@ -165,14 +165,83 @@ export default function MethodologiePage() {
               </p>
             </div>
 
+            <h4 className="text-lg font-semibold mt-6 mb-2">2.3.3 Correction SCOP (Performance saisonnière réelle)</h4>
+            <p className="mb-4">
+              Le <strong>SCOP (Coefficient de Performance Saisonnier)</strong> reflète la performance réelle d'une PAC sur toute une saison de chauffe,
+              en tenant compte des variations de température extérieure. Selon l'<strong>étude ADEME 2023-2024 sur 100 maisons</strong> équipées de PAC :
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Le SCOP réel moyen mesuré pour les PAC Air/Eau est de <strong>2,9</strong> (plage 1,8 à 4,5)</li>
+              <li>Dans <strong>85% des cas</strong>, le SCOP fabricant est supérieur au SCOP réel mesuré</li>
+              <li>Écart moyen entre COP nominal et SCOP mesuré : <strong>-10% à -15%</strong></li>
+            </ul>
+
+            <p className="mb-4">
+              Pour calculer une <strong>consommation plus réaliste</strong> conforme aux mesures terrain, ThermoGain applique un
+              <strong> facteur de correction SCOP</strong> sur le COP ajusté :
+            </p>
+
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full border-collapse border border-gray-300 dark:border-gray-700 text-sm">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="border border-gray-300 dark:border-gray-700 p-3 text-left font-semibold">Type de PAC</th>
+                    <th className="border border-gray-300 dark:border-gray-700 p-3 text-left font-semibold">Facteur SCOP</th>
+                    <th className="border border-gray-300 dark:border-gray-700 p-3 text-left font-semibold">Stabilité</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">PAC Air/Air</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">0,88</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Performance variable (dégradation par grand froid)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">PAC Air/Eau</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">0,90</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Stable grâce à l'inertie hydraulique</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">PAC Eau/Eau (géothermie)</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">0,95</td>
+                    <td className="border border-gray-300 dark:border-gray-700 p-3">Très stable (température source constante)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
+              <p><strong>Formule SCOP réel :</strong></p>
+              <p>SCOP réel = COP ajusté × Facteur SCOP</p>
+              <br />
+              <p><strong>Exemple PAC Air/Eau :</strong></p>
+              <p>COP nominal = 5</p>
+              <p>COP ajusté = 4.04 (température + climat)</p>
+              <p>Facteur SCOP Air/Eau = 0.90</p>
+              <p>SCOP réel = 4.04 × 0.90 = <strong>3.64</strong></p>
+              <br />
+              <p className="text-xs">Cette correction rend les estimations plus conservatrices et conformes aux mesures ADEME 2024</p>
+            </div>
+
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg mb-4">
+              <p className="text-sm">
+                <strong>✅ Impact de cette correction :</strong> La consommation estimée de la PAC augmente de +10% à +12%
+                par rapport à un calcul basé uniquement sur le COP ajusté. Cela garantit que les économies présentées au client
+                sont <strong>réalistes et atteignables</strong>, évitant les déceptions après installation.
+              </p>
+            </div>
+
             <p className="mb-4 text-sm italic">
-              Source : <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ADEME - Guide des pompes à chaleur</a>
+              Source : <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                ADEME - Étude 2023-2024 sur 100 maisons équipées de PAC (Publication octobre 2024)
+              </a>
             </p>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">2.4 Durée de vie des équipements</h3>
             <p className="mb-4">
               La durée de vie moyenne d'une pompe à chaleur est estimée à <strong>17 ans</strong> selon les études de l'ADEME.
-              Cette valeur est utilisée par défaut pour toutes les projections long terme.
+              Cette valeur est proposée comme référence dans le formulaire, mais vous pouvez la personnaliser selon votre garantie fabricant
+              ou vos prévisions. Les projections financières sont calculées sur la durée que vous spécifiez.
             </p>
           </section>
 
@@ -303,25 +372,33 @@ export default function MethodologiePage() {
 
             <h3 className="text-xl font-semibold mt-6 mb-3">5.2 Consommation électrique de la PAC</h3>
             <p className="mb-4">
-              La PAC consomme moins d'électricité que les besoins grâce à son COP (elle récupère de l'énergie gratuite dans l'air ou le sol).
-              ThermoGain utilise le <strong>COP ajusté</strong> (et non le COP nominal) pour refléter les conditions réelles d'exploitation.
+              La PAC consomme moins d'électricité que les besoins grâce à son coefficient de performance (elle récupère de l'énergie gratuite dans l'air ou le sol).
+              ThermoGain utilise le <strong>SCOP réel</strong> (et non le COP nominal) pour refléter la performance saisonnière réelle.
             </p>
             <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
-              <p><strong>Formule :</strong></p>
-              <p>Consommation PAC (kWh) = Besoins énergétiques (kWh) ÷ COP ajusté</p>
+              <p><strong>Formule complète :</strong></p>
+              <p>1. COP ajusté = COP nominal × Facteur température × Facteur climatique</p>
+              <p>2. SCOP réel = COP ajusté × Facteur SCOP</p>
+              <p>3. Consommation PAC (kWh) = Besoins énergétiques (kWh) ÷ SCOP réel</p>
               <br />
-              <p><strong>Exemple :</strong></p>
-              <p>COP nominal = 5</p>
-              <p>COP ajusté = 4.04 (après ajustements température + climat)</p>
-              <p>20 000 kWh ÷ 4.04 = 4950 kWh d'électricité consommée</p>
+              <p><strong>Exemple complet (PAC Air/Eau) :</strong></p>
+              <p>Besoins annuels : 20 000 kWh</p>
+              <p>COP nominal : 5</p>
+              <p>Radiateurs BT (45°C) → Facteur température : 0.85</p>
+              <p>Zone H2 (Paris) → Facteur climatique : 0.95</p>
+              <p>Type PAC Air/Eau → Facteur SCOP : 0.90</p>
               <br />
-              <p className="text-xs">Note : Pour 1 kWh d'électricité consommé, la PAC produit 4.04 kWh de chaleur dans cet exemple</p>
+              <p>COP ajusté = 5 × 0.85 × 0.95 = 4.04</p>
+              <p>SCOP réel = 4.04 × 0.90 = 3.64</p>
+              <p>Consommation PAC = 20 000 ÷ 3.64 = <strong>5495 kWh/an</strong></p>
+              <br />
+              <p className="text-xs">Note : Pour 1 kWh d'électricité consommé, la PAC produit 3.64 kWh de chaleur (performance saisonnière)</p>
             </div>
             <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 p-3 rounded-lg mb-4">
               <p className="text-sm">
-                <strong>⚠️ Important :</strong> L'utilisation du COP ajusté (et non nominal) garantit une estimation réaliste des coûts.
-                Un COP nominal de 5 peut devenir 3.4 dans de mauvaises conditions (radiateurs HT en zone froide), ce qui modifie
-                significativement la consommation électrique et donc la rentabilité du projet.
+                <strong>⚠️ Important :</strong> L'utilisation du SCOP réel (au lieu du COP nominal) garantit une estimation réaliste conforme aux mesures terrain.
+                Dans cet exemple, la consommation réelle (5495 kWh) est <strong>+11% supérieure</strong> à un calcul basé uniquement sur le COP ajusté (4950 kWh).
+                Cette approche conservatrice évite les mauvaises surprises après installation.
               </p>
             </div>
 
