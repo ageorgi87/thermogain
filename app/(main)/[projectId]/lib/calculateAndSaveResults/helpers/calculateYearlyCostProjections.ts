@@ -4,6 +4,7 @@ import type { EnergyEvolutionModel } from "@/types/energy";
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateCurrentFixedCosts";
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePacFixedCosts";
+import { ENERGY_ANALYSIS_PARAMS } from "@/config/constants";
 
 interface CalculateYearlyCostProjectionsParams {
   data: ProjectData;
@@ -60,6 +61,21 @@ const preCalculateEvolutionFactors = (
   return factors;
 };
 
+/**
+ * Pré-calcule les facteurs d'inflation cumulés pour toutes les années
+ * Appliqué aux coûts d'entretien (inflation générale, pas évolution énergétique)
+ */
+const preCalculateInflationFactors = (years: number): number[] => {
+  const factors: number[] = [1]; // Année 0: pas d'inflation
+  const inflationRate = ENERGY_ANALYSIS_PARAMS.INFLATION_BASELINE; // 2% par an
+
+  for (let i = 1; i < years; i++) {
+    factors.push(factors[i - 1] * (1 + inflationRate / 100));
+  }
+
+  return factors;
+};
+
 export const calculateYearlyCostProjections = async ({
   data,
   years,
@@ -71,24 +87,39 @@ export const calculateYearlyCostProjections = async ({
   let economiesCumulees = 0;
   const currentYear = new Date().getFullYear();
 
-  // Calculer les coûts fixes UNE SEULE FOIS (constants sur toute la période)
+  // Calculer les coûts fixes UNE SEULE FOIS (année 1)
   const currentFixedCosts = calculateCurrentFixedCosts(data);
   const pacFixedCosts = calculatePacFixedCosts(data);
 
   // Coûts variables année 1 (pour évolution)
   const currentVariableCostYear1 = calculateCurrentVariableCost(data);
-  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  // Prix élec PAC: vient de data.prix_elec_pac (mappé depuis projetPac.prix_elec_pac ou projetPac.prix_elec_kwh)
+  // Fallback sur modèle énergétique si vraiment absent (ne devrait jamais arriver)
+  const prixElec = data.prix_elec_pac || pacEnergyModel.currentPrice || 0;
   const pacVariableCostYear1 = pacConsumptionKwh * prixElec;
 
   // PRÉ-CALCULER tous les facteurs d'évolution UNE SEULE FOIS
-  // Au lieu de recalculer 136 fois par modèle = 272 fois total
   const currentEvolutionFactors = preCalculateEvolutionFactors(years, currentEnergyModel);
   const pacEvolutionFactors = preCalculateEvolutionFactors(years, pacEnergyModel);
+  const inflationFactors = preCalculateInflationFactors(years);
 
   for (let i = 0; i < years; i++) {
-    // Appliquer le facteur d'évolution pré-calculé (lookup O(1) au lieu de calcul O(n))
-    const coutActuel = currentVariableCostYear1 * currentEvolutionFactors[i] + currentFixedCosts.total;
-    const coutPac = pacVariableCostYear1 * pacEvolutionFactors[i] + pacFixedCosts.total;
+    // CHAUFFAGE ACTUEL
+    // Variables + Abonnements → évolution énergétique (selon type d'énergie)
+    // Entretien → inflation générale (2%)
+    const coutActuelVariable = currentVariableCostYear1 * currentEvolutionFactors[i];
+    const coutActuelAbonnementElec = currentFixedCosts.abonnementElec * currentEvolutionFactors[i];
+    const coutActuelAbonnementGaz = currentFixedCosts.abonnementGaz * currentEvolutionFactors[i];
+    const coutActuelEntretien = currentFixedCosts.entretien * inflationFactors[i];
+    const coutActuel = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien;
+
+    // PAC
+    // Variables + Abonnement électricité → évolution énergétique (électricité)
+    // Entretien PAC → inflation générale (2%)
+    const coutPacVariable = pacVariableCostYear1 * pacEvolutionFactors[i];
+    const coutPacAbonnement = pacFixedCosts.abonnementElec * pacEvolutionFactors[i];
+    const coutPacEntretien = pacFixedCosts.entretien * inflationFactors[i];
+    const coutPac = coutPacVariable + coutPacAbonnement + coutPacEntretien;
 
     const economie = coutActuel - coutPac;
     economiesCumulees += economie;

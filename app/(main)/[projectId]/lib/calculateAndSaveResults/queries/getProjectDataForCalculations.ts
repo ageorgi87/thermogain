@@ -100,7 +100,8 @@ export const getProjectDataForCalculations = async ({
     duree_vie_pac: project.projetPac.duree_vie_pac!,
     puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac!,
     entretien_pac_annuel: project.projetPac.entretien_pac_annuel!,
-    prix_elec_pac: project.projetPac.prix_elec_pac ?? undefined,
+    // Prix élec PAC: priorité à prix_elec_pac (tarif spécifique), sinon prix_elec_kwh (tarif standard)
+    prix_elec_pac: project.projetPac.prix_elec_pac ?? project.projetPac.prix_elec_kwh ?? undefined,
     with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
     cop_ecs: project.projetPac.cop_ecs ?? undefined,
 
