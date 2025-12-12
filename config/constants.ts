@@ -496,62 +496,16 @@ export const ECS_ESTIMATION = {
 } as const
 
 // ============================================================================
-// 11. FACTEURS DE CORRECTION COP → SCOP RÉEL
-// ============================================================================
-
-/**
- * Facteurs de correction pour convertir le COP ajusté en SCOP réel
- *
- * Source : Étude ADEME 2023-2024 sur 100 maisons équipées de PAC
- * Publication : Octobre 2024
- *
- * Résultats clés :
- * - SCOP réel PAC Air/Eau : 2.9 en moyenne (plage 1.8-4.5)
- * - SCOP fabricant supérieur aux valeurs mesurées dans 85% des cas
- * - Écart moyen COP nominal vs SCOP mesuré : -10 à -15%
- *
- * Ces facteurs permettent de calculer une consommation plus réaliste
- * en appliquant un coefficient conservateur basé sur les performances
- * mesurées en conditions réelles (et non en laboratoire).
- *
- * Utilisation : SCOP réel = COP ajusté × Facteur de correction
- *
- * Dernière mise à jour : Décembre 2024
- */
-export const SCOP_ADJUSTMENT_FACTORS: Record<string, number> = {
-  /**
-   * PAC Air/Air : Facteur 0.88
-   * Performance la plus variable selon conditions extérieures
-   * Dégradation importante par grand froid
-   */
-  "Air/Air": 0.88,
-
-  /**
-   * PAC Air/Eau : Facteur 0.90
-   * Légèrement plus stable grâce à l'inertie du circuit hydraulique
-   * Correspond au SCOP moyen mesuré par l'ADEME (2.9 pour COP nominal ~3.2)
-   */
-  "Air/Eau": 0.90,
-
-  /**
-   * PAC Eau/Eau (Géothermie) : Facteur 0.95
-   * Performance la plus stable (température source constante)
-   * Écart minimal entre COP et SCOP
-   */
-  "Eau/Eau": 0.95,
-}
-
-// ============================================================================
-// 12. MÉTADONNÉES DE MAINTENANCE
+// 11. MÉTADONNÉES DE MAINTENANCE
 // ============================================================================
 
 /**
  * Informations pour la maintenance de ce fichier
  */
 export const CONSTANTS_METADATA = {
-  LAST_FULL_AUDIT: '2024-12-12',
-  NEXT_REVIEW_RECOMMENDED: '2025-06-01',
-  VERSION: '1.1.0',
+  LAST_FULL_AUDIT: '2025-11-29',
+  NEXT_REVIEW_RECOMMENDED: '2026-03-01',
+  VERSION: '1.0.0',
 
   /** Sources officielles à vérifier périodiquement */
   SOURCES: {
@@ -567,7 +521,6 @@ export const CONSTANTS_METADATA = {
     MAINTENANCE_COSTS: 'Annuel (inflation)',
     COP_VALUES: 'Bi-annuel (évolution technologies)',
     MEAN_REVERSION: 'Annuel (recalibrage modèle)',
-    SCOP_ADJUSTMENT: 'Annuel (nouvelles études ADEME)',
   },
 } as const
 

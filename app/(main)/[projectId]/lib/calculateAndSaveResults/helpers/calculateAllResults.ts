@@ -13,7 +13,6 @@ import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateA
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 import { calculateEcsCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts";
-import { SCOP_ADJUSTMENT_FACTORS } from "@/config/constants";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -71,15 +70,9 @@ export const calculateAllResults = async (
   const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + ecsCosts.currentEcsCost;
 
   // Consommation PAC (calculée UNE SEULE FOIS, inline)
-  // Formule: Consommation PAC = Besoins énergétiques / SCOP réel
-  // SCOP réel = COP ajusté × Facteur de correction ADEME (0.88-0.95 selon type)
+  // Formule: Consommation PAC = Besoins énergétiques / COP ajusté
   const currentConsumptionKwh = getCurrentConsumptionKwh(data, true);
-
-  // Appliquer le facteur de correction SCOP selon le type de PAC (ADEME 2024)
-  const scopAdjustmentFactor = SCOP_ADJUSTMENT_FACTORS[data.type_pac];
-  const scopReel = data.cop_ajuste * scopAdjustmentFactor;
-
-  const consommationPacKwh = currentConsumptionKwh / scopReel;
+  const consommationPacKwh = currentConsumptionKwh / data.cop_ajuste;
 
   // Coût variable PAC (inline pour éviter de recalculer la consommation)
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
