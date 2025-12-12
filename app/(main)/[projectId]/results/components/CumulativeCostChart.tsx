@@ -38,7 +38,7 @@ export function CumulativeCostChart({
   const investissementReel = investmentCost
 
   // Calculer les coûts cumulés
-  const chartData = data.map((year, index) => {
+  let chartData = data.map((year, index) => {
     // Coût cumulé avec chauffage actuel (pas d'investissement initial)
     const coutCumuleActuel = data.slice(0, index + 1).reduce((sum, y) => sum + y.coutActuel, 0)
 
@@ -53,10 +53,43 @@ export function CumulativeCostChart({
     }
   })
 
-  // Calculer l'année exacte du break-even avec la fraction
-  // pour placer la ligne verticale exactement au croisement des courbes
-  const currentYear = new Date().getFullYear()
-  const breakEvenYear = paybackPeriod ? currentYear + paybackPeriod : paybackYear
+  // Formater la période en "X années et Y mois"
+  const formatPaybackPeriod = (period: number): string => {
+    const years = Math.floor(period)
+    const months = Math.round((period - years) * 12)
+    return months === 0
+      ? `${years} an${years > 1 ? 's' : ''}`
+      : `${years} an${years > 1 ? 's' : ''} et ${months} mois`
+  }
+
+  // Calculer le point exact de croisement des courbes et insérer un point interpolé
+  let breakEvenYear = paybackYear
+
+  for (let i = 0; i < chartData.length - 1; i++) {
+    const current = chartData[i]
+    const next = chartData[i + 1]
+
+    // Le croisement se produit si PAC passe de plus cher à moins cher
+    if (current.coutCumulePac >= current.coutCumuleActuel &&
+        next.coutCumulePac <= next.coutCumuleActuel) {
+
+      // Interpolation linéaire pour trouver l'année exacte
+      const gap = current.coutCumulePac - current.coutCumuleActuel
+      const diffActuel = next.coutCumuleActuel - current.coutCumuleActuel
+      const diffPac = next.coutCumulePac - current.coutCumulePac
+      const fraction = gap / (diffActuel - diffPac)
+
+      breakEvenYear = current.year + fraction
+
+      // Insérer le point interpolé pour positionner la ligne ROI exactement au croisement
+      chartData.splice(i + 1, 0, {
+        year: breakEvenYear,
+        coutCumuleActuel: Math.round(current.coutCumuleActuel + diffActuel * fraction),
+        coutCumulePac: Math.round(current.coutCumulePac + diffPac * fraction),
+      })
+      break
+    }
+  }
 
   // Description selon le mode de financement
   const getFinancementDescription = () => {
@@ -116,6 +149,12 @@ export function CumulativeCostChart({
               <ChartTooltip
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null
+
+                  const year = payload[0].payload.year
+                  const currentYear = new Date().getFullYear()
+                  const yearsFromNow = year - currentYear
+                  const displayYear = Math.round(year)
+
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="grid gap-2">
@@ -124,8 +163,13 @@ export function CumulativeCostChart({
                             Année
                           </span>
                           <span className="font-bold text-muted-foreground">
-                            {payload[0].payload.year}
+                            {displayYear}
                           </span>
+                          {yearsFromNow > 0 && (
+                            <span className="text-[0.65rem] text-muted-foreground">
+                              {formatPaybackPeriod(yearsFromNow)}
+                            </span>
+                          )}
                         </div>
                         {payload.map((entry: any, index: number) => (
                           <div key={index} className="flex flex-col">
@@ -144,7 +188,7 @@ export function CumulativeCostChart({
               />
 
               {/* Ligne verticale au point de croisement */}
-              {breakEvenYear && paybackYear && (
+              {breakEvenYear && paybackPeriod && (
                 <ReferenceLine
                   x={breakEvenYear}
                   stroke="#22c55e"
@@ -152,7 +196,7 @@ export function CumulativeCostChart({
                   strokeWidth={2}
                 >
                   <Label
-                    value={`ROI: ${paybackYear}`}
+                    value={`ROI: ${formatPaybackPeriod(paybackPeriod)}`}
                     position="top"
                     fill="#22c55e"
                     fontSize={12}
