@@ -168,6 +168,7 @@ export default async function ResultsPage({ params }: PageProps) {
           modeFinancement={project.financement?.mode_financement || undefined}
           mensualite={results.mensualiteCredit}
           dureeCreditMois={project.financement?.duree_credit_mois || undefined}
+          apportPersonnel={project.financement?.apport_personnel || undefined}
         />
         <ProfitabilityCard
           paybackPeriod={results.paybackPeriod}

@@ -205,7 +205,7 @@ export const calculateAllResults = async (
   let coutTotalCredit: number | undefined;
 
   if (
-    data.mode_financement === FinancingMode.CREDIT &&
+    (data.mode_financement === FinancingMode.CREDIT || data.mode_financement === FinancingMode.MIXTE) &&
     data.montant_credit &&
     data.taux_interet &&
     data.duree_credit_mois

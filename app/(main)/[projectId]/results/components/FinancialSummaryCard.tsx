@@ -8,6 +8,7 @@ interface FinancialSummaryCardProps {
   modeFinancement?: string
   mensualite?: number
   dureeCreditMois?: number
+  apportPersonnel?: number
 }
 
 export function FinancialSummaryCard({
@@ -15,8 +16,10 @@ export function FinancialSummaryCard({
   modeFinancement,
   mensualite,
   dureeCreditMois,
+  apportPersonnel,
 }: FinancialSummaryCardProps) {
   const isCredit = modeFinancement && modeFinancement !== FinancingMode.COMPTANT && mensualite
+  const isMixte = modeFinancement === FinancingMode.MIXTE && mensualite && apportPersonnel
 
   return (
     <Card>
@@ -38,12 +41,25 @@ export function FinancialSummaryCard({
           </div>
         </div>
 
-        {/* Mensualité si crédit */}
+        {/* Apport personnel si mixte */}
+        {isMixte && (
+          <>
+            <Separator />
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Apport personnel</span>
+              <span className="font-medium">{apportPersonnel!.toLocaleString("fr-FR")} €</span>
+            </div>
+          </>
+        )}
+
+        {/* Mensualité si crédit ou mixte */}
         {isCredit && (
           <>
             <Separator />
             <div className="bg-brand-orange-50 dark:bg-brand-orange-950 rounded-lg p-4">
-              <p className="text-sm text-muted-foreground mb-1">Mensualité sur Crédit</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                {isMixte ? "Mensualité crédit" : "Mensualité sur Crédit"}
+              </p>
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-3xl font-bold text-brand-orange-600">
                   {mensualite.toLocaleString("fr-FR")} €
