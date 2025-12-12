@@ -165,8 +165,83 @@ export default function MethodologiePage() {
               </p>
             </div>
 
+            <h4 className="text-lg font-semibold mt-6 mb-2">2.3.3 Pourquoi pas de correction SCOP supplémentaire ?</h4>
+
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-4">
+              <p className="mb-3">
+                <strong>📊 Position de ThermoGain :</strong> Nous utilisons le <strong>COP ajusté</strong> directement dans nos calculs de consommation,
+                SANS appliquer de facteur de correction SCOP supplémentaire. Cette approche est justifiée par plusieurs raisons.
+              </p>
+            </div>
+
+            <p className="mb-3">
+              <strong>1. Étude ADEME 2023-2024 : Performance moyenne incluant installations médiocres</strong>
+            </p>
+            <p className="mb-4">
+              L'étude ADEME sur 100 maisons équipées de PAC a mesuré un <strong>SCOP réel moyen de 2,9 pour les PAC Air/Eau</strong>.
+              Cependant, cette moyenne INCLUT :
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Des PAC <strong>surdimensionnées</strong> (cycles courts → dégradation du SCOP)</li>
+              <li>Des <strong>régulations de qualité variable</strong> (systèmes mal paramétrés)</li>
+              <li>Des <strong>installations faites par des professionnels de niveaux variés</strong></li>
+              <li>Des réglages non optimisés après installation</li>
+            </ul>
+
+            <p className="mb-3">
+              <strong>2. ThermoGain s'adresse à des professionnels RGE qualifiés</strong>
+            </p>
+            <p className="mb-4">
+              Cet outil est conçu pour des <strong>chauffagistes certifiés RGE</strong> qui :
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>✅ Savent <strong>dimensionner correctement</strong> une PAC (pas de surdimensionnement)</li>
+              <li>✅ Maîtrisent l'<strong>installation selon les règles de l'art</strong></li>
+              <li>✅ Paramètrent finement la <strong>régulation</strong> (loi d'eau, courbe de chauffe)</li>
+              <li>✅ Assurent un <strong>suivi et optimisation</strong> après installation</li>
+            </ul>
+
+            <p className="mb-4">
+              L'étude ADEME elle-même confirme que les <strong>installations professionnelles optimales atteignent des SCOP bien supérieurs à 2,9</strong>.
+              Exemple cité : une PAC géothermique NIBE a atteint un <strong>SCOP de 7,4</strong> grâce à une régulation intelligente et un installateur compétent.
+            </p>
+
+            <p className="mb-3">
+              <strong>3. Le COP ajusté intègre déjà les conditions réelles</strong>
+            </p>
+            <p className="mb-4">
+              Notre COP ajusté prend en compte :
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>La <strong>température de départ d'eau</strong> selon le type d'émetteur (règle ADEME : -1 point de COP par 10°C)</li>
+              <li>La <strong>zone climatique</strong> (H1, H2, H3) avec facteurs différenciés</li>
+              <li>Les conditions d'exploitation réelles du système de chauffage</li>
+            </ul>
+
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg mb-4">
+              <p className="mb-3">
+                <strong>✅ Positionnement professionnel :</strong>
+              </p>
+              <p className="mb-3">
+                Les économies présentées par ThermoGain reposent sur une <strong>installation professionnelle conforme aux règles de l'art</strong>
+                par un installateur RGE qualifié. Un dimensionnement incorrect, une régulation mal paramétrée, ou une installation
+                non optimisée peuvent réduire significativement les performances réelles.
+              </p>
+              <p className="text-sm">
+                <strong>Notre approche :</strong> Présenter des chiffres réalistes pour des installations de qualité professionnelle,
+                plutôt que des estimations pessimistes basées sur la moyenne incluant des installations médiocres.
+                Cela valorise l'expertise des professionnels RGE et encourage la transition énergétique avec des projections fiables.
+              </p>
+            </div>
+
             <p className="mb-4 text-sm italic">
-              Source : <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ADEME - Guide des pompes à chaleur</a>
+              Sources :
+              <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
+                ADEME - Étude 2023-2024 sur 100 maisons équipées de PAC
+              </a>,
+              <a href="https://www.quechoisir.org/actualite-pompes-a-chaleur-a-priori-plutot-rentables-mais-n171872/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
+                UFC Que Choisir - Analyse performances PAC
+              </a>
             </p>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">2.4 Durée de vie des équipements</h3>
