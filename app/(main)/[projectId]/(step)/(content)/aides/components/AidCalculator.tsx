@@ -61,7 +61,6 @@ export const AidCalculator = ({
 }: AidCalculatorProps) => {
   const [open, setOpen] = useState(false);
   const [typeLogement, setTypeLogement] = useState<string>("");
-  const [surfaceLogement, setSurfaceLogement] = useState<string>("");
   const [revenuFiscal, setRevenuFiscal] = useState<string>("");
   const [residencePrincipale, setResidencePrincipale] = useState<string>("oui");
   const [remplacementComplet, setRemplacementComplet] = useState<string>("oui");
@@ -76,9 +75,6 @@ export const AidCalculator = ({
     if (open && savedCriteria) {
       if (savedCriteria.type_logement) {
         setTypeLogement(savedCriteria.type_logement);
-      }
-      if (savedCriteria.surface_logement !== undefined) {
-        setSurfaceLogement(savedCriteria.surface_logement.toString());
       }
       if (savedCriteria.revenu_fiscal_reference !== undefined) {
         setRevenuFiscal(savedCriteria.revenu_fiscal_reference.toString());
@@ -99,12 +95,6 @@ export const AidCalculator = ({
     // Validation
     if (!typeLogement) {
       setError("Veuillez sélectionner le type de logement");
-      setIsCalculating(false);
-      return;
-    }
-
-    if (!surfaceLogement || parseFloat(surfaceLogement) <= 0) {
-      setError("Veuillez saisir une surface valide");
       setIsCalculating(false);
       return;
     }
@@ -191,18 +181,6 @@ export const AidCalculator = ({
                       <SelectItem value={TypeLogement.APPARTEMENT}>Appartement</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                {/* Surface du logement */}
-                <div className="space-y-2">
-                  <Label htmlFor="surface">Surface habitable (m²)</Label>
-                  <Input
-                    id="surface"
-                    type="number"
-                    placeholder="Ex: 100"
-                    value={surfaceLogement}
-                    onChange={(e) => setSurfaceLogement(e.target.value)}
-                  />
                 </div>
 
                 {/* Revenu Fiscal de Référence */}

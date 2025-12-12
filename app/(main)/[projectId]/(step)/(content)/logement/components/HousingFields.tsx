@@ -122,27 +122,13 @@ export function HousingFields({
             <SelectValue placeholder="Sélectionnez la classe DPE" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ClasseDPE.A}>
-              A - Excellent (≤ 50 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.B}>
-              B - Très bien (51 à 90 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.C}>
-              C - Bien (91 à 150 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.D}>
-              D - Moyen (151 à 230 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.E}>
-              E - Passable (231 à 330 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.F}>
-              F - Médiocre (331 à 450 kWh/m²/an)
-            </SelectItem>
-            <SelectItem value={ClasseDPE.G}>
-              G - Mauvais (&gt; 450 kWh/m²/an)
-            </SelectItem>
+            <SelectItem value={ClasseDPE.A}>A</SelectItem>
+            <SelectItem value={ClasseDPE.B}>B</SelectItem>
+            <SelectItem value={ClasseDPE.C}>C</SelectItem>
+            <SelectItem value={ClasseDPE.D}>D</SelectItem>
+            <SelectItem value={ClasseDPE.E}>E</SelectItem>
+            <SelectItem value={ClasseDPE.F}>F</SelectItem>
+            <SelectItem value={ClasseDPE.G}>G</SelectItem>
           </SelectContent>
         </Select>
       </FormField>
