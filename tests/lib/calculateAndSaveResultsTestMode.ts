@@ -46,16 +46,13 @@ const getProjectDataForCalculationsTestMode = async (
   const data: ProjectData = {
     // Logement
     code_postal: project.logement.code_postal,
-    annee_construction: project.logement.annee_construction,
     surface_logement: project.logement.surface_logement,
     nombre_occupants: project.logement.nombre_occupants,
-    classe_dpe: project.logement.classe_dpe,
+    classe_dpe: project.logement.classe_dpe ?? undefined,
 
     // Chauffage actuel
     type_chauffage: project.chauffageActuel.type_chauffage,
-    age_installation: project.chauffageActuel.age_installation,
-    etat_installation: project.chauffageActuel.etat_installation,
-    ecs_integrated: project.chauffageActuel.ecs_integrated,
+    ecs_integrated: project.chauffageActuel.ecs_integrated ?? undefined,
     conso_fioul_litres: project.chauffageActuel.conso_fioul_litres ?? undefined,
     prix_fioul_litre: project.chauffageActuel.prix_fioul_litre ?? undefined,
     conso_gaz_kwh: project.chauffageActuel.conso_gaz_kwh ?? undefined,
@@ -71,44 +68,31 @@ const getProjectDataForCalculationsTestMode = async (
     cop_actuel: project.chauffageActuel.cop_actuel ?? undefined,
     conso_pac_kwh: project.chauffageActuel.conso_pac_kwh ?? undefined,
     abonnement_gaz: project.chauffageActuel.abonnement_gaz ?? undefined,
-    entretien_annuel: project.chauffageActuel.entretien_annuel,
+    entretien_annuel: project.chauffageActuel.entretien_annuel ?? undefined,
 
     // ECS (si séparé)
-    type_production_ecs: project.ecs?.type_production_ecs ?? undefined,
-    nombre_douches: project.ecs?.nombre_douches ?? undefined,
-    nombre_bains: project.ecs?.nombre_bains ?? undefined,
+    type_ecs: project.ecs?.type_ecs ?? undefined,
+    conso_ecs_kwh: project.ecs?.conso_ecs_kwh ?? undefined,
+    prix_ecs_kwh: project.ecs?.prix_ecs_kwh ?? undefined,
+    entretien_ecs: project.ecs?.entretien_ecs ?? undefined,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,
-    puissance_pac_kw: project.projetPac.puissance_pac_kw,
-    cop_estime: project.projetPac.cop_estime,
-    cop_ajuste: project.projetPac.cop_ajuste,
-    emetteurs: project.projetPac.emetteurs,
-    duree_vie_pac: project.projetPac.duree_vie_pac,
+    puissance_pac_kw: project.projetPac.puissance_pac_kw ?? 0,
+    cop_estime: project.projetPac.cop_estime ?? 0,
+    cop_ajuste: project.projetPac.cop_ajuste ?? 0,
+    emetteurs: project.projetPac.emetteurs ?? "",
+    duree_vie_pac: project.projetPac.duree_vie_pac ?? 17,
     prix_elec_pac:
       project.projetPac.prix_elec_pac ?? project.projetPac.prix_elec_kwh ?? undefined,
-    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle,
-    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac,
-    entretien_pac_annuel: project.projetPac.entretien_pac_annuel,
+    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
+    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac ?? undefined,
+    entretien_pac_annuel: project.projetPac.entretien_pac_annuel ?? undefined,
     with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
-    volume_ballon_ecs: project.projetPac.volume_ballon_ecs ?? undefined,
     cop_ecs: project.projetPac.cop_ecs ?? undefined,
 
     // Coûts
-    cout_pac: project.couts.cout_pac,
-    cout_installation: project.couts.cout_installation,
-    cout_travaux_annexes: project.couts.cout_travaux_annexes,
     cout_total: project.couts.cout_total,
-
-    // Aides
-    type_logement: project.aides.type_logement,
-    revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
-    residence_principale: project.aides.residence_principale,
-    remplacement_complet: project.aides.remplacement_complet,
-    ma_prime_renov: project.aides.ma_prime_renov,
-    cee: project.aides.cee,
-    autres_aides: project.aides.autres_aides,
-    total_aides: project.aides.total_aides,
 
     // Reste à charge = coût total - aides
     reste_a_charge: project.couts.cout_total - project.aides.total_aides,
