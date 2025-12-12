@@ -106,6 +106,11 @@ export default function MethodologiePage() {
             <h3 className="text-xl font-semibold mt-6 mb-3">2.3 Coefficients de performance (COP)</h3>
             <p className="mb-4">
               Le COP (Coefficient de Performance) représente le rapport entre l'énergie thermique produite et l'énergie électrique consommée.
+            </p>
+
+            <h4 className="text-lg font-semibold mt-4 mb-2">2.3.1 COP nominal du fabricant</h4>
+            <p className="mb-4">
+              Le COP nominal est mesuré dans des conditions standardisées (généralement 7°C extérieur / 35°C départ d'eau pour les PAC hydrauliques).
               Les valeurs typiques selon l'ADEME :
             </p>
             <ul className="list-disc pl-6 space-y-2 mb-4">
@@ -113,6 +118,53 @@ export default function MethodologiePage() {
               <li><strong>PAC Air/Eau</strong> : COP de 2,5 à 3,5 (moyenne : 3)</li>
               <li><strong>PAC Eau/Eau (géothermie)</strong> : COP de 4 à 5 (moyenne : 4,5)</li>
             </ul>
+
+            <h4 className="text-lg font-semibold mt-4 mb-2">2.3.2 COP ajusté (conditions réelles)</h4>
+            <p className="mb-4">
+              Le COP réel en conditions d'exploitation diffère du COP nominal car il dépend de plusieurs facteurs.
+              ThermoGain applique des <strong>ajustements automatiques</strong> basés sur :
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Température de départ d'eau</strong> : Déduite automatiquement du type d'émetteur
+                <ul className="list-disc pl-6 mt-2 space-y-1">
+                  <li>Plancher chauffant : 35°C (facteur optimal : 1.0)</li>
+                  <li>Radiateurs basse température : 45°C (facteur : 0.85)</li>
+                  <li>Radiateurs moyenne température : 55°C (facteur : 0.75)</li>
+                  <li>Radiateurs haute température : 65°C (facteur : 0.65)</li>
+                </ul>
+              </li>
+              <li><strong>Zone climatique</strong> : Basée sur le code postal
+                <ul className="list-disc pl-6 mt-2 space-y-1">
+                  <li>Zone H3 (Sud) : facteur 1.0 (conditions optimales)</li>
+                  <li>Zone H2 (Centre) : facteur 0.95</li>
+                  <li>Zone H1c (Nord-Est) : facteur 0.9</li>
+                  <li>Zone H1b (Nord) : facteur 0.88</li>
+                  <li>Zone H1a (montagne) : facteur 0.85</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
+              <p><strong>Formule COP ajusté :</strong></p>
+              <p>COP ajusté = COP nominal × Facteur température × Facteur climatique</p>
+              <br />
+              <p><strong>Exemple :</strong></p>
+              <p>COP nominal = 5 (Air/Eau)</p>
+              <p>Radiateurs BT (45°C) → Facteur température = 0.85</p>
+              <p>Zone H2 (Paris) → Facteur climatique = 0.95</p>
+              <p>COP ajusté = 5 × 0.85 × 0.95 = <strong>4.04</strong></p>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-4">
+              <p className="text-sm">
+                <strong>📋 Mise à jour importante (décembre 2024) :</strong> Suite à une analyse approfondie des recommandations ADEME,
+                nous avons supprimé la "double pénalité" qui appliquait à la fois un facteur température ET un facteur émetteur.
+                Le type d'émetteur détermine maintenant uniquement la température de départ, et seul le facteur température est appliqué.
+                Cela reflète mieux la réalité physique : un radiateur BT nécessite 45°C, cette température impacte directement le COP
+                (règle ADEME : "10°C de moins = +1 point de COP"), il n'y a pas de pénalité supplémentaire liée au type d'émetteur.
+              </p>
+            </div>
+
             <p className="mb-4 text-sm italic">
               Source : <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ADEME - Guide des pompes à chaleur</a>
             </p>
@@ -252,15 +304,25 @@ export default function MethodologiePage() {
             <h3 className="text-xl font-semibold mt-6 mb-3">5.2 Consommation électrique de la PAC</h3>
             <p className="mb-4">
               La PAC consomme moins d'électricité que les besoins grâce à son COP (elle récupère de l'énergie gratuite dans l'air ou le sol).
+              ThermoGain utilise le <strong>COP ajusté</strong> (et non le COP nominal) pour refléter les conditions réelles d'exploitation.
             </p>
             <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
               <p><strong>Formule :</strong></p>
-              <p>Consommation PAC (kWh) = Besoins énergétiques (kWh) ÷ COP</p>
+              <p>Consommation PAC (kWh) = Besoins énergétiques (kWh) ÷ COP ajusté</p>
               <br />
               <p><strong>Exemple :</strong></p>
-              <p>20 000 kWh ÷ 3,5 (COP) = 5714 kWh d'électricité consommée</p>
+              <p>COP nominal = 5</p>
+              <p>COP ajusté = 4.04 (après ajustements température + climat)</p>
+              <p>20 000 kWh ÷ 4.04 = 4950 kWh d'électricité consommée</p>
               <br />
-              <p className="text-xs">Note : Pour 1 kWh d'électricité consommé, la PAC produit 3,5 kWh de chaleur</p>
+              <p className="text-xs">Note : Pour 1 kWh d'électricité consommé, la PAC produit 4.04 kWh de chaleur dans cet exemple</p>
+            </div>
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 p-3 rounded-lg mb-4">
+              <p className="text-sm">
+                <strong>⚠️ Important :</strong> L'utilisation du COP ajusté (et non nominal) garantit une estimation réaliste des coûts.
+                Un COP nominal de 5 peut devenir 3.4 dans de mauvaises conditions (radiateurs HT en zone froide), ce qui modifie
+                significativement la consommation électrique et donc la rentabilité du projet.
+              </p>
             </div>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">5.3 Coût variable avec PAC</h3>
@@ -288,7 +350,140 @@ export default function MethodologiePage() {
             </div>
           </section>
 
-          {/* 6. Évolution des prix */}
+          {/* 6. Eau Chaude Sanitaire (ECS) */}
+          <section id="ecs" className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">6. Prise en compte de l'Eau Chaude Sanitaire (ECS)</h2>
+
+            <p className="mb-4">
+              L'ECS (Eau Chaude Sanitaire) représente la production d'eau chaude pour les usages domestiques (douches, bains, vaisselle, etc.).
+              ThermoGain traite l'ECS selon <strong>4 scénarios possibles</strong> en fonction de votre installation actuelle et du projet PAC.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">6.1 Les 4 scénarios ECS</h3>
+
+            <div className="space-y-4 mb-6">
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Scénario A : ECS intégrée → PAC sans gestion ECS</h4>
+                <p className="text-sm mb-2">
+                  <strong>Situation :</strong> Votre système actuel produit à la fois le chauffage et l'ECS (ex: chaudière gaz).
+                  La future PAC ne gère que le chauffage.
+                </p>
+                <p className="text-sm">
+                  <strong>Calcul :</strong> L'ECS reste incluse dans le système de chauffage actuel. Pas de calcul séparé.
+                </p>
+              </div>
+
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Scénario B : ECS intégrée → PAC avec gestion ECS</h4>
+                <p className="text-sm mb-2">
+                  <strong>Situation :</strong> Votre système actuel produit chauffage + ECS.
+                  La future PAC gérera aussi l'ECS (PAC thermodynamique ou ballon intégré).
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Problématique :</strong> La consommation totale actuelle ne distingue pas chauffage et ECS.
+                </p>
+                <p className="text-sm">
+                  <strong>Calcul :</strong> Estimation ADEME des besoins ECS (800 kWh/personne/an).
+                  Si cette estimation dépasse la consommation totale, on applique un ratio 80/20 (80% chauffage, 20% ECS).
+                </p>
+              </div>
+
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Scénario C : ECS séparée → PAC sans gestion ECS</h4>
+                <p className="text-sm mb-2">
+                  <strong>Situation :</strong> Vous avez déjà un système ECS séparé (ex: ballon électrique, chauffe-eau gaz).
+                  La PAC ne gère que le chauffage.
+                </p>
+                <p className="text-sm">
+                  <strong>Calcul :</strong> Le système ECS actuel est conservé. Coût ECS identique avant/après (pas d'économies sur cette partie).
+                </p>
+              </div>
+
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Scénario D : ECS séparée → PAC avec gestion ECS</h4>
+                <p className="text-sm mb-2">
+                  <strong>Situation :</strong> Vous avez un système ECS séparé actuellement.
+                  La future PAC remplacera ce système (PAC thermodynamique).
+                </p>
+                <p className="text-sm">
+                  <strong>Calcul :</strong> Comparaison complète entre le coût ECS actuel et le coût ECS avec PAC.
+                </p>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">6.2 COP ECS (production d'eau chaude)</h3>
+            <p className="mb-4">
+              Le COP pour la production d'ECS est <strong>inférieur</strong> au COP chauffage car l'eau chaude sanitaire
+              nécessite une température plus élevée (55-60°C vs 35-45°C pour le chauffage).
+            </p>
+            <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
+              <p><strong>Formule COP ECS :</strong></p>
+              <p>COP ECS = COP ajusté chauffage × 0,85</p>
+              <br />
+              <p><strong>Exemple :</strong></p>
+              <p>COP ajusté chauffage = 4.04</p>
+              <p>COP ECS = 4.04 × 0.85 = <strong>3.43</strong></p>
+            </div>
+            <p className="text-sm italic mb-4">
+              Source : Ratio standard du secteur basé sur la différence de température de production
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">6.3 Estimation ADEME des besoins ECS</h3>
+            <p className="mb-4">
+              Lorsque la consommation ECS n'est pas connue séparément (Scénario B), nous utilisons la méthode ADEME :
+            </p>
+            <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
+              <p><strong>Formule :</strong></p>
+              <p>Besoins ECS (kWh/an) = Nombre d'occupants × 800 kWh</p>
+              <br />
+              <p><strong>Exemple pour 4 personnes :</strong></p>
+              <p>Besoins ECS = 4 × 800 = 3200 kWh/an</p>
+              <br />
+              <p><strong>Validation :</strong></p>
+              <p>Si l'estimation dépasse la consommation totale, application du ratio 80/20 :</p>
+              <ul className="list-disc pl-6 space-y-1 mt-2">
+                <li>80% de la consommation totale → chauffage</li>
+                <li>20% de la consommation totale → ECS</li>
+              </ul>
+            </div>
+            <p className="text-sm italic mb-4">
+              Source : <a href="https://www.ademe.fr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                ADEME - Estimation besoins ECS résidentiels
+              </a>
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">6.4 Calcul des économies ECS</h3>
+            <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
+              <p><strong>Scénario D - Exemple complet :</strong></p>
+              <br />
+              <p><strong>ECS actuel (ballon électrique) :</strong></p>
+              <p>Consommation : 3200 kWh/an</p>
+              <p>Prix électricité : 0.2516 €/kWh</p>
+              <p>Entretien : 50 €/an</p>
+              <p>Coût total = 3200 × 0.2516 + 50 = 855 €/an</p>
+              <br />
+              <p><strong>ECS futur (PAC thermodynamique) :</strong></p>
+              <p>Besoins : 3200 kWh/an (identique)</p>
+              <p>COP ECS : 3.43</p>
+              <p>Consommation PAC : 3200 / 3.43 = 933 kWh/an</p>
+              <p>Prix électricité PAC : 0.2516 €/kWh</p>
+              <p>Coût = 933 × 0.2516 = 235 €/an</p>
+              <p>(Entretien inclus dans entretien PAC)</p>
+              <br />
+              <p><strong>Économies ECS annuelles :</strong></p>
+              <p>855 € - 235 € = <strong>620 €/an</strong></p>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-4">
+              <p className="text-sm">
+                <strong>💡 Bon à savoir :</strong> Les économies sur l'ECS peuvent représenter une part significative
+                des économies totales, surtout si vous remplacez un ballon électrique (COP = 1) par une PAC thermodynamique (COP ≈ 3-3.5).
+                Dans certains cas, les économies ECS peuvent atteindre 30-40% des économies totales du projet.
+              </p>
+            </div>
+          </section>
+
+          {/* 7. Évolution des prix */}
           <section id="evolution-prix" className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Évolution des prix de l'énergie</h2>
 
@@ -539,6 +734,16 @@ export default function MethodologiePage() {
               <li><strong>Besoins énergétiques constants</strong> : Les besoins de chauffage sont supposés identiques chaque année (même surface, même occupation, même isolation)</li>
               <li><strong>Évolution des prix</strong> : Le modèle Mean Reversion est basé sur l'historique long terme mais ne peut prédire les chocs ponctuels (crises géopolitiques, catastrophes naturelles, etc.)</li>
               <li><strong>Performance de la PAC</strong> : Le COP est supposé constant sur toute la durée de vie (en pratique, il peut légèrement diminuer avec le temps)</li>
+              <li><strong>Température de départ</strong> : Elle est automatiquement déduite du type d'émetteur selon les standards techniques :
+                <ul className="list-disc pl-6 mt-2 space-y-1">
+                  <li>Plancher chauffant : 35°C</li>
+                  <li>Radiateurs basse température : 45°C</li>
+                  <li>Ventilo-convecteurs : 45°C</li>
+                  <li>Radiateurs moyenne température : 55°C</li>
+                  <li>Radiateurs haute température : 65°C</li>
+                </ul>
+                Cette simplification évite les incohérences entre type d'émetteur et température, tout en restant fidèle aux pratiques du secteur.
+              </li>
               <li><strong>Durée de vie</strong> : 17 ans est une moyenne ; la durée réelle dépend de la qualité de l'installation et de l'entretien</li>
               <li><strong>Coûts fixes constants</strong> : Les abonnements et coûts d'entretien sont exprimés en euros constants (pas d'inflation appliquée)</li>
             </ul>
