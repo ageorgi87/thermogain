@@ -45,8 +45,10 @@ export interface ProjectData {
   with_ecs_management?: boolean        // La PAC gérera-t-elle l'ECS ?
   cop_ecs?: number                     // COP PAC pour production ECS (≈ cop_estime × 0.85)
 
-  // Logement (pour estimation ECS) - Décembre 2024
+  // Logement (pour estimation ECS + besoins énergétiques DPE) - Décembre 2024
   nombre_occupants?: number            // Nombre d'occupants (pour estimation besoins ECS)
+  classe_dpe?: string                  // Classe DPE du logement (A-G) - pour calcul besoins théoriques
+  surface_logement?: number            // Surface habitable (m²) - pour calcul besoins théoriques DPE
 
   // Code postal pour ajustement climatique COP
   code_postal?: string

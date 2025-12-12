@@ -63,6 +63,29 @@ export function HousingFields({
       </FormField>
 
       <FormField
+        label="Surface habitable (m²)"
+        required
+        error={errors.surface_logement}
+      >
+        <Input
+          type="number"
+          min="10"
+          max="1000"
+          placeholder="ex: 100"
+          value={formData.surface_logement ?? ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "") {
+              onChange("surface_logement", undefined);
+            } else {
+              const num = parseFloat(value);
+              onChange("surface_logement", isNaN(num) ? undefined : num);
+            }
+          }}
+        />
+      </FormField>
+
+      <FormField
         label="Nombre d'occupants"
         required
         error={errors.nombre_occupants}

@@ -104,8 +104,10 @@ export const getProjectDataForCalculations = async ({
     with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
     cop_ecs: project.projetPac.cop_ecs ?? undefined,
 
-    // Logement (pour estimation ECS)
+    // Logement (pour estimation ECS + besoins énergétiques DPE)
     nombre_occupants: project.logement.nombre_occupants ?? undefined,
+    classe_dpe: project.logement.classe_dpe ?? undefined,
+    surface_logement: project.logement.surface_logement ?? undefined,
 
     // Code postal pour ajustement climatique
     code_postal: project.logement.code_postal ?? undefined,

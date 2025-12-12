@@ -15,10 +15,10 @@ export interface ProjectDataForAides {
   annee_construction: number | null
   nombre_occupants: number
   classe_dpe: ClasseDPE
+  surface_logement: number
 
   // Aides (critères utilisateur)
   type_logement: "maison" | "appartement"
-  surface_logement: number
   revenu_fiscal_reference: number
   residence_principale: boolean
 

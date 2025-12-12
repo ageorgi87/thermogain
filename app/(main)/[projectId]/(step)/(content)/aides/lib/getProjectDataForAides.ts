@@ -27,12 +27,12 @@ export const getProjectDataForAides = async (
           annee_construction: true,
           nombre_occupants: true,
           classe_dpe: true,
+          surface_logement: true,
         },
       },
       aides: {
         select: {
           type_logement: true,
-          surface_logement: true,
           revenu_fiscal_reference: true,
           residence_principale: true,
         },
@@ -74,6 +74,10 @@ export const getProjectDataForAides = async (
     throw new Error("Classe DPE manquante");
   }
 
+  if (!project.logement.surface_logement) {
+    throw new Error("Surface logement manquante");
+  }
+
   if (!project.projetPac) {
     throw new Error("Données PAC manquantes");
   }
@@ -88,10 +92,6 @@ export const getProjectDataForAides = async (
 
   if (!project.aides.type_logement) {
     throw new Error("Type de logement manquant");
-  }
-
-  if (!project.aides.surface_logement) {
-    throw new Error("Surface du logement manquante");
   }
 
   if (!project.aides.revenu_fiscal_reference) {
@@ -112,10 +112,10 @@ export const getProjectDataForAides = async (
     annee_construction: project.logement.annee_construction,
     nombre_occupants: project.logement.nombre_occupants,
     classe_dpe: project.logement.classe_dpe as ClasseDPE,
+    surface_logement: project.logement.surface_logement,
 
-    // Aides
+    // Aides (critères utilisateur)
     type_logement: project.aides.type_logement as "maison" | "appartement",
-    surface_logement: project.aides.surface_logement,
     revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
     residence_principale: project.aides.residence_principale,
 

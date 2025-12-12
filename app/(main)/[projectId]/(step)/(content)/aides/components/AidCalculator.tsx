@@ -119,7 +119,6 @@ export const AidCalculator = ({
       const response = await saveCriteriaAndCalculate({
         projectId,
         type_logement: typeLogement,
-        surface_logement: parseFloat(surfaceLogement),
         revenu_fiscal_reference: parseFloat(revenuFiscal),
         residence_principale: residencePrincipale === "oui",
         remplacement_complet: remplacementComplet === "oui",

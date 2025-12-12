@@ -49,7 +49,6 @@ export function AidesFields({
           }}
           savedCriteria={{
             type_logement: formData.type_logement,
-            surface_logement: formData.surface_logement,
             revenu_fiscal_reference: formData.revenu_fiscal_reference,
             residence_principale: formData.residence_principale,
             remplacement_complet: formData.remplacement_complet,

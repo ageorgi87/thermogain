@@ -10,7 +10,6 @@ import { calculateAidesGeothermique } from "@/app/(main)/[projectId]/(step)/(con
 interface SaveCriteriaParams {
   projectId: string;
   type_logement: string;
-  surface_logement: number;
   revenu_fiscal_reference: number;
   residence_principale: boolean;
   remplacement_complet: boolean;
@@ -68,7 +67,6 @@ export const saveCriteriaAndCalculate = async (
       create: {
         projectId: params.projectId,
         type_logement: params.type_logement,
-        surface_logement: params.surface_logement,
         revenu_fiscal_reference: params.revenu_fiscal_reference,
         residence_principale: params.residence_principale,
         remplacement_complet: params.remplacement_complet,
@@ -79,7 +77,6 @@ export const saveCriteriaAndCalculate = async (
       },
       update: {
         type_logement: params.type_logement,
-        surface_logement: params.surface_logement,
         revenu_fiscal_reference: params.revenu_fiscal_reference,
         residence_principale: params.residence_principale,
         remplacement_complet: params.remplacement_complet,

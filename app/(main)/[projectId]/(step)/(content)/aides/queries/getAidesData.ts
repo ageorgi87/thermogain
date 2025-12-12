@@ -27,7 +27,6 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
           total_aides: true,
           // Critères d'éligibilité sauvegardés
           type_logement: true,
-          surface_logement: true,
           revenu_fiscal_reference: true,
           residence_principale: true,
           remplacement_complet: true,

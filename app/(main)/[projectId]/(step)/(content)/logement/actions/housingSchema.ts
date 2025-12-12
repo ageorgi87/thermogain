@@ -16,6 +16,10 @@ export const housingSchema = z.object({
       new Date().getFullYear() + 2,
       "L'année ne peut pas être dans le futur"
     ),
+  surface_logement: z
+    .number({ message: "La surface habitable est requise" })
+    .min(10, "La surface doit être d'au moins 10 m²")
+    .max(1000, "La surface ne peut pas dépasser 1000 m²"),
   nombre_occupants: z
     .number({ message: "Le nombre d'occupants est requis" })
     .min(1, "Il doit y avoir au moins 1 occupant")

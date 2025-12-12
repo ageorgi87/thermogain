@@ -6,13 +6,13 @@ import { FinancingMode } from "@/types/financingMode";
 import { calculateCurrentVariableCost } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
 import { calculateCurrentFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateCurrentFixedCosts";
 import { calculatePacFixedCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePacFixedCosts";
-import { getCurrentConsumptionKwh } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/energyDataExtractors";
 import { calculateYearlyCostProjections } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateYearlyCostProjections";
 import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculatePaybackPeriod";
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateMonthlyPayment";
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 import { calculateEcsCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts";
+import { calculateEnergyNeedsWithDPE } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEnergyNeedsWithDPE";
 
 /**
  * Retourne le type d'énergie pour l'API DIDO selon le type de chauffage
@@ -69,10 +69,17 @@ export const calculateAllResults = async (
   const currentFixedCosts = calculateCurrentFixedCosts(data);
   const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + ecsCosts.currentEcsCost;
 
+  // Calcul des besoins énergétiques avec méthode MOYENNE (conso réelle + DPE)
+  // Cette approche équilibrée tient compte de l'usage actuel ET anticipe un confort optimal
+  const energyNeeds = calculateEnergyNeedsWithDPE(
+    data,
+    data.classe_dpe,
+    data.surface_logement
+  );
+
   // Consommation PAC (calculée UNE SEULE FOIS, inline)
-  // Formule: Consommation PAC = Besoins énergétiques / COP ajusté
-  const currentConsumptionKwh = getCurrentConsumptionKwh(data, true);
-  const consommationPacKwh = currentConsumptionKwh / data.cop_ajuste;
+  // Formule: Consommation PAC = Besoins énergétiques finaux / COP ajusté
+  const consommationPacKwh = energyNeeds.finalEnergyNeedsKwh / data.cop_ajuste;
 
   // Coût variable PAC (inline pour éviter de recalculer la consommation)
   const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;

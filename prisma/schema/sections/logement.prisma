@@ -8,6 +8,7 @@ model ProjectLogement {
 
   code_postal        String
   annee_construction Int
+  surface_logement   Int     // Surface habitable en m² (obligatoire pour calcul besoins énergétiques)
   nombre_occupants   Int
   classe_dpe         String? // DPE class (A-G), required for API Aides
 
