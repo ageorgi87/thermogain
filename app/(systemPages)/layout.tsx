@@ -58,7 +58,7 @@ export default async function FooterPagesLayout({
           <div className="container mx-auto py-8 max-w-4xl px-4">
             {/* Back Button */}
             <div className="mb-6">
-              <Link href="/">
+              <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Retour à l'accueil
