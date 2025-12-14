@@ -13,15 +13,12 @@ const debugEcsCosts = async () => {
   const testData: ProjectData = {
     // Logement
     code_postal: '83000',
-    annee_construction: 2005,
     surface_logement: 70,
     nombre_occupants: 3,
     classe_dpe: 'C',
 
     // Chauffage actuel
     type_chauffage: 'Gaz',
-    age_installation: 12,
-    etat_installation: 'Bon',
     ecs_integrated: true, // ← ECS INTÉGRÉE
     conso_gaz_kwh: 5000,
     prix_gaz_kwh: 0.10,
@@ -43,20 +40,7 @@ const debugEcsCosts = async () => {
     with_ecs_management: true, // ← PAC GÈRE L'ECS
 
     // Coûts
-    cout_pac: 8000,
-    cout_installation: 2000,
-    cout_travaux_annexes: 1500,
     cout_total: 11500,
-
-    // Aides
-    type_logement: 'appartement',
-    revenu_fiscal_reference: 35000,
-    residence_principale: true,
-    remplacement_complet: true,
-    ma_prime_renov: 2000,
-    cee: 1500,
-    autres_aides: 0,
-    total_aides: 3500,
 
     // Reste à charge
     reste_a_charge: 8000,

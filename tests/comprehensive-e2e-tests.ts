@@ -28,6 +28,8 @@ interface ProjectCreateData {
   chauffageActuel: {
     type_chauffage: string
     ecs_integrated: boolean
+    age_installation: number
+    etat_installation: string
     conso_fioul_litres?: number
     prix_fioul_litre?: number
     conso_gaz_kwh?: number
@@ -44,9 +46,10 @@ interface ProjectCreateData {
     entretien_annuel: number
   }
   ecs?: {
-    type_production_ecs: string
-    nombre_douches: number
-    nombre_bains: number
+    type_ecs: string
+    consumption_known: boolean
+    prix_ecs_kwh: number
+    entretien_ecs: number
   }
   projetPac: {
     type_pac: string
@@ -181,7 +184,7 @@ const scenarios: TestScenario[] = [
     },
     validation: {
       economiesAnnuelles: { min: -1000, max: 15000 },
-      paybackPeriod: { allowNull: true },
+      paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -40000 },
       expectedOutcome: "ROI variable - Dépend du prix fioul et consommation",
     },
@@ -249,7 +252,7 @@ const scenarios: TestScenario[] = [
     },
     validation: {
       economiesAnnuelles: { min: -200, max: 3500 },
-      paybackPeriod: { allowNull: true },
+      paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -20000 },
       expectedOutcome: "ROI variable - Dépend de la consommation gaz",
     },
@@ -316,7 +319,7 @@ const scenarios: TestScenario[] = [
     },
     validation: {
       economiesAnnuelles: { min: 800, max: 25000 },
-      paybackPeriod: { allowNull: true },
+      paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -10000 },
       expectedOutcome: "ROI généralement bon - GPL cher",
     },
@@ -389,7 +392,7 @@ const scenarios: TestScenario[] = [
     },
     validation: {
       economiesAnnuelles: { min: -3000, max: 3000 },
-      paybackPeriod: { allowNull: true },
+      paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -80000 },
       expectedOutcome: "ROI très variable - Mauvais si PAC air-air existante",
     },
@@ -464,7 +467,7 @@ const scenarios: TestScenario[] = [
     },
     validation: {
       economiesAnnuelles: { min: -600, max: 2000 },
-      paybackPeriod: { allowNull: true },
+      paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -18000 },
       expectedOutcome: "ROI limite ou négatif - Cas défavorable",
     },
@@ -551,7 +554,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
 
     const paybackOk =
       'allowNull' in validation.paybackPeriod
-        ? validation.paybackPeriod.allowNull || r.paybackPeriod !== null
+        ? true // allowNull: true permet null ou n'importe quelle valeur
         : r.paybackPeriod !== null &&
           r.paybackPeriod >= validation.paybackPeriod.min &&
           r.paybackPeriod <= validation.paybackPeriod.max
@@ -580,9 +583,9 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
     return {
       scenario: scenario.name,
       passed: economiesOk && paybackOk && netBenefitOk,
-      economiesAnnuelles: r.economies_annuelles,
-      paybackPeriod: r.payback_period,
-      netBenefit: r.net_benefit_lifetime,
+      economiesAnnuelles: r.economiesAnnuelles,
+      paybackPeriod: r.paybackPeriod,
+      netBenefit: r.netBenefitLifetime,
       warnings,
     }
   } catch (error) {

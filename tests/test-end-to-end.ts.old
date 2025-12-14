@@ -43,10 +43,9 @@ const createScenario1 = async (userId: string) => {
         create: {
           code_postal: "75001",
           annee_construction: 1990,
-          surface_habitable: 150,
+          surface_logement: 150,
           nombre_occupants: 4,
-          qualite_isolation: "moyenne",
-          altitude: 100,
+          classe_dpe: "D",
         }
       },
 
