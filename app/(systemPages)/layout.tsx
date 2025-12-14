@@ -22,7 +22,7 @@ export default async function FooterPagesLayout({
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <Link
-                href="/dashboard"
+                href={session ? "/dashboard" : "/"}
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
                 <Image
@@ -58,7 +58,7 @@ export default async function FooterPagesLayout({
           <div className="container mx-auto py-8 max-w-4xl px-4">
             {/* Back Button */}
             <div className="mb-6">
-              <Link href="/dashboard">
+              <Link href={session ? "/dashboard" : "/"}>
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Retour à l'accueil
