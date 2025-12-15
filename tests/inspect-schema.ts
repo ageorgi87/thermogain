@@ -13,7 +13,7 @@ const inspect = async () => {
       dhw: true,
       heatPump: true,
       costs: true,
-      aides: true,
+      financialAid: true,
       financement: true,
       evolutions: true,
       results: true,
@@ -35,7 +35,7 @@ const inspect = async () => {
     { name: 'dhw', data: project.dhw },
     { name: 'heatPump', data: project.heatPump },
     { name: 'costs', data: project.costs },
-    { name: 'aides', data: project.aides },
+    { name: 'financialAid', data: project.financialAid },
     { name: 'financement', data: project.financement },
     { name: 'evolutions', data: project.evolutions },
   ]

@@ -40,7 +40,7 @@ export default function FinancementStepPage({
       const data = await getFinancementData({ projectId });
 
       setTotalCosts(data.costs?.totalCost || 0);
-      setTotalAides(data.aides?.total_aides || 0);
+      setTotalAides(data.financialAid?.totalAid || 0);
 
       return data.financement || {};
     },

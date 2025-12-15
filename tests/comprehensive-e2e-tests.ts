@@ -71,15 +71,15 @@ interface ProjectCreateData {
     additionalWorkCost: number
     totalCost: number
   }
-  aides: {
-    type_logement: string
-    revenu_fiscal_reference: number
-    residence_principale: boolean
-    remplacement_complet: boolean
-    ma_prime_renov: number
+  financialAid: {
+    housingType: string
+    referenceTaxIncome: number
+    isPrimaryResidence: boolean
+    isCompleteReplacement: boolean
+    maPrimeRenov: number
     cee: number
-    autres_aides: number
-    total_aides: number
+    otherAid: number
+    totalAid: number
   }
   financement: {
     mode_financement: string
@@ -164,15 +164,15 @@ const scenarios: TestScenario[] = [
         additionalWorkCost: [1500, 3000, 4000][i % 3],
         totalCost: [14000, 22000, 27000][i % 3],
       },
-      aides: {
-        type_logement: "maison",
-        revenu_fiscal_reference: 30000 + (i * 5000),
-        residence_principale: true,
-        remplacement_complet: true,
-        ma_prime_renov: [4000, 5000, 6000][i % 3],
+      financialAid: {
+        housingType: "maison",
+        referenceTaxIncome: 30000 + (i * 5000),
+        isPrimaryResidence: true,
+        isCompleteReplacement: true,
+        maPrimeRenov: [4000, 5000, 6000][i % 3],
         cee: [2000, 3000, 4000][i % 3],
-        autres_aides: 0,
-        total_aides: [6000, 8000, 10000][i % 3],
+        otherAid: 0,
+        totalAid: [6000, 8000, 10000][i % 3],
       },
       financement: {
         mode_financement: i % 2 === 0 ? "Crédit" : "Mixte",
@@ -232,15 +232,15 @@ const scenarios: TestScenario[] = [
         additionalWorkCost: i % 2 === 0 ? [1500, 2500, 3500][i % 3] : [3000, 5000, 7000][i % 3],
         totalCost: i % 2 === 0 ? [11500, 17500, 23500][i % 3] : [13000, 20000, 27000][i % 3],
       },
-      aides: {
-        type_logement: i % 3 === 0 ? "appartement" : "maison",
-        revenu_fiscal_reference: 35000 + (i * 5000),
-        residence_principale: true,
-        remplacement_complet: true,
-        ma_prime_renov: [2000, 3000, 4000][i % 3],
+      financialAid: {
+        housingType: i % 3 === 0 ? "appartement" : "maison",
+        referenceTaxIncome: 35000 + (i * 5000),
+        isPrimaryResidence: true,
+        isCompleteReplacement: true,
+        maPrimeRenov: [2000, 3000, 4000][i % 3],
         cee: [1500, 2000, 2500][i % 3],
-        autres_aides: 0,
-        total_aides: [3500, 5000, 6500][i % 3],
+        otherAid: 0,
+        totalAid: [3500, 5000, 6500][i % 3],
       },
       financement: {
         mode_financement: ["Comptant", "Crédit", "Mixte"][i % 3],
@@ -299,15 +299,15 @@ const scenarios: TestScenario[] = [
         additionalWorkCost: [2500, 3500, 4500][i % 3],
         totalCost: [19000, 24000, 29000][i % 3],
       },
-      aides: {
-        type_logement: "maison",
-        revenu_fiscal_reference: 25000 + (i * 3000),
-        residence_principale: true,
-        remplacement_complet: true,
-        ma_prime_renov: [5000, 6000, 7000][i % 3],
+      financialAid: {
+        housingType: "maison",
+        referenceTaxIncome: 25000 + (i * 3000),
+        isPrimaryResidence: true,
+        isCompleteReplacement: true,
+        maPrimeRenov: [5000, 6000, 7000][i % 3],
         cee: [3500, 4000, 4500][i % 3],
-        autres_aides: 0,
-        total_aides: [8500, 10000, 11500][i % 3],
+        otherAid: 0,
+        totalAid: [8500, 10000, 11500][i % 3],
       },
       financement: {
         mode_financement: i % 2 === 0 ? "Crédit" : "Mixte",
@@ -372,15 +372,15 @@ const scenarios: TestScenario[] = [
         additionalWorkCost: i % 2 === 0 ? [5000, 6000, 7000][i % 3] : [2000, 3000, 4000][i % 3],
         totalCost: i % 2 === 0 ? [16500, 22500, 27500][i % 3] : [13500, 19500, 24500][i % 3],
       },
-      aides: {
-        type_logement: "maison",
-        revenu_fiscal_reference: 40000 + (i * 5000),
-        residence_principale: true,
-        remplacement_complet: true,
-        ma_prime_renov: [2500, 3000, 3500][i % 3],
+      financialAid: {
+        housingType: "maison",
+        referenceTaxIncome: 40000 + (i * 5000),
+        isPrimaryResidence: true,
+        isCompleteReplacement: true,
+        maPrimeRenov: [2500, 3000, 3500][i % 3],
         cee: [1500, 2000, 2500][i % 3],
-        autres_aides: 0,
-        total_aides: [4000, 5000, 6000][i % 3],
+        otherAid: 0,
+        totalAid: [4000, 5000, 6000][i % 3],
       },
       financement: {
         mode_financement: ["Comptant", "Crédit", "Mixte"][i % 3],
@@ -450,15 +450,15 @@ const scenarios: TestScenario[] = [
         additionalWorkCost: [1000, 1500, 2000][i % 3],
         totalCost: [10000, 12000, 14000][i % 3],
       },
-      aides: {
-        type_logement: i % 2 === 0 ? "appartement" : "maison",
-        revenu_fiscal_reference: 50000 + (i * 5000),
-        residence_principale: true,
-        remplacement_complet: true,
-        ma_prime_renov: [1500, 2000, 2500][i % 3],
+      financialAid: {
+        housingType: i % 2 === 0 ? "appartement" : "maison",
+        referenceTaxIncome: 50000 + (i * 5000),
+        isPrimaryResidence: true,
+        isCompleteReplacement: true,
+        maPrimeRenov: [1500, 2000, 2500][i % 3],
         cee: [1000, 1500, 2000][i % 3],
-        autres_aides: 0,
-        total_aides: [2500, 3500, 4500][i % 3],
+        otherAid: 0,
+        totalAid: [2500, 3500, 4500][i % 3],
       },
       financement: {
         mode_financement: "Comptant",
@@ -521,7 +521,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         ...(scenario.data.dhw && { dhw: { create: scenario.data.dhw } }),
         heatPump: { create: scenario.data.heatPump },
         costs: { create: scenario.data.costs },
-        aides: { create: scenario.data.aides },
+        financialAid: { create: scenario.data.financialAid },
         financement: { create: scenario.data.financement },
       },
     })

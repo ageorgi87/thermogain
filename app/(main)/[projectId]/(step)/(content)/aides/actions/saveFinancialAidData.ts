@@ -31,17 +31,17 @@ export const saveFinancialAidData = async ({
 
   // Convert undefined values to 0 for Prisma (which doesn't accept undefined for Float fields)
   const prismaData = {
-    type_logement: validatedData.type_logement,
-    revenu_fiscal_reference: validatedData.revenu_fiscal_reference,
-    residence_principale: validatedData.residence_principale,
-    remplacement_complet: validatedData.remplacement_complet,
-    ma_prime_renov: validatedData.ma_prime_renov ?? 0,
+    housingType: validatedData.type_logement,
+    referenceTaxIncome: validatedData.revenu_fiscal_reference,
+    isPrimaryResidence: validatedData.residence_principale,
+    isCompleteReplacement: validatedData.remplacement_complet,
+    maPrimeRenov: validatedData.ma_prime_renov ?? 0,
     cee: validatedData.cee ?? 0,
-    autres_aides: validatedData.autres_aides ?? 0,
-    total_aides: validatedData.total_aides ?? 0,
+    otherAid: validatedData.autres_aides ?? 0,
+    totalAid: validatedData.total_aides ?? 0,
   }
 
-  const aides = await prisma.projectAides.upsert({
+  const financialAid = await prisma.projectFinancialAid.upsert({
     where: { projectId },
     create: {
       ...prismaData,
@@ -57,5 +57,5 @@ export const saveFinancialAidData = async ({
     })
   }
 
-  return aides
+  return financialAid
 }

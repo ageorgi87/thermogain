@@ -39,7 +39,7 @@ export const getProjectDataForCalculations = async ({
       dhw: true, // Données DHW (Domestic Hot Water) séparé (si dhwIntegrated = false)
       heatPump: true,
       costs: true,
-      aides: true,
+      financialAid: true,
       financement: true,
     },
   });
@@ -54,13 +54,13 @@ export const getProjectDataForCalculations = async ({
     !project.currentHeating ||
     !project.heatPump ||
     !project.costs ||
-    !project.aides
+    !project.financialAid
   ) {
     throw new Error(`Données incomplètes pour le projet ${projectId}`);
   }
 
-  // Calculer le reste à charge (totalCost - total_aides)
-  const reste_a_charge = project.costs.totalCost - project.aides.total_aides;
+  // Calculer le reste à charge (totalCost - totalAid)
+  const reste_a_charge = project.costs.totalCost - project.financialAid.totalAid;
 
   // Mapper vers le format ProjectData utilisé par les calculs
   return {

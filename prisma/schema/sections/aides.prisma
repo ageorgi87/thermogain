@@ -1,22 +1,22 @@
-// Section 5: Aides (Financial Aid)
+// Section 5: Financial Aid
 // Stores available financial aid and subsidies
 
-model ProjectAides {
+model ProjectFinancialAid {
   id        String  @id @default(cuid())
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  // Critères d'éligibilité (remplis dans le calculateur)
-  type_logement           String?
-  revenu_fiscal_reference Int?
-  residence_principale    Boolean?
-  remplacement_complet    Boolean? 
+  // Eligibility criteria (filled in calculator)
+  housingType            String?
+  referenceTaxIncome     Int?
+  isPrimaryResidence     Boolean?
+  isCompleteReplacement  Boolean?
 
-  // Montants des aides
-  ma_prime_renov Float
-  cee            Float
-  autres_aides   Float
-  total_aides    Float // Automatically calculated (sum of aids)
+  // Aid amounts
+  maPrimeRenov Float
+  cee          Float
+  otherAid     Float
+  totalAid     Float // Automatically calculated (sum of aids)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

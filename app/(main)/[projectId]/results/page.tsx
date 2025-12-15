@@ -37,7 +37,7 @@ export default async function ResultsPage({ params }: PageProps) {
     !project.currentHeating ||
     !project.heatPump ||
     !project.costs ||
-    !project.aides
+    !project.financialAid
   ) {
     redirect(`/projects/${projectId}/logement`);
   }
@@ -164,7 +164,7 @@ export default async function ResultsPage({ params }: PageProps) {
           dureeVie={project.heatPump.heatPumpLifespanYears}
         />
         <FinancialSummaryCard
-          resteACharge={project.costs.totalCost - project.aides.total_aides}
+          resteACharge={project.costs.totalCost - project.financialAid.totalAid}
           modeFinancement={project.financement?.mode_financement || undefined}
           mensualite={results.mensualiteCredit}
           dureeCreditMois={project.financement?.duree_credit_mois || undefined}

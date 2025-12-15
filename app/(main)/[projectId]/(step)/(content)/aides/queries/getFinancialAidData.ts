@@ -3,11 +3,11 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-interface GetAidesDataParams {
+interface GetFinancialAidDataParams {
   projectId: string
 }
 
-export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
+export const getFinancialAidData = async ({ projectId }: GetFinancialAidDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -18,18 +18,18 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
     where: { id: projectId },
     select: {
       userId: true,
-      aides: {
+      financialAid: {
         select: {
           // Montants des aides
-          ma_prime_renov: true,
+          maPrimeRenov: true,
           cee: true,
-          autres_aides: true,
-          total_aides: true,
+          otherAid: true,
+          totalAid: true,
           // Critères d'éligibilité sauvegardés
-          type_logement: true,
-          revenu_fiscal_reference: true,
-          residence_principale: true,
-          remplacement_complet: true,
+          housingType: true,
+          referenceTaxIncome: true,
+          isPrimaryResidence: true,
+          isCompleteReplacement: true,
         },
       },
     },
@@ -40,6 +40,6 @@ export const getAidesData = async ({ projectId }: GetAidesDataParams) => {
   }
 
   return {
-    aides: project.aides,
+    financialAid: project.financialAid,
   }
 }

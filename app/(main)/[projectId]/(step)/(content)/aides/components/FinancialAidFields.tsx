@@ -5,19 +5,19 @@ import { FinancialAidData } from "@/app/(main)/[projectId]/(step)/(content)/aide
 import { useEffect } from "react";
 import { AidCalculator } from "@/app/(main)/[projectId]/(step)/(content)/aides/components/AidCalculator";
 
-interface AidesFieldsProps {
+interface FinancialAidFieldsProps {
   formData: Partial<FinancialAidData>;
   errors: Partial<Record<keyof FinancialAidData, string>>;
   onChange: (name: keyof FinancialAidData, value: any) => void;
   projectId: string;
 }
 
-export function AidesFields({
+export function FinancialAidFields({
   formData,
   errors,
   onChange,
   projectId,
-}: AidesFieldsProps) {
+}: FinancialAidFieldsProps) {
   const maPrimeRenov = formData.ma_prime_renov;
   const cee = formData.cee;
   const autresAides = formData.autres_aides;

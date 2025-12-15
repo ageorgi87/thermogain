@@ -70,9 +70,9 @@ export const sendStudyResults = async ({
             totalCost: true,
           },
         },
-        aides: {
+        financialAid: {
           select: {
-            total_aides: true,
+            totalAid: true,
           },
         },
         results: {
@@ -130,7 +130,7 @@ export const sendStudyResults = async ({
 
     // 5. Calculer l'investissement net
     const investmentTotal = project.costs?.totalCost || 0;
-    const aidesTotal = project.aides?.total_aides || 0;
+    const aidesTotal = project.financialAid?.totalAid || 0;
     const investmentNet = investmentTotal - aidesTotal;
 
     // 6. Préparer les données pour l'email

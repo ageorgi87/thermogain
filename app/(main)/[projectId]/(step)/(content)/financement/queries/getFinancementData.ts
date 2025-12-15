@@ -25,9 +25,9 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
           totalCost: true,
         },
       },
-      aides: {
+      financialAid: {
         select: {
-          total_aides: true,
+          totalAid: true,
         },
       },
     },
@@ -49,6 +49,6 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
   return {
     financement,
     costs: project.costs,
-    aides: project.aides,
+    financialAid: project.financialAid,
   }
 }

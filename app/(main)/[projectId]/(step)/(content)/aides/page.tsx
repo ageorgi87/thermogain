@@ -2,13 +2,13 @@
 
 import { use } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
-import { AidesFields } from "@/app/(main)/[projectId]/(step)/(content)/aides/components/AidesFields";
+import { FinancialAidFields } from "@/app/(main)/[projectId]/(step)/(content)/aides/components/FinancialAidFields";
 import { saveFinancialAidData } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/saveFinancialAidData";
 import {
   financialAidSchema,
   type FinancialAidData,
 } from "@/app/(main)/[projectId]/(step)/(content)/aides/actions/financialAidSchema";
-import { getAidesData } from "@/app/(main)/[projectId]/(step)/(content)/aides/queries/getAidesData";
+import { getFinancialAidData } from "@/app/(main)/[projectId]/(step)/(content)/aides/queries/getFinancialAidData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
@@ -36,8 +36,8 @@ export default function AidesStepPage({
     stepKey: STEP_INFO.key,
     schema: financialAidSchema,
     loadData: async ({ projectId }) => {
-      const data = await getAidesData({ projectId });
-      return data.aides || {};
+      const data = await getFinancialAidData({ projectId });
+      return data.financialAid || {};
     },
     saveData: async ({ projectId, data }) => {
       await saveFinancialAidData({ projectId, data });
@@ -57,7 +57,7 @@ export default function AidesStepPage({
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
-      <AidesFields
+      <FinancialAidFields
         formData={formData}
         errors={errors}
         onChange={handleChange}

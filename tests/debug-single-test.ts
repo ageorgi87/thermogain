@@ -80,16 +80,16 @@ const debugTest = async () => {
         },
       },
 
-      aides: {
+      financialAid: {
         create: {
-          type_logement: 'maison',
-          revenu_fiscal_reference: 30000,
-          residence_principale: true,
-          remplacement_complet: true,
-          ma_prime_renov: 4000,
+          housingType: 'maison',
+          referenceTaxIncome: 30000,
+          isPrimaryResidence: true,
+          isCompleteReplacement: true,
+          maPrimeRenov: 4000,
           cee: 2500,
-          autres_aides: 0,
-          total_aides: 6500,
+          otherAid: 0,
+          totalAid: 6500,
         },
       },
 

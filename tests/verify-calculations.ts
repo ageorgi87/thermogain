@@ -80,16 +80,16 @@ const verifCalculs = async () => {
         },
       },
 
-      aides: {
+      financialAid: {
         create: {
-          type_logement: 'appartement',
-          revenu_fiscal_reference: 35000,
-          residence_principale: true,
-          remplacement_complet: true,
-          ma_prime_renov: 2000,
+          housingType: 'appartement',
+          referenceTaxIncome: 35000,
+          isPrimaryResidence: true,
+          isCompleteReplacement: true,
+          maPrimeRenov: 2000,
           cee: 1500,
-          autres_aides: 0,
-          total_aides: 3500,
+          otherAid: 0,
+          totalAid: 3500,
         },
       },
 

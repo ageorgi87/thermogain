@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getProjectDataForAides } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/getProjectDataForAides";
+import { getProjectDataForFinancialAid } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/getProjectDataForFinancialAid";
 import { calculateAidesAirEau } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesAirEau";
 import { calculateAidesAirAir } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesAirAir";
 import { calculateAidesGeothermique } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesGeothermique";
@@ -62,29 +62,29 @@ export const saveCriteriaAndCalculate = async (
     }
 
     // Sauvegarder les critères d'éligibilité en DB
-    await prisma.projectAides.upsert({
+    await prisma.projectFinancialAid.upsert({
       where: { projectId: params.projectId },
       create: {
         projectId: params.projectId,
-        type_logement: params.type_logement,
-        revenu_fiscal_reference: params.revenu_fiscal_reference,
-        residence_principale: params.residence_principale,
-        remplacement_complet: params.remplacement_complet,
-        ma_prime_renov: 0,
+        housingType: params.type_logement,
+        referenceTaxIncome: params.revenu_fiscal_reference,
+        isPrimaryResidence: params.residence_principale,
+        isCompleteReplacement: params.remplacement_complet,
+        maPrimeRenov: 0,
         cee: 0,
-        autres_aides: 0,
-        total_aides: 0,
+        otherAid: 0,
+        totalAid: 0,
       },
       update: {
-        type_logement: params.type_logement,
-        revenu_fiscal_reference: params.revenu_fiscal_reference,
-        residence_principale: params.residence_principale,
-        remplacement_complet: params.remplacement_complet,
+        housingType: params.type_logement,
+        referenceTaxIncome: params.revenu_fiscal_reference,
+        isPrimaryResidence: params.residence_principale,
+        isCompleteReplacement: params.remplacement_complet,
       },
     });
 
     // Récupérer les données brutes du projet depuis la DB
-    const projectData = await getProjectDataForAides(params.projectId);
+    const projectData = await getProjectDataForFinancialAid(params.projectId);
 
     // Dispatcher : Appeler la fonction de calcul appropriée selon le type de PAC
     let result;

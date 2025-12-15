@@ -23,7 +23,7 @@ const getProjectDataForCalculationsTestMode = async (
       dhw: true,
       heatPump: true,
       costs: true,
-      aides: true,
+      financialAid: true,
       financement: true,
     },
   });
@@ -37,7 +37,7 @@ const getProjectDataForCalculationsTestMode = async (
     !project.currentHeating ||
     !project.heatPump ||
     !project.costs ||
-    !project.aides
+    !project.financialAid
   ) {
     throw new Error(`Projet ${projectId} incomplet`);
   }
@@ -95,7 +95,7 @@ const getProjectDataForCalculationsTestMode = async (
     cout_total: project.costs.totalCost,
 
     // Reste à charge = coût total - aides
-    reste_a_charge: project.costs.totalCost - project.aides.total_aides,
+    reste_a_charge: project.costs.totalCost - project.financialAid.totalAid,
 
     // Financement
     mode_financement: project.financement?.mode_financement ?? undefined,

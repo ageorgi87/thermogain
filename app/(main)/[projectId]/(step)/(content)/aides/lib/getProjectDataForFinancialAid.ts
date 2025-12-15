@@ -14,7 +14,7 @@ import type { ClasseDPE } from "@/types/dpe";
  * @returns Données brutes du projet
  * @throws Error si des données requises sont manquantes
  */
-export const getProjectDataForAides = async (
+export const getProjectDataForFinancialAid = async (
   projectId: string
 ): Promise<ProjectDataForAides> => {
   // Récupérer toutes les données nécessaires du projet
@@ -30,11 +30,11 @@ export const getProjectDataForAides = async (
           livingArea: true,
         },
       },
-      aides: {
+      financialAid: {
         select: {
-          type_logement: true,
-          revenu_fiscal_reference: true,
-          residence_principale: true,
+          housingType: true,
+          referenceTaxIncome: true,
+          isPrimaryResidence: true,
         },
       },
       currentHeating: {
@@ -86,21 +86,21 @@ export const getProjectDataForAides = async (
     throw new Error("Données coûts manquantes");
   }
 
-  if (!project.aides) {
+  if (!project.financialAid) {
     throw new Error("Données aides manquantes");
   }
 
-  if (!project.aides.type_logement) {
+  if (!project.financialAid.housingType) {
     throw new Error("Type de logement manquant");
   }
 
-  if (!project.aides.revenu_fiscal_reference) {
+  if (!project.financialAid.referenceTaxIncome) {
     throw new Error("Revenu fiscal de référence manquant");
   }
 
   if (
-    project.aides.residence_principale === null ||
-    project.aides.residence_principale === undefined
+    project.financialAid.isPrimaryResidence === null ||
+    project.financialAid.isPrimaryResidence === undefined
   ) {
     throw new Error("Résidence principale manquante");
   }
@@ -115,9 +115,9 @@ export const getProjectDataForAides = async (
     surface_logement: project.housing.livingArea,
 
     // Aides (critères utilisateur)
-    type_logement: project.aides.type_logement as "maison" | "appartement",
-    revenu_fiscal_reference: project.aides.revenu_fiscal_reference,
-    residence_principale: project.aides.residence_principale,
+    type_logement: project.financialAid.housingType as "maison" | "appartement",
+    revenu_fiscal_reference: project.financialAid.referenceTaxIncome,
+    residence_principale: project.financialAid.isPrimaryResidence,
 
     // Chauffage actuel
     type_chauffage_actuel: project.currentHeating?.heatingType || null,
