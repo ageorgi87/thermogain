@@ -2,13 +2,13 @@
 
 import { use, useState } from "react"
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper"
-import { EcsActuelFields } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/components/EcsActuelFields"
-import { saveEcsActuelData } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/actions/saveEcsActuelData"
+import { CurrentDhwFields } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/components/CurrentDhwFields"
+import { saveCurrentDhwData } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/actions/saveCurrentDhwData"
 import {
-  ecsActuelSchema,
-  type EcsActuelData,
-} from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/actions/ecsActuelSchema"
-import { getCurrentEcsData } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/queries/getCurrentEcsData"
+  currentDhwSchema,
+  type CurrentDhwData,
+} from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/actions/currentDhwSchema"
+import { getCurrentDhwData } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/queries/getCurrentDhwData"
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData"
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm"
 
@@ -40,21 +40,21 @@ export default function EcsActuelStepPage({
   } = useStepForm({
     projectId,
     stepKey: STEP_INFO.key,
-    schema: ecsActuelSchema,
+    schema: currentDhwSchema,
     loadData: async ({ projectId }) => {
-      const data = await getCurrentEcsData({ projectId })
+      const data = await getCurrentDhwData({ projectId })
 
       setNombreOccupants(data.logementInfo.nombreOccupants)
       setDefaultPrices(data.defaultPrices)
 
-      if (data.ecs) {
+      if (data.dhw) {
         const {
           id,
           projectId: pid,
           createdAt,
           updatedAt,
           ...formFields
-        } = data.ecs
+        } = data.dhw
 
         // Convertir tous les null en undefined pour la validation Zod
         const cleanedFields = Object.fromEntries(
@@ -69,12 +69,12 @@ export default function EcsActuelStepPage({
       return {}
     },
     saveData: async ({ projectId, data }) => {
-      await saveEcsActuelData({ projectId, data, nombreOccupants })
+      await saveCurrentDhwData({ projectId, data, nombreOccupants })
     },
   })
 
   const handleNumberChange =
-    (name: keyof EcsActuelData) =>
+    (name: keyof CurrentDhwData) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value
       if (value === "") {
@@ -98,7 +98,7 @@ export default function EcsActuelStepPage({
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
-      <EcsActuelFields
+      <CurrentDhwFields
         formData={formData}
         errors={errors}
         onChange={handleChange}

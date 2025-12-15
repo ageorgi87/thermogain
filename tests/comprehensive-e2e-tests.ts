@@ -45,11 +45,11 @@ interface ProjectCreateData {
     gasSubscription?: number
     annualMaintenance: number
   }
-  ecs?: {
-    type_ecs: string
-    consumption_known: boolean
-    prix_ecs_kwh: number
-    entretien_ecs: number
+  dhw?: {
+    dhwSystemType: string
+    dhwConsumptionKnown: boolean
+    dhwEnergyPricePerKwh: number
+    dhwAnnualMaintenance: number
   }
   projetPac: {
     type_pac: string
@@ -346,11 +346,11 @@ const scenarios: TestScenario[] = [
         prix_elec_kwh: 0.2516,
         annualMaintenance: [50, 50, 100][i % 3],
       },
-      ecs: {
-        type_ecs: i % 2 === 0 ? "Ballon électrique" : "Thermodynamique",
-        consumption_known: false,
-        prix_ecs_kwh: 0.2516,
-        entretien_ecs: 0,
+      dhw: {
+        dhwSystemType: i % 2 === 0 ? "Ballon électrique" : "Thermodynamique",
+        dhwConsumptionKnown: false,
+        dhwEnergyPricePerKwh: 0.2516,
+        dhwAnnualMaintenance: 0,
       },
       projetPac: {
         type_pac: "Air/Eau",
@@ -424,11 +424,11 @@ const scenarios: TestScenario[] = [
         electricityPricePerKwh: i % 3 === 2 ? 0.2516 : undefined,
         annualMaintenance: [80, 100, 120][i % 3],
       },
-      ecs: i % 3 === 1 ? {
-        type_ecs: "Chauffe-eau solaire",
-        consumption_known: false,
-        prix_ecs_kwh: 0.2516,
-        entretien_ecs: 50,
+      dhw: i % 3 === 1 ? {
+        dhwSystemType: "Chauffe-eau solaire",
+        dhwConsumptionKnown: false,
+        dhwEnergyPricePerKwh: 0.2516,
+        dhwAnnualMaintenance: 50,
       } : undefined,
       projetPac: {
         type_pac: "Air/Eau",
@@ -518,7 +518,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         completed: true,
         housing: { create: scenario.data.housing },
         currentHeating: { create: scenario.data.currentHeating },
-        ...(scenario.data.ecs && { ecs: { create: scenario.data.ecs } }),
+        ...(scenario.data.dhw && { dhw: { create: scenario.data.dhw } }),
         projetPac: { create: scenario.data.projetPac },
         couts: { create: scenario.data.couts },
         aides: { create: scenario.data.aides },

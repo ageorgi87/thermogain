@@ -5,18 +5,18 @@ import { getCurrentConsumptionKwh, getCurrentEnergyPrice } from "@/app/(main)/[p
 /**
  * Résultat du calcul des coûts ECS
  */
-export interface EcsCostCalculation {
+export interface DhwCostCalculation {
   /** Coût ECS actuel annuel (€/an) */
-  currentEcsCost: number;
+  currentDhwCost: number;
 
   /** Coût ECS futur annuel avec PAC (€/an) - 0 si PAC sans gestion ECS */
-  futureEcsCost: number;
+  futureDhwCost: number;
 
   /** Économies ECS annuelles (€/an) */
-  ecsEconomiesAnnuelles: number;
+  dhwEconomiesAnnuelles: number;
 
   /** Consommation ECS estimée ou réelle (kWh/an) */
-  ecsConsumptionKwh: number;
+  dhwConsumptionKwh: number;
 
   /** Flag indiquant si la consommation ECS est estimée (ADEME) */
   isEstimated: boolean;
@@ -43,7 +43,7 @@ export interface EcsCostCalculation {
  * @param data Données complètes du projet
  * @returns Détails des coûts ECS et économies
  */
-export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
+export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
   const ecsIntegrated = data.ecs_integrated ?? false;
   const withEcsManagement = data.with_ecs_management ?? false;
 
@@ -54,10 +54,10 @@ export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
   // Pas de changement côté ECS
   if (ecsIntegrated && !withEcsManagement) {
     return {
-      currentEcsCost: 0,
-      futureEcsCost: 0,
-      ecsEconomiesAnnuelles: 0,
-      ecsConsumptionKwh: 0,
+      currentDhwCost: 0,
+      futureDhwCost: 0,
+      dhwEconomiesAnnuelles: 0,
+      dhwConsumptionKwh: 0,
       isEstimated: false,
       scenario: "A",
     };
@@ -74,30 +74,30 @@ export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
 
     // Estimation besoins ECS (ADEME)
     const nombreOccupants = data.nombre_occupants || 4; // Default 4 personnes
-    let besoinsEcs = nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR;
-    let besoinsChauffage = besoinsTotaux - besoinsEcs;
+    let besoinsDhw = nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR;
+    let besoinsChauffage = besoinsTotaux - besoinsDhw;
 
     // Validation : Si estimation ECS > total, utiliser ratio 80/20 (fallback)
-    if (besoinsChauffage < 0 || besoinsEcs > besoinsTotaux) {
+    if (besoinsChauffage < 0 || besoinsDhw > besoinsTotaux) {
       besoinsChauffage = besoinsTotaux * ECS_ESTIMATION.HEATING_TO_TOTAL_RATIO;
-      besoinsEcs = besoinsTotaux * ECS_ESTIMATION.DHW_TO_TOTAL_RATIO;
+      besoinsDhw = besoinsTotaux * ECS_ESTIMATION.DHW_TO_TOTAL_RATIO;
     }
 
     // Coût ECS actuel (estimation basée sur prix actuel)
     const prixEnergie = getCurrentEnergyPrice(data);
-    const currentEcsCost = besoinsEcs * prixEnergie;
+    const currentDhwCost = besoinsDhw * prixEnergie;
 
     // Coût ECS futur (PAC avec COP ECS)
-    const copEcs = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
+    const copDhw = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
     const prixElecPac = data.prix_elec_pac || data.prix_elec_kwh || 0;
-    const consoEcsPac = besoinsEcs / copEcs;
-    const futureEcsCost = consoEcsPac * prixElecPac;
+    const consoDhwPac = besoinsDhw / copDhw;
+    const futureDhwCost = consoDhwPac * prixElecPac;
 
     return {
-      currentEcsCost,
-      futureEcsCost,
-      ecsEconomiesAnnuelles: currentEcsCost - futureEcsCost,
-      ecsConsumptionKwh: besoinsEcs,
+      currentDhwCost,
+      futureDhwCost,
+      dhwEconomiesAnnuelles: currentDhwCost - futureDhwCost,
+      dhwConsumptionKwh: besoinsDhw,
       isEstimated: true,
       scenario: "B",
     };
@@ -108,17 +108,17 @@ export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
   // ============================================================================
   // Le système ECS actuel est conservé → même coût avant/après
   if (!ecsIntegrated && !withEcsManagement) {
-    const consoEcs = data.conso_ecs_kwh || 0;
-    const prixEcs = data.prix_ecs_kwh || 0;
-    const entretienEcs = data.entretien_ecs || 0;
+    const consoDhw = data.conso_ecs_kwh || 0;
+    const prixDhw = data.prix_ecs_kwh || 0;
+    const entretienDhw = data.entretien_ecs || 0;
 
-    const ecsCost = consoEcs * prixEcs + entretienEcs;
+    const dhwCost = consoDhw * prixDhw + entretienDhw;
 
     return {
-      currentEcsCost: ecsCost,
-      futureEcsCost: ecsCost, // Même coût (système conservé)
-      ecsEconomiesAnnuelles: 0, // Pas d'économies
-      ecsConsumptionKwh: consoEcs,
+      currentDhwCost: dhwCost,
+      futureDhwCost: dhwCost, // Même coût (système conservé)
+      dhwEconomiesAnnuelles: 0, // Pas d'économies
+      dhwConsumptionKwh: consoDhw,
       isEstimated: false,
       scenario: "C",
     };
@@ -129,25 +129,25 @@ export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
   // ============================================================================
   // Calcul complet : ECS actuel séparé vs PAC avec ECS intégrée
   if (!ecsIntegrated && withEcsManagement) {
-    const consoEcs = data.conso_ecs_kwh || 0;
-    const prixEcs = data.prix_ecs_kwh || 0;
-    const entretienEcs = data.entretien_ecs || 0;
+    const consoDhw = data.conso_ecs_kwh || 0;
+    const prixDhw = data.prix_ecs_kwh || 0;
+    const entretienDhw = data.entretien_ecs || 0;
 
     // Coût ECS actuel
-    const currentEcsCost = consoEcs * prixEcs + entretienEcs;
+    const currentDhwCost = consoDhw * prixDhw + entretienDhw;
 
     // Coût ECS futur (PAC avec COP ECS)
-    const copEcs = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
+    const copDhw = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
     const prixElecPac = data.prix_elec_pac || data.prix_elec_kwh || 0;
-    const consoEcsPac = consoEcs / copEcs;
-    const futureEcsCost = consoEcsPac * prixElecPac;
+    const consoDhwPac = consoDhw / copDhw;
+    const futureDhwCost = consoDhwPac * prixElecPac;
     // Note: Pas d'entretien séparé (inclus dans entretien_pac)
 
     return {
-      currentEcsCost,
-      futureEcsCost,
-      ecsEconomiesAnnuelles: currentEcsCost - futureEcsCost,
-      ecsConsumptionKwh: consoEcs,
+      currentDhwCost,
+      futureDhwCost,
+      dhwEconomiesAnnuelles: currentDhwCost - futureDhwCost,
+      dhwConsumptionKwh: consoDhw,
       isEstimated: false,
       scenario: "D",
     };
@@ -155,10 +155,10 @@ export const calculateEcsCosts = (data: ProjectData): EcsCostCalculation => {
 
   // Fallback (ne devrait jamais arriver)
   return {
-    currentEcsCost: 0,
-    futureEcsCost: 0,
-    ecsEconomiesAnnuelles: 0,
-    ecsConsumptionKwh: 0,
+    currentDhwCost: 0,
+    futureDhwCost: 0,
+    dhwEconomiesAnnuelles: 0,
+    dhwConsumptionKwh: 0,
     isEstimated: false,
     scenario: "A",
   };

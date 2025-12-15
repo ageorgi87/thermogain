@@ -11,7 +11,7 @@ import { calculatePaybackPeriod } from "@/app/(main)/[projectId]/lib/calculateAn
 import { calculateMonthlyPayment } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateMonthlyPayment";
 import { getEnergyPriceEvolutionFromDB } from "@/app/(main)/[projectId]/lib/getErnegyData/getEnergyPriceEvolutionFromDB";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
-import { calculateEcsCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts";
+import { calculateDhwCosts } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateDhwCosts";
 import { calculateEnergyNeedsWithDPE } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEnergyNeedsWithDPE";
 
 /**
@@ -62,12 +62,12 @@ export const calculateAllResults = async (
   );
 
   // Calculer les coûts ECS (avant/après)
-  const ecsCosts = calculateEcsCosts(data);
+  const dhwCosts = calculateDhwCosts(data);
 
   // Coûts année 1 - Chauffage actuel
   const currentVariableCost = calculateCurrentVariableCost(data);
   const currentFixedCosts = calculateCurrentFixedCosts(data);
-  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + ecsCosts.currentEcsCost;
+  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + dhwCosts.currentDhwCost;
 
   // Calcul des besoins énergétiques avec méthode MOYENNE (conso réelle + DPE)
   // Cette approche équilibrée tient compte de l'usage actuel ET anticipe un confort optimal
@@ -86,7 +86,7 @@ export const calculateAllResults = async (
   const pacVariableCost = consommationPacKwh * prixElec;
 
   const pacFixedCosts = calculatePacFixedCosts(data);
-  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total + ecsCosts.futureEcsCost;
+  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total + dhwCosts.futureDhwCost;
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : reste_a_charge

@@ -12,6 +12,6 @@ import { ECS_ESTIMATION } from "@/config/constants"
  * @param nombreOccupants - Nombre de personnes dans le logement
  * @returns Consommation estimée en kWh/an
  */
-export const estimateEcsConsumption = (nombreOccupants: number): number => {
+export const estimateDhwConsumption = (nombreOccupants: number): number => {
   return nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR
 }

@@ -20,7 +20,7 @@ const getProjectDataForCalculationsTestMode = async (
     include: {
       housing: true,
       currentHeating: true,
-      ecs: true,
+      dhw: true,
       projetPac: true,
       couts: true,
       aides: true,
@@ -71,10 +71,10 @@ const getProjectDataForCalculationsTestMode = async (
     entretien_annuel: project.currentHeating.annualMaintenance ?? undefined,
 
     // ECS (si séparé)
-    type_ecs: project.ecs?.type_ecs ?? undefined,
-    conso_ecs_kwh: project.ecs?.conso_ecs_kwh ?? undefined,
-    prix_ecs_kwh: project.ecs?.prix_ecs_kwh ?? undefined,
-    entretien_ecs: project.ecs?.entretien_ecs ?? undefined,
+    type_ecs: project.dhw?.dhwSystemType ?? undefined,
+    conso_ecs_kwh: project.dhw?.dhwConsumptionKwh ?? undefined,
+    prix_ecs_kwh: project.dhw?.dhwEnergyPricePerKwh ?? undefined,
+    entretien_ecs: project.dhw?.dhwAnnualMaintenance ?? undefined,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,

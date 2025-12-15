@@ -10,7 +10,7 @@ const inspect = async () => {
     include: {
       housing: true,
       currentHeating: true,
-      ecs: true,
+      dhw: true,
       projetPac: true,
       couts: true,
       aides: true,
@@ -32,7 +32,7 @@ const inspect = async () => {
   const sections = [
     { name: 'housing', data: project.housing },
     { name: 'currentHeating', data: project.currentHeating },
-    { name: 'ecs', data: project.ecs },
+    { name: 'dhw', data: project.dhw },
     { name: 'projetPac', data: project.projetPac },
     { name: 'couts', data: project.couts },
     { name: 'aides', data: project.aides },

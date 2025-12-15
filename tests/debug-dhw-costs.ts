@@ -3,7 +3,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { calculateEcsCosts } from '../app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateEcsCosts'
+import { calculateDhwCosts } from '../app/(main)/[projectId]/lib/calculateAndSaveResults/helpers/calculateDhwCosts'
 import type { ProjectData } from '../types/projectData'
 
 const debugEcsCosts = async () => {
@@ -59,19 +59,19 @@ const debugEcsCosts = async () => {
   console.log(`   Prix élec PAC: ${testData.prix_elec_pac}€/kWh`)
   console.log(`   COP ajusté: ${testData.cop_ajuste}\n`)
 
-  const ecsCosts = calculateEcsCosts(testData)
+  const dhwCosts = calculateDhwCosts(testData)
 
   console.log('🔍 RÉSULTATS CALCUL ECS:\n')
-  console.log(`   Scénario: ${ecsCosts.scenario}`)
-  console.log(`   Consommation ECS: ${ecsCosts.ecsConsumptionKwh.toFixed(0)} kWh/an`)
-  console.log(`   Estimation ADEME: ${ecsCosts.isEstimated ? 'OUI' : 'NON'}\n`)
+  console.log(`   Scénario: ${dhwCosts.scenario}`)
+  console.log(`   Consommation ECS: ${dhwCosts.dhwConsumptionKwh.toFixed(0)} kWh/an`)
+  console.log(`   Estimation ADEME: ${dhwCosts.isEstimated ? 'OUI' : 'NON'}\n`)
 
-  console.log(`   Coût ECS actuel: ${ecsCosts.currentEcsCost.toFixed(2)}€/an`)
-  console.log(`   Coût ECS futur (PAC): ${ecsCosts.futureEcsCost.toFixed(2)}€/an`)
-  console.log(`   Économies ECS: ${ecsCosts.ecsEconomiesAnnuelles.toFixed(2)}€/an\n`)
+  console.log(`   Coût ECS actuel: ${dhwCosts.currentDhwCost.toFixed(2)}€/an`)
+  console.log(`   Coût ECS futur (PAC): ${dhwCosts.futureDhwCost.toFixed(2)}€/an`)
+  console.log(`   Économies ECS: ${dhwCosts.dhwEconomiesAnnuelles.toFixed(2)}€/an\n`)
 
   // Calcul détaillé
-  if (ecsCosts.scenario === 'B') {
+  if (dhwCosts.scenario === 'B') {
     console.log('📐 DÉTAILS DU CALCUL (Scénario B):\n')
 
     const nombreOccupants = testData.nombre_occupants || 4

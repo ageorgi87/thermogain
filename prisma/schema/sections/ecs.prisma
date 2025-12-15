@@ -1,22 +1,22 @@
-// Section ECS (Eau Chaude Sanitaire)
+// Section DHW (Domestic Hot Water / Eau Chaude Sanitaire)
 // Stores information about the separate hot water system
-// Only used when ecs_integrated = false in ProjectChauffageActuel
+// Only used when dhwIntegrated = false in ProjectCurrentHeating
 
-model ProjectEcs {
+model ProjectDhw {
   id        String  @id @default(cuid())
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   // Type of DHW system
-  type_ecs String // "Ballon électrique", "Thermodynamique", "Chauffe-eau gaz", "Chauffe-eau solaire", "Autre"
+  dhwSystemType String // "Ballon électrique", "Thermodynamique", "Chauffe-eau gaz", "Chauffe-eau solaire", "Autre"
 
   // Consumption (user-provided or estimated)
-  consumption_known Boolean // true = manual input, false = auto estimation
-  conso_ecs_kwh     Float?  // Annual DHW consumption (kWh/year) - if consumption_known = true
+  dhwConsumptionKnown Boolean // true = manual input, false = auto estimation
+  dhwConsumptionKwh Float?  // Annual DHW consumption (kWh/year) - if dhwConsumptionKnown = true
 
   // Costs
-  prix_ecs_kwh  Float // Energy price (€/kWh)
-  entretien_ecs Float @default(0) // Annual maintenance cost (€/year)
+  dhwEnergyPricePerKwh Float // Energy price (€/kWh)
+  dhwAnnualMaintenance Float @default(0) // Annual maintenance cost (€/year)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -12,7 +12,7 @@ import { PacType } from "@/types/pacType";
  * @param projectId - ID du projet
  * @returns true si l'étape ECS doit être affichée, false sinon
  */
-export const shouldShowEcsStep = async (
+export const shouldShowDhwStep = async (
   projectId: string
 ): Promise<boolean> => {
   const project = await prisma.project.findUnique({
@@ -37,15 +37,15 @@ export const shouldShowEcsStep = async (
   }
 
   // 1. Vérifier que le type de PAC permet la gestion de l'ECS
-  const pacTypeAllowsEcs =
+  const pacTypeAllowsDhw =
     project.projetPac?.type_pac === PacType.AIR_EAU ||
     project.projetPac?.type_pac === PacType.EAU_EAU;
 
   // 2. Vérifier que le client veut que la PAC gère l'ECS
-  const clientWantsEcsManagement = project.projetPac?.with_ecs_management === true;
+  const clientWantsDhwManagement = project.projetPac?.with_ecs_management === true;
 
   // 3. Vérifier que le système actuel a une ECS séparée (pas intégrée au chauffage)
-  const currentEcsIsSeparate = project.currentHeating?.dhwIntegrated === false;
+  const currentDhwIsSeparate = project.currentHeating?.dhwIntegrated === false;
 
-  return pacTypeAllowsEcs && clientWantsEcsManagement && currentEcsIsSeparate;
+  return pacTypeAllowsDhw && clientWantsDhwManagement && currentDhwIsSeparate;
 };

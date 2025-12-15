@@ -1,4 +1,4 @@
-import { shouldShowEcsStep } from "@/app/(main)/[projectId]/(step)/lib/shouldShowEcsStep";
+import { shouldShowDhwStep } from "@/app/(main)/[projectId]/(step)/lib/shouldShowDhwStep";
 import {
   getNextStepKey as getNextStepKeyBase,
   getPreviousStepKey as getPreviousStepKeyBase,
@@ -21,8 +21,8 @@ export const getConditionalNextStepKey = async (
 
   // Si la prochaine étape est "systeme-ecs-actuel", vérifier si elle doit être affichée
   if (nextStepKey === WizardStepKey.SYSTEME_ECS_ACTUEL) {
-    const showEcs = await shouldShowEcsStep(projectId);
-    if (!showEcs) {
+    const showDhw = await shouldShowDhwStep(projectId);
+    if (!showDhw) {
       // Sauter l'étape ECS et passer à la suivante
       return getNextStepKeyBase(WizardStepKey.SYSTEME_ECS_ACTUEL);
     }
@@ -47,8 +47,8 @@ export const getConditionalPreviousStepKey = async (
 
   // Si l'étape précédente est "systeme-ecs-actuel", vérifier si elle doit être affichée
   if (previousStepKey === WizardStepKey.SYSTEME_ECS_ACTUEL) {
-    const showEcs = await shouldShowEcsStep(projectId);
-    if (!showEcs) {
+    const showDhw = await shouldShowDhwStep(projectId);
+    if (!showDhw) {
       // Sauter l'étape ECS et revenir à la précédente
       return getPreviousStepKeyBase(WizardStepKey.SYSTEME_ECS_ACTUEL);
     }

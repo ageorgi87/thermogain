@@ -36,7 +36,7 @@ export const getProjectDataForCalculations = async ({
     include: {
       housing: true,
       currentHeating: true,
-      ecs: true, // Données ECS séparé (si dhwIntegrated = false)
+      dhw: true, // Données DHW (Domestic Hot Water) séparé (si dhwIntegrated = false)
       projetPac: true,
       couts: true,
       aides: true,
@@ -86,10 +86,10 @@ export const getProjectDataForCalculations = async ({
     ecs_integrated: project.currentHeating.dhwIntegrated ?? undefined,
 
     // ECS séparé (si ecs_integrated = false)
-    type_ecs: project.ecs?.type_ecs ?? undefined,
-    conso_ecs_kwh: project.ecs?.conso_ecs_kwh ?? undefined,
-    prix_ecs_kwh: project.ecs?.prix_ecs_kwh ?? undefined,
-    entretien_ecs: project.ecs?.entretien_ecs ?? undefined,
+    type_ecs: project.dhw?.dhwSystemType ?? undefined,
+    conso_ecs_kwh: project.dhw?.dhwConsumptionKwh ?? undefined,
+    prix_ecs_kwh: project.dhw?.dhwEnergyPricePerKwh ?? undefined,
+    entretien_ecs: project.dhw?.dhwAnnualMaintenance ?? undefined,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,

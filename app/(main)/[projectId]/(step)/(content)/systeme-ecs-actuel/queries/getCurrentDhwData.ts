@@ -2,15 +2,15 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import type { ProjectEcs } from "@prisma/client"
+import type { ProjectDhw } from "@prisma/client"
 import { EnergyType } from "@/types/energyType"
 
-interface GetCurrentEcsDataParams {
+interface GetCurrentDhwDataParams {
   projectId: string
 }
 
-interface GetCurrentEcsDataResult {
-  ecs: ProjectEcs | null
+interface GetCurrentDhwDataResult {
+  dhw: ProjectDhw | null
   logementInfo: {
     nombreOccupants: number | null
   }
@@ -18,7 +18,7 @@ interface GetCurrentEcsDataResult {
     dhwIntegrated: boolean | null
   }
   pacInfo: {
-    withEcsManagement: boolean | null
+    withDhwManagement: boolean | null
   }
   defaultPrices: {
     electricite: number
@@ -30,9 +30,9 @@ interface GetCurrentEcsDataResult {
  * Récupère les données ECS et les infos nécessaires pour un projet
  * Query optimisée pour la page systeme-ecs-actuel
  */
-export const getCurrentEcsData = async ({
+export const getCurrentDhwData = async ({
   projectId,
-}: GetCurrentEcsDataParams): Promise<GetCurrentEcsDataResult> => {
+}: GetCurrentDhwDataParams): Promise<GetCurrentDhwDataResult> => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -44,7 +44,7 @@ export const getCurrentEcsData = async ({
     where: { id: projectId },
     select: {
       userId: true,
-      ecs: true,
+      dhw: true,
       housing: {
         select: {
           numberOfOccupants: true,
@@ -86,7 +86,7 @@ export const getCurrentEcsData = async ({
     cachedPrices.find((c) => c.energyType === EnergyType.GAZ)?.currentPrice ?? 0
 
   return {
-    ecs: project.ecs,
+    dhw: project.dhw,
     logementInfo: {
       nombreOccupants: project.housing?.numberOfOccupants ?? null,
     },
@@ -94,7 +94,7 @@ export const getCurrentEcsData = async ({
       dhwIntegrated: project.currentHeating?.dhwIntegrated ?? null,
     },
     pacInfo: {
-      withEcsManagement: project.projetPac?.with_ecs_management ?? null,
+      withDhwManagement: project.projetPac?.with_ecs_management ?? null,
     },
     defaultPrices: {
       electricite: electricitePrice,
