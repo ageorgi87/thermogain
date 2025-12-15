@@ -65,9 +65,9 @@ export const sendStudyResults = async ({
             heatPumpType: true,
           },
         },
-        couts: {
+        costs: {
           select: {
-            cout_total: true,
+            totalCost: true,
           },
         },
         aides: {
@@ -129,7 +129,7 @@ export const sendStudyResults = async ({
     const results = project.results;
 
     // 5. Calculer l'investissement net
-    const investmentTotal = project.couts?.cout_total || 0;
+    const investmentTotal = project.costs?.totalCost || 0;
     const aidesTotal = project.aides?.total_aides || 0;
     const investmentNet = investmentTotal - aidesTotal;
 

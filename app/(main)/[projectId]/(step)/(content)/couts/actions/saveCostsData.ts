@@ -31,13 +31,13 @@ export const saveCostsData = async ({
 
   // Convert undefined values to 0 for Prisma (which doesn't accept undefined for Float fields)
   const prismaData = {
-    cout_pac: validatedData.cout_pac ?? 0,
-    cout_installation: validatedData.cout_installation ?? 0,
-    cout_travaux_annexes: validatedData.cout_travaux_annexes ?? 0,
-    cout_total: validatedData.cout_total ?? 0,
+    heatPumpCost: validatedData.cout_pac ?? 0,
+    installationCost: validatedData.cout_installation ?? 0,
+    additionalWorkCost: validatedData.cout_travaux_annexes ?? 0,
+    totalCost: validatedData.cout_total ?? 0,
   }
 
-  const couts = await prisma.projectCouts.upsert({
+  const costs = await prisma.projectCosts.upsert({
     where: { projectId },
     create: {
       ...prismaData,
@@ -53,5 +53,5 @@ export const saveCostsData = async ({
     })
   }
 
-  return couts
+  return costs
 }

@@ -71,12 +71,12 @@ const verifCalculs = async () => {
         },
       },
 
-      couts: {
+      costs: {
         create: {
-          cout_pac: 8000,
-          cout_installation: 2000,
-          cout_travaux_annexes: 1500,
-          cout_total: 11500,
+          heatPumpCost: 8000,
+          installationCost: 2000,
+          additionalWorkCost: 1500,
+          totalCost: 11500,
         },
       },
 

@@ -3,11 +3,11 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-interface GetCoutsDataParams {
+interface GetCostsDataParams {
   projectId: string
 }
 
-export const getCoutsData = async ({ projectId }: GetCoutsDataParams) => {
+export const getCostsData = async ({ projectId }: GetCostsDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -18,7 +18,7 @@ export const getCoutsData = async ({ projectId }: GetCoutsDataParams) => {
     where: { id: projectId },
     select: {
       userId: true,
-      couts: true,
+      costs: true,
     },
   })
 
@@ -27,6 +27,6 @@ export const getCoutsData = async ({ projectId }: GetCoutsDataParams) => {
   }
 
   return {
-    couts: project.couts,
+    costs: project.costs,
   }
 }

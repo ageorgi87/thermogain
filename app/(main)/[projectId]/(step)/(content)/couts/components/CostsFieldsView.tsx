@@ -4,10 +4,10 @@ import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField"
 import type { CostsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema";
 
 interface CostsFieldsViewProps {
-  coutPac: number | undefined;
-  coutInstallation: number | undefined;
-  coutTravauxAnnexes: number | undefined;
-  coutTotal: number;
+  heatPumpCost: number | undefined;
+  installationCost: number | undefined;
+  additionalWorkCost: number | undefined;
+  totalCost: number;
   errors: Partial<Record<keyof CostsData, string>>;
   onChange: ({
     field,
@@ -23,10 +23,10 @@ interface CostsFieldsViewProps {
  * Aucune logique métier, reçoit tout via props
  */
 export const CostsFieldsView = ({
-  coutPac,
-  coutInstallation,
-  coutTravauxAnnexes,
-  coutTotal,
+  heatPumpCost,
+  installationCost,
+  additionalWorkCost,
+  totalCost,
   errors,
   onChange,
 }: CostsFieldsViewProps) => (
@@ -36,7 +36,7 @@ export const CostsFieldsView = ({
         type="number"
         min="0"
         placeholder="ex: 8000"
-        value={coutPac ?? ""}
+        value={heatPumpCost ?? ""}
         onChange={(e) => onChange({ field: "cout_pac", value: e.target.value })}
       />
     </FormField>
@@ -46,7 +46,7 @@ export const CostsFieldsView = ({
         type="number"
         min="0"
         placeholder="ex: 5000"
-        value={coutInstallation ?? ""}
+        value={installationCost ?? ""}
         onChange={(e) =>
           onChange({ field: "cout_installation", value: e.target.value })
         }
@@ -62,7 +62,7 @@ export const CostsFieldsView = ({
         type="number"
         min="0"
         placeholder="ex: 1500"
-        value={coutTravauxAnnexes ?? ""}
+        value={additionalWorkCost ?? ""}
         onChange={(e) =>
           onChange({ field: "cout_travaux_annexes", value: e.target.value })
         }
@@ -74,7 +74,7 @@ export const CostsFieldsView = ({
     <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
       <span className="text-lg font-semibold">Coût total</span>
       <span className="text-2xl font-bold">
-        {coutTotal.toLocaleString("fr-FR")} €
+        {totalCost.toLocaleString("fr-FR")} €
       </span>
     </div>
   </div>

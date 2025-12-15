@@ -71,12 +71,12 @@ const debugTest = async () => {
         },
       },
 
-      couts: {
+      costs: {
         create: {
-          cout_pac: 12000,
-          cout_installation: 3000,
-          cout_travaux_annexes: 2000,
-          cout_total: 17000,
+          heatPumpCost: 12000,
+          installationCost: 3000,
+          additionalWorkCost: 2000,
+          totalCost: 17000,
         },
       },
 

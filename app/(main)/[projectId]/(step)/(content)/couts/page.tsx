@@ -2,17 +2,17 @@
 
 import { use, useEffect } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
-import { CostsFieldsView } from "@/app/(main)/[projectId]/(step)/(content)/couts/components/CoutsFieldsView";
+import { CostsFieldsView } from "@/app/(main)/[projectId]/(step)/(content)/couts/components/CostsFieldsView";
 import { saveCostsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/saveCostsData";
 import {
   costsSchema,
   type CostsData,
 } from "@/app/(main)/[projectId]/(step)/(content)/couts/actions/costsSchema";
-import { getCoutsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/queries/getCoutsData";
+import { getCostsData } from "@/app/(main)/[projectId]/(step)/(content)/couts/queries/getCostsData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
-export default function CoutsStepPage({
+export default function CostsStepPage({
   params,
 }: {
   params: Promise<{ projectId: string }>;
@@ -36,8 +36,8 @@ export default function CoutsStepPage({
     stepKey: STEP_INFO.key,
     schema: costsSchema,
     loadData: async ({ projectId }) => {
-      const data = await getCoutsData({ projectId });
-      return data.couts || {};
+      const data = await getCostsData({ projectId });
+      return data.costs || {};
     },
     saveData: async ({ projectId, data }) => {
       await saveCostsData({ projectId, data });
@@ -45,17 +45,17 @@ export default function CoutsStepPage({
   });
 
   // Calcul du total
-  const coutTotal =
+  const totalCost =
     (formData.cout_pac || 0) +
     (formData.cout_installation || 0) +
     (formData.cout_travaux_annexes || 0);
 
   // Synchronisation du total calculé avec formData
   useEffect(() => {
-    if (formData.cout_total !== coutTotal) {
-      handleChange("cout_total", coutTotal);
+    if (formData.cout_total !== totalCost) {
+      handleChange("cout_total", totalCost);
     }
-  }, [coutTotal, formData.cout_total]);
+  }, [totalCost, formData.cout_total]);
 
   const handleFieldChange = ({
     field,
@@ -82,10 +82,10 @@ export default function CoutsStepPage({
       onNext={handleSubmit}
     >
       <CostsFieldsView
-        coutPac={formData.cout_pac}
-        coutInstallation={formData.cout_installation}
-        coutTravauxAnnexes={formData.cout_travaux_annexes}
-        coutTotal={coutTotal}
+        heatPumpCost={formData.cout_pac}
+        installationCost={formData.cout_installation}
+        additionalWorkCost={formData.cout_travaux_annexes}
+        totalCost={totalCost}
         errors={errors}
         onChange={handleFieldChange}
       />

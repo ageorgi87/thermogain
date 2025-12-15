@@ -17,7 +17,7 @@ export default function FinancementStepPage({
 }) {
   const { projectId } = use(params);
 
-  const [totalCouts, setTotalCouts] = useState(0);
+  const [totalCosts, setTotalCosts] = useState(0);
   const [totalAides, setTotalAides] = useState(0);
 
   const STEP_INFO = getStepInfo("financement")!;
@@ -39,7 +39,7 @@ export default function FinancementStepPage({
     loadData: async ({ projectId }) => {
       const data = await getFinancementData({ projectId });
 
-      setTotalCouts(data.couts?.cout_total || 0);
+      setTotalCosts(data.costs?.totalCost || 0);
       setTotalAides(data.aides?.total_aides || 0);
 
       return data.financement || {};
@@ -71,7 +71,7 @@ export default function FinancementStepPage({
         formData={formData}
         errors={errors}
         onChange={handleChange}
-        totalCouts={totalCouts}
+        totalCouts={totalCosts}
         totalAides={totalAides}
       />
     </StepWrapper>

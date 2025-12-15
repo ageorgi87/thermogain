@@ -48,10 +48,10 @@ export const getProjectDataForAides = async (
           estimatedCop: true,
         },
       },
-      couts: {
+      costs: {
         select: {
-          cout_pac: true,
-          cout_installation: true,
+          heatPumpCost: true,
+          installationCost: true,
         },
       },
     },
@@ -82,7 +82,7 @@ export const getProjectDataForAides = async (
     throw new Error("Données PAC manquantes");
   }
 
-  if (!project.couts) {
+  if (!project.costs) {
     throw new Error("Données coûts manquantes");
   }
 
@@ -127,7 +127,7 @@ export const getProjectDataForAides = async (
     cop_estime: project.heatPump.estimatedCop!,
 
     // Coûts
-    cout_pac: project.couts.cout_pac,
-    cout_installation: project.couts.cout_installation,
+    cout_pac: project.costs.heatPumpCost,
+    cout_installation: project.costs.installationCost,
   };
 };

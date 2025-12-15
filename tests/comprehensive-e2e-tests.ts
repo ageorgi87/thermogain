@@ -51,7 +51,7 @@ interface ProjectCreateData {
     dhwEnergyPricePerKwh: number
     dhwAnnualMaintenance: number
   }
-  projetPac: {
+  heatPump: {
     heatPumpType: string
     heatPumpPowerKw: number
     estimatedCop: number
@@ -65,11 +65,11 @@ interface ProjectCreateData {
     annualMaintenanceCost: number
     withDhwManagement?: boolean
   }
-  couts: {
-    cout_pac: number
-    cout_installation: number
-    cout_travaux_annexes: number
-    cout_total: number
+  costs: {
+    heatPumpCost: number
+    installationCost: number
+    additionalWorkCost: number
+    totalCost: number
   }
   aides: {
     type_logement: string
@@ -144,7 +144,7 @@ const scenarios: TestScenario[] = [
         fuelPricePerLiter: 1.40 + (i * 0.05),
         annualMaintenance: 150,
       },
-      projetPac: {
+      heatPump: {
         heatPumpType: "Air/Eau",
         heatPumpPowerKw: [8, 12, 16][i % 3],
         estimatedCop: 3.5,
@@ -158,11 +158,11 @@ const scenarios: TestScenario[] = [
         annualMaintenanceCost: 200,
         withDhwManagement: true,
       },
-      couts: {
-        cout_pac: [10000, 15000, 18000][i % 3],
-        cout_installation: [2500, 4000, 5000][i % 3],
-        cout_travaux_annexes: [1500, 3000, 4000][i % 3],
-        cout_total: [14000, 22000, 27000][i % 3],
+      costs: {
+        heatPumpCost: [10000, 15000, 18000][i % 3],
+        installationCost: [2500, 4000, 5000][i % 3],
+        additionalWorkCost: [1500, 3000, 4000][i % 3],
+        totalCost: [14000, 22000, 27000][i % 3],
       },
       aides: {
         type_logement: "maison",
@@ -212,7 +212,7 @@ const scenarios: TestScenario[] = [
         gasSubscription: 120 + (i * 20),
         annualMaintenance: 120 + (i * 10),
       },
-      projetPac: {
+      heatPump: {
         heatPumpType: "Air/Eau",
         heatPumpPowerKw: [6, 10, 14][i % 3],
         estimatedCop: 3.8 + (i * 0.05),
@@ -226,11 +226,11 @@ const scenarios: TestScenario[] = [
         annualMaintenanceCost: 180,
         withDhwManagement: true,
       },
-      couts: {
-        cout_pac: [8000, 12000, 16000][i % 3],
-        cout_installation: [2000, 3000, 4000][i % 3],
-        cout_travaux_annexes: i % 2 === 0 ? [1500, 2500, 3500][i % 3] : [3000, 5000, 7000][i % 3],
-        cout_total: i % 2 === 0 ? [11500, 17500, 23500][i % 3] : [13000, 20000, 27000][i % 3],
+      costs: {
+        heatPumpCost: [8000, 12000, 16000][i % 3],
+        installationCost: [2000, 3000, 4000][i % 3],
+        additionalWorkCost: i % 2 === 0 ? [1500, 2500, 3500][i % 3] : [3000, 5000, 7000][i % 3],
+        totalCost: i % 2 === 0 ? [11500, 17500, 23500][i % 3] : [13000, 20000, 27000][i % 3],
       },
       aides: {
         type_logement: i % 3 === 0 ? "appartement" : "maison",
@@ -279,7 +279,7 @@ const scenarios: TestScenario[] = [
         lpgPricePerKg: 1.80 + (i * 0.10),
         annualMaintenance: 180 + (i * 20),
       },
-      projetPac: {
+      heatPump: {
         heatPumpType: "Air/Eau",
         heatPumpPowerKw: [10, 14, 18][i % 3],
         estimatedCop: 3.3,
@@ -293,11 +293,11 @@ const scenarios: TestScenario[] = [
         annualMaintenanceCost: 220,
         withDhwManagement: true,
       },
-      couts: {
-        cout_pac: [13000, 16000, 19000][i % 3],
-        cout_installation: [3500, 4500, 5500][i % 3],
-        cout_travaux_annexes: [2500, 3500, 4500][i % 3],
-        cout_total: [19000, 24000, 29000][i % 3],
+      costs: {
+        heatPumpCost: [13000, 16000, 19000][i % 3],
+        installationCost: [3500, 4500, 5500][i % 3],
+        additionalWorkCost: [2500, 3500, 4500][i % 3],
+        totalCost: [19000, 24000, 29000][i % 3],
       },
       aides: {
         type_logement: "maison",
@@ -352,7 +352,7 @@ const scenarios: TestScenario[] = [
         dhwEnergyPricePerKwh: 0.2516,
         dhwAnnualMaintenance: 0,
       },
-      projetPac: {
+      heatPump: {
         heatPumpType: "Air/Eau",
         heatPumpPowerKw: [8, 11, 14][i % 3],
         estimatedCop: 4.0 + (i * 0.05),
@@ -366,11 +366,11 @@ const scenarios: TestScenario[] = [
         annualMaintenanceCost: 190,
         withDhwManagement: true,
       },
-      couts: {
-        cout_pac: [9000, 13000, 16000][i % 3],
-        cout_installation: [2500, 3500, 4500][i % 3],
-        cout_travaux_annexes: i % 2 === 0 ? [5000, 6000, 7000][i % 3] : [2000, 3000, 4000][i % 3],
-        cout_total: i % 2 === 0 ? [16500, 22500, 27500][i % 3] : [13500, 19500, 24500][i % 3],
+      costs: {
+        heatPumpCost: [9000, 13000, 16000][i % 3],
+        installationCost: [2500, 3500, 4500][i % 3],
+        additionalWorkCost: i % 2 === 0 ? [5000, 6000, 7000][i % 3] : [2000, 3000, 4000][i % 3],
+        totalCost: i % 2 === 0 ? [16500, 22500, 27500][i % 3] : [13500, 19500, 24500][i % 3],
       },
       aides: {
         type_logement: "maison",
@@ -430,7 +430,7 @@ const scenarios: TestScenario[] = [
         dhwEnergyPricePerKwh: 0.2516,
         dhwAnnualMaintenance: 50,
       } : undefined,
-      projetPac: {
+      heatPump: {
         heatPumpType: "Air/Eau",
         heatPumpPowerKw: [5, 6, 7][i % 3],
         estimatedCop: 4.5,
@@ -444,11 +444,11 @@ const scenarios: TestScenario[] = [
         annualMaintenanceCost: 180,
         withDhwManagement: i % 3 !== 1,
       },
-      couts: {
-        cout_pac: [7000, 8000, 9000][i % 3],
-        cout_installation: [2000, 2500, 3000][i % 3],
-        cout_travaux_annexes: [1000, 1500, 2000][i % 3],
-        cout_total: [10000, 12000, 14000][i % 3],
+      costs: {
+        heatPumpCost: [7000, 8000, 9000][i % 3],
+        installationCost: [2000, 2500, 3000][i % 3],
+        additionalWorkCost: [1000, 1500, 2000][i % 3],
+        totalCost: [10000, 12000, 14000][i % 3],
       },
       aides: {
         type_logement: i % 2 === 0 ? "appartement" : "maison",
@@ -519,8 +519,8 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         housing: { create: scenario.data.housing },
         currentHeating: { create: scenario.data.currentHeating },
         ...(scenario.data.dhw && { dhw: { create: scenario.data.dhw } }),
-        heatPump: { create: scenario.data.projetPac },
-        couts: { create: scenario.data.couts },
+        heatPump: { create: scenario.data.heatPump },
+        costs: { create: scenario.data.costs },
         aides: { create: scenario.data.aides },
         financement: { create: scenario.data.financement },
       },

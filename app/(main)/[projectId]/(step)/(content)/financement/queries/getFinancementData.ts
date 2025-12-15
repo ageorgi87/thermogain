@@ -20,9 +20,9 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
     select: {
       userId: true,
       financement: true,
-      couts: {
+      costs: {
         select: {
-          cout_total: true,
+          totalCost: true,
         },
       },
       aides: {
@@ -48,7 +48,7 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
 
   return {
     financement,
-    couts: project.couts,
+    costs: project.costs,
     aides: project.aides,
   }
 }
