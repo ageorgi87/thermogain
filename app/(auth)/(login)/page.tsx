@@ -256,7 +256,7 @@ export default function LoginPage() {
               </CardTitle>
               <CardDescription className="text-center">
                 {step === "email" &&
-                  "Entrez votre adresse e-mail professionnelle pour commencer"}
+                  "Entrez votre adresse e-mail pour commencer"}
                 {step === "login" &&
                   "Entrez votre mot de passe pour accéder à votre espace"}
                 {step === "register" &&
@@ -291,9 +291,7 @@ export default function LoginPage() {
               {step === "email" && (
                 <form onSubmit={handleEmailSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">
-                      Adresse e-mail professionnelle
-                    </Label>
+                    <Label htmlFor="email">Adresse e-mail</Label>
                     <Input
                       id="email"
                       type="email"
