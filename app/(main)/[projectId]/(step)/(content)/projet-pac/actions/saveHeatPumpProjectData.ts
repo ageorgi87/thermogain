@@ -29,7 +29,7 @@ export const saveHeatPumpProjectData = async ({
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     include: {
-      logement: true,
+      housing: true,
     },
   });
 
@@ -42,7 +42,7 @@ export const saveHeatPumpProjectData = async ({
   const cop_ajuste = calculateAdjustedCOP(
     validatedData.cop_estime,
     validatedData.emetteurs ?? EmitterType.RADIATEURS_BASSE_TEMP,
-    project.logement?.code_postal ?? undefined,
+    project.housing?.postalCode ?? undefined,
     validatedData.type_pac
   );
 

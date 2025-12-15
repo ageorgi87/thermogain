@@ -45,9 +45,9 @@ export const getCurrentEcsData = async ({
     select: {
       userId: true,
       ecs: true,
-      logement: {
+      housing: {
         select: {
-          nombre_occupants: true,
+          numberOfOccupants: true,
         },
       },
       chauffageActuel: {
@@ -88,7 +88,7 @@ export const getCurrentEcsData = async ({
   return {
     ecs: project.ecs,
     logementInfo: {
-      nombreOccupants: project.logement?.nombre_occupants ?? null,
+      nombreOccupants: project.housing?.numberOfOccupants ?? null,
     },
     chauffageActuelInfo: {
       ecsIntegrated: project.chauffageActuel?.ecs_integrated ?? null,

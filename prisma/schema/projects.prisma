@@ -13,7 +13,7 @@ model Project {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations to section tables (one-to-one relationships)
-  logement        ProjectLogement?
+  housing         ProjectHousing?
   chauffageActuel ProjectChauffageActuel?
   ecs             ProjectEcs? // DHW (Domestic Hot Water) - only if ecs_integrated = false
   projetPac       ProjectProjetPac?

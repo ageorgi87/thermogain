@@ -26,16 +26,16 @@ export function HousingFields({
       <FormField
         label="Code postal"
         required
-        error={errors.code_postal}
+        error={errors.postalCode}
         description="Code postal français (métropole, Corse, DOM-TOM)"
       >
         <Input
           placeholder="ex: 75001, 20000, 97400"
           maxLength={5}
-          value={formData.code_postal ?? ""}
+          value={formData.postalCode ?? ""}
           onChange={(e) => {
             const value = e.target.value;
-            onChange("code_postal", value === "" ? undefined : value);
+            onChange("postalCode", value === "" ? undefined : value);
           }}
         />
       </FormField>
@@ -43,20 +43,20 @@ export function HousingFields({
       <FormField
         label="Année de construction"
         required
-        error={errors.annee_construction}
+        error={errors.constructionYear}
       >
         <Input
           type="number"
           min="1600"
           placeholder="ex: 1990, 2010"
-          value={formData.annee_construction ?? ""}
+          value={formData.constructionYear ?? ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
-              onChange("annee_construction", undefined);
+              onChange("constructionYear", undefined);
             } else {
               const num = parseFloat(value);
-              onChange("annee_construction", isNaN(num) ? undefined : num);
+              onChange("constructionYear", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -65,21 +65,21 @@ export function HousingFields({
       <FormField
         label="Surface habitable (m²)"
         required
-        error={errors.surface_logement}
+        error={errors.livingArea}
       >
         <Input
           type="number"
           min="10"
           max="1000"
           placeholder="ex: 100"
-          value={formData.surface_logement ?? ""}
+          value={formData.livingArea ?? ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
-              onChange("surface_logement", undefined);
+              onChange("livingArea", undefined);
             } else {
               const num = parseFloat(value);
-              onChange("surface_logement", isNaN(num) ? undefined : num);
+              onChange("livingArea", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -88,20 +88,20 @@ export function HousingFields({
       <FormField
         label="Nombre d'occupants"
         required
-        error={errors.nombre_occupants}
+        error={errors.numberOfOccupants}
       >
         <Input
           type="number"
           min="0"
           placeholder="ex: 3"
-          value={formData.nombre_occupants ?? ""}
+          value={formData.numberOfOccupants ?? ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
-              onChange("nombre_occupants", undefined);
+              onChange("numberOfOccupants", undefined);
             } else {
               const num = parseFloat(value);
-              onChange("nombre_occupants", isNaN(num) ? undefined : num);
+              onChange("numberOfOccupants", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -110,13 +110,13 @@ export function HousingFields({
       <FormField
         label="Classe DPE (Diagnostic de Performance Énergétique)"
         required={true}
-        error={errors.classe_dpe}
+        error={errors.dpeRating}
       >
         <Select
           onValueChange={(value) => {
-            onChange("classe_dpe", value as HousingData["classe_dpe"]);
+            onChange("dpeRating", value as HousingData["dpeRating"]);
           }}
-          value={formData.classe_dpe}
+          value={formData.dpeRating}
         >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionnez la classe DPE" />

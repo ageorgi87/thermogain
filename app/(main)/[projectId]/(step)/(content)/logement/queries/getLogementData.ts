@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import type { HousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema"
 
 interface GetLogementDataParams {
   projectId: string
@@ -19,7 +18,7 @@ export const getLogementData = async ({ projectId }: GetLogementDataParams) => {
     where: { id: projectId },
     select: {
       userId: true,
-      logement: true,
+      housing: true,
     },
   })
 
@@ -27,16 +26,7 @@ export const getLogementData = async ({ projectId }: GetLogementDataParams) => {
     throw new Error("Projet non trouvé")
   }
 
-  // Map Prisma data to HousingData type
-  const logement: Partial<HousingData> | null = project.logement ? {
-    code_postal: project.logement.code_postal,
-    annee_construction: project.logement.annee_construction,
-    surface_logement: project.logement.surface_logement,
-    nombre_occupants: project.logement.nombre_occupants,
-    classe_dpe: project.logement.classe_dpe as HousingData["classe_dpe"],
-  } : null
-
   return {
-    logement,
+    housing: project.housing,
   }
 }

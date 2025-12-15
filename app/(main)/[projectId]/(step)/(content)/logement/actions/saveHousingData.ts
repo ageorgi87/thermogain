@@ -30,14 +30,14 @@ export const saveHousingData = async ({
     throw new Error("Projet non trouvé");
   }
 
-  // Upsert logement data
-  const logement = await prisma.projectLogement.upsert({
+  // Upsert housing data
+  const housing = await prisma.projectHousing.upsert({
     where: { projectId },
     create: {
       ...validatedData,
       projectId,
-    } as any,
-    update: validatedData as any,
+    },
+    update: validatedData,
   });
 
   // Update project's current step if needed
@@ -48,5 +48,5 @@ export const saveHousingData = async ({
     });
   }
 
-  return logement;
+  return housing;
 };

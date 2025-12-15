@@ -37,7 +37,7 @@ export default function LogementStepPage({
     schema: housingSchema,
     loadData: async ({ projectId }) => {
       const data = await getLogementData({ projectId });
-      return data.logement || {};
+      return data.housing || {};
     },
     saveData: async ({ projectId, data }) => {
       await saveHousingData({ projectId, data });

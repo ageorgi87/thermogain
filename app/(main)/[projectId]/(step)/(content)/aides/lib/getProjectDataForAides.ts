@@ -21,13 +21,13 @@ export const getProjectDataForAides = async (
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: {
-      logement: {
+      housing: {
         select: {
-          code_postal: true,
-          annee_construction: true,
-          nombre_occupants: true,
-          classe_dpe: true,
-          surface_logement: true,
+          postalCode: true,
+          constructionYear: true,
+          numberOfOccupants: true,
+          dpeRating: true,
+          livingArea: true,
         },
       },
       aides: {
@@ -62,19 +62,19 @@ export const getProjectDataForAides = async (
   }
 
   // Vérifier les données requises
-  if (!project.logement) {
+  if (!project.housing) {
     throw new Error("Données logement manquantes");
   }
 
-  if (!project.logement.nombre_occupants) {
+  if (!project.housing.numberOfOccupants) {
     throw new Error("Nombre d'occupants manquant");
   }
 
-  if (!project.logement.classe_dpe) {
+  if (!project.housing.dpeRating) {
     throw new Error("Classe DPE manquante");
   }
 
-  if (!project.logement.surface_logement) {
+  if (!project.housing.livingArea) {
     throw new Error("Surface logement manquante");
   }
 
@@ -108,11 +108,11 @@ export const getProjectDataForAides = async (
   // Retourner les données brutes (pas de transformation)
   return {
     // Logement
-    code_postal: project.logement.code_postal,
-    annee_construction: project.logement.annee_construction,
-    nombre_occupants: project.logement.nombre_occupants,
-    classe_dpe: project.logement.classe_dpe as ClasseDPE,
-    surface_logement: project.logement.surface_logement,
+    code_postal: project.housing.postalCode,
+    annee_construction: project.housing.constructionYear,
+    nombre_occupants: project.housing.numberOfOccupants,
+    classe_dpe: project.housing.dpeRating as ClasseDPE,
+    surface_logement: project.housing.livingArea,
 
     // Aides (critères utilisateur)
     type_logement: project.aides.type_logement as "maison" | "appartement",

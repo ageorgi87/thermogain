@@ -34,7 +34,7 @@ export const getProjectDataForCalculations = async ({
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     include: {
-      logement: true,
+      housing: true,
       chauffageActuel: true,
       ecs: true, // Données ECS séparé (si ecs_integrated = false)
       projetPac: true,
@@ -50,7 +50,7 @@ export const getProjectDataForCalculations = async ({
 
   // Vérifier que toutes les données nécessaires sont présentes
   if (
-    !project.logement ||
+    !project.housing ||
     !project.chauffageActuel ||
     !project.projetPac ||
     !project.couts ||
@@ -106,12 +106,12 @@ export const getProjectDataForCalculations = async ({
     cop_ecs: project.projetPac.cop_ecs ?? undefined,
 
     // Logement (pour estimation ECS + besoins énergétiques DPE)
-    nombre_occupants: project.logement.nombre_occupants ?? undefined,
-    classe_dpe: project.logement.classe_dpe ?? undefined,
-    surface_logement: project.logement.surface_logement ?? undefined,
+    nombre_occupants: project.housing.numberOfOccupants ?? undefined,
+    classe_dpe: project.housing.dpeRating ?? undefined,
+    surface_logement: project.housing.livingArea ?? undefined,
 
     // Code postal pour ajustement climatique
-    code_postal: project.logement.code_postal ?? undefined,
+    code_postal: project.housing.postalCode ?? undefined,
 
     // Coûts
     cout_total: project.couts.cout_total,
