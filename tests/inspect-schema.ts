@@ -8,8 +8,8 @@ const inspect = async () => {
   // Récupérer un projet existant avec toutes ses relations
   const project = await prisma.project.findFirst({
     include: {
-      logement: true,
-      chauffageActuel: true,
+      housing: true,
+      currentHeating: true,
       ecs: true,
       projetPac: true,
       couts: true,
@@ -30,8 +30,8 @@ const inspect = async () => {
   console.log('\n📋 Structure des données:\n')
 
   const sections = [
-    { name: 'logement', data: project.logement },
-    { name: 'chauffageActuel', data: project.chauffageActuel },
+    { name: 'housing', data: project.housing },
+    { name: 'currentHeating', data: project.currentHeating },
     { name: 'ecs', data: project.ecs },
     { name: 'projetPac', data: project.projetPac },
     { name: 'couts', data: project.couts },

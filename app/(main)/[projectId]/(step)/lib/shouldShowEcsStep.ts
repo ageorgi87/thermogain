@@ -24,9 +24,9 @@ export const shouldShowEcsStep = async (
           with_ecs_management: true,
         },
       },
-      chauffageActuel: {
+      currentHeating: {
         select: {
-          ecs_integrated: true,
+          dhwIntegrated: true,
         },
       },
     },
@@ -45,7 +45,7 @@ export const shouldShowEcsStep = async (
   const clientWantsEcsManagement = project.projetPac?.with_ecs_management === true;
 
   // 3. Vérifier que le système actuel a une ECS séparée (pas intégrée au chauffage)
-  const currentEcsIsSeparate = project.chauffageActuel?.ecs_integrated === false;
+  const currentEcsIsSeparate = project.currentHeating?.dhwIntegrated === false;
 
   return pacTypeAllowsEcs && clientWantsEcsManagement && currentEcsIsSeparate;
 };

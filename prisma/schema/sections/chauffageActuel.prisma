@@ -1,42 +1,42 @@
-// Section 2: Chauffage Actuel (Current Heating System)
+// Section 2: Current Heating System
 // Stores information about the existing heating system and energy consumption
 
-model ProjectChauffageActuel {
+model ProjectCurrentHeating {
   id        String  @id @default(cuid())
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  type_chauffage    String
-  age_installation  Int
-  etat_installation String
+  heatingType          String
+  installationAge      Int
+  installationCondition String
 
   // DHW (Domestic Hot Water) integration
   // true = DHW integrated in heating system (mixed boiler), false = separate DHW system
-  // Only relevant if future PAC will manage DHW (with_ecs_management = true)
-  ecs_integrated Boolean?
+  // Only relevant if future heat pump will manage DHW (with_ecs_management = true)
+  dhwIntegrated Boolean?
 
-  // Consumption data - conditional based on type_chauffage
-  conso_fioul_litres Float?
-  prix_fioul_litre   Float?
-  conso_gaz_kwh      Float?
-  prix_gaz_kwh       Float?
-  conso_gpl_kg       Float?
-  prix_gpl_kg        Float?
-  conso_pellets_kg   Float?
-  prix_pellets_kg    Float?
-  conso_bois_steres  Float?
-  prix_bois_stere    Float?
-  conso_elec_kwh     Float?
-  prix_elec_kwh      Float?
-  cop_actuel         Float?
-  conso_pac_kwh      Float?
+  // Consumption data - conditional based on heatingType
+  fuelConsumptionLiters    Float?
+  fuelPricePerLiter        Float?
+  gasConsumptionKwh        Float?
+  gasPricePerKwh           Float?
+  lpgConsumptionKg         Float?
+  lpgPricePerKg            Float?
+  pelletsConsumptionKg     Float?
+  pelletsPricePerKg        Float?
+  woodConsumptionSteres    Float?
+  woodPricePerStere        Float?
+  electricityConsumptionKwh Float?
+  electricityPricePerKwh   Float?
+  currentCop               Float?
+  heatPumpConsumptionKwh   Float?
 
-  // Fixed costs and subscriptions (Novembre 2024)
-  // Annual gas subscription (€/year) - only for type_chauffage = "Gaz"
-  abonnement_gaz Float?
+  // Fixed costs and subscriptions (November 2024)
+  // Annual gas subscription (€/year) - only for heatingType = "gas"
+  gasSubscription Float?
 
   // Annual maintenance cost of current system (€/year)
-  entretien_annuel Float
+  annualMaintenance Float
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

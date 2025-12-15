@@ -2,14 +2,14 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import type { ProjectChauffageActuel } from "@prisma/client"
+import type { ProjectCurrentHeating } from "@prisma/client"
 
-interface GetChauffageActuelDataParams {
+interface GetCurrentHeatingDataParams {
   projectId: string
 }
 
-interface GetChauffageActuelDataResult {
-  chauffageActuel: ProjectChauffageActuel | null
+interface GetCurrentHeatingDataResult {
+  currentHeating: ProjectCurrentHeating | null
   pacInfo: {
     typePac: string | null
     withEcsManagement: boolean | null
@@ -17,24 +17,24 @@ interface GetChauffageActuelDataResult {
 }
 
 /**
- * Récupère les données de chauffage actuel et les infos PAC pour un projet
- * Query optimisée pour la page chauffage-actuel
+ * Retrieves current heating data and heat pump info for a project
+ * Optimized query for the current heating page
  */
-export const getChauffageActuelData = async ({
+export const getCurrentHeatingData = async ({
   projectId
-}: GetChauffageActuelDataParams): Promise<GetChauffageActuelDataResult> => {
+}: GetCurrentHeatingDataParams): Promise<GetCurrentHeatingDataResult> => {
   const session = await auth()
 
   if (!session?.user?.id) {
     throw new Error("Non autorisé")
   }
 
-  // Vérifier que le projet appartient à l'utilisateur
+  // Verify that the project belongs to the user
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: {
       userId: true,
-      chauffageActuel: true,
+      currentHeating: true,
       projetPac: {
         select: {
           type_pac: true,
@@ -53,7 +53,7 @@ export const getChauffageActuelData = async ({
   }
 
   return {
-    chauffageActuel: project.chauffageActuel,
+    currentHeating: project.currentHeating,
     pacInfo: {
       typePac: project.projetPac?.type_pac || null,
       withEcsManagement: project.projetPac?.with_ecs_management ?? null,

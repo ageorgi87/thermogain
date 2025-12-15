@@ -37,9 +37,9 @@ export const getProjectDataForAides = async (
           residence_principale: true,
         },
       },
-      chauffageActuel: {
+      currentHeating: {
         select: {
-          type_chauffage: true,
+          heatingType: true,
         },
       },
       projetPac: {
@@ -120,7 +120,7 @@ export const getProjectDataForAides = async (
     residence_principale: project.aides.residence_principale,
 
     // Chauffage actuel
-    type_chauffage_actuel: project.chauffageActuel?.type_chauffage || null,
+    type_chauffage_actuel: project.currentHeating?.heatingType || null,
 
     // Projet PAC
     type_pac: project.projetPac.type_pac,

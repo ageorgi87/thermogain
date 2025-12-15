@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import type { ProjectChauffageActuel } from "@prisma/client";
+import type { ProjectCurrentHeating } from "@prisma/client";
 import {
   currentHeatingSchema,
   type CurrentHeatingData,
@@ -16,7 +16,7 @@ interface SaveCurrentHeatingDataParams {
 export const saveCurrentHeatingData = async ({
   projectId,
   data,
-}: SaveCurrentHeatingDataParams): Promise<ProjectChauffageActuel> => {
+}: SaveCurrentHeatingDataParams): Promise<ProjectCurrentHeating> => {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -33,13 +33,13 @@ export const saveCurrentHeatingData = async ({
     throw new Error("Projet non trouvé");
   }
 
-  const chauffageActuel = await prisma.projectChauffageActuel.upsert({
+  const currentHeating = await prisma.projectCurrentHeating.upsert({
     where: { projectId },
     create: {
       ...validatedData,
       projectId,
-    } as any,
-    update: validatedData as any,
+    },
+    update: validatedData,
   });
 
   // Update currentStep from 1 to 2 (chauffage-actuel is now step 1)
@@ -50,5 +50,5 @@ export const saveCurrentHeatingData = async ({
     });
   }
 
-  return chauffageActuel;
+  return currentHeating;
 };

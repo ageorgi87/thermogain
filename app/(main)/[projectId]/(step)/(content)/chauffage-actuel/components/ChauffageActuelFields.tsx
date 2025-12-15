@@ -52,23 +52,23 @@ export const ChauffageActuelFields = ({
   defaultPrices,
   shouldAskEcsIntegrated,
 }: ChauffageActuelFieldsProps) => {
-  const typeChauffage = formData.type_chauffage;
+  const typeChauffage = formData.heatingType;
 
   return (
     <div className="space-y-6">
       <FormField
         label="Type de chauffage"
         required
-        error={errors.type_chauffage}
+        error={errors.heatingType}
       >
         <Select
           onValueChange={(value) =>
             onChange(
-              "type_chauffage",
-              value as CurrentHeatingData["type_chauffage"]
+              "heatingType",
+              value as CurrentHeatingData["heatingType"]
             )
           }
-          value={formData.type_chauffage}
+          value={formData.heatingType}
         >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionnez un type" />
@@ -99,30 +99,30 @@ export const ChauffageActuelFields = ({
         <FormField
           label="Âge de l'installation (années)"
           required
-          error={errors.age_installation}
+          error={errors.installationAge}
         >
           <Input
             type="number"
             min="0"
             placeholder="ex: 10"
-            value={formData.age_installation ?? ""}
-            onChange={onNumberChange("age_installation")}
+            value={formData.installationAge ?? ""}
+            onChange={onNumberChange("installationAge")}
           />
         </FormField>
 
         <FormField
           label="État de l'installation"
           required
-          error={errors.etat_installation}
+          error={errors.installationCondition}
         >
           <Select
             onValueChange={(value) =>
               onChange(
-                "etat_installation",
-                value as CurrentHeatingData["etat_installation"]
+                "installationCondition",
+                value as CurrentHeatingData["installationCondition"]
               )
             }
-            value={formData.etat_installation}
+            value={formData.installationCondition}
           >
             <SelectTrigger>
               <SelectValue placeholder="Sélectionnez l'état" />
@@ -141,15 +141,15 @@ export const ChauffageActuelFields = ({
         <FormField
           label="Votre système de chauffage actuel gère-t-il l'eau chaude sanitaire ?"
           required
-          error={errors.ecs_integrated}
+          error={errors.dhwIntegrated}
         >
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                name="ecs_integrated"
-                checked={formData.ecs_integrated === true}
-                onChange={() => onChange("ecs_integrated", true)}
+                name="dhwIntegrated"
+                checked={formData.dhwIntegrated === true}
+                onChange={() => onChange("dhwIntegrated", true)}
                 className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
               />
               <span className="text-sm">Oui</span>
@@ -157,9 +157,9 @@ export const ChauffageActuelFields = ({
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                name="ecs_integrated"
-                checked={formData.ecs_integrated === false}
-                onChange={() => onChange("ecs_integrated", false)}
+                name="dhwIntegrated"
+                checked={formData.dhwIntegrated === false}
+                onChange={() => onChange("dhwIntegrated", false)}
                 className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
               />
               <span className="text-sm">Non</span>
@@ -169,7 +169,7 @@ export const ChauffageActuelFields = ({
       )}
 
       {/* Information message about consumption - only if ECS question was asked */}
-      {shouldAskEcsIntegrated && formData.ecs_integrated !== undefined && (
+      {shouldAskEcsIntegrated && formData.dhwIntegrated !== undefined && (
         <div className="bg-muted/50 border border-border rounded-lg p-4">
           <div className="flex gap-3">
             <div className="shrink-0">
@@ -189,7 +189,7 @@ export const ChauffageActuelFields = ({
               <h3 className="text-sm font-medium text-foreground mb-1">
                 Consommation à renseigner
               </h3>
-              {formData.ecs_integrated === true ? (
+              {formData.dhwIntegrated === true ? (
                 <p className="text-sm text-muted-foreground">
                   Votre système actuel gère le chauffage ET l'eau chaude
                   sanitaire. Renseignez la <strong>consommation totale</strong>{" "}
@@ -207,20 +207,20 @@ export const ChauffageActuelFields = ({
         </div>
       )}
 
-      {/* Consumption fields - conditional based on type_chauffage */}
+      {/* Consumption fields - conditional based on heatingType */}
       {typeChauffage === TypeChauffageActuel.FIOUL && (
         <div className="grid grid-cols-2 gap-4">
           <FormField
             label="Consommation (litres/an)"
             required
-            error={errors.conso_fioul_litres}
+            error={errors.fuelConsumptionLiters}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 2000"
-              value={formData.conso_fioul_litres ?? ""}
-              onChange={onNumberChange("conso_fioul_litres")}
+              value={formData.fuelConsumptionLiters ?? ""}
+              onChange={onNumberChange("fuelConsumptionLiters")}
             />
           </FormField>
 
@@ -233,15 +233,15 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_fioul_litre}
+            error={errors.fuelPricePerLiter}
           >
             <Input
               type="number"
               step="0.01"
               min="0"
               placeholder="ex: 1.20"
-              value={formData.prix_fioul_litre ?? ""}
-              onChange={onNumberChange("prix_fioul_litre")}
+              value={formData.fuelPricePerLiter ?? ""}
+              onChange={onNumberChange("fuelPricePerLiter")}
             />
           </FormField>
         </div>
@@ -252,14 +252,14 @@ export const ChauffageActuelFields = ({
           <FormField
             label="Consommation (kWh/an)"
             required
-            error={errors.conso_gaz_kwh}
+            error={errors.gasConsumptionKwh}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 15000"
-              value={formData.conso_gaz_kwh ?? ""}
-              onChange={onNumberChange("conso_gaz_kwh")}
+              value={formData.gasConsumptionKwh ?? ""}
+              onChange={onNumberChange("gasConsumptionKwh")}
             />
           </FormField>
 
@@ -272,30 +272,30 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_gaz_kwh}
+            error={errors.gasPricePerKwh}
           >
             <Input
               type="number"
               step="0.001"
               min="0"
               placeholder="ex: 0.10"
-              value={formData.prix_gaz_kwh ?? ""}
-              onChange={onNumberChange("prix_gaz_kwh")}
+              value={formData.gasPricePerKwh ?? ""}
+              onChange={onNumberChange("gasPricePerKwh")}
             />
           </FormField>
 
           <FormField
             label="Abonnement gaz (€/an)"
             required
-            error={errors.abonnement_gaz}
+            error={errors.gasSubscription}
             className="col-span-2"
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 120"
-              value={formData.abonnement_gaz ?? ""}
-              onChange={onNumberChange("abonnement_gaz")}
+              value={formData.gasSubscription ?? ""}
+              onChange={onNumberChange("gasSubscription")}
             />
           </FormField>
         </div>
@@ -306,14 +306,14 @@ export const ChauffageActuelFields = ({
           <FormField
             label="Consommation (kg/an)"
             required
-            error={errors.conso_gpl_kg}
+            error={errors.lpgConsumptionKg}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 1500"
-              value={formData.conso_gpl_kg ?? ""}
-              onChange={onNumberChange("conso_gpl_kg")}
+              value={formData.lpgConsumptionKg ?? ""}
+              onChange={onNumberChange("lpgConsumptionKg")}
             />
           </FormField>
 
@@ -326,15 +326,15 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_gpl_kg}
+            error={errors.lpgPricePerKg}
           >
             <Input
               type="number"
               step="0.01"
               min="0"
               placeholder="ex: 2.50"
-              value={formData.prix_gpl_kg ?? ""}
-              onChange={onNumberChange("prix_gpl_kg")}
+              value={formData.lpgPricePerKg ?? ""}
+              onChange={onNumberChange("lpgPricePerKg")}
             />
           </FormField>
         </div>
@@ -345,14 +345,14 @@ export const ChauffageActuelFields = ({
           <FormField
             label="Consommation (kg/an)"
             required
-            error={errors.conso_pellets_kg}
+            error={errors.pelletsConsumptionKg}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 3000"
-              value={formData.conso_pellets_kg ?? ""}
-              onChange={onNumberChange("conso_pellets_kg")}
+              value={formData.pelletsConsumptionKg ?? ""}
+              onChange={onNumberChange("pelletsConsumptionKg")}
             />
           </FormField>
 
@@ -365,15 +365,15 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_pellets_kg}
+            error={errors.pelletsPricePerKg}
           >
             <Input
               type="number"
               step="0.01"
               min="0"
               placeholder="ex: 0.35"
-              value={formData.prix_pellets_kg ?? ""}
-              onChange={onNumberChange("prix_pellets_kg")}
+              value={formData.pelletsPricePerKg ?? ""}
+              onChange={onNumberChange("pelletsPricePerKg")}
             />
           </FormField>
         </div>
@@ -384,14 +384,14 @@ export const ChauffageActuelFields = ({
           <FormField
             label="Consommation (stères/an)"
             required
-            error={errors.conso_bois_steres}
+            error={errors.woodConsumptionSteres}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 8"
-              value={formData.conso_bois_steres ?? ""}
-              onChange={onNumberChange("conso_bois_steres")}
+              value={formData.woodConsumptionSteres ?? ""}
+              onChange={onNumberChange("woodConsumptionSteres")}
             />
           </FormField>
 
@@ -404,15 +404,15 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_bois_stere}
+            error={errors.woodPricePerStere}
           >
             <Input
               type="number"
               step="0.01"
               min="0"
               placeholder="ex: 80"
-              value={formData.prix_bois_stere ?? ""}
-              onChange={onNumberChange("prix_bois_stere")}
+              value={formData.woodPricePerStere ?? ""}
+              onChange={onNumberChange("woodPricePerStere")}
             />
           </FormField>
         </div>
@@ -423,14 +423,14 @@ export const ChauffageActuelFields = ({
           <FormField
             label="Consommation (kWh/an)"
             required
-            error={errors.conso_elec_kwh}
+            error={errors.electricityConsumptionKwh}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 8000"
-              value={formData.conso_elec_kwh ?? ""}
-              onChange={onNumberChange("conso_elec_kwh")}
+              value={formData.electricityConsumptionKwh ?? ""}
+              onChange={onNumberChange("electricityConsumptionKwh")}
             />
           </FormField>
 
@@ -443,15 +443,15 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_elec_kwh}
+            error={errors.electricityPricePerKwh}
           >
             <Input
               type="number"
               step="0.001"
               min="0"
               placeholder="ex: 0.17"
-              value={formData.prix_elec_kwh ?? ""}
-              onChange={onNumberChange("prix_elec_kwh")}
+              value={formData.electricityPricePerKwh ?? ""}
+              onChange={onNumberChange("electricityPricePerKwh")}
             />
           </FormField>
         </div>
@@ -464,7 +464,7 @@ export const ChauffageActuelFields = ({
           <FormField
             label="COP actuel"
             required
-            error={errors.cop_actuel}
+            error={errors.currentCop}
             description="Coefficient de Performance de votre PAC actuelle"
           >
             <Input
@@ -473,22 +473,22 @@ export const ChauffageActuelFields = ({
               min="1"
               max="10"
               placeholder="ex: 3.5"
-              value={formData.cop_actuel ?? ""}
-              onChange={onNumberChange("cop_actuel")}
+              value={formData.currentCop ?? ""}
+              onChange={onNumberChange("currentCop")}
             />
           </FormField>
 
           <FormField
             label="Consommation électrique (kWh/an)"
             required
-            error={errors.conso_pac_kwh}
+            error={errors.heatPumpConsumptionKwh}
           >
             <Input
               type="number"
               min="0"
               placeholder="ex: 4000"
-              value={formData.conso_pac_kwh ?? ""}
-              onChange={onNumberChange("conso_pac_kwh")}
+              value={formData.heatPumpConsumptionKwh ?? ""}
+              onChange={onNumberChange("heatPumpConsumptionKwh")}
             />
           </FormField>
 
@@ -501,7 +501,7 @@ export const ChauffageActuelFields = ({
               />
             }
             required
-            error={errors.prix_elec_kwh}
+            error={errors.electricityPricePerKwh}
             className="col-span-2"
           >
             <Input
@@ -509,8 +509,8 @@ export const ChauffageActuelFields = ({
               step="0.001"
               min="0"
               placeholder="ex: 0.17"
-              value={formData.prix_elec_kwh ?? ""}
-              onChange={onNumberChange("prix_elec_kwh")}
+              value={formData.electricityPricePerKwh ?? ""}
+              onChange={onNumberChange("electricityPricePerKwh")}
             />
           </FormField>
         </div>
@@ -548,15 +548,15 @@ export const ChauffageActuelFields = ({
           </div>
         }
         required
-        error={errors.entretien_annuel}
+        error={errors.annualMaintenance}
       >
         <Input
           type="number"
           min="0"
           max="500"
           placeholder="ex: 150"
-          value={formData.entretien_annuel ?? ""}
-          onChange={onNumberChange("entretien_annuel")}
+          value={formData.annualMaintenance ?? ""}
+          onChange={onNumberChange("annualMaintenance")}
         />
       </FormField>
     </div>

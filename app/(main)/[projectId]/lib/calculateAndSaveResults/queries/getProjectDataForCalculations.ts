@@ -35,8 +35,8 @@ export const getProjectDataForCalculations = async ({
     where: { id: projectId },
     include: {
       housing: true,
-      chauffageActuel: true,
-      ecs: true, // Données ECS séparé (si ecs_integrated = false)
+      currentHeating: true,
+      ecs: true, // Données ECS séparé (si dhwIntegrated = false)
       projetPac: true,
       couts: true,
       aides: true,
@@ -51,7 +51,7 @@ export const getProjectDataForCalculations = async ({
   // Vérifier que toutes les données nécessaires sont présentes
   if (
     !project.housing ||
-    !project.chauffageActuel ||
+    !project.currentHeating ||
     !project.projetPac ||
     !project.couts ||
     !project.aides
@@ -65,25 +65,25 @@ export const getProjectDataForCalculations = async ({
   // Mapper vers le format ProjectData utilisé par les calculs
   return {
     // Chauffage actuel
-    type_chauffage: project.chauffageActuel.type_chauffage,
-    conso_fioul_litres: project.chauffageActuel.conso_fioul_litres ?? undefined,
-    prix_fioul_litre: project.chauffageActuel.prix_fioul_litre ?? undefined,
-    conso_gaz_kwh: project.chauffageActuel.conso_gaz_kwh ?? undefined,
-    prix_gaz_kwh: project.chauffageActuel.prix_gaz_kwh ?? undefined,
-    conso_gpl_kg: project.chauffageActuel.conso_gpl_kg ?? undefined,
-    prix_gpl_kg: project.chauffageActuel.prix_gpl_kg ?? undefined,
-    conso_pellets_kg: project.chauffageActuel.conso_pellets_kg ?? undefined,
-    prix_pellets_kg: project.chauffageActuel.prix_pellets_kg ?? undefined,
-    conso_bois_steres: project.chauffageActuel.conso_bois_steres ?? undefined,
-    prix_bois_stere: project.chauffageActuel.prix_bois_stere ?? undefined,
-    conso_elec_kwh: project.chauffageActuel.conso_elec_kwh ?? undefined,
-    prix_elec_kwh: project.chauffageActuel.prix_elec_kwh ?? undefined,
-    cop_actuel: project.chauffageActuel.cop_actuel ?? undefined,
-    conso_pac_kwh: project.chauffageActuel.conso_pac_kwh ?? undefined,
+    type_chauffage: project.currentHeating.heatingType,
+    conso_fioul_litres: project.currentHeating.fuelConsumptionLiters ?? undefined,
+    prix_fioul_litre: project.currentHeating.fuelPricePerLiter ?? undefined,
+    conso_gaz_kwh: project.currentHeating.gasConsumptionKwh ?? undefined,
+    prix_gaz_kwh: project.currentHeating.gasPricePerKwh ?? undefined,
+    conso_gpl_kg: project.currentHeating.lpgConsumptionKg ?? undefined,
+    prix_gpl_kg: project.currentHeating.lpgPricePerKg ?? undefined,
+    conso_pellets_kg: project.currentHeating.pelletsConsumptionKg ?? undefined,
+    prix_pellets_kg: project.currentHeating.pelletsPricePerKg ?? undefined,
+    conso_bois_steres: project.currentHeating.woodConsumptionSteres ?? undefined,
+    prix_bois_stere: project.currentHeating.woodPricePerStere ?? undefined,
+    conso_elec_kwh: project.currentHeating.electricityConsumptionKwh ?? undefined,
+    prix_elec_kwh: project.currentHeating.electricityPricePerKwh ?? undefined,
+    cop_actuel: project.currentHeating.currentCop ?? undefined,
+    conso_pac_kwh: project.currentHeating.heatPumpConsumptionKwh ?? undefined,
     puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
-    abonnement_gaz: project.chauffageActuel.abonnement_gaz ?? undefined,
-    entretien_annuel: project.chauffageActuel.entretien_annuel,
-    ecs_integrated: project.chauffageActuel.ecs_integrated ?? undefined,
+    abonnement_gaz: project.currentHeating.gasSubscription ?? undefined,
+    entretien_annuel: project.currentHeating.annualMaintenance,
+    ecs_integrated: project.currentHeating.dhwIntegrated ?? undefined,
 
     // ECS séparé (si ecs_integrated = false)
     type_ecs: project.ecs?.type_ecs ?? undefined,

@@ -34,7 +34,7 @@ export default async function ResultsPage({ params }: PageProps) {
   // Check if all required data is present
   if (
     !project.housing ||
-    !project.chauffageActuel ||
+    !project.currentHeating ||
     !project.projetPac ||
     !project.couts ||
     !project.aides

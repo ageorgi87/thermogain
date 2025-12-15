@@ -14,8 +14,8 @@ interface GetCurrentEcsDataResult {
   logementInfo: {
     nombreOccupants: number | null
   }
-  chauffageActuelInfo: {
-    ecsIntegrated: boolean | null
+  currentHeatingInfo: {
+    dhwIntegrated: boolean | null
   }
   pacInfo: {
     withEcsManagement: boolean | null
@@ -50,9 +50,9 @@ export const getCurrentEcsData = async ({
           numberOfOccupants: true,
         },
       },
-      chauffageActuel: {
+      currentHeating: {
         select: {
-          ecs_integrated: true,
+          dhwIntegrated: true,
         },
       },
       projetPac: {
@@ -90,8 +90,8 @@ export const getCurrentEcsData = async ({
     logementInfo: {
       nombreOccupants: project.housing?.numberOfOccupants ?? null,
     },
-    chauffageActuelInfo: {
-      ecsIntegrated: project.chauffageActuel?.ecs_integrated ?? null,
+    currentHeatingInfo: {
+      dhwIntegrated: project.currentHeating?.dhwIntegrated ?? null,
     },
     pacInfo: {
       withEcsManagement: project.projetPac?.with_ecs_management ?? null,

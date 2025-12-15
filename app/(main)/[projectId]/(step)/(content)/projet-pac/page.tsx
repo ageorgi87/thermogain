@@ -30,13 +30,13 @@ export default function ProjetPacStepPage({
     bois: 0,
     electricite: 0,
   });
-  const [typeChauffageActuel, setTypeChauffageActuel] = useState<
+  const [currentHeatingType, setCurrentHeatingType] = useState<
     string | undefined
   >();
-  const [prixElecKwhActuel, setPrixElecKwhActuel] = useState<
+  const [currentElectricityPricePerKwh, setCurrentElectricityPricePerKwh] = useState<
     number | undefined
   >();
-  const [puissanceSouscriteActuelle, setPuissanceSouscriteActuelle] = useState<
+  const [currentSubscribedPower, setCurrentSubscribedPower] = useState<
     number | undefined
   >();
 
@@ -61,9 +61,9 @@ export default function ProjetPacStepPage({
       ]);
 
       setDefaultPrices(prices);
-      setTypeChauffageActuel(data.chauffageActuel?.type_chauffage);
-      setPrixElecKwhActuel(data.chauffageActuel?.prix_elec_kwh ?? undefined);
-      setPuissanceSouscriteActuelle(undefined);
+      setCurrentHeatingType(data.currentHeating?.heatingType);
+      setCurrentElectricityPricePerKwh(data.currentHeating?.electricityPricePerKwh ?? undefined);
+      setCurrentSubscribedPower(undefined);
 
       return data.projetPac || {};
     },
@@ -97,10 +97,10 @@ export default function ProjetPacStepPage({
         formData={formData}
         errors={errors}
         onChange={handleChange}
-        currentElectricPower={puissanceSouscriteActuelle}
+        currentElectricPower={currentSubscribedPower}
         defaultElectricityPrice={defaultPrices.electricite}
-        prixElecKwhActuel={prixElecKwhActuel}
-        typeChauffageActuel={typeChauffageActuel}
+        prixElecKwhActuel={currentElectricityPricePerKwh}
+        typeChauffageActuel={currentHeatingType}
       />
     </StepWrapper>
   );

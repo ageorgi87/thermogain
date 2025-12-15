@@ -55,9 +55,9 @@ export const sendStudyResults = async ({
             website: true,
           },
         },
-        chauffageActuel: {
+        currentHeating: {
           select: {
-            type_chauffage: true,
+            heatingType: true,
           },
         },
         projetPac: {
@@ -149,7 +149,7 @@ export const sendStudyResults = async ({
       professionalWebsite: project.user.website || undefined,
       projectName: project.name,
       currentHeatingType:
-        project.chauffageActuel?.type_chauffage || "système actuel",
+        project.currentHeating?.heatingType || "système actuel",
       pacType: project.projetPac?.type_pac || "PAC",
       investmentTotal: Math.round(investmentTotal),
       aidesTotal: Math.round(aidesTotal),

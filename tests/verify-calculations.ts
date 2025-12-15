@@ -31,26 +31,26 @@ const verifCalculs = async () => {
       currentStep: 8,
       completed: true,
 
-      logement: {
+      housing: {
         create: {
-          code_postal: '83000', // Var - H3 sud
-          annee_construction: 2005,
-          surface_logement: 70,
-          nombre_occupants: 3,
-          classe_dpe: 'C',
+          postalCode: '83000', // Var - H3 sud
+          constructionYear: 2005,
+          livingArea: 70,
+          numberOfOccupants: 3,
+          dpeRating: 'C',
         },
       },
 
-      chauffageActuel: {
+      currentHeating: {
         create: {
-          type_chauffage: 'Gaz',
-          age_installation: 12,
-          etat_installation: 'Bon',
-          ecs_integrated: true,
-          conso_gaz_kwh: 5000, // 5000 kWh/an de gaz
-          prix_gaz_kwh: 0.10, // 0.10€/kWh
-          abonnement_gaz: 120, // 120€/an
-          entretien_annuel: 120, // 120€/an
+          heatingType: 'Gaz',
+          installationAge: 12,
+          installationCondition: 'Bon',
+          dhwIntegrated: true,
+          gasConsumptionKwh: 5000, // 5000 kWh/an de gaz
+          gasPricePerKwh: 0.10, // 0.10€/kWh
+          gasSubscription: 120, // 120€/an
+          annualMaintenance: 120, // 120€/an
         },
       },
 

@@ -18,32 +18,32 @@ interface TestScenario {
 }
 
 interface ProjectCreateData {
-  logement: {
-    code_postal: string
-    annee_construction: number
-    surface_logement: number
-    nombre_occupants: number
-    classe_dpe?: string
+  housing: {
+    postalCode: string
+    constructionYear: number
+    livingArea: number
+    numberOfOccupants: number
+    dpeRating?: string
   }
-  chauffageActuel: {
-    type_chauffage: string
-    ecs_integrated: boolean
-    age_installation: number
-    etat_installation: string
-    conso_fioul_litres?: number
-    prix_fioul_litre?: number
-    conso_gaz_kwh?: number
-    prix_gaz_kwh?: number
-    conso_gpl_kg?: number
-    prix_gpl_kg?: number
-    conso_pellets_kg?: number
-    prix_pellets_kg?: number
-    conso_bois_steres?: number
-    prix_bois_stere?: number
-    conso_elec_kwh?: number
-    prix_elec_kwh?: number
-    abonnement_gaz?: number
-    entretien_annuel: number
+  currentHeating: {
+    heatingType: string
+    dhwIntegrated: boolean
+    installationAge: number
+    installationCondition: string
+    fuelConsumptionLiters?: number
+    fuelPricePerLiter?: number
+    gasConsumptionKwh?: number
+    gasPricePerKwh?: number
+    lpgConsumptionKg?: number
+    lpgPricePerKg?: number
+    pelletsConsumptionKg?: number
+    pelletsPricePerKg?: number
+    woodConsumptionSteres?: number
+    woodPricePerStere?: number
+    electricityConsumptionKwh?: number
+    electricityPricePerKwh?: number
+    gasSubscription?: number
+    annualMaintenance: number
   }
   ecs?: {
     type_ecs: string
@@ -128,21 +128,21 @@ const scenarios: TestScenario[] = [
     name: `Fioul ${i + 1}: ${["Petite", "Moyenne", "Grande"][i % 3]} maison`,
     description: `Maison fioul ${[80, 120, 200][i % 3]}m² - Zone ${["H1", "H2", "H3"][i % 3]}`,
     data: {
-      logement: {
-        code_postal: randomChoice([...CODES_POSTAUX.H1_NORD, ...CODES_POSTAUX.H2_CENTRE]),
-        annee_construction: randomInt(1970, 2005),
-        surface_logement: [80, 120, 200][i % 3],
-        nombre_occupants: randomInt(2, 5),
-        classe_dpe: randomChoice(["D", "E", "F", "G"]),
+      housing: {
+        postalCode: randomChoice([...CODES_POSTAUX.H1_NORD, ...CODES_POSTAUX.H2_CENTRE]),
+        constructionYear: randomInt(1970, 2005),
+        livingArea: [80, 120, 200][i % 3],
+        numberOfOccupants: randomInt(2, 5),
+        dpeRating: randomChoice(["D", "E", "F", "G"]),
       },
-      chauffageActuel: {
-        type_chauffage: "Fioul",
-        age_installation: randomInt(8, 20),
-        etat_installation: randomChoice(["Mauvais", "Moyen", "Bon"]),
-        ecs_integrated: true,
-        conso_fioul_litres: [1200, 1800, 2800][i % 3],
-        prix_fioul_litre: 1.40 + (i * 0.05),
-        entretien_annuel: 150,
+      currentHeating: {
+        heatingType: "Fioul",
+        installationAge: randomInt(8, 20),
+        installationCondition: randomChoice(["Mauvais", "Moyen", "Bon"]),
+        dhwIntegrated: true,
+        fuelConsumptionLiters: [1200, 1800, 2800][i % 3],
+        fuelPricePerLiter: 1.40 + (i * 0.05),
+        annualMaintenance: 150,
       },
       projetPac: {
         type_pac: "Air/Eau",
@@ -195,22 +195,22 @@ const scenarios: TestScenario[] = [
     name: `Gaz ${i + 1}: ${["Appartement", "Maison moyenne", "Grande maison"][i % 3]}`,
     description: `Chauffage gaz ${[70, 120, 180][i % 3]}m² - Isolation ${["bonne", "moyenne", "mauvaise"][i % 3]}`,
     data: {
-      logement: {
-        code_postal: randomChoice([...CODES_POSTAUX.H2_CENTRE, ...CODES_POSTAUX.H3_SUD]),
-        annee_construction: randomInt(1985, 2015),
-        surface_logement: [70, 120, 180][i % 3],
-        nombre_occupants: randomInt(2, 4),
-        classe_dpe: ["C", "D", "E"][i % 3],
+      housing: {
+        postalCode: randomChoice([...CODES_POSTAUX.H2_CENTRE, ...CODES_POSTAUX.H3_SUD]),
+        constructionYear: randomInt(1985, 2015),
+        livingArea: [70, 120, 180][i % 3],
+        numberOfOccupants: randomInt(2, 4),
+        dpeRating: ["C", "D", "E"][i % 3],
       },
-      chauffageActuel: {
-        type_chauffage: "Gaz",
-        age_installation: randomInt(6, 18),
-        etat_installation: randomChoice(["Bon", "Moyen", "Mauvais"]),
-        ecs_integrated: true,
-        conso_gaz_kwh: [5000, 12000, 20000][i % 3],
-        prix_gaz_kwh: 0.10 + (i * 0.01),
-        abonnement_gaz: 120 + (i * 20),
-        entretien_annuel: 120 + (i * 10),
+      currentHeating: {
+        heatingType: "Gaz",
+        installationAge: randomInt(6, 18),
+        installationCondition: randomChoice(["Bon", "Moyen", "Mauvais"]),
+        dhwIntegrated: true,
+        gasConsumptionKwh: [5000, 12000, 20000][i % 3],
+        gasPricePerKwh: 0.10 + (i * 0.01),
+        gasSubscription: 120 + (i * 20),
+        annualMaintenance: 120 + (i * 10),
       },
       projetPac: {
         type_pac: "Air/Eau",
@@ -263,21 +263,21 @@ const scenarios: TestScenario[] = [
     name: `Propane ${i + 1}: Maison ${["petite", "moyenne", "grande"][i % 3]} zone rurale`,
     description: `GPL ${[100, 150, 200][i % 3]}m² - Isolation ${["moyenne", "mauvaise", "très mauvaise"][i % 3]}`,
     data: {
-      logement: {
-        code_postal: randomChoice([...CODES_POSTAUX.H1_EST, ...CODES_POSTAUX.H2_OUEST]),
-        annee_construction: randomInt(1975, 2000),
-        surface_logement: [100, 150, 200][i % 3],
-        nombre_occupants: randomInt(3, 6),
-        classe_dpe: ["E", "F", "G"][i % 3],
+      housing: {
+        postalCode: randomChoice([...CODES_POSTAUX.H1_EST, ...CODES_POSTAUX.H2_OUEST]),
+        constructionYear: randomInt(1975, 2000),
+        livingArea: [100, 150, 200][i % 3],
+        numberOfOccupants: randomInt(3, 6),
+        dpeRating: ["E", "F", "G"][i % 3],
       },
-      chauffageActuel: {
-        type_chauffage: "GPL",
-        age_installation: randomInt(10, 25),
-        etat_installation: randomChoice(["Mauvais", "Moyen"]),
-        ecs_integrated: true,
-        conso_gpl_kg: [1600, 2400, 3200][i % 3],
-        prix_gpl_kg: 1.80 + (i * 0.10),
-        entretien_annuel: 180 + (i * 20),
+      currentHeating: {
+        heatingType: "GPL",
+        installationAge: randomInt(10, 25),
+        installationCondition: randomChoice(["Mauvais", "Moyen"]),
+        dhwIntegrated: true,
+        lpgConsumptionKg: [1600, 2400, 3200][i % 3],
+        lpgPricePerKg: 1.80 + (i * 0.10),
+        annualMaintenance: 180 + (i * 20),
       },
       projetPac: {
         type_pac: "Air/Eau",
@@ -330,21 +330,21 @@ const scenarios: TestScenario[] = [
     name: `Électrique ${i + 1}: ${["Convecteurs", "Radiateurs élec", "PAC air-air"][i % 3]}`,
     description: `Chauffage électrique ${[90, 130, 170][i % 3]}m² - COP actuel ${[1.0, 2.5, 1.0][i % 3]}`,
     data: {
-      logement: {
-        code_postal: randomChoice([...CODES_POSTAUX.H2_OUEST, ...CODES_POSTAUX.H3_SUD]),
-        annee_construction: randomInt(1980, 2010),
-        surface_logement: [90, 130, 170][i % 3],
-        nombre_occupants: randomInt(2, 4),
-        classe_dpe: ["D", "E", "F"][i % 3],
+      housing: {
+        postalCode: randomChoice([...CODES_POSTAUX.H2_OUEST, ...CODES_POSTAUX.H3_SUD]),
+        constructionYear: randomInt(1980, 2010),
+        livingArea: [90, 130, 170][i % 3],
+        numberOfOccupants: randomInt(2, 4),
+        dpeRating: ["D", "E", "F"][i % 3],
       },
-      chauffageActuel: {
-        type_chauffage: ["Electrique", "Electrique", "PAC Air/Air"][i % 3],
-        age_installation: randomInt(5, 15),
-        etat_installation: randomChoice(["Bon", "Moyen"]),
-        ecs_integrated: false,
-        conso_elec_kwh: [10000, 14000, 8000][i % 3],
+      currentHeating: {
+        heatingType: ["Electrique", "Electrique", "PAC Air/Air"][i % 3],
+        installationAge: randomInt(5, 15),
+        installationCondition: randomChoice(["Bon", "Moyen"]),
+        dhwIntegrated: false,
+        electricityConsumptionKwh: [10000, 14000, 8000][i % 3],
         prix_elec_kwh: 0.2516,
-        entretien_annuel: [50, 50, 100][i % 3],
+        annualMaintenance: [50, 50, 100][i % 3],
       },
       ecs: {
         type_ecs: i % 2 === 0 ? "Ballon électrique" : "Thermodynamique",
@@ -403,26 +403,26 @@ const scenarios: TestScenario[] = [
     name: `Cas limite ${i + 1}: ${["Gaz BBC", "Pellets", "Maison passive"][i % 3]}`,
     description: `Faible consommation ${[60, 80, 100][i % 3]}m² - Énergie ${["gaz", "bois", "élec"][i % 3]} peu chère`,
     data: {
-      logement: {
-        code_postal: randomChoice(CODES_POSTAUX.H3_SUD),
-        annee_construction: 2010 + i,
-        surface_logement: [60, 80, 100][i % 3],
-        nombre_occupants: randomInt(1, 3),
-        classe_dpe: ["A", "B", "C"][i % 3],
+      housing: {
+        postalCode: randomChoice(CODES_POSTAUX.H3_SUD),
+        constructionYear: 2010 + i,
+        livingArea: [60, 80, 100][i % 3],
+        numberOfOccupants: randomInt(1, 3),
+        dpeRating: ["A", "B", "C"][i % 3],
       },
-      chauffageActuel: {
-        type_chauffage: ["Gaz", "Pellets", "Electrique"][i % 3],
-        age_installation: randomInt(3, 12),
-        etat_installation: "Bon",
-        ecs_integrated: i % 3 !== 1,
-        conso_gaz_kwh: i % 3 === 0 ? [3000, 4000, 5000][i % 3] : undefined,
-        prix_gaz_kwh: i % 3 === 0 ? 0.10 : undefined,
-        abonnement_gaz: i % 3 === 0 ? 120 : undefined,
-        conso_pellets_kg: i % 3 === 1 ? [400, 600, 800][i % 3] : undefined,
-        prix_pellets_kg: i % 3 === 1 ? 0.35 : undefined,
-        conso_elec_kwh: i % 3 === 2 ? [4000, 5000, 6000][i % 3] : undefined,
-        prix_elec_kwh: i % 3 === 2 ? 0.2516 : undefined,
-        entretien_annuel: [80, 100, 120][i % 3],
+      currentHeating: {
+        heatingType: ["Gaz", "Pellets", "Electrique"][i % 3],
+        installationAge: randomInt(3, 12),
+        installationCondition: "Bon",
+        dhwIntegrated: i % 3 !== 1,
+        gasConsumptionKwh: i % 3 === 0 ? [3000, 4000, 5000][i % 3] : undefined,
+        gasPricePerKwh: i % 3 === 0 ? 0.10 : undefined,
+        gasSubscription: i % 3 === 0 ? 120 : undefined,
+        pelletsConsumptionKg: i % 3 === 1 ? [400, 600, 800][i % 3] : undefined,
+        pelletsPricePerKg: i % 3 === 1 ? 0.35 : undefined,
+        electricityConsumptionKwh: i % 3 === 2 ? [4000, 5000, 6000][i % 3] : undefined,
+        electricityPricePerKwh: i % 3 === 2 ? 0.2516 : undefined,
+        annualMaintenance: [80, 100, 120][i % 3],
       },
       ecs: i % 3 === 1 ? {
         type_ecs: "Chauffe-eau solaire",
@@ -516,8 +516,8 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         userId,
         currentStep: 8,
         completed: true,
-        logement: { create: scenario.data.logement },
-        chauffageActuel: { create: scenario.data.chauffageActuel },
+        housing: { create: scenario.data.housing },
+        currentHeating: { create: scenario.data.currentHeating },
         ...(scenario.data.ecs && { ecs: { create: scenario.data.ecs } }),
         projetPac: { create: scenario.data.projetPac },
         couts: { create: scenario.data.couts },

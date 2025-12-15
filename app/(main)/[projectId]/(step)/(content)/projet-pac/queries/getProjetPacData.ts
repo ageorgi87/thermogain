@@ -20,7 +20,7 @@ export const getProjetPacData = async ({ projectId }: GetProjetPacDataParams) =>
     select: {
       userId: true,
       projetPac: true,
-      chauffageActuel: true,
+      currentHeating: true,
     },
   })
 
@@ -44,6 +44,6 @@ export const getProjetPacData = async ({ projectId }: GetProjetPacDataParams) =>
 
   return {
     projetPac,
-    chauffageActuel: project.chauffageActuel,
+    currentHeating: project.currentHeating,
   }
 }

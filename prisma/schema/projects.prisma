@@ -13,15 +13,15 @@ model Project {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations to section tables (one-to-one relationships)
-  housing         ProjectHousing?
-  chauffageActuel ProjectChauffageActuel?
-  ecs             ProjectEcs? // DHW (Domestic Hot Water) - only if ecs_integrated = false
-  projetPac       ProjectProjetPac?
-  couts           ProjectCouts?
-  aides           ProjectAides?
-  financement     ProjectFinancement?
-  evolutions      ProjectEvolutions?
-  results         ProjectResults? // Calculated results for display
+  housing        ProjectHousing?
+  currentHeating ProjectCurrentHeating?
+  ecs            ProjectEcs? // DHW (Domestic Hot Water) - only if dhwIntegrated = false
+  projetPac      ProjectProjetPac?
+  couts          ProjectCouts?
+  aides          ProjectAides?
+  financement    ProjectFinancement?
+  evolutions     ProjectEvolutions?
+  results        ProjectResults? // Calculated results for display
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

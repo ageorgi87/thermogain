@@ -32,26 +32,26 @@ const debugTest = async () => {
       currentStep: 8,
       completed: true,
 
-      logement: {
+      housing: {
         create: {
-          code_postal: '83000', // H3 sud
-          annee_construction: 2005,
-          surface_logement: 70,
-          nombre_occupants: 3,
-          classe_dpe: 'C',
+          postalCode: '83000', // H3 sud
+          constructionYear: 2005,
+          livingArea: 70,
+          numberOfOccupants: 3,
+          dpeRating: 'C',
         },
       },
 
-      chauffageActuel: {
+      currentHeating: {
         create: {
-          type_chauffage: 'Gaz',
-          age_installation: 12,
-          etat_installation: 'Bon',
-          ecs_integrated: true,
-          conso_gaz_kwh: 5000,
-          prix_gaz_kwh: 0.10,
-          abonnement_gaz: 120,
-          entretien_annuel: 120,
+          heatingType: 'Gaz',
+          installationAge: 12,
+          installationCondition: 'Bon',
+          dhwIntegrated: true,
+          gasConsumptionKwh: 5000,
+          gasPricePerKwh: 0.10,
+          gasSubscription: 120,
+          annualMaintenance: 120,
         },
       },
 

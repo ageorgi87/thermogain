@@ -10,7 +10,7 @@ import {
   currentHeatingSchema,
   type CurrentHeatingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/actions/currentHeatingSchema";
-import { getChauffageActuelData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/queries/getChauffageActuelData";
+import { getCurrentHeatingData } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/queries/getCurrentHeatingData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 import { PacType } from "@/types/pacType";
@@ -51,7 +51,7 @@ export default function ChauffageActuelStepPage({
     schema: currentHeatingSchema,
     loadData: async ({ projectId }) => {
       const [data, prices] = await Promise.all([
-        getChauffageActuelData({ projectId }),
+        getCurrentHeatingData({ projectId }),
         getDefaultEnergyPrices(),
       ]);
 
@@ -65,16 +65,16 @@ export default function ChauffageActuelStepPage({
       const pacWillManageDhw = data.pacInfo.withEcsManagement === true;
       setShouldAskEcsIntegrated(isWaterBasedPac && pacWillManageDhw);
 
-      if (data.chauffageActuel) {
+      if (data.currentHeating) {
         const {
           id,
           projectId: pid,
           createdAt,
           updatedAt,
           ...formFields
-        } = data.chauffageActuel;
+        } = data.currentHeating;
 
-        // Convertir tous les null en undefined pour la validation Zod
+        // Convert all null to undefined for Zod validation
         const cleanedFields = Object.fromEntries(
           Object.entries(formFields).map(([key, value]) => [
             key,

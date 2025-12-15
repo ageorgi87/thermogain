@@ -16,7 +16,7 @@ export const getProject = async (id: string) => {
       include: {
         user: true,
         housing: true,
-        chauffageActuel: true,
+        currentHeating: true,
         projetPac: true,
         couts: true,
         aides: true,

@@ -2,183 +2,183 @@ import { z } from "zod"
 import { TypeChauffageActuel } from "@/types/typeChauffageActuel"
 
 export const currentHeatingSchema = z.object({
-  type_chauffage: z.nativeEnum(TypeChauffageActuel, {
+  heatingType: z.nativeEnum(TypeChauffageActuel, {
     message: "Le type de chauffage est requis",
   }),
-  age_installation: z
+  installationAge: z
     .number({ message: "L'âge de l'installation est requis" })
     .min(0, "L'âge ne peut pas être négatif")
     .max(100, "L'âge ne peut pas dépasser 100 ans"),
-  etat_installation: z.enum(["Bon", "Moyen", "Mauvais"], {
+  installationCondition: z.enum(["Bon", "Moyen", "Mauvais"], {
     message: "L'état de l'installation est requis",
   }),
 
   // DHW (Domestic Hot Water) integration
   // true = DHW integrated in heating system (mixed boiler), false = separate DHW system
-  // Only asked if future PAC will manage DHW (from step 1: with_ecs_management = true)
-  ecs_integrated: z.boolean().optional(),
+  // Only asked if future heat pump will manage DHW (from step 1: with_ecs_management = true)
+  dhwIntegrated: z.boolean().optional(),
 
-  entretien_annuel: z
+  annualMaintenance: z
     .number({ message: "Le coût d'entretien annuel est requis" })
     .min(0)
     .max(500),
 
-  // Champs de consommation optionnels - deviennent requis selon le type de chauffage
-  conso_fioul_litres: z.number().min(0).max(50000).nullable().optional(),
-  prix_fioul_litre: z.number().min(0).max(10).nullable().optional(),
-  conso_gaz_kwh: z.number().min(0).max(100000).nullable().optional(),
-  prix_gaz_kwh: z.number().min(0).max(1).nullable().optional(),
-  conso_gpl_kg: z.number().min(0).max(10000).nullable().optional(),
-  prix_gpl_kg: z.number().min(0).max(10).nullable().optional(),
-  conso_pellets_kg: z.number().min(0).max(20000).nullable().optional(),
-  prix_pellets_kg: z.number().min(0).max(2).nullable().optional(),
-  conso_bois_steres: z.number().min(0).max(100).nullable().optional(),
-  prix_bois_stere: z.number().min(0).max(500).nullable().optional(),
-  conso_elec_kwh: z.number().min(0).max(100000).nullable().optional(),
-  prix_elec_kwh: z.number().min(0).max(1).nullable().optional(),
-  cop_actuel: z.number().min(1).max(10).nullable().optional(),
-  conso_pac_kwh: z.number().min(0).max(100000).nullable().optional(),
-  abonnement_gaz: z.number().min(0).max(1000).nullable().optional(),
+  // Optional consumption fields - become required based on heating type
+  fuelConsumptionLiters: z.number().min(0).max(50000).nullable().optional(),
+  fuelPricePerLiter: z.number().min(0).max(10).nullable().optional(),
+  gasConsumptionKwh: z.number().min(0).max(100000).nullable().optional(),
+  gasPricePerKwh: z.number().min(0).max(1).nullable().optional(),
+  lpgConsumptionKg: z.number().min(0).max(10000).nullable().optional(),
+  lpgPricePerKg: z.number().min(0).max(10).nullable().optional(),
+  pelletsConsumptionKg: z.number().min(0).max(20000).nullable().optional(),
+  pelletsPricePerKg: z.number().min(0).max(2).nullable().optional(),
+  woodConsumptionSteres: z.number().min(0).max(100).nullable().optional(),
+  woodPricePerStere: z.number().min(0).max(500).nullable().optional(),
+  electricityConsumptionKwh: z.number().min(0).max(100000).nullable().optional(),
+  electricityPricePerKwh: z.number().min(0).max(1).nullable().optional(),
+  currentCop: z.number().min(1).max(10).nullable().optional(),
+  heatPumpConsumptionKwh: z.number().min(0).max(100000).nullable().optional(),
+  gasSubscription: z.number().min(0).max(1000).nullable().optional(),
 }).superRefine((data, ctx) => {
-  // Validation selon le type de chauffage
-  const type = data.type_chauffage
+  // Validation based on heating type
+  const type = data.heatingType
 
   // Fioul
   if (type === TypeChauffageActuel.FIOUL) {
-    if (data.conso_fioul_litres === undefined || data.conso_fioul_litres === null) {
+    if (data.fuelConsumptionLiters === undefined || data.fuelConsumptionLiters === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de fioul est requise",
-        path: ["conso_fioul_litres"],
+        path: ["fuelConsumptionLiters"],
       })
     }
-    if (data.prix_fioul_litre === undefined || data.prix_fioul_litre === null) {
+    if (data.fuelPricePerLiter === undefined || data.fuelPricePerLiter === null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix du fioul est requis",
-        path: ["prix_fioul_litre"],
+        path: ["fuelPricePerLiter"],
       })
     }
   }
 
   // Gaz
   if (type === TypeChauffageActuel.GAZ) {
-    if (data.conso_gaz_kwh === undefined) {
+    if (data.gasConsumptionKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de gaz est requise",
-        path: ["conso_gaz_kwh"],
+        path: ["gasConsumptionKwh"],
       })
     }
-    if (data.prix_gaz_kwh === undefined) {
+    if (data.gasPricePerKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix du gaz est requis",
-        path: ["prix_gaz_kwh"],
+        path: ["gasPricePerKwh"],
       })
     }
-    if (data.abonnement_gaz === undefined) {
+    if (data.gasSubscription === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "L'abonnement gaz est requis",
-        path: ["abonnement_gaz"],
+        path: ["gasSubscription"],
       })
     }
   }
 
   // GPL
   if (type === TypeChauffageActuel.GPL) {
-    if (data.conso_gpl_kg === undefined) {
+    if (data.lpgConsumptionKg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de GPL est requise",
-        path: ["conso_gpl_kg"],
+        path: ["lpgConsumptionKg"],
       })
     }
-    if (data.prix_gpl_kg === undefined) {
+    if (data.lpgPricePerKg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix du GPL est requis",
-        path: ["prix_gpl_kg"],
+        path: ["lpgPricePerKg"],
       })
     }
   }
 
   // Pellets
   if (type === TypeChauffageActuel.PELLETS) {
-    if (data.conso_pellets_kg === undefined) {
+    if (data.pelletsConsumptionKg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de pellets est requise",
-        path: ["conso_pellets_kg"],
+        path: ["pelletsConsumptionKg"],
       })
     }
-    if (data.prix_pellets_kg === undefined) {
+    if (data.pelletsPricePerKg === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix des pellets est requis",
-        path: ["prix_pellets_kg"],
+        path: ["pelletsPricePerKg"],
       })
     }
   }
 
   // Bois
   if (type === TypeChauffageActuel.BOIS) {
-    if (data.conso_bois_steres === undefined) {
+    if (data.woodConsumptionSteres === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de bois est requise",
-        path: ["conso_bois_steres"],
+        path: ["woodConsumptionSteres"],
       })
     }
-    if (data.prix_bois_stere === undefined) {
+    if (data.woodPricePerStere === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix du bois est requis",
-        path: ["prix_bois_stere"],
+        path: ["woodPricePerStere"],
       })
     }
   }
 
   // Electrique
   if (type === TypeChauffageActuel.ELECTRIQUE) {
-    if (data.conso_elec_kwh === undefined) {
+    if (data.electricityConsumptionKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation électrique est requise",
-        path: ["conso_elec_kwh"],
+        path: ["electricityConsumptionKwh"],
       })
     }
-    if (data.prix_elec_kwh === undefined) {
+    if (data.electricityPricePerKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix de l'électricité est requis",
-        path: ["prix_elec_kwh"],
+        path: ["electricityPricePerKwh"],
       })
     }
   }
 
-  // PAC (Air/Air, Air/Eau, Eau/Eau) - tous ont les mêmes champs
+  // PAC (Air/Air, Air/Eau, Eau/Eau) - all have the same fields
   if (type === TypeChauffageActuel.PAC_AIR_AIR || type === TypeChauffageActuel.PAC_AIR_EAU || type === TypeChauffageActuel.PAC_EAU_EAU) {
-    if (data.cop_actuel === undefined) {
+    if (data.currentCop === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le COP actuel est requis",
-        path: ["cop_actuel"],
+        path: ["currentCop"],
       })
     }
-    if (data.conso_pac_kwh === undefined) {
+    if (data.heatPumpConsumptionKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "La consommation de la PAC est requise",
-        path: ["conso_pac_kwh"],
+        path: ["heatPumpConsumptionKwh"],
       })
     }
-    if (data.prix_elec_kwh === undefined) {
+    if (data.electricityPricePerKwh === undefined) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Le prix de l'électricité est requis",
-        path: ["prix_elec_kwh"],
+        path: ["electricityPricePerKwh"],
       })
     }
   }

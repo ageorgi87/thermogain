@@ -32,25 +32,25 @@ const debugTest = async () => {
       currentStep: 8,
       completed: true,
 
-      logement: {
+      housing: {
         create: {
-          code_postal: '75001',
-          annee_construction: 1990,
-          surface_logement: 100,
-          nombre_occupants: 3,
-          classe_dpe: 'D',
+          postalCode: '75001',
+          constructionYear: 1990,
+          livingArea: 100,
+          numberOfOccupants: 3,
+          dpeRating: 'D',
         },
       },
 
-      chauffageActuel: {
+      currentHeating: {
         create: {
-          type_chauffage: 'Fioul',
-          age_installation: 15,
-          etat_installation: 'Moyen',
-          ecs_integrated: true,
-          conso_fioul_litres: 1500,
-          prix_fioul_litre: 1.50,
-          entretien_annuel: 150,
+          heatingType: 'Fioul',
+          installationAge: 15,
+          installationCondition: 'Moyen',
+          dhwIntegrated: true,
+          fuelConsumptionLiters: 1500,
+          fuelPricePerLiter: 1.50,
+          annualMaintenance: 150,
         },
       },
 
