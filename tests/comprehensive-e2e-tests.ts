@@ -52,18 +52,18 @@ interface ProjectCreateData {
     dhwAnnualMaintenance: number
   }
   projetPac: {
-    type_pac: string
-    puissance_pac_kw: number
-    cop_estime: number
-    cop_ajuste: number
-    emetteurs: string
-    duree_vie_pac: number
-    prix_elec_kwh: number
-    prix_elec_pac?: number
-    puissance_souscrite_actuelle: number
-    puissance_souscrite_pac: number
-    entretien_pac_annuel: number
-    with_ecs_management?: boolean
+    heatPumpType: string
+    heatPumpPowerKw: number
+    estimatedCop: number
+    adjustedCop: number
+    emitters: string
+    heatPumpLifespanYears: number
+    electricityPricePerKwh: number
+    heatPumpElectricityPricePerKwh?: number
+    currentSubscribedPowerKva: number
+    heatPumpSubscribedPowerKva: number
+    annualMaintenanceCost: number
+    withDhwManagement?: boolean
   }
   couts: {
     cout_pac: number
@@ -145,18 +145,18 @@ const scenarios: TestScenario[] = [
         annualMaintenance: 150,
       },
       projetPac: {
-        type_pac: "Air/Eau",
-        puissance_pac_kw: [8, 12, 16][i % 3],
-        cop_estime: 3.5,
-        cop_ajuste: 3.2,
-        emetteurs: "Radiateurs basse température",
-        duree_vie_pac: 17,
-        prix_elec_kwh: 0.2516,
-        prix_elec_pac: 0.2276,
-        puissance_souscrite_actuelle: 6,
-        puissance_souscrite_pac: [9, 12, 15][i % 3],
-        entretien_pac_annuel: 200,
-        with_ecs_management: true,
+        heatPumpType: "Air/Eau",
+        heatPumpPowerKw: [8, 12, 16][i % 3],
+        estimatedCop: 3.5,
+        adjustedCop: 3.2,
+        emitters: "Radiateurs basse température",
+        heatPumpLifespanYears: 17,
+        electricityPricePerKwh: 0.2516,
+        heatPumpElectricityPricePerKwh: 0.2276,
+        currentSubscribedPowerKva: 6,
+        heatPumpSubscribedPowerKva: [9, 12, 15][i % 3],
+        annualMaintenanceCost: 200,
+        withDhwManagement: true,
       },
       couts: {
         cout_pac: [10000, 15000, 18000][i % 3],
@@ -213,18 +213,18 @@ const scenarios: TestScenario[] = [
         annualMaintenance: 120 + (i * 10),
       },
       projetPac: {
-        type_pac: "Air/Eau",
-        puissance_pac_kw: [6, 10, 14][i % 3],
-        cop_estime: 3.8 + (i * 0.05),
-        cop_ajuste: 3.5 + (i * 0.05),
-        emetteurs: i % 2 === 0 ? "Radiateurs basse température" : "Plancher chauffant",
-        duree_vie_pac: 17,
-        prix_elec_kwh: 0.2516,
-        prix_elec_pac: 0.2276,
-        puissance_souscrite_actuelle: [3, 6, 9][i % 3],
-        puissance_souscrite_pac: [6, 9, 12][i % 3],
-        entretien_pac_annuel: 180,
-        with_ecs_management: true,
+        heatPumpType: "Air/Eau",
+        heatPumpPowerKw: [6, 10, 14][i % 3],
+        estimatedCop: 3.8 + (i * 0.05),
+        adjustedCop: 3.5 + (i * 0.05),
+        emitters: i % 2 === 0 ? "Radiateurs basse température" : "Plancher chauffant",
+        heatPumpLifespanYears: 17,
+        electricityPricePerKwh: 0.2516,
+        heatPumpElectricityPricePerKwh: 0.2276,
+        currentSubscribedPowerKva: [3, 6, 9][i % 3],
+        heatPumpSubscribedPowerKva: [6, 9, 12][i % 3],
+        annualMaintenanceCost: 180,
+        withDhwManagement: true,
       },
       couts: {
         cout_pac: [8000, 12000, 16000][i % 3],
@@ -280,18 +280,18 @@ const scenarios: TestScenario[] = [
         annualMaintenance: 180 + (i * 20),
       },
       projetPac: {
-        type_pac: "Air/Eau",
-        puissance_pac_kw: [10, 14, 18][i % 3],
-        cop_estime: 3.3,
-        cop_ajuste: 3.0,
-        emetteurs: "Radiateurs basse température",
-        duree_vie_pac: 17,
-        prix_elec_kwh: 0.2516,
-        prix_elec_pac: 0.2276,
-        puissance_souscrite_actuelle: 6,
-        puissance_souscrite_pac: [12, 15, 18][i % 3],
-        entretien_pac_annuel: 220,
-        with_ecs_management: true,
+        heatPumpType: "Air/Eau",
+        heatPumpPowerKw: [10, 14, 18][i % 3],
+        estimatedCop: 3.3,
+        adjustedCop: 3.0,
+        emitters: "Radiateurs basse température",
+        heatPumpLifespanYears: 17,
+        electricityPricePerKwh: 0.2516,
+        heatPumpElectricityPricePerKwh: 0.2276,
+        currentSubscribedPowerKva: 6,
+        heatPumpSubscribedPowerKva: [12, 15, 18][i % 3],
+        annualMaintenanceCost: 220,
+        withDhwManagement: true,
       },
       couts: {
         cout_pac: [13000, 16000, 19000][i % 3],
@@ -343,7 +343,7 @@ const scenarios: TestScenario[] = [
         installationCondition: randomChoice(["Bon", "Moyen"]),
         dhwIntegrated: false,
         electricityConsumptionKwh: [10000, 14000, 8000][i % 3],
-        prix_elec_kwh: 0.2516,
+        electricityPricePerKwh: 0.2516,
         annualMaintenance: [50, 50, 100][i % 3],
       },
       dhw: {
@@ -353,18 +353,18 @@ const scenarios: TestScenario[] = [
         dhwAnnualMaintenance: 0,
       },
       projetPac: {
-        type_pac: "Air/Eau",
-        puissance_pac_kw: [8, 11, 14][i % 3],
-        cop_estime: 4.0 + (i * 0.05),
-        cop_ajuste: 3.7 + (i * 0.05),
-        emetteurs: i % 2 === 0 ? "Plancher chauffant" : "Radiateurs basse température",
-        duree_vie_pac: 17,
-        prix_elec_kwh: 0.2516,
-        prix_elec_pac: 0.2276,
-        puissance_souscrite_actuelle: [6, 9, 12][i % 3],
-        puissance_souscrite_pac: [9, 12, 15][i % 3],
-        entretien_pac_annuel: 190,
-        with_ecs_management: true,
+        heatPumpType: "Air/Eau",
+        heatPumpPowerKw: [8, 11, 14][i % 3],
+        estimatedCop: 4.0 + (i * 0.05),
+        adjustedCop: 3.7 + (i * 0.05),
+        emitters: i % 2 === 0 ? "Plancher chauffant" : "Radiateurs basse température",
+        heatPumpLifespanYears: 17,
+        electricityPricePerKwh: 0.2516,
+        heatPumpElectricityPricePerKwh: 0.2276,
+        currentSubscribedPowerKva: [6, 9, 12][i % 3],
+        heatPumpSubscribedPowerKva: [9, 12, 15][i % 3],
+        annualMaintenanceCost: 190,
+        withDhwManagement: true,
       },
       couts: {
         cout_pac: [9000, 13000, 16000][i % 3],
@@ -431,18 +431,18 @@ const scenarios: TestScenario[] = [
         dhwAnnualMaintenance: 50,
       } : undefined,
       projetPac: {
-        type_pac: "Air/Eau",
-        puissance_pac_kw: [5, 6, 7][i % 3],
-        cop_estime: 4.5,
-        cop_ajuste: 4.3,
-        emetteurs: "Plancher chauffant",
-        duree_vie_pac: 17,
-        prix_elec_kwh: 0.2516,
-        prix_elec_pac: 0.2276,
-        puissance_souscrite_actuelle: 3,
-        puissance_souscrite_pac: 6,
-        entretien_pac_annuel: 180,
-        with_ecs_management: i % 3 !== 1,
+        heatPumpType: "Air/Eau",
+        heatPumpPowerKw: [5, 6, 7][i % 3],
+        estimatedCop: 4.5,
+        adjustedCop: 4.3,
+        emitters: "Plancher chauffant",
+        heatPumpLifespanYears: 17,
+        electricityPricePerKwh: 0.2516,
+        heatPumpElectricityPricePerKwh: 0.2276,
+        currentSubscribedPowerKva: 3,
+        heatPumpSubscribedPowerKva: 6,
+        annualMaintenanceCost: 180,
+        withDhwManagement: i % 3 !== 1,
       },
       couts: {
         cout_pac: [7000, 8000, 9000][i % 3],
@@ -519,7 +519,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         housing: { create: scenario.data.housing },
         currentHeating: { create: scenario.data.currentHeating },
         ...(scenario.data.dhw && { dhw: { create: scenario.data.dhw } }),
-        projetPac: { create: scenario.data.projetPac },
+        heatPump: { create: scenario.data.projetPac },
         couts: { create: scenario.data.couts },
         aides: { create: scenario.data.aides },
         financement: { create: scenario.data.financement },

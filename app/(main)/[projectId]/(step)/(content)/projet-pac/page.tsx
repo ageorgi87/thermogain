@@ -2,13 +2,13 @@
 
 import { use, useState } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
-import { ProjetPacFields } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/components/ProjetPacFields";
+import { HeatPumpProjectFields } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/components/HeatPumpProjectFields";
 import { saveHeatPumpProjectData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/saveHeatPumpProjectData";
 import {
   heatPumpProjectSchema,
   type HeatPumpProjectData,
 } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/heatPumpProjectSchema";
-import { getProjetPacData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/queries/getProjetPacData";
+import { getHeatPumpProjectData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/queries/getHeatPumpProjectData";
 import { getDefaultEnergyPrices } from "@/app/(main)/[projectId]/(step)/(content)/chauffage-actuel/lib/getDefaultEnergyPrices";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
@@ -56,7 +56,7 @@ export default function ProjetPacStepPage({
     schema: heatPumpProjectSchema,
     loadData: async ({ projectId }) => {
       const [data, prices] = await Promise.all([
-        getProjetPacData({ projectId }),
+        getHeatPumpProjectData({ projectId }),
         getDefaultEnergyPrices(),
       ]);
 
@@ -65,12 +65,12 @@ export default function ProjetPacStepPage({
       setCurrentElectricityPricePerKwh(data.currentHeating?.electricityPricePerKwh ?? undefined);
       setCurrentSubscribedPower(undefined);
 
-      return data.projetPac || {};
+      return data.heatPump || {};
     },
     saveData: async ({ projectId, data }) => {
       // Manual validation for water-based PACs
-      const typePac = data.type_pac;
-      if (typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU) {
+      const heatPumpType = data.type_pac;
+      if (heatPumpType === PacType.AIR_EAU || heatPumpType === PacType.EAU_EAU) {
         if (!data.emetteurs || data.emetteurs.length === 0) {
           throw new Error("Le type d'émetteurs est requis pour une PAC hydraulique");
         }
@@ -93,14 +93,14 @@ export default function ProjetPacStepPage({
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
-      <ProjetPacFields
+      <HeatPumpProjectFields
         formData={formData}
         errors={errors}
         onChange={handleChange}
         currentElectricPower={currentSubscribedPower}
         defaultElectricityPrice={defaultPrices.electricite}
-        prixElecKwhActuel={currentElectricityPricePerKwh}
-        typeChauffageActuel={currentHeatingType}
+        currentElectricityPricePerKwh={currentElectricityPricePerKwh}
+        currentHeatingType={currentHeatingType}
       />
     </StepWrapper>
   );

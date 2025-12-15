@@ -15,20 +15,20 @@ import {
 import { HelpCircle } from "lucide-react";
 import { useEffect } from "react";
 import { HeatPumpProjectData } from "@/app/(main)/[projectId]/(step)/(content)/projet-pac/actions/heatPumpProjectSchema";
-import { getPuissanceSouscritePacRecommandee } from "../lib/getPuissanceSouscritePacRecommandee";
+import { getRecommendedHeatPumpSubscribedPower } from "../lib/getRecommendedHeatPumpSubscribedPower";
 import { FormField } from "@/app/(main)/[projectId]/(step)/components/FormField";
 import { PacType } from "@/types/pacType";
 import { TypeChauffageActuel } from "@/types/typeChauffageActuel";
 import { EmitterType } from "@/types/emitterType";
 
-interface ProjetPacFieldsProps {
+interface HeatPumpProjectFieldsProps {
   formData: Partial<HeatPumpProjectData>;
   errors: Partial<Record<keyof HeatPumpProjectData, string>>;
   onChange: (name: keyof HeatPumpProjectData, value: any) => void;
   currentElectricPower?: number; // Current electrical subscription power (kVA)
   defaultElectricityPrice?: number; // Default electricity price (€/kWh)
-  prixElecKwhActuel?: number; // Prix électricité déjà renseigné dans chauffage actuel (si type électrique)
-  typeChauffageActuel?: string; // Type de chauffage actuel
+  currentElectricityPricePerKwh?: number; // Electricity price already set in current heating (if electric type)
+  currentHeatingType?: string; // Current heating type
 }
 
 // Helper component for price label with tooltip
@@ -66,21 +66,21 @@ function PriceLabelWithTooltip({
   );
 }
 
-export function ProjetPacFields({
+export function HeatPumpProjectFields({
   formData,
   errors,
   onChange,
   currentElectricPower = 6,
   defaultElectricityPrice,
-  prixElecKwhActuel,
-  typeChauffageActuel,
-}: ProjetPacFieldsProps) {
-  const typePac = formData.type_pac;
+  currentElectricityPricePerKwh,
+  currentHeatingType,
+}: HeatPumpProjectFieldsProps) {
+  const heatPumpType = formData.type_pac;
   const isWaterBased =
-    typePac === PacType.AIR_EAU || typePac === PacType.EAU_EAU;
-  const isAirToAir = typePac === PacType.AIR_AIR;
-  const puissancePacKw = formData.puissance_pac_kw;
-  const puissanceSouscriteActuelle = formData.puissance_souscrite_actuelle;
+    heatPumpType === PacType.AIR_EAU || heatPumpType === PacType.EAU_EAU;
+  const isAirToAir = heatPumpType === PacType.AIR_AIR;
+  const heatPumpPowerKw = formData.puissance_pac_kw;
+  const currentSubscribedPower = formData.puissance_souscrite_actuelle;
 
   const handleNumberChange =
     (name: keyof HeatPumpProjectData) =>
@@ -94,15 +94,15 @@ export function ProjetPacFields({
       }
     };
 
-  // Si le prix de l'électricité est déjà renseigné dans chauffage actuel ET que le type est électrique,
-  // on masque le champ prix_elec_kwh
+  // If electricity price is already set in current heating AND type is electric,
+  // we hide the prix_elec_kwh field
   const isElectricHeating =
-    typeChauffageActuel === TypeChauffageActuel.ELECTRIQUE ||
-    typeChauffageActuel === TypeChauffageActuel.PAC_AIR_AIR ||
-    typeChauffageActuel === TypeChauffageActuel.PAC_AIR_EAU ||
-    typeChauffageActuel === TypeChauffageActuel.PAC_EAU_EAU;
+    currentHeatingType === TypeChauffageActuel.ELECTRIQUE ||
+    currentHeatingType === TypeChauffageActuel.PAC_AIR_AIR ||
+    currentHeatingType === TypeChauffageActuel.PAC_AIR_EAU ||
+    currentHeatingType === TypeChauffageActuel.PAC_EAU_EAU;
   const shouldHideElectricityPrice =
-    isElectricHeating && prixElecKwhActuel && prixElecKwhActuel > 0;
+    isElectricHeating && currentElectricityPricePerKwh && currentElectricityPricePerKwh > 0;
 
   // Automatically set emetteurs to "Ventilo-convecteurs" for Air/Air PACs
   useEffect(() => {
@@ -111,16 +111,16 @@ export function ProjetPacFields({
     }
   }, [isAirToAir, formData.emetteurs, onChange]);
 
-  // Auto-fill prix_elec_kwh if already provided in chauffage actuel (for electric heating types)
+  // Auto-fill prix_elec_kwh if already provided in current heating (for electric heating types)
   useEffect(() => {
     if (
-      prixElecKwhActuel &&
-      prixElecKwhActuel > 0 &&
+      currentElectricityPricePerKwh &&
+      currentElectricityPricePerKwh > 0 &&
       formData.prix_elec_kwh === undefined
     ) {
-      onChange("prix_elec_kwh", prixElecKwhActuel);
+      onChange("prix_elec_kwh", currentElectricityPricePerKwh);
     }
-  }, [prixElecKwhActuel, formData.prix_elec_kwh, onChange]);
+  }, [currentElectricityPricePerKwh, formData.prix_elec_kwh, onChange]);
 
   return (
     <div className="space-y-6">
@@ -249,7 +249,7 @@ export function ProjetPacFields({
 
       {/* Section 4: Électricité et abonnements */}
       {(!shouldHideElectricityPrice ||
-        (puissancePacKw && puissancePacKw > 0)) && (
+        (heatPumpPowerKw && heatPumpPowerKw > 0)) && (
         <div className="space-y-4 pt-2">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Électricité et abonnements
@@ -278,7 +278,7 @@ export function ProjetPacFields({
             </FormField>
           )}
 
-          {puissancePacKw && puissancePacKw > 0 && (
+          {heatPumpPowerKw && heatPumpPowerKw > 0 && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 label={
@@ -331,12 +331,12 @@ export function ProjetPacFields({
               </FormField>
 
               {(() => {
-                // Utiliser la puissance souscrite actuelle du formulaire si disponible, sinon la valeur par défaut
+                // Use current subscribed power from form if available, otherwise default value
                 const currentPower =
-                  puissanceSouscriteActuelle ?? currentElectricPower;
-                const recommendedPower = puissancePacKw
-                  ? getPuissanceSouscritePacRecommandee(
-                      puissancePacKw,
+                  currentSubscribedPower ?? currentElectricPower;
+                const recommendedPower = heatPumpPowerKw
+                  ? getRecommendedHeatPumpSubscribedPower(
+                      heatPumpPowerKw,
                       currentPower
                     )
                   : 9;
@@ -367,7 +367,7 @@ export function ProjetPacFields({
                                 <br />
                                 Calculée selon la formule : Puissance actuelle (
                                 {currentPower} kVA) + Puissance PAC (
-                                {puissancePacKw || 0} kW)
+                                {heatPumpPowerKw || 0} kW)
                                 <br />
                                 <br />
                                 Le coefficient de foisonnement est pris en

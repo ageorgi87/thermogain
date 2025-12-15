@@ -16,7 +16,7 @@ model Project {
   housing        ProjectHousing?
   currentHeating ProjectCurrentHeating?
   dhw            ProjectDhw? // DHW (Domestic Hot Water) - only if dhwIntegrated = false
-  projetPac      ProjectProjetPac?
+  heatPump       ProjectHeatPump?
   couts          ProjectCouts?
   aides          ProjectAides?
   financement    ProjectFinancement?

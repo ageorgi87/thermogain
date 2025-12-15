@@ -17,7 +17,7 @@ export const getProject = async (id: string) => {
         user: true,
         housing: true,
         currentHeating: true,
-        projetPac: true,
+        heatPump: true,
         couts: true,
         aides: true,
         financement: true,

@@ -97,7 +97,7 @@ export const calculateYearlyCostProjections = async ({
 
   // Coûts variables année 1 (pour évolution)
   const currentVariableCostYear1 = calculateCurrentVariableCost(data);
-  // Prix élec PAC: vient de data.prix_elec_pac (mappé depuis projetPac.prix_elec_pac ou projetPac.prix_elec_kwh)
+  // Prix élec PAC: vient de data.prix_elec_pac (mappé depuis heatPump.heatPumpElectricityPricePerKwh ou heatPump.electricityPricePerKwh)
   // Fallback sur modèle énergétique si vraiment absent (ne devrait jamais arriver)
   const prixElec = data.prix_elec_pac || pacEnergyModel.currentPrice || 0;
   const pacVariableCostYear1 = pacConsumptionKwh * prixElec;

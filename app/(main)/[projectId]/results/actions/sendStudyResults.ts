@@ -60,9 +60,9 @@ export const sendStudyResults = async ({
             heatingType: true,
           },
         },
-        projetPac: {
+        heatPump: {
           select: {
-            type_pac: true,
+            heatPumpType: true,
           },
         },
         couts: {
@@ -150,7 +150,7 @@ export const sendStudyResults = async ({
       projectName: project.name,
       currentHeatingType:
         project.currentHeating?.heatingType || "système actuel",
-      pacType: project.projetPac?.type_pac || "PAC",
+      pacType: project.heatPump?.heatPumpType || "PAC",
       investmentTotal: Math.round(investmentTotal),
       aidesTotal: Math.round(aidesTotal),
       investmentNet: Math.round(investmentNet),

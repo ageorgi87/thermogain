@@ -55,9 +55,9 @@ export const getCurrentDhwData = async ({
           dhwIntegrated: true,
         },
       },
-      projetPac: {
+      heatPump: {
         select: {
-          with_ecs_management: true,
+          withDhwManagement: true,
         },
       },
     },
@@ -94,7 +94,7 @@ export const getCurrentDhwData = async ({
       dhwIntegrated: project.currentHeating?.dhwIntegrated ?? null,
     },
     pacInfo: {
-      withDhwManagement: project.projetPac?.with_ecs_management ?? null,
+      withDhwManagement: project.heatPump?.withDhwManagement ?? null,
     },
     defaultPrices: {
       electricite: electricitePrice,

@@ -37,7 +37,7 @@ export const getProjectDataForCalculations = async ({
       housing: true,
       currentHeating: true,
       dhw: true, // Données DHW (Domestic Hot Water) séparé (si dhwIntegrated = false)
-      projetPac: true,
+      heatPump: true,
       couts: true,
       aides: true,
       financement: true,
@@ -52,7 +52,7 @@ export const getProjectDataForCalculations = async ({
   if (
     !project.housing ||
     !project.currentHeating ||
-    !project.projetPac ||
+    !project.heatPump ||
     !project.couts ||
     !project.aides
   ) {
@@ -80,7 +80,7 @@ export const getProjectDataForCalculations = async ({
     prix_elec_kwh: project.currentHeating.electricityPricePerKwh ?? undefined,
     cop_actuel: project.currentHeating.currentCop ?? undefined,
     conso_pac_kwh: project.currentHeating.heatPumpConsumptionKwh ?? undefined,
-    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
+    puissance_souscrite_actuelle: project.heatPump.currentSubscribedPowerKva ?? undefined,
     abonnement_gaz: project.currentHeating.gasSubscription ?? undefined,
     entretien_annuel: project.currentHeating.annualMaintenance,
     ecs_integrated: project.currentHeating.dhwIntegrated ?? undefined,
@@ -92,18 +92,18 @@ export const getProjectDataForCalculations = async ({
     entretien_ecs: project.dhw?.dhwAnnualMaintenance ?? undefined,
 
     // Projet PAC
-    type_pac: project.projetPac.type_pac,
-    puissance_pac_kw: project.projetPac.puissance_pac_kw!,
-    cop_estime: project.projetPac.cop_estime!,
-    cop_ajuste: project.projetPac.cop_ajuste!, // COP réel ajusté stocké en DB
-    emetteurs: project.projetPac.emetteurs ?? "Radiateurs basse température", // Valeur par défaut (détermine auto la température)
-    duree_vie_pac: project.projetPac.duree_vie_pac!,
-    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac!,
-    entretien_pac_annuel: project.projetPac.entretien_pac_annuel!,
-    // Prix élec PAC: priorité à prix_elec_pac (tarif spécifique), sinon prix_elec_kwh (tarif standard)
-    prix_elec_pac: project.projetPac.prix_elec_pac ?? project.projetPac.prix_elec_kwh ?? undefined,
-    with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
-    cop_ecs: project.projetPac.cop_ecs ?? undefined,
+    type_pac: project.heatPump.heatPumpType,
+    puissance_pac_kw: project.heatPump.heatPumpPowerKw!,
+    cop_estime: project.heatPump.estimatedCop!,
+    cop_ajuste: project.heatPump.adjustedCop!, // COP réel ajusté stocké en DB
+    emetteurs: project.heatPump.emitters ?? "Radiateurs basse température", // Valeur par défaut (détermine auto la température)
+    duree_vie_pac: project.heatPump.heatPumpLifespanYears!,
+    puissance_souscrite_pac: project.heatPump.heatPumpSubscribedPowerKva!,
+    entretien_pac_annuel: project.heatPump.annualMaintenanceCost!,
+    // Prix élec PAC: priorité à heatPumpElectricityPricePerKwh (tarif spécifique), sinon electricityPricePerKwh (tarif standard)
+    prix_elec_pac: project.heatPump.heatPumpElectricityPricePerKwh ?? project.heatPump.electricityPricePerKwh ?? undefined,
+    with_ecs_management: project.heatPump.withDhwManagement ?? undefined,
+    cop_ecs: project.heatPump.dhwCop ?? undefined,
 
     // Logement (pour estimation ECS + besoins énergétiques DPE)
     nombre_occupants: project.housing.numberOfOccupants ?? undefined,

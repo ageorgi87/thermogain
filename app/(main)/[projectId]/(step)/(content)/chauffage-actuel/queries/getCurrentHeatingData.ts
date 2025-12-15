@@ -35,10 +35,10 @@ export const getCurrentHeatingData = async ({
     select: {
       userId: true,
       currentHeating: true,
-      projetPac: {
+      heatPump: {
         select: {
-          type_pac: true,
-          with_ecs_management: true,
+          heatPumpType: true,
+          withDhwManagement: true,
         },
       },
     },
@@ -55,8 +55,8 @@ export const getCurrentHeatingData = async ({
   return {
     currentHeating: project.currentHeating,
     pacInfo: {
-      typePac: project.projetPac?.type_pac || null,
-      withEcsManagement: project.projetPac?.with_ecs_management ?? null,
+      typePac: project.heatPump?.heatPumpType || null,
+      withEcsManagement: project.heatPump?.withDhwManagement ?? null,
     },
   }
 }

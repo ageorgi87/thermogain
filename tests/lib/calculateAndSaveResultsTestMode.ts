@@ -21,7 +21,7 @@ const getProjectDataForCalculationsTestMode = async (
       housing: true,
       currentHeating: true,
       dhw: true,
-      projetPac: true,
+      heatPump: true,
       couts: true,
       aides: true,
       financement: true,
@@ -35,7 +35,7 @@ const getProjectDataForCalculationsTestMode = async (
   if (
     !project.housing ||
     !project.currentHeating ||
-    !project.projetPac ||
+    !project.heatPump ||
     !project.couts ||
     !project.aides
   ) {
@@ -77,19 +77,19 @@ const getProjectDataForCalculationsTestMode = async (
     entretien_ecs: project.dhw?.dhwAnnualMaintenance ?? undefined,
 
     // Projet PAC
-    type_pac: project.projetPac.type_pac,
-    puissance_pac_kw: project.projetPac.puissance_pac_kw ?? 0,
-    cop_estime: project.projetPac.cop_estime ?? 0,
-    cop_ajuste: project.projetPac.cop_ajuste ?? 0,
-    emetteurs: project.projetPac.emetteurs ?? "",
-    duree_vie_pac: project.projetPac.duree_vie_pac ?? 17,
+    type_pac: project.heatPump.heatPumpType,
+    puissance_pac_kw: project.heatPump.heatPumpPowerKw ?? 0,
+    cop_estime: project.heatPump.estimatedCop ?? 0,
+    cop_ajuste: project.heatPump.adjustedCop ?? 0,
+    emetteurs: project.heatPump.emitters ?? "",
+    duree_vie_pac: project.heatPump.heatPumpLifespanYears ?? 17,
     prix_elec_pac:
-      project.projetPac.prix_elec_pac ?? project.projetPac.prix_elec_kwh ?? undefined,
-    puissance_souscrite_actuelle: project.projetPac.puissance_souscrite_actuelle ?? undefined,
-    puissance_souscrite_pac: project.projetPac.puissance_souscrite_pac ?? undefined,
-    entretien_pac_annuel: project.projetPac.entretien_pac_annuel ?? undefined,
-    with_ecs_management: project.projetPac.with_ecs_management ?? undefined,
-    cop_ecs: project.projetPac.cop_ecs ?? undefined,
+      project.heatPump.heatPumpElectricityPricePerKwh ?? project.heatPump.electricityPricePerKwh ?? undefined,
+    puissance_souscrite_actuelle: project.heatPump.currentSubscribedPowerKva ?? undefined,
+    puissance_souscrite_pac: project.heatPump.heatPumpSubscribedPowerKva ?? undefined,
+    entretien_pac_annuel: project.heatPump.annualMaintenanceCost ?? undefined,
+    with_ecs_management: project.heatPump.withDhwManagement ?? undefined,
+    cop_ecs: project.heatPump.dhwCop ?? undefined,
 
     // Coûts
     cout_total: project.couts.cout_total,

@@ -1,54 +1,54 @@
-// Section 3: Projet PAC (Heat Pump Project)
+// Section 3: Heat Pump Project
 // Stores specifications for the planned heat pump installation
 
-model ProjectProjetPac {
+model ProjectHeatPump {
   id        String  @id @default(cuid())
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  type_pac         String
-  puissance_pac_kw Float?
-  cop_estime       Float? // COP nominal du fabricant (conditions standardisées)
-  cop_ajuste       Float? // COP réel ajusté selon température, émetteurs, zone climatique
-  emetteurs        String? // Type d'émetteurs (détermine automatiquement la température de départ)
+  heatPumpType   String
+  heatPumpPowerKw Float?
+  estimatedCop    Float? // Manufacturer's nominal COP (standardized conditions)
+  adjustedCop     Float? // Real COP adjusted for temperature, emitters, climate zone
+  emitters        String? // Emitter type (automatically determines flow temperature)
 
   // Estimated heat pump lifespan in years (REQUIRED in form - based on ADEME studies)
-  duree_vie_pac Int?
+  heatPumpLifespanYears Int?
 
-  // Fixed costs and subscriptions (Novembre 2024)
+  // Fixed costs and subscriptions (November 2024)
   // Electricity price (€/kWh) - REQUIRED in form
   // Auto-filled from API via useEffect if undefined
-  prix_elec_kwh Float?
+  electricityPricePerKwh Float?
 
   // Current electrical power subscription (in kVA: 3, 6, 9, 12, 15, 18)
-  // Retrieved from previous section (chauffageActuel) or defaults to 6 kVA
-  puissance_souscrite_actuelle Int?
+  // Retrieved from previous section (currentHeating) or defaults to 6 kVA
+  currentSubscribedPowerKva Int?
 
-  // Recommended electrical power subscription for PAC (in kVA: 6, 9, 12, 15, 18)
-  // Smart calculation based on puissance_pac_kw, but user-modifiable
-  puissance_souscrite_pac Int?
+  // Recommended electrical power subscription for heat pump (in kVA: 6, 9, 12, 15, 18)
+  // Smart calculation based on heatPumpPowerKw, but user-modifiable
+  heatPumpSubscribedPowerKva Int?
 
   // Annual heat pump maintenance cost (€/year)
   // REQUIRED in form - standard value 120€/year
-  entretien_pac_annuel Float?
+  annualMaintenanceCost Float?
 
-  // Electricity price for PAC (€/kWh) - can be different from current price
+  // Electricity price for heat pump (€/kWh) - can be different from current price
   // Optional: for off-peak rates or other specific contracts
-  prix_elec_pac Float?
+  heatPumpElectricityPricePerKwh Float?
 
-  // DHW (Domestic Hot Water) management with PAC
-  // Only applicable for water-based PACs (Air/Eau, Eau/Eau)
-  // null for Air/Air PACs
-  with_ecs_management Boolean?
+  // DHW (Domestic Hot Water) management with heat pump
+  // Only applicable for water-based heat pumps (Air/Water, Water/Water)
+  // null for Air/Air heat pumps
+  withDhwManagement Boolean?
 
   // DHW storage tank volume (liters)
-  // Only if with_ecs_management = true
-  volume_ballon_ecs Int?
+  // Only if withDhwManagement = true
+  dhwTankVolumeLiters Int?
 
-  // COP for DHW production (automatically calculated: cop_estime × 0.85)
+  // COP for DHW production (automatically calculated: estimatedCop × 0.85)
   // Lower than heating COP due to higher water temperature (55-60°C vs 35-45°C)
-  // Only if with_ecs_management = true
-  cop_ecs Float?
+  // Only if withDhwManagement = true
+  dhwCop Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

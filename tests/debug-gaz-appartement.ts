@@ -55,20 +55,20 @@ const debugTest = async () => {
         },
       },
 
-      projetPac: {
+      heatPump: {
         create: {
-          type_pac: 'Air/Eau',
-          puissance_pac_kw: 6,
-          cop_estime: 3.8,
-          cop_ajuste: 3.5,
-          emetteurs: 'Radiateurs basse température',
-          duree_vie_pac: 17,
-          prix_elec_kwh: 0.2516,
-          prix_elec_pac: 0.2276,
-          puissance_souscrite_actuelle: 3,
-          puissance_souscrite_pac: 6,
-          entretien_pac_annuel: 180,
-          with_ecs_management: true,
+          heatPumpType: 'Air/Eau',
+          heatPumpPowerKw: 6,
+          estimatedCop: 3.8,
+          adjustedCop: 3.5,
+          emitters: 'Radiateurs basse température',
+          heatPumpLifespanYears: 17,
+          electricityPricePerKwh: 0.2516,
+          heatPumpElectricityPricePerKwh: 0.2276,
+          currentSubscribedPowerKva: 3,
+          heatPumpSubscribedPowerKva: 6,
+          annualMaintenanceCost: 180,
+          withDhwManagement: true,
         },
       },
 

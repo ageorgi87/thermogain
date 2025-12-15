@@ -46,7 +46,7 @@ export const saveHeatPumpProjectData = async ({
     validatedData.type_pac
   );
 
-  const projetPac = await prisma.projectProjetPac.upsert({
+  const heatPump = await prisma.projectHeatPump.upsert({
     where: { projectId },
     create: {
       ...validatedData,
@@ -66,5 +66,5 @@ export const saveHeatPumpProjectData = async ({
     });
   }
 
-  return projetPac;
+  return heatPump;
 };

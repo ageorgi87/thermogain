@@ -35,7 +35,7 @@ export default async function ResultsPage({ params }: PageProps) {
   if (
     !project.housing ||
     !project.currentHeating ||
-    !project.projetPac ||
+    !project.heatPump ||
     !project.couts ||
     !project.aides
   ) {
@@ -112,7 +112,7 @@ export default async function ResultsPage({ params }: PageProps) {
                   <strong className="text-brand-teal-600 font-semibold">
                     {results.netBenefitLifetime.toLocaleString("fr-FR")} €
                   </strong>{" "}
-                  sur {project.projetPac.duree_vie_pac} ans.
+                  sur {project.heatPump.heatPumpLifespanYears} ans.
                 </p>
               )}
             </>
@@ -122,7 +122,7 @@ export default async function ResultsPage({ params }: PageProps) {
               <strong className="text-red-600 font-semibold">
                 {Math.abs(results.netBenefitLifetime).toLocaleString("fr-FR")} €
               </strong>{" "}
-              sur une durée de {project.projetPac.duree_vie_pac} ans. Les
+              sur une durée de {project.heatPump.heatPumpLifespanYears} ans. Les
               économies générées ne couvrent pas l&apos;investissement.
             </p>
           )}
@@ -161,7 +161,7 @@ export default async function ResultsPage({ params }: PageProps) {
           economiesAnnuelles={results.economiesAnnuelles}
           coutTotalActuelLifetime={results.coutTotalActuelLifetime}
           coutTotalPacLifetime={results.coutTotalPacLifetime}
-          dureeVie={project.projetPac.duree_vie_pac}
+          dureeVie={project.heatPump.heatPumpLifespanYears}
         />
         <FinancialSummaryCard
           resteACharge={project.couts.cout_total - project.aides.total_aides}
@@ -174,7 +174,7 @@ export default async function ResultsPage({ params }: PageProps) {
           paybackPeriod={results.paybackPeriod}
           paybackYear={results.paybackYear}
           netBenefit={results.netBenefitLifetime}
-          dureeVie={project.projetPac.duree_vie_pac}
+          dureeVie={project.heatPump.heatPumpLifespanYears}
           tauxRentabilite={results.tauxRentabilite}
         />
       </div>

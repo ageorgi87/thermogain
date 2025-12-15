@@ -48,18 +48,18 @@ export const saveInformationsData = async ({
     },
   });
 
-  // Upsert ProjectProjetPac with type_pac and with_ecs_management
+  // Upsert ProjectHeatPump with heatPumpType and withDhwManagement
   // Other fields will be filled in step 3 (projet-pac)
-  await prisma.projectProjetPac.upsert({
+  await prisma.projectHeatPump.upsert({
     where: { projectId },
     create: {
       projectId,
-      type_pac: validatedData.type_pac,
-      with_ecs_management: validatedData.with_ecs_management,
+      heatPumpType: validatedData.type_pac,
+      withDhwManagement: validatedData.with_ecs_management,
     },
     update: {
-      type_pac: validatedData.type_pac,
-      with_ecs_management: validatedData.with_ecs_management,
+      heatPumpType: validatedData.type_pac,
+      withDhwManagement: validatedData.with_ecs_management,
     },
   });
 };

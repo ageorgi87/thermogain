@@ -22,10 +22,10 @@ export const getInformationsData = async ({
       userId: true,
       name: true,
       recipientEmails: true,
-      projetPac: {
+      heatPump: {
         select: {
-          type_pac: true,
-          with_ecs_management: true,
+          heatPumpType: true,
+          withDhwManagement: true,
         },
       },
     },
@@ -38,7 +38,7 @@ export const getInformationsData = async ({
   return {
     name: project.name,
     recipientEmails: project.recipientEmails,
-    typePac: project.projetPac?.type_pac,
-    withEcsManagement: project.projetPac?.with_ecs_management,
+    typePac: project.heatPump?.heatPumpType,
+    withEcsManagement: project.heatPump?.withDhwManagement,
   };
 };

@@ -42,10 +42,10 @@ export const getProjectDataForAides = async (
           heatingType: true,
         },
       },
-      projetPac: {
+      heatPump: {
         select: {
-          type_pac: true,
-          cop_estime: true,
+          heatPumpType: true,
+          estimatedCop: true,
         },
       },
       couts: {
@@ -78,7 +78,7 @@ export const getProjectDataForAides = async (
     throw new Error("Surface logement manquante");
   }
 
-  if (!project.projetPac) {
+  if (!project.heatPump) {
     throw new Error("Données PAC manquantes");
   }
 
@@ -123,8 +123,8 @@ export const getProjectDataForAides = async (
     type_chauffage_actuel: project.currentHeating?.heatingType || null,
 
     // Projet PAC
-    type_pac: project.projetPac.type_pac,
-    cop_estime: project.projetPac.cop_estime!,
+    type_pac: project.heatPump.heatPumpType,
+    cop_estime: project.heatPump.estimatedCop!,
 
     // Coûts
     cout_pac: project.couts.cout_pac,
