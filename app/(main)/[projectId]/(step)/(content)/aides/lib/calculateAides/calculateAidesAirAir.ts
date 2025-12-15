@@ -38,7 +38,7 @@ export const calculateAidesAirAir = async (
     const gesteKey = "gestes.chauffage.PAC.air-air";
 
     // Convertir code postal en code INSEE
-    const code_insee = await postalCodeToInsee(projectData.code_postal);
+    const code_insee = await postalCodeToInsee(projectData.postalCode);
 
     // Construction des paramètres API pour PAC Air/Air
     const apiParams: Record<string, string> = {
@@ -46,18 +46,18 @@ export const calculateAidesAirAir = async (
       "vous.propriétaire.statut": "'propriétaire'",
 
       // OBLIGATOIRE - Ménage
-      "ménage.personnes": projectData.nombre_occupants.toString(),
-      "ménage.revenu": projectData.revenu_fiscal_reference.toString(),
+      "ménage.personnes": projectData.numberOfOccupants.toString(),
+      "ménage.revenu": projectData.taxIncomeReference.toString(),
 
       // OBLIGATOIRE - Logement
-      "logement.type": `'${projectData.type_logement}'`,
-      "logement.surface": projectData.surface_logement.toString(),
-      "logement.période de construction": `'${convertAnneeConstruction(projectData.annee_construction || undefined)}'`,
-      "logement.propriétaire occupant": projectData.residence_principale
+      "logement.type": `'${projectData.housingType}'`,
+      "logement.surface": projectData.livingArea.toString(),
+      "logement.période de construction": `'${convertAnneeConstruction(projectData.constructionYear || undefined)}'`,
+      "logement.propriétaire occupant": projectData.primaryResidence
         ? "'oui'"
         : "'non'",
       "logement.résidence principale propriétaire":
-        projectData.residence_principale ? "'oui'" : "'non'",
+        projectData.primaryResidence ? "'oui'" : "'non'",
       "logement.commune": `'${code_insee}'`,
       "logement.adresse": `'Code INSEE ${code_insee}'`,
 
@@ -69,10 +69,10 @@ export const calculateAidesAirAir = async (
 
       // OBLIGATOIRE - CEE
       "CEE.projet.remplacement chaudière thermique":
-        projectData.type_chauffage_actuel?.includes("chaudière") ? "oui" : "non",
+        projectData.currentHeatingType?.includes("chaudière") ? "oui" : "non",
 
       // SPÉCIFIQUE PAC AIR/AIR - Paramètre CEE SCOP
-      [`${gesteKey}.CEE.SCOP`]: projectData.cop_estime.toString(),
+      [`${gesteKey}.CEE.SCOP`]: projectData.estimatedCop.toString(),
     };
 
     // Construire la query string

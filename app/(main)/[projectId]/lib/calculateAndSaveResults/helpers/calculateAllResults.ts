@@ -20,7 +20,7 @@ import { calculateEnergyNeedsWithDPE } from "@/app/(main)/[projectId]/lib/calcul
  * @returns Type d'énergie (ApiEnergyType: 'gaz' | 'electricite' | 'fioul' | 'bois')
  */
 const getEnergyType = (
-  heatingSolution: ProjectData["type_chauffage"]
+  heatingSolution: ProjectData["heatingType"]
 ): ApiEnergyType => {
   switch (heatingSolution) {
     case "Fioul":
@@ -55,7 +55,7 @@ export const calculateAllResults = async (
 ): Promise<CalculationResults> => {
   // Récupérer les modèles énergétiques UNE SEULE FOIS au début
   // Les données ont été rafraîchies au step 1 (informations) si nécessaire
-  const energyType = getEnergyType(data.type_chauffage);
+  const energyType = getEnergyType(data.heatingType);
   const currentEnergyModel = await getEnergyPriceEvolutionFromDB(energyType);
   const pacEnergyModel = await getEnergyPriceEvolutionFromDB(
     EnergyType.ELECTRICITE
@@ -73,73 +73,73 @@ export const calculateAllResults = async (
   // Cette approche équilibrée tient compte de l'usage actuel ET anticipe un confort optimal
   const energyNeeds = calculateEnergyNeedsWithDPE(
     data,
-    data.classe_dpe,
-    data.surface_logement
+    data.dpeRating,
+    data.livingArea
   );
 
   // Consommation PAC (calculée UNE SEULE FOIS, inline)
   // Formule: Consommation PAC = Besoins énergétiques finaux / COP ajusté
-  const consommationPacKwh = energyNeeds.finalEnergyNeedsKwh / data.cop_ajuste;
+  const consommationPacKwh = energyNeeds.finalEnergyNeedsKwh / data.adjustedCop;
 
   // Coût variable PAC (inline pour éviter de recalculer la consommation)
-  const prixElec = data.prix_elec_pac || data.prix_elec_kwh || 0;
+  const prixElec = data.heatPumpElectricityPricePerKwh || data.electricityPricePerKwh || 0;
   const pacVariableCost = consommationPacKwh * prixElec;
 
   const pacFixedCosts = calculatePacFixedCosts(data);
   const coutAnnuelPac = pacVariableCost + pacFixedCosts.total + dhwCosts.futureDhwCost;
 
   // Calculer l'investissement réel selon le mode de financement
-  // Mode Comptant : reste_a_charge
-  // Mode Crédit : reste_a_charge + intérêts du crédit
-  // Mode Mixte : apport_personnel + montant_credit + intérêts
-  let investissementReel = data.reste_a_charge;
+  // Mode Comptant : remainingCost
+  // Mode Crédit : remainingCost + intérêts du crédit
+  // Mode Mixte : downPayment + loanAmount + intérêts
+  let investissementReel = data.remainingCost;
 
   if (
-    data.mode_financement === FinancingMode.CREDIT &&
-    data.montant_credit &&
-    data.taux_interet !== undefined &&
-    data.duree_credit_mois
+    data.financingMode === FinancingMode.CREDIT &&
+    data.loanAmount &&
+    data.interestRate !== undefined &&
+    data.loanDurationMonths
   ) {
     const mensualite = calculateMonthlyPayment({
-      montant: data.montant_credit,
-      tauxAnnuel: data.taux_interet,
-      dureeMois: data.duree_credit_mois,
+      montant: data.loanAmount,
+      tauxAnnuel: data.interestRate,
+      dureeMois: data.loanDurationMonths,
     });
     const coutTotalCredit = roundToDecimals(
-      mensualite * data.duree_credit_mois,
+      mensualite * data.loanDurationMonths,
       2
     );
     investissementReel = coutTotalCredit;
   } else if (
-    data.mode_financement === FinancingMode.MIXTE &&
-    data.montant_credit &&
-    data.taux_interet !== undefined &&
-    data.duree_credit_mois &&
-    data.apport_personnel
+    data.financingMode === FinancingMode.MIXTE &&
+    data.loanAmount &&
+    data.interestRate !== undefined &&
+    data.loanDurationMonths &&
+    data.downPayment
   ) {
     const mensualite = calculateMonthlyPayment({
-      montant: data.montant_credit,
-      tauxAnnuel: data.taux_interet,
-      dureeMois: data.duree_credit_mois,
+      montant: data.loanAmount,
+      tauxAnnuel: data.interestRate,
+      dureeMois: data.loanDurationMonths,
     });
     const coutTotalCredit = roundToDecimals(
-      mensualite * data.duree_credit_mois,
+      mensualite * data.loanDurationMonths,
       2
     );
-    investissementReel = data.apport_personnel + coutTotalCredit;
+    investissementReel = data.downPayment + coutTotalCredit;
   }
 
   // Créer un objet ProjectData ajusté avec l'investissement réel
   const dataAjusteeROI: ProjectData = {
     ...data,
-    reste_a_charge: investissementReel,
+    remainingCost: investissementReel,
   };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
   // Passer les modèles énergétiques ET la consommation PAC pour éviter les recalculs
   const yearlyData = await calculateYearlyCostProjections({
     data: dataAjusteeROI,
-    years: data.duree_vie_pac,
+    years: data.heatPumpLifespanYears,
     currentEnergyModel,
     pacEnergyModel,
     pacConsumptionKwh: consommationPacKwh,
@@ -178,20 +178,20 @@ export const calculateAllResults = async (
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
   // Valeur finale = Investissement + Gain net
   let tauxRentabilite: number | null = null;
-  if (investissementReel > 0 && data.duree_vie_pac > 0) {
+  if (investissementReel > 0 && data.heatPumpLifespanYears > 0) {
     const valeurFinale = investissementReel + netBenefitLifetime;
     // Calculer le taux même si négatif (perte annuelle moyenne)
     // Si valeurFinale <= 0, le taux sera négatif
     if (valeurFinale > 0) {
       tauxRentabilite =
-        (Math.pow(valeurFinale / investissementReel, 1 / data.duree_vie_pac) -
+        (Math.pow(valeurFinale / investissementReel, 1 / data.heatPumpLifespanYears) -
           1) *
         100;
     } else {
       // Pour les projets non rentables, calculer la perte annuelle moyenne en pourcentage
       // Perte totale / investissement / nombre d'années * 100
       tauxRentabilite =
-        (netBenefitLifetime / investissementReel / data.duree_vie_pac) * 100;
+        (netBenefitLifetime / investissementReel / data.heatPumpLifespanYears) * 100;
     }
   }
 
@@ -205,19 +205,19 @@ export const calculateAllResults = async (
   let coutTotalCredit: number | undefined;
 
   if (
-    (data.mode_financement === FinancingMode.CREDIT || data.mode_financement === FinancingMode.MIXTE) &&
-    data.montant_credit &&
-    data.taux_interet &&
-    data.duree_credit_mois
+    (data.financingMode === FinancingMode.CREDIT || data.financingMode === FinancingMode.MIXTE) &&
+    data.loanAmount &&
+    data.interestRate &&
+    data.loanDurationMonths
   ) {
     mensualiteCredit = calculateMonthlyPayment({
-      montant: data.montant_credit,
-      tauxAnnuel: data.taux_interet,
-      dureeMois: data.duree_credit_mois,
+      montant: data.loanAmount,
+      tauxAnnuel: data.interestRate,
+      dureeMois: data.loanDurationMonths,
     });
     // Inline: mensualite * duree
     coutTotalCredit = roundToDecimals(
-      mensualiteCredit * data.duree_credit_mois,
+      mensualiteCredit * data.loanDurationMonths,
       2
     );
   }

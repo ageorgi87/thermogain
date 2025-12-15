@@ -4,7 +4,7 @@
  * L'Etas (Efficacité énergétique saisonnière) est calculé à partir du COP nominal.
  * Formule : Etas (%) = COP × 40
  *
- * @param cop_estime - COP nominal du fabricant
+ * @param estimatedCop - COP nominal du fabricant
  * @returns Catégorie Etas au format attendu par l'API Publicodes
  *
  * Catégories :
@@ -13,9 +13,9 @@
  * - COP 3.15-5.0  → Etas 126-200% → "'entre 126 et 200 %'"
  * - COP > 5.0     → Etas > 200%   → "'supérieur à 200 %'"
  */
-export const getEtasCategory = (cop_estime: number): string => {
+export const getEtasCategory = (estimatedCop: number): string => {
   // Calcul Etas (%) = COP × 40
-  const etas = cop_estime * 40;
+  const etas = estimatedCop * 40;
 
   // Déterminer la catégorie
   if (etas < 111) {

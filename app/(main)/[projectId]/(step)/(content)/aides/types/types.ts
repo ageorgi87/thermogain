@@ -10,28 +10,28 @@ import type { ClasseDPE } from "@/types/dpe"
  * Pour être passées aux fonctions calculateAidesXXX
  */
 export interface ProjectDataForAides {
-  // Logement
-  code_postal: string
-  annee_construction: number | null
-  nombre_occupants: number
-  classe_dpe: ClasseDPE
-  surface_logement: number
+  // Housing
+  postalCode: string
+  constructionYear: number | null
+  numberOfOccupants: number
+  dpeRating: ClasseDPE
+  livingArea: number
 
-  // Aides (critères utilisateur)
-  type_logement: "maison" | "appartement"
-  revenu_fiscal_reference: number
-  residence_principale: boolean
+  // Financial aid criteria (user input)
+  housingType: "maison" | "appartement"
+  taxIncomeReference: number
+  primaryResidence: boolean
 
-  // Chauffage actuel
-  type_chauffage_actuel: string | null
+  // Current heating
+  currentHeatingType: string | null
 
-  // Projet PAC
-  type_pac: string // Format ThermoGain: "Air/Eau", "Eau/Eau", "Air/Air"
-  cop_estime: number // COP nominal du fabricant (pour calcul Etas)
+  // Heat pump project
+  heatPumpType: string // ThermoGain format: "Air/Eau", "Eau/Eau", "Air/Air"
+  estimatedCop: number // Nominal COP from manufacturer (for Etas calculation)
 
-  // Coûts
-  cout_pac: number
-  cout_installation: number
+  // Costs
+  heatPumpCost: number
+  installationCost: number
 }
 
 /**

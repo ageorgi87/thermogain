@@ -105,29 +105,29 @@ export const getProjectDataForFinancialAid = async (
     throw new Error("Résidence principale manquante");
   }
 
-  // Retourner les données brutes (pas de transformation)
+  // Retourner les données brutes (English field names matching DB schema)
   return {
-    // Logement
-    code_postal: project.housing.postalCode,
-    annee_construction: project.housing.constructionYear,
-    nombre_occupants: project.housing.numberOfOccupants,
-    classe_dpe: project.housing.dpeRating as ClasseDPE,
-    surface_logement: project.housing.livingArea,
+    // Housing
+    postalCode: project.housing.postalCode,
+    constructionYear: project.housing.constructionYear,
+    numberOfOccupants: project.housing.numberOfOccupants,
+    dpeRating: project.housing.dpeRating as ClasseDPE,
+    livingArea: project.housing.livingArea,
 
-    // Aides (critères utilisateur)
-    type_logement: project.financialAid.housingType as "maison" | "appartement",
-    revenu_fiscal_reference: project.financialAid.referenceTaxIncome,
-    residence_principale: project.financialAid.isPrimaryResidence,
+    // Financial aid criteria (user input)
+    housingType: project.financialAid.housingType as "maison" | "appartement",
+    taxIncomeReference: project.financialAid.referenceTaxIncome,
+    primaryResidence: project.financialAid.isPrimaryResidence,
 
-    // Chauffage actuel
-    type_chauffage_actuel: project.currentHeating?.heatingType || null,
+    // Current heating
+    currentHeatingType: project.currentHeating?.heatingType || null,
 
-    // Projet PAC
-    type_pac: project.heatPump.heatPumpType,
-    cop_estime: project.heatPump.estimatedCop!,
+    // Heat pump project
+    heatPumpType: project.heatPump.heatPumpType,
+    estimatedCop: project.heatPump.estimatedCop!,
 
-    // Coûts
-    cout_pac: project.costs.heatPumpCost,
-    cout_installation: project.costs.installationCost,
+    // Costs
+    heatPumpCost: project.costs.heatPumpCost,
+    installationCost: project.costs.installationCost,
   };
 };

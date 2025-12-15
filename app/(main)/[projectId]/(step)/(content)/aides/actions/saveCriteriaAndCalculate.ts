@@ -89,7 +89,7 @@ export const saveCriteriaAndCalculate = async (
     // Dispatcher : Appeler la fonction de calcul appropriée selon le type de PAC
     let result;
 
-    switch (projectData.type_pac) {
+    switch (projectData.heatPumpType) {
       case "Air/Eau":
         result = await calculateAidesAirEau(projectData);
         break;
@@ -103,7 +103,7 @@ export const saveCriteriaAndCalculate = async (
         break;
 
       default:
-        throw new Error(`Type de PAC non supporté: ${projectData.type_pac}`);
+        throw new Error(`Type de PAC non supporté: ${projectData.heatPumpType}`);
     }
 
     return {

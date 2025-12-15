@@ -44,8 +44,8 @@ export interface DhwCostCalculation {
  * @returns Détails des coûts ECS et économies
  */
 export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
-  const ecsIntegrated = data.ecs_integrated ?? false;
-  const withEcsManagement = data.with_ecs_management ?? false;
+  const ecsIntegrated = data.dhwIntegrated ?? false;
+  const withEcsManagement = data.withDhwManagement ?? false;
 
   // ============================================================================
   // SCÉNARIO A : ECS intégrée + PAC sans gestion ECS
@@ -73,7 +73,7 @@ export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
     const besoinsTotaux = getCurrentConsumptionKwh(data, true);
 
     // Estimation besoins ECS (ADEME)
-    const nombreOccupants = data.nombre_occupants || 4; // Default 4 personnes
+    const nombreOccupants = data.numberOfOccupants || 4; // Default 4 personnes
     let besoinsDhw = nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR;
     let besoinsChauffage = besoinsTotaux - besoinsDhw;
 
@@ -88,8 +88,8 @@ export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
     const currentDhwCost = besoinsDhw * prixEnergie;
 
     // Coût ECS futur (PAC avec COP ECS)
-    const copDhw = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
-    const prixElecPac = data.prix_elec_pac || data.prix_elec_kwh || 0;
+    const copDhw = data.dhwCop || data.adjustedCop * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
+    const prixElecPac = data.heatPumpElectricityPricePerKwh || data.electricityPricePerKwh || 0;
     const consoDhwPac = besoinsDhw / copDhw;
     const futureDhwCost = consoDhwPac * prixElecPac;
 
@@ -108,9 +108,9 @@ export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
   // ============================================================================
   // Le système ECS actuel est conservé → même coût avant/après
   if (!ecsIntegrated && !withEcsManagement) {
-    const consoDhw = data.conso_ecs_kwh || 0;
-    const prixDhw = data.prix_ecs_kwh || 0;
-    const entretienDhw = data.entretien_ecs || 0;
+    const consoDhw = data.dhwConsumptionKwh || 0;
+    const prixDhw = data.dhwEnergyPricePerKwh || 0;
+    const entretienDhw = data.dhwAnnualMaintenance || 0;
 
     const dhwCost = consoDhw * prixDhw + entretienDhw;
 
@@ -129,19 +129,19 @@ export const calculateDhwCosts = (data: ProjectData): DhwCostCalculation => {
   // ============================================================================
   // Calcul complet : ECS actuel séparé vs PAC avec ECS intégrée
   if (!ecsIntegrated && withEcsManagement) {
-    const consoDhw = data.conso_ecs_kwh || 0;
-    const prixDhw = data.prix_ecs_kwh || 0;
-    const entretienDhw = data.entretien_ecs || 0;
+    const consoDhw = data.dhwConsumptionKwh || 0;
+    const prixDhw = data.dhwEnergyPricePerKwh || 0;
+    const entretienDhw = data.dhwAnnualMaintenance || 0;
 
     // Coût ECS actuel
     const currentDhwCost = consoDhw * prixDhw + entretienDhw;
 
     // Coût ECS futur (PAC avec COP ECS)
-    const copDhw = data.cop_ecs || data.cop_ajuste * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
-    const prixElecPac = data.prix_elec_pac || data.prix_elec_kwh || 0;
+    const copDhw = data.dhwCop || data.adjustedCop * ECS_ESTIMATION.COP_REDUCTION_FACTOR;
+    const prixElecPac = data.heatPumpElectricityPricePerKwh || data.electricityPricePerKwh || 0;
     const consoDhwPac = consoDhw / copDhw;
     const futureDhwCost = consoDhwPac * prixElecPac;
-    // Note: Pas d'entretien séparé (inclus dans entretien_pac)
+    // Note: Pas d'entretien séparé (inclus dans annualMaintenanceCost)
 
     return {
       currentDhwCost,

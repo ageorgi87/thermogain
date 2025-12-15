@@ -88,7 +88,7 @@ export function YearlyBreakdownTable({
               Détail année par année
             </CardTitle>
             <CardDescription className="mt-1.5">
-              Évolution des coûts et économies sur {projectData.duree_vie_pac} ans
+              Évolution des coûts et économies sur {projectData.heatPumpLifespanYears} ans
             </CardDescription>
           </div>
           <TooltipProvider>

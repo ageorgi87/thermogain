@@ -17,7 +17,7 @@ export const calculatePacFixedCosts = (data: ProjectData): {
   entretien: number;
   total: number;
 } => {
-  const puissancePac = data.puissance_souscrite_pac || 9;
+  const puissancePac = data.heatPumpSubscribedPowerKva || 9;
 
   // Abonnement électricité avec PAC (puissance augmentée)
   const abonnementElec =
@@ -26,7 +26,7 @@ export const calculatePacFixedCosts = (data: ProjectData): {
     ];
 
   // Entretien PAC
-  const entretien = data.entretien_pac_annuel || 120;
+  const entretien = data.annualMaintenanceCost || 120;
 
   return {
     abonnementElec,

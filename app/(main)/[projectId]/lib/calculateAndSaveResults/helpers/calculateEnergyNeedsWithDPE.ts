@@ -60,10 +60,10 @@ export const calculateEnergyNeedsWithDPE = (
   // 2. Si ECS séparée, ajouter l'ECS à la consommation réelle pour cohérence avec DPE
   // Le DPE inclut TOUJOURS chauffage + ECS + tout
   // Donc si la conso déclarée n'inclut PAS l'ECS, on doit l'ajouter avant la moyenne
-  if (!data.ecs_integrated) {
+  if (!data.dhwIntegrated) {
     // Utiliser la consommation ECS déclarée si disponible, sinon estimation ADEME
-    const nombreOccupants = data.nombre_occupants || 4;
-    const ecsKwh = data.conso_ecs_kwh || (nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR);
+    const nombreOccupants = data.numberOfOccupants || 4;
+    const ecsKwh = data.dhwConsumptionKwh || (nombreOccupants * ECS_ESTIMATION.KWH_PER_PERSON_PER_YEAR);
     actualConsumptionKwh += ecsKwh;
   }
 

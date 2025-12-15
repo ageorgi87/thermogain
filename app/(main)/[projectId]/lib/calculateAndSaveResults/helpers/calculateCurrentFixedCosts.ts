@@ -18,22 +18,22 @@ export const calculateCurrentFixedCosts = (data: ProjectData): {
   entretien: number
   total: number
 } => {
-  const puissanceActuelle = data.puissance_souscrite_actuelle || 6
+  const puissanceActuelle = data.currentSubscribedPowerKva || 6
 
   // Abonnement électricité: uniquement pour les chauffages électriques ou PAC
-  const abonnementElec = isElectricHeating(data.type_chauffage || "")
+  const abonnementElec = isElectricHeating(data.heatingType || "")
     ? ELECTRICITY_SUBSCRIPTION_ANNUAL[
         puissanceActuelle as keyof typeof ELECTRICITY_SUBSCRIPTION_ANNUAL
       ]
     : 0
 
   // Abonnement gaz: uniquement pour chauffage au gaz
-  const abonnementGaz = requiresGasSubscription(data.type_chauffage || "")
-    ? data.abonnement_gaz || GAS_SUBSCRIPTION.ANNUAL_AVERAGE
+  const abonnementGaz = requiresGasSubscription(data.heatingType || "")
+    ? data.gasSubscription || GAS_SUBSCRIPTION.ANNUAL_AVERAGE
     : 0
 
   // Entretien: utilise la valeur renseignée par l'utilisateur
-  const entretien = data.entretien_annuel || 0
+  const entretien = data.annualMaintenance || 0
 
   return {
     abonnementElec,

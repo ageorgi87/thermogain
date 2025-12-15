@@ -42,67 +42,72 @@ const getProjectDataForCalculationsTestMode = async (
     throw new Error(`Projet ${projectId} incomplet`);
   }
 
-  // Mapper les données Prisma vers ProjectData
+  // Calculate remaining cost
+  const remainingCost = project.costs.totalCost - project.financialAid.totalAid;
+
+  // Helper to convert null to undefined
+  const nullToUndefined = <T>(value: T | null): T | undefined => value ?? undefined;
+
+  // Map Prisma data to ProjectData using English field names
   const data: ProjectData = {
-    // Housing
-    code_postal: project.housing.postalCode,
-    surface_logement: project.housing.livingArea,
-    nombre_occupants: project.housing.numberOfOccupants,
-    classe_dpe: project.housing.dpeRating ?? undefined,
+    // Current heating data - with null converted to undefined
+    heatingType: project.currentHeating.heatingType,
+    fuelConsumptionLiters: nullToUndefined(project.currentHeating.fuelConsumptionLiters),
+    fuelPricePerLiter: nullToUndefined(project.currentHeating.fuelPricePerLiter),
+    gasConsumptionKwh: nullToUndefined(project.currentHeating.gasConsumptionKwh),
+    gasPricePerKwh: nullToUndefined(project.currentHeating.gasPricePerKwh),
+    lpgConsumptionKg: nullToUndefined(project.currentHeating.lpgConsumptionKg),
+    lpgPricePerKg: nullToUndefined(project.currentHeating.lpgPricePerKg),
+    pelletsConsumptionKg: nullToUndefined(project.currentHeating.pelletsConsumptionKg),
+    pelletsPricePerKg: nullToUndefined(project.currentHeating.pelletsPricePerKg),
+    woodConsumptionSteres: nullToUndefined(project.currentHeating.woodConsumptionSteres),
+    woodPricePerStere: nullToUndefined(project.currentHeating.woodPricePerStere),
+    electricityConsumptionKwh: nullToUndefined(project.currentHeating.electricityConsumptionKwh),
+    electricityPricePerKwh: nullToUndefined(project.currentHeating.electricityPricePerKwh),
+    currentCop: nullToUndefined(project.currentHeating.currentCop),
+    heatPumpConsumptionKwh: nullToUndefined(project.currentHeating.heatPumpConsumptionKwh),
+    gasSubscription: nullToUndefined(project.currentHeating.gasSubscription),
+    annualMaintenance: nullToUndefined(project.currentHeating.annualMaintenance),
+    dhwIntegrated: nullToUndefined(project.currentHeating.dhwIntegrated),
 
-    // Chauffage actuel
-    type_chauffage: project.currentHeating.heatingType,
-    ecs_integrated: project.currentHeating.dhwIntegrated ?? undefined,
-    conso_fioul_litres: project.currentHeating.fuelConsumptionLiters ?? undefined,
-    prix_fioul_litre: project.currentHeating.fuelPricePerLiter ?? undefined,
-    conso_gaz_kwh: project.currentHeating.gasConsumptionKwh ?? undefined,
-    prix_gaz_kwh: project.currentHeating.gasPricePerKwh ?? undefined,
-    conso_gpl_kg: project.currentHeating.lpgConsumptionKg ?? undefined,
-    prix_gpl_kg: project.currentHeating.lpgPricePerKg ?? undefined,
-    conso_pellets_kg: project.currentHeating.pelletsConsumptionKg ?? undefined,
-    prix_pellets_kg: project.currentHeating.pelletsPricePerKg ?? undefined,
-    conso_bois_steres: project.currentHeating.woodConsumptionSteres ?? undefined,
-    prix_bois_stere: project.currentHeating.woodPricePerStere ?? undefined,
-    conso_elec_kwh: project.currentHeating.electricityConsumptionKwh ?? undefined,
-    prix_elec_kwh: project.currentHeating.electricityPricePerKwh ?? undefined,
-    cop_actuel: project.currentHeating.currentCop ?? undefined,
-    conso_pac_kwh: project.currentHeating.heatPumpConsumptionKwh ?? undefined,
-    abonnement_gaz: project.currentHeating.gasSubscription ?? undefined,
-    entretien_annuel: project.currentHeating.annualMaintenance ?? undefined,
+    // DHW data (if exists)
+    dhwSystemType: nullToUndefined(project.dhw?.dhwSystemType),
+    dhwConsumptionKwh: nullToUndefined(project.dhw?.dhwConsumptionKwh),
+    dhwEnergyPricePerKwh: nullToUndefined(project.dhw?.dhwEnergyPricePerKwh),
+    dhwAnnualMaintenance: nullToUndefined(project.dhw?.dhwAnnualMaintenance),
 
-    // ECS (si séparé)
-    type_ecs: project.dhw?.dhwSystemType ?? undefined,
-    conso_ecs_kwh: project.dhw?.dhwConsumptionKwh ?? undefined,
-    prix_ecs_kwh: project.dhw?.dhwEnergyPricePerKwh ?? undefined,
-    entretien_ecs: project.dhw?.dhwAnnualMaintenance ?? undefined,
+    // Heat pump data
+    heatPumpType: project.heatPump.heatPumpType,
+    heatPumpPowerKw: project.heatPump.heatPumpPowerKw ?? 0,
+    estimatedCop: project.heatPump.estimatedCop ?? 0,
+    adjustedCop: project.heatPump.adjustedCop ?? 0,
+    emitters: project.heatPump.emitters ?? "",
+    heatPumpLifespanYears: project.heatPump.heatPumpLifespanYears ?? 17,
+    currentSubscribedPowerKva: nullToUndefined(project.heatPump.currentSubscribedPowerKva),
+    heatPumpSubscribedPowerKva: nullToUndefined(project.heatPump.heatPumpSubscribedPowerKva),
+    annualMaintenanceCost: nullToUndefined(project.heatPump.annualMaintenanceCost),
+    heatPumpElectricityPricePerKwh: project.heatPump.heatPumpElectricityPricePerKwh ?? project.heatPump.electricityPricePerKwh ?? undefined,
+    withDhwManagement: nullToUndefined(project.heatPump.withDhwManagement),
+    dhwCop: nullToUndefined(project.heatPump.dhwCop),
 
-    // Projet PAC
-    type_pac: project.heatPump.heatPumpType,
-    puissance_pac_kw: project.heatPump.heatPumpPowerKw ?? 0,
-    cop_estime: project.heatPump.estimatedCop ?? 0,
-    cop_ajuste: project.heatPump.adjustedCop ?? 0,
-    emetteurs: project.heatPump.emitters ?? "",
-    duree_vie_pac: project.heatPump.heatPumpLifespanYears ?? 17,
-    prix_elec_pac:
-      project.heatPump.heatPumpElectricityPricePerKwh ?? project.heatPump.electricityPricePerKwh ?? undefined,
-    puissance_souscrite_actuelle: project.heatPump.currentSubscribedPowerKva ?? undefined,
-    puissance_souscrite_pac: project.heatPump.heatPumpSubscribedPowerKva ?? undefined,
-    entretien_pac_annuel: project.heatPump.annualMaintenanceCost ?? undefined,
-    with_ecs_management: project.heatPump.withDhwManagement ?? undefined,
-    cop_ecs: project.heatPump.dhwCop ?? undefined,
+    // Housing data (selected fields)
+    numberOfOccupants: nullToUndefined(project.housing.numberOfOccupants),
+    dpeRating: nullToUndefined(project.housing.dpeRating),
+    livingArea: nullToUndefined(project.housing.livingArea),
+    postalCode: nullToUndefined(project.housing.postalCode),
 
-    // Coûts
-    cout_total: project.costs.totalCost,
+    // Costs
+    totalCost: project.costs.totalCost,
 
-    // Reste à charge = coût total - aides
-    reste_a_charge: project.costs.totalCost - project.financialAid.totalAid,
+    // Financial aid - remainingCost calculated automatically
+    remainingCost,
 
-    // Financement
-    mode_financement: project.financing?.financingMode ?? undefined,
-    apport_personnel: project.financing?.downPayment ?? undefined,
-    montant_credit: project.financing?.loanAmount ?? undefined,
-    taux_interet: project.financing?.interestRate ?? undefined,
-    duree_credit_mois: project.financing?.loanDurationMonths ?? undefined,
+    // Financing (if exists)
+    financingMode: project.financing?.financingMode ?? undefined,
+    loanAmount: nullToUndefined(project.financing?.loanAmount),
+    interestRate: nullToUndefined(project.financing?.interestRate),
+    loanDurationMonths: nullToUndefined(project.financing?.loanDurationMonths),
+    downPayment: nullToUndefined(project.financing?.downPayment),
   };
 
   return data;
