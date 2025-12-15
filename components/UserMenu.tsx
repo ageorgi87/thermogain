@@ -54,7 +54,10 @@ export const UserMenu = ({ userName, userEmail }: UserMenuProps) => {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/" })
+    // Sign out without automatic redirect
+    await signOut({ redirect: false })
+    // Then manually redirect to home page
+    window.location.href = "/"
   }
 
   // Gérer la fermeture du menu : retirer le focus du bouton
