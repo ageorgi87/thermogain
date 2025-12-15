@@ -80,9 +80,17 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Mot de passe invalide");
+        // Check the error code from NextAuth
+        if (result.code === "EMAIL_NOT_VERIFIED") {
+          setError(
+            "Votre email n'a pas encore été vérifié. Veuillez consulter votre boîte de réception et cliquer sur le lien de vérification."
+          );
+        } else {
+          setError("Mot de passe invalide");
+        }
       }
     } catch (error) {
+      console.error("SignIn error:", error);
       setError("Une erreur s'est produite. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
