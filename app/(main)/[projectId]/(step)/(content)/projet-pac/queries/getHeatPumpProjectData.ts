@@ -28,18 +28,18 @@ export const getHeatPumpProjectData = async ({ projectId }: GetHeatPumpProjectDa
     throw new Error("Projet non trouvé")
   }
 
-  // Map Prisma data to HeatPumpProjectData type
+  // Map Prisma data to HeatPumpProjectData type (using English field names)
   const heatPump: Partial<HeatPumpProjectData> | null = project.heatPump ? {
-    type_pac: project.heatPump.heatPumpType as HeatPumpProjectData["type_pac"],
-    prix_elec_kwh: project.heatPump.electricityPricePerKwh ?? undefined,
-    puissance_souscrite_actuelle: project.heatPump.currentSubscribedPowerKva ?? undefined,
-    puissance_pac_kw: project.heatPump.heatPumpPowerKw ?? undefined,
-    cop_estime: project.heatPump.estimatedCop ?? undefined,
-    duree_vie_pac: project.heatPump.heatPumpLifespanYears ?? undefined,
-    puissance_souscrite_pac: project.heatPump.heatPumpSubscribedPowerKva ?? undefined,
-    entretien_pac_annuel: project.heatPump.annualMaintenanceCost ?? undefined,
-    prix_elec_pac: project.heatPump.heatPumpElectricityPricePerKwh ?? undefined,
-    emetteurs: project.heatPump.emitters as HeatPumpProjectData["emetteurs"] ?? undefined,
+    heatPumpType: project.heatPump.heatPumpType as HeatPumpProjectData["heatPumpType"],
+    electricityPricePerKwh: project.heatPump.electricityPricePerKwh ?? undefined,
+    currentSubscribedPowerKva: project.heatPump.currentSubscribedPowerKva ?? undefined,
+    heatPumpPowerKw: project.heatPump.heatPumpPowerKw ?? undefined,
+    estimatedCop: project.heatPump.estimatedCop ?? undefined,
+    heatPumpLifespanYears: project.heatPump.heatPumpLifespanYears ?? undefined,
+    heatPumpSubscribedPowerKva: project.heatPump.heatPumpSubscribedPowerKva ?? undefined,
+    annualMaintenanceCost: project.heatPump.annualMaintenanceCost ?? undefined,
+    heatPumpElectricityPricePerKwh: project.heatPump.heatPumpElectricityPricePerKwh ?? undefined,
+    emitters: project.heatPump.emitters as HeatPumpProjectData["emitters"] ?? undefined,
   } : null
 
   return {

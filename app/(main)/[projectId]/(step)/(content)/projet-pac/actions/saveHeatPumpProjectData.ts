@@ -39,24 +39,24 @@ export const saveHeatPumpProjectData = async ({
 
   // Calculer le COP ajusté selon émetteurs et zone climatique
   // La température de départ est automatiquement déduite du type d'émetteur
-  const cop_ajuste = calculateAdjustedCOP(
-    validatedData.cop_estime,
-    validatedData.emetteurs ?? EmitterType.RADIATEURS_BASSE_TEMP,
+  const adjustedCop = calculateAdjustedCOP(
+    validatedData.estimatedCop,
+    validatedData.emitters ?? EmitterType.RADIATEURS_BASSE_TEMP,
     project.housing?.postalCode ?? undefined,
-    validatedData.type_pac
+    validatedData.heatPumpType
   );
 
   const heatPump = await prisma.projectHeatPump.upsert({
     where: { projectId },
     create: {
       ...validatedData,
-      cop_ajuste,
+      adjustedCop,
       projectId,
-    } as any,
+    },
     update: {
       ...validatedData,
-      cop_ajuste,
-    } as any,
+      adjustedCop,
+    },
   });
 
   if (project.currentStep === 4) {

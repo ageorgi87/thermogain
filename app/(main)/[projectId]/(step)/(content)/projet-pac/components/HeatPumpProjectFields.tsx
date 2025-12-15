@@ -75,12 +75,12 @@ export function HeatPumpProjectFields({
   currentElectricityPricePerKwh,
   currentHeatingType,
 }: HeatPumpProjectFieldsProps) {
-  const heatPumpType = formData.type_pac;
+  const heatPumpType = formData.heatPumpType;
   const isWaterBased =
     heatPumpType === PacType.AIR_EAU || heatPumpType === PacType.EAU_EAU;
   const isAirToAir = heatPumpType === PacType.AIR_AIR;
-  const heatPumpPowerKw = formData.puissance_pac_kw;
-  const currentSubscribedPower = formData.puissance_souscrite_actuelle;
+  const heatPumpPowerKw = formData.heatPumpPowerKw;
+  const currentSubscribedPower = formData.currentSubscribedPowerKva;
 
   const handleNumberChange =
     (name: keyof HeatPumpProjectData) =>
@@ -95,7 +95,7 @@ export function HeatPumpProjectFields({
     };
 
   // If electricity price is already set in current heating AND type is electric,
-  // we hide the prix_elec_kwh field
+  // we hide the electricityPricePerKwh field
   const isElectricHeating =
     currentHeatingType === TypeChauffageActuel.ELECTRIQUE ||
     currentHeatingType === TypeChauffageActuel.PAC_AIR_AIR ||
@@ -104,23 +104,23 @@ export function HeatPumpProjectFields({
   const shouldHideElectricityPrice =
     isElectricHeating && currentElectricityPricePerKwh && currentElectricityPricePerKwh > 0;
 
-  // Automatically set emetteurs to "Ventilo-convecteurs" for Air/Air PACs
+  // Automatically set emitters to "Ventilo-convecteurs" for Air/Air PACs
   useEffect(() => {
-    if (isAirToAir && formData.emetteurs !== EmitterType.VENTILO_CONVECTEURS) {
-      onChange("emetteurs", EmitterType.VENTILO_CONVECTEURS);
+    if (isAirToAir && formData.emitters !== EmitterType.VENTILO_CONVECTEURS) {
+      onChange("emitters", EmitterType.VENTILO_CONVECTEURS);
     }
-  }, [isAirToAir, formData.emetteurs, onChange]);
+  }, [isAirToAir, formData.emitters, onChange]);
 
-  // Auto-fill prix_elec_kwh if already provided in current heating (for electric heating types)
+  // Auto-fill electricityPricePerKwh if already provided in current heating (for electric heating types)
   useEffect(() => {
     if (
       currentElectricityPricePerKwh &&
       currentElectricityPricePerKwh > 0 &&
-      formData.prix_elec_kwh === undefined
+      formData.electricityPricePerKwh === undefined
     ) {
-      onChange("prix_elec_kwh", currentElectricityPricePerKwh);
+      onChange("electricityPricePerKwh", currentElectricityPricePerKwh);
     }
-  }, [currentElectricityPricePerKwh, formData.prix_elec_kwh, onChange]);
+  }, [currentElectricityPricePerKwh, formData.electricityPricePerKwh, onChange]);
 
   return (
     <div className="space-y-6">
@@ -134,15 +134,15 @@ export function HeatPumpProjectFields({
           <FormField
             label="Puissance de la PAC (kW)"
             required
-            error={errors.puissance_pac_kw}
+            error={errors.heatPumpPowerKw}
           >
             <Input
               type="number"
               step="0.1"
               min="0"
               placeholder="ex: 8"
-              value={formData.puissance_pac_kw ?? ""}
-              onChange={handleNumberChange("puissance_pac_kw")}
+              value={formData.heatPumpPowerKw ?? ""}
+              onChange={handleNumberChange("heatPumpPowerKw")}
             />
           </FormField>
 
@@ -175,15 +175,15 @@ export function HeatPumpProjectFields({
               </div>
             }
             required
-            error={errors.cop_estime}
+            error={errors.estimatedCop}
           >
             <Input
               type="number"
               step="0.1"
               min="0"
               placeholder="ex: 3.5"
-              value={formData.cop_estime ?? ""}
-              onChange={handleNumberChange("cop_estime")}
+              value={formData.estimatedCop ?? ""}
+              onChange={handleNumberChange("estimatedCop")}
             />
           </FormField>
         </div>
@@ -191,14 +191,14 @@ export function HeatPumpProjectFields({
         <FormField
           label="Durée de vie estimée (années)"
           required
-          error={errors.duree_vie_pac}
+          error={errors.heatPumpLifespanYears}
         >
           <Input
             type="number"
             min="0"
             placeholder="ex: 17"
-            value={formData.duree_vie_pac ?? ""}
-            onChange={handleNumberChange("duree_vie_pac")}
+            value={formData.heatPumpLifespanYears ?? ""}
+            onChange={handleNumberChange("heatPumpLifespanYears")}
           />
         </FormField>
       </div>
@@ -213,13 +213,13 @@ export function HeatPumpProjectFields({
           <FormField
             label="Type d'émetteurs"
             required
-            error={errors.emetteurs}
+            error={errors.emitters}
           >
             <Select
               onValueChange={(value) =>
-                onChange("emetteurs", value as HeatPumpProjectData["emetteurs"])
+                onChange("emitters", value as HeatPumpProjectData["emitters"])
               }
-              value={formData.emetteurs ?? ""}
+              value={formData.emitters ?? ""}
               defaultValue=""
             >
               <SelectTrigger>
@@ -265,15 +265,15 @@ export function HeatPumpProjectFields({
                 />
               }
               required
-              error={errors.prix_elec_kwh}
+              error={errors.electricityPricePerKwh}
             >
               <Input
                 type="number"
                 step="0.001"
                 min="0"
                 placeholder="ex: 0.23"
-                value={formData.prix_elec_kwh ?? ""}
-                onChange={handleNumberChange("prix_elec_kwh")}
+                value={formData.electricityPricePerKwh ?? ""}
+                onChange={handleNumberChange("electricityPricePerKwh")}
               />
             </FormField>
           )}
@@ -308,13 +308,13 @@ export function HeatPumpProjectFields({
                   </div>
                 }
                 required
-                error={errors.puissance_souscrite_actuelle}
+                error={errors.currentSubscribedPowerKva}
               >
                 <Select
                   onValueChange={(value) =>
-                    onChange("puissance_souscrite_actuelle", Number(value))
+                    onChange("currentSubscribedPowerKva", Number(value))
                   }
-                  value={formData.puissance_souscrite_actuelle?.toString()}
+                  value={formData.currentSubscribedPowerKva?.toString()}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez la puissance" />
@@ -380,13 +380,13 @@ export function HeatPumpProjectFields({
                       </div>
                     }
                     required
-                    error={errors.puissance_souscrite_pac}
+                    error={errors.heatPumpSubscribedPowerKva}
                   >
                     <Select
                       onValueChange={(value) =>
-                        onChange("puissance_souscrite_pac", Number(value))
+                        onChange("heatPumpSubscribedPowerKva", Number(value))
                       }
-                      value={formData.puissance_souscrite_pac?.toString()}
+                      value={formData.heatPumpSubscribedPowerKva?.toString()}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionnez la puissance" />
@@ -457,15 +457,15 @@ export function HeatPumpProjectFields({
             </div>
           }
           required
-          error={errors.entretien_pac_annuel}
+          error={errors.annualMaintenanceCost}
         >
           <Input
             type="number"
             step="1"
             min="0"
             placeholder="ex: 120"
-            value={formData.entretien_pac_annuel ?? ""}
-            onChange={handleNumberChange("entretien_pac_annuel")}
+            value={formData.annualMaintenanceCost ?? ""}
+            onChange={handleNumberChange("annualMaintenanceCost")}
           />
         </FormField>
       </div>
