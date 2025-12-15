@@ -15,7 +15,6 @@ const inspect = async () => {
       costs: true,
       financialAid: true,
       financement: true,
-      evolutions: true,
       results: true,
     },
   })
@@ -37,7 +36,6 @@ const inspect = async () => {
     { name: 'costs', data: project.costs },
     { name: 'financialAid', data: project.financialAid },
     { name: 'financement', data: project.financement },
-    { name: 'evolutions', data: project.evolutions },
   ]
 
   for (const section of sections) {

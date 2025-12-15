@@ -13,7 +13,6 @@ interface GetProjectDataForCalculationsParams {
  *
  * Exclut les données inutiles pour optimiser les performances:
  * - user (non utilisé dans les calculs)
- * - evolutions (deprecated depuis novembre 2024)
  * - project name et recipient emails (non utilisés dans les calculs)
  *
  * @param projectId - ID du projet
@@ -30,7 +29,7 @@ export const getProjectDataForCalculations = async ({
   }
 
   // Query optimisée : uniquement les relations nécessaires aux calculs
-  // (exclut user et evolutions pour réduire la charge)
+  // (exclut user pour réduire la charge)
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     include: {

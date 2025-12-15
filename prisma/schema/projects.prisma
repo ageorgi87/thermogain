@@ -20,7 +20,6 @@ model Project {
   costs          ProjectCosts?
   financialAid   ProjectFinancialAid?
   financement    ProjectFinancement?
-  evolutions     ProjectEvolutions?
   results        ProjectResults? // Calculated results for display
 
   createdAt DateTime @default(now())

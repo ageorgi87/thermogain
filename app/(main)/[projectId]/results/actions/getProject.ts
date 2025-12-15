@@ -21,7 +21,6 @@ export const getProject = async (id: string) => {
         costs: true,
         financialAid: true,
         financement: true,
-        evolutions: true,
       },
     })
 
