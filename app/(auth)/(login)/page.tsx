@@ -81,9 +81,6 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Mot de passe invalide");
-      } else {
-        router.push("/dashboard");
-        router.refresh();
       }
     } catch (error) {
       setError("Une erreur s'est produite. Veuillez réessayer.");
