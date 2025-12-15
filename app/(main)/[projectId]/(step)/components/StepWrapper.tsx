@@ -13,6 +13,7 @@ interface StepWrapperProps {
   explanation?: string
   isLastStep: boolean
   isSubmitting: boolean
+  isLoading?: boolean
   onPrevious: () => void
   onNext: () => void
   children: ReactNode
@@ -30,6 +31,7 @@ export const StepWrapper = ({
   explanation,
   isLastStep,
   isSubmitting,
+  isLoading = false,
   onPrevious,
   onNext,
   children,
@@ -110,7 +112,16 @@ export const StepWrapper = ({
         className="space-y-8"
       >
         <Card className="shadow-2xl border-2">
-          <CardContent className="pt-6">{children}</CardContent>
+          <CardContent className="pt-6">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-3 text-muted-foreground">Chargement...</span>
+              </div>
+            ) : (
+              children
+            )}
+          </CardContent>
         </Card>
 
         {/* Navigation buttons */}

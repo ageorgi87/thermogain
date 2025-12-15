@@ -56,6 +56,11 @@ export const useStepForm = <T extends z.ZodType>({
     loadProject();
   }, [projectId]);
 
+  // Remonter en haut de la page lors du changement d'étape
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [stepKey]);
+
   // Gérer le changement d'un champ
   const handleChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }));

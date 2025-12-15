@@ -44,14 +44,6 @@ export default function AidesStepPage({
     },
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Chargement...
-      </div>
-    );
-  }
-
   return (
     <StepWrapper
       title={STEP_INFO.title}
@@ -61,6 +53,7 @@ export default function AidesStepPage({
       explanation={STEP_INFO.explanation}
       isLastStep={isLastStep}
       isSubmitting={isSubmitting}
+      isLoading={isLoading}
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
