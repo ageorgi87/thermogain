@@ -135,10 +135,10 @@ export default async function ResultsPage({ params }: PageProps) {
         investmentCost={results.investissementReel}
         paybackYear={results.paybackYear}
         paybackPeriod={results.paybackPeriod}
-        modeFinancement={project.financement?.mode_financement}
-        montantCredit={project.financement?.montant_credit || undefined}
-        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
-        apportPersonnel={project.financement?.apport_personnel || undefined}
+        modeFinancement={project.financing?.financingMode}
+        montantCredit={project.financing?.loanAmount || undefined}
+        dureeCreditMois={project.financing?.loanDurationMonths || undefined}
+        apportPersonnel={project.financing?.downPayment || undefined}
       />
 
       {/* Tableau détaillé année par année */}
@@ -146,11 +146,11 @@ export default async function ResultsPage({ params }: PageProps) {
         yearlyData={results.yearlyData}
         projectData={project}
         investissementReel={results.investissementReel}
-        modeFinancement={project.financement?.mode_financement}
-        montantCredit={project.financement?.montant_credit || undefined}
-        tauxInteret={project.financement?.taux_interet || undefined}
-        dureeCreditMois={project.financement?.duree_credit_mois || undefined}
-        apportPersonnel={project.financement?.apport_personnel || undefined}
+        modeFinancement={project.financing?.financingMode}
+        montantCredit={project.financing?.loanAmount || undefined}
+        tauxInteret={project.financing?.interestRate || undefined}
+        dureeCreditMois={project.financing?.loanDurationMonths || undefined}
+        apportPersonnel={project.financing?.downPayment || undefined}
         paybackPeriod={results.paybackPeriod}
         paybackYear={results.paybackYear}
       />
@@ -165,10 +165,10 @@ export default async function ResultsPage({ params }: PageProps) {
         />
         <FinancialSummaryCard
           resteACharge={project.costs.totalCost - project.financialAid.totalAid}
-          modeFinancement={project.financement?.mode_financement || undefined}
+          modeFinancement={project.financing?.financingMode || undefined}
           mensualite={results.mensualiteCredit}
-          dureeCreditMois={project.financement?.duree_credit_mois || undefined}
-          apportPersonnel={project.financement?.apport_personnel || undefined}
+          dureeCreditMois={project.financing?.loanDurationMonths || undefined}
+          apportPersonnel={project.financing?.downPayment || undefined}
         />
         <ProfitabilityCard
           paybackPeriod={results.paybackPeriod}

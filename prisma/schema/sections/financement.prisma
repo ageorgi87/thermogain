@@ -1,17 +1,17 @@
-// Section 6: Financement (Financing)
+// Section 6: Financing
 // Stores project financing options and loan details
 
-model ProjectFinancement {
+model ProjectFinancing {
   id        String  @id @default(cuid())
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  mode_financement  String
-  apport_personnel  Float?
-  montant_credit    Float?
-  taux_interet      Float?
-  duree_credit_mois Int?
-  mensualite        Float?
+  financingMode       String
+  downPayment         Float?
+  loanAmount          Float?
+  interestRate        Float?
+  loanDurationMonths  Int?
+  monthlyPayment      Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

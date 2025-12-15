@@ -2,10 +2,10 @@
 
 import { use, useState } from "react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
-import { FinancementFields } from "@/app/(main)/[projectId]/(step)/(content)/financement/components/FinancementFields";
+import { FinancingFields } from "@/app/(main)/[projectId]/(step)/(content)/financement/components/FinancingFields";
 import { saveFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingData";
 import { financingSchema } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema";
-import { getFinancementData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancementData";
+import { getFinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/queries/getFinancingData";
 import { calculateAndSaveResults } from "@/app/(main)/[projectId]/lib/calculateAndSaveResults/calculateAndSaveResults";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
@@ -37,7 +37,7 @@ export default function FinancementStepPage({
     stepKey: STEP_INFO.key,
     schema: financingSchema,
     loadData: async ({ projectId }) => {
-      const data = await getFinancementData({ projectId });
+      const data = await getFinancingData({ projectId });
 
       setTotalCosts(data.costs?.totalCost || 0);
       setTotalAides(data.financialAid?.totalAid || 0);
@@ -67,7 +67,7 @@ export default function FinancementStepPage({
       onPrevious={handlePrevious}
       onNext={handleSubmit}
     >
-      <FinancementFields
+      <FinancingFields
         formData={formData}
         errors={errors}
         onChange={handleChange}

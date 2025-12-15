@@ -30,31 +30,39 @@ export const saveFinancingData = async ({
     throw new Error("Projet non trouvé")
   }
 
-  // Calculate mensualite if credit information is provided
-  let mensualite: number | null = null
+  // Calculate monthlyPayment if credit information is provided
+  let monthlyPayment: number | null = null
   if (
     validatedData.montant_credit &&
     validatedData.taux_interet !== undefined &&
     validatedData.duree_credit_mois
   ) {
-    mensualite = calculateMensualite(
+    monthlyPayment = calculateMensualite(
       validatedData.montant_credit,
       validatedData.taux_interet,
       validatedData.duree_credit_mois
     )
   }
 
-  const financement = await prisma.projectFinancement.upsert({
+  const financement = await prisma.projectFinancing.upsert({
     where: { projectId },
     create: {
-      ...validatedData,
-      mensualite,
       projectId,
-    } as any,
+      financingMode: validatedData.mode_financement,
+      downPayment: validatedData.apport_personnel ?? null,
+      loanAmount: validatedData.montant_credit ?? null,
+      interestRate: validatedData.taux_interet ?? null,
+      loanDurationMonths: validatedData.duree_credit_mois ?? null,
+      monthlyPayment,
+    },
     update: {
-      ...validatedData,
-      mensualite,
-    } as any,
+      financingMode: validatedData.mode_financement,
+      downPayment: validatedData.apport_personnel ?? null,
+      loanAmount: validatedData.montant_credit ?? null,
+      interestRate: validatedData.taux_interet ?? null,
+      loanDurationMonths: validatedData.duree_credit_mois ?? null,
+      monthlyPayment,
+    },
   })
 
   if (project.currentStep === 6) {

@@ -20,7 +20,7 @@ import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/f
 import { Separator } from "@/components/ui/separator";
 import { roundToDecimals } from "@/lib/utils/roundToDecimals";
 
-interface FinancementFieldsProps {
+interface FinancingFieldsProps {
   formData: Partial<FinancingData>;
   errors: Partial<Record<keyof FinancingData, string>>;
   onChange: (name: keyof FinancingData, value: any) => void;
@@ -28,13 +28,13 @@ interface FinancementFieldsProps {
   totalAides?: number;
 }
 
-export function FinancementFields({
+export function FinancingFields({
   formData,
   errors,
   onChange,
   totalCouts = 0,
   totalAides = 0,
-}: FinancementFieldsProps) {
+}: FinancingFieldsProps) {
   const montantAPayer = Math.max(0, totalCouts - totalAides);
   const modeFinancement = formData.mode_financement;
 

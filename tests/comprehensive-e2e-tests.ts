@@ -81,12 +81,12 @@ interface ProjectCreateData {
     otherAid: number
     totalAid: number
   }
-  financement: {
-    mode_financement: string
-    apport_personnel?: number
-    montant_credit?: number
-    taux_interet?: number
-    duree_credit_mois?: number
+  financing: {
+    financingMode: string
+    downPayment?: number
+    loanAmount?: number
+    interestRate?: number
+    loanDurationMonths?: number
   }
 }
 
@@ -174,12 +174,12 @@ const scenarios: TestScenario[] = [
         otherAid: 0,
         totalAid: [6000, 8000, 10000][i % 3],
       },
-      financement: {
-        mode_financement: i % 2 === 0 ? "Crédit" : "Mixte",
-        apport_personnel: i % 2 === 0 ? 0 : [3000, 4000, 5000][i % 3],
-        montant_credit: i % 2 === 0 ? [8000, 14000, 17000][i % 3] : [5000, 10000, 12000][i % 3],
-        taux_interet: 3.0 + (i * 0.1),
-        duree_credit_mois: [84, 120, 144][i % 3],
+      financing: {
+        financingMode: i % 2 === 0 ? "Crédit" : "Mixte",
+        downPayment: i % 2 === 0 ? 0 : [3000, 4000, 5000][i % 3],
+        loanAmount: i % 2 === 0 ? [8000, 14000, 17000][i % 3] : [5000, 10000, 12000][i % 3],
+        interestRate: 3.0 + (i * 0.1),
+        loanDurationMonths: [84, 120, 144][i % 3],
       },
     },
     validation: {
@@ -242,12 +242,12 @@ const scenarios: TestScenario[] = [
         otherAid: 0,
         totalAid: [3500, 5000, 6500][i % 3],
       },
-      financement: {
-        mode_financement: ["Comptant", "Crédit", "Mixte"][i % 3],
-        apport_personnel: i % 3 === 2 ? [3000, 5000, 7000][i % 3] : i % 3 === 0 ? [8000, 12500, 17000][i % 3] : undefined,
-        montant_credit: i % 3 === 0 ? undefined : [5000, 10000, 14000][i % 3],
-        taux_interet: i % 3 === 0 ? undefined : 3.0 + (i * 0.1),
-        duree_credit_mois: i % 3 === 0 ? undefined : [84, 120, 144][i % 3],
+      financing: {
+        financingMode: ["Comptant", "Crédit", "Mixte"][i % 3],
+        downPayment: i % 3 === 2 ? [3000, 5000, 7000][i % 3] : i % 3 === 0 ? [8000, 12500, 17000][i % 3] : undefined,
+        loanAmount: i % 3 === 0 ? undefined : [5000, 10000, 14000][i % 3],
+        interestRate: i % 3 === 0 ? undefined : 3.0 + (i * 0.1),
+        loanDurationMonths: i % 3 === 0 ? undefined : [84, 120, 144][i % 3],
       },
     },
     validation: {
@@ -309,12 +309,12 @@ const scenarios: TestScenario[] = [
         otherAid: 0,
         totalAid: [8500, 10000, 11500][i % 3],
       },
-      financement: {
-        mode_financement: i % 2 === 0 ? "Crédit" : "Mixte",
-        apport_personnel: i % 2 === 0 ? 0 : [4000, 5000, 6000][i % 3],
-        montant_credit: i % 2 === 0 ? [10500, 14000, 17500][i % 3] : [6500, 9000, 11500][i % 3],
-        taux_interet: 3.5 + (i * 0.1),
-        duree_credit_mois: [96, 120, 144][i % 3],
+      financing: {
+        financingMode: i % 2 === 0 ? "Crédit" : "Mixte",
+        downPayment: i % 2 === 0 ? 0 : [4000, 5000, 6000][i % 3],
+        loanAmount: i % 2 === 0 ? [10500, 14000, 17500][i % 3] : [6500, 9000, 11500][i % 3],
+        interestRate: 3.5 + (i * 0.1),
+        loanDurationMonths: [96, 120, 144][i % 3],
       },
     },
     validation: {
@@ -382,12 +382,12 @@ const scenarios: TestScenario[] = [
         otherAid: 0,
         totalAid: [4000, 5000, 6000][i % 3],
       },
-      financement: {
-        mode_financement: ["Comptant", "Crédit", "Mixte"][i % 3],
-        apport_personnel: i % 3 === 2 ? [4000, 6000, 8000][i % 3] : i % 3 === 0 ? [12500, 17500, 21500][i % 3] : undefined,
-        montant_credit: i % 3 === 0 ? undefined : [8500, 12500, 16500][i % 3],
-        taux_interet: i % 3 === 0 ? undefined : 2.9 + (i * 0.1),
-        duree_credit_mois: i % 3 === 0 ? undefined : [84, 120, 144][i % 3],
+      financing: {
+        financingMode: ["Comptant", "Crédit", "Mixte"][i % 3],
+        downPayment: i % 3 === 2 ? [4000, 6000, 8000][i % 3] : i % 3 === 0 ? [12500, 17500, 21500][i % 3] : undefined,
+        loanAmount: i % 3 === 0 ? undefined : [8500, 12500, 16500][i % 3],
+        interestRate: i % 3 === 0 ? undefined : 2.9 + (i * 0.1),
+        loanDurationMonths: i % 3 === 0 ? undefined : [84, 120, 144][i % 3],
       },
     },
     validation: {
@@ -460,9 +460,9 @@ const scenarios: TestScenario[] = [
         otherAid: 0,
         totalAid: [2500, 3500, 4500][i % 3],
       },
-      financement: {
-        mode_financement: "Comptant",
-        apport_personnel: [7500, 8500, 9500][i % 3],
+      financing: {
+        financingMode: "Comptant",
+        downPayment: [7500, 8500, 9500][i % 3],
       },
     },
     validation: {
@@ -522,7 +522,15 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
         heatPump: { create: scenario.data.heatPump },
         costs: { create: scenario.data.costs },
         financialAid: { create: scenario.data.financialAid },
-        financement: { create: scenario.data.financement },
+        financing: {
+          create: {
+            financingMode: scenario.data.financing.financingMode,
+            downPayment: scenario.data.financing.downPayment,
+            loanAmount: scenario.data.financing.loanAmount,
+            interestRate: scenario.data.financing.interestRate,
+            loanDurationMonths: scenario.data.financing.loanDurationMonths,
+          }
+        },
       },
     })
 

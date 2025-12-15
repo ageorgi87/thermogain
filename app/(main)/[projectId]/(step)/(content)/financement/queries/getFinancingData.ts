@@ -4,11 +4,11 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import type { FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
 
-interface GetFinancementDataParams {
+interface GetFinancingDataParams {
   projectId: string
 }
 
-export const getFinancementData = async ({ projectId }: GetFinancementDataParams) => {
+export const getFinancingData = async ({ projectId }: GetFinancingDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -19,7 +19,7 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
     where: { id: projectId },
     select: {
       userId: true,
-      financement: true,
+      financing: true,
       costs: {
         select: {
           totalCost: true,
@@ -38,12 +38,12 @@ export const getFinancementData = async ({ projectId }: GetFinancementDataParams
   }
 
   // Map Prisma data to FinancingData type
-  const financement: Partial<FinancingData> | null = project.financement ? {
-    mode_financement: project.financement.mode_financement as FinancingData["mode_financement"],
-    apport_personnel: project.financement.apport_personnel ?? undefined,
-    montant_credit: project.financement.montant_credit ?? undefined,
-    taux_interet: project.financement.taux_interet ?? undefined,
-    duree_credit_mois: project.financement.duree_credit_mois ?? undefined,
+  const financement: Partial<FinancingData> | null = project.financing ? {
+    mode_financement: project.financing.financingMode as FinancingData["mode_financement"],
+    apport_personnel: project.financing.downPayment ?? undefined,
+    montant_credit: project.financing.loanAmount ?? undefined,
+    taux_interet: project.financing.interestRate ?? undefined,
+    duree_credit_mois: project.financing.loanDurationMonths ?? undefined,
   } : null
 
   return {

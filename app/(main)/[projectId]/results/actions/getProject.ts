@@ -20,7 +20,7 @@ export const getProject = async (id: string) => {
         heatPump: true,
         costs: true,
         financialAid: true,
-        financement: true,
+        financing: true,
       },
     })
 

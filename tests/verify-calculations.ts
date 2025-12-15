@@ -93,10 +93,10 @@ const verifCalculs = async () => {
         },
       },
 
-      financement: {
+      financing: {
         create: {
-          mode_financement: 'Comptant',
-          apport_personnel: 8000,
+          financingMode: 'Comptant',
+          downPayment: 8000,
         },
       },
     },

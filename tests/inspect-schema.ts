@@ -14,7 +14,7 @@ const inspect = async () => {
       heatPump: true,
       costs: true,
       financialAid: true,
-      financement: true,
+      financing: true,
       results: true,
     },
   })
@@ -35,7 +35,7 @@ const inspect = async () => {
     { name: 'heatPump', data: project.heatPump },
     { name: 'costs', data: project.costs },
     { name: 'financialAid', data: project.financialAid },
-    { name: 'financement', data: project.financement },
+    { name: 'financing', data: project.financing },
   ]
 
   for (const section of sections) {

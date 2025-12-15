@@ -93,13 +93,13 @@ const debugTest = async () => {
         },
       },
 
-      financement: {
+      financing: {
         create: {
-          mode_financement: 'Crédit',
-          apport_personnel: 0,
-          montant_credit: 10500,
-          taux_interet: 3.0,
-          duree_credit_mois: 84,
+          financingMode: 'Crédit',
+          downPayment: 0,
+          loanAmount: 10500,
+          interestRate: 3.0,
+          loanDurationMonths: 84,
         },
       },
     },

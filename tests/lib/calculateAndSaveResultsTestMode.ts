@@ -24,7 +24,7 @@ const getProjectDataForCalculationsTestMode = async (
       heatPump: true,
       costs: true,
       financialAid: true,
-      financement: true,
+      financing: true,
     },
   });
 
@@ -98,11 +98,11 @@ const getProjectDataForCalculationsTestMode = async (
     reste_a_charge: project.costs.totalCost - project.financialAid.totalAid,
 
     // Financement
-    mode_financement: project.financement?.mode_financement ?? undefined,
-    apport_personnel: project.financement?.apport_personnel ?? undefined,
-    montant_credit: project.financement?.montant_credit ?? undefined,
-    taux_interet: project.financement?.taux_interet ?? undefined,
-    duree_credit_mois: project.financement?.duree_credit_mois ?? undefined,
+    mode_financement: project.financing?.financingMode ?? undefined,
+    apport_personnel: project.financing?.downPayment ?? undefined,
+    montant_credit: project.financing?.loanAmount ?? undefined,
+    taux_interet: project.financing?.interestRate ?? undefined,
+    duree_credit_mois: project.financing?.loanDurationMonths ?? undefined,
   };
 
   return data;
