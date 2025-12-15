@@ -3,11 +3,11 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-interface GetLogementDataParams {
+interface GetHousingDataParams {
   projectId: string
 }
 
-export const getLogementData = async ({ projectId }: GetLogementDataParams) => {
+export const getHousingData = async ({ projectId }: GetHousingDataParams) => {
   const session = await auth()
 
   if (!session?.user?.id) {

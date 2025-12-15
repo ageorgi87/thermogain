@@ -8,7 +8,7 @@ import {
   housingSchema,
   type HousingData,
 } from "@/app/(main)/[projectId]/(step)/(content)/logement/actions/housingSchema";
-import { getLogementData } from "@/app/(main)/[projectId]/(step)/(content)/logement/queries/getLogementData";
+import { getHousingData } from "@/app/(main)/[projectId]/(step)/(content)/logement/queries/getHousingData";
 import { getStepInfo, getTotalSteps } from "@/lib/wizardStepsData";
 import { useStepForm } from "@/app/(main)/[projectId]/(step)/lib/useStepForm";
 
@@ -36,7 +36,7 @@ export default function LogementStepPage({
     stepKey: STEP_INFO.key,
     schema: housingSchema,
     loadData: async ({ projectId }) => {
-      const data = await getLogementData({ projectId });
+      const data = await getHousingData({ projectId });
       return data.housing || {};
     },
     saveData: async ({ projectId, data }) => {
