@@ -53,7 +53,7 @@ export const registerUser = async (data: {
 
     return {
       id: user.id,
-      email: user.email,
+      email: user.email as string,
     }
   } catch (error) {
     console.error("[registerUser] Error:", error)

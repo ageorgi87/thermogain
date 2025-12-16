@@ -22,6 +22,7 @@ import {
   Calculator,
   CheckCircle2,
   Mail,
+  Zap,
 } from "lucide-react";
 import { checkEmailExists } from "@/app/(auth)/(login)/actions/checkEmailExists";
 import { registerUser } from "@/app/(auth)/(login)/actions/registerUser";
@@ -136,6 +137,7 @@ export default function LoginPage() {
     setCompany("");
     setError("");
   };
+
 
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center p-4 md:p-8">
@@ -254,246 +256,283 @@ export default function LoginPage() {
                 {step === "register" && "Créez votre compte"}
                 {step === "verify-email" && "Vérifiez votre email"}
               </CardTitle>
-              <CardDescription className="text-center">
-                {step === "email" &&
-                  "Entrez votre adresse e-mail pour commencer"}
-                {step === "login" &&
-                  "Entrez votre mot de passe pour accéder à votre espace"}
-                {step === "register" &&
-                  "Complétez votre profil pour créer votre compte professionnel"}
-                {step === "verify-email" &&
-                  "Consultez votre boîte de réception pour activer votre compte"}
-              </CardDescription>
+              {step !== "email" && (
+                <CardDescription className="text-center">
+                  {step === "login" &&
+                    "Entrez votre mot de passe pour accéder à votre espace"}
+                  {step === "register" &&
+                    "Complétez votre profil pour créer votre compte professionnel"}
+                  {step === "verify-email" &&
+                    "Consultez votre boîte de réception pour activer votre compte"}
+                </CardDescription>
+              )}
             </CardHeader>
             <CardContent>
-              {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertDescription>
-                    {error}
-                    {error === "Mot de passe invalide" && (
-                      <>
-                        <br />
-                        <span>
-                          Souhaitez-vous{" "}
-                          <a
-                            href={`/forgot-password?email=${encodeURIComponent(email)}`}
-                            className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
-                          >
-                            réinitialiser votre mot de passe ?
-                          </a>
-                        </span>
-                      </>
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
-
               {step === "email" && (
-                <form onSubmit={handleEmailSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Adresse e-mail</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="vous@exemple.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                <>
+                  {/* Primary CTA - Guest Simulation */}
+                  <div className="space-y-4 mb-6">
+                    <Button
+                      onClick={() => console.log('click')}
                       disabled={isLoading}
-                      autoFocus
-                      autoComplete="email"
-                      className="h-11"
-                    />
+                      className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all"
+                      size="lg"
+                    >
+                      <Zap className="mr-2 h-5 w-5" />
+                      Démarrer une simulation gratuite
+                    </Button>
+                    <p className="text-sm text-center text-muted-foreground">
+                      Sans inscription • Résultats en 3 minutes
+                    </p>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-11"
-                    disabled={isLoading}
-                  >
-                    {isLoading && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Continuer
-                  </Button>
-                </form>
-              )}
 
-              {step === "login" && (
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Adresse e-mail</Label>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-muted-foreground">{email}</p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={resetToEmail}
-                      >
-                        Modifier
-                      </Button>
+                  {/* Divider */}
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-background px-4 text-muted-foreground font-medium">
+                        ou accédez à votre compte
+                      </span>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      autoFocus
-                      autoComplete="current-password"
-                      className="h-11"
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-11"
-                    disabled={isLoading}
-                  >
-                    {isLoading && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Se connecter
-                  </Button>
-                </form>
+                </>
               )}
 
-              {step === "register" && (
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Adresse e-mail</Label>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-muted-foreground">{email}</p>
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>
+                      {error}
+                      {error === "Mot de passe invalide" && (
+                        <>
+                          <br />
+                          <span>
+                            Souhaitez-vous{" "}
+                            <a
+                              href={`/forgot-password?email=${encodeURIComponent(email)}`}
+                              className="underline font-medium hover:text-red-900 dark:hover:text-red-100"
+                            >
+                              réinitialiser votre mot de passe ?
+                            </a>
+                          </span>
+                        </>
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {step === "email" && (
+                  <>
+                    <form onSubmit={handleEmailSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Adresse e-mail</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="vous@exemple.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          disabled={isLoading}
+                          autoFocus
+                          autoComplete="email"
+                          className="h-11"
+                        />
+                      </div>
                       <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={resetToEmail}
+                        type="submit"
+                        className="w-full h-11"
+                        disabled={isLoading}
                       >
-                        Modifier
+                        {isLoading && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Continuer
                       </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
+                    </form>
+                    <p className="text-sm text-center text-muted-foreground mt-4">
+                      Sauvegardez toutes vos simulations et partagez-les avec vos clients
+                    </p>
+                  </>
+                )}
+
+                {step === "login" && (
+                  <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom</Label>
+                      <Label>Adresse e-mail</Label>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">{email}</p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={resetToEmail}
+                        >
+                          Modifier
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Mot de passe</Label>
                       <Input
-                        id="firstName"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                         disabled={isLoading}
                         autoFocus
-                        autoComplete="given-name"
+                        autoComplete="current-password"
+                        className="h-11"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full h-11"
+                      disabled={isLoading}
+                    >
+                      {isLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Se connecter
+                    </Button>
+                  </form>
+                )}
+
+                {step === "register" && (
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Adresse e-mail</Label>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">{email}</p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={resetToEmail}
+                        >
+                          Modifier
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">Prénom</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                          disabled={isLoading}
+                          autoFocus
+                          autoComplete="given-name"
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Nom</Label>
+                        <Input
+                          id="lastName"
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                          disabled={isLoading}
+                          autoComplete="family-name"
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Entreprise (optionnel)</Label>
+                      <Input
+                        id="company"
+                        type="text"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        disabled={isLoading}
+                        placeholder="Nom de votre entreprise"
+                        autoComplete="organization"
                         className="h-11"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom</Label>
+                      <Label htmlFor="registerPassword">Mot de passe</Label>
                       <Input
-                        id="lastName"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        id="registerPassword"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                         disabled={isLoading}
-                        autoComplete="family-name"
+                        minLength={6}
+                        autoComplete="new-password"
                         className="h-11"
                       />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Entreprise (optionnel)</Label>
-                    <Input
-                      id="company"
-                      type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      disabled={isLoading}
-                      placeholder="Nom de votre entreprise"
-                      autoComplete="organization"
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="registerPassword">Mot de passe</Label>
-                    <Input
-                      id="registerPassword"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      minLength={6}
-                      autoComplete="new-password"
-                      className="h-11"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Au moins 6 caractères
-                    </p>
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-11"
-                    disabled={isLoading}
-                  >
-                    {isLoading && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Créer mon compte
-                  </Button>
-                </form>
-              )}
-
-              {step === "verify-email" && (
-                <div className="space-y-6 py-4">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="rounded-full bg-green-100 dark:bg-green-950 p-4">
-                      <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div className="text-center space-y-2">
-                      <h3 className="text-xl font-semibold">
-                        Compte créé avec succès !
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Un email de vérification a été envoyé à
+                      <p className="text-xs text-muted-foreground">
+                        Au moins 6 caractères
                       </p>
-                      <p className="font-medium text-orange-600">{email}</p>
                     </div>
+                    <Button
+                      type="submit"
+                      className="w-full h-11"
+                      disabled={isLoading}
+                    >
+                      {isLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Créer mon compte
+                    </Button>
+                  </form>
+                )}
+
+                {step === "verify-email" && (
+                  <div className="space-y-6 py-4">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="rounded-full bg-green-100 dark:bg-green-950 p-4">
+                        <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div className="text-center space-y-2">
+                        <h3 className="text-xl font-semibold">
+                          Compte créé avec succès !
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Un email de vérification a été envoyé à
+                        </p>
+                        <p className="font-medium text-orange-600">{email}</p>
+                      </div>
+                    </div>
+
+                    <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950">
+                      <Mail className="h-4 w-4 text-orange-600" />
+                      <AlertDescription className="text-sm">
+                        <strong>Vérifiez votre boîte de réception</strong>
+                        <br />
+                        Cliquez sur le lien dans l'email pour activer votre
+                        compte. Si vous ne le voyez pas, vérifiez vos spams.
+                      </AlertDescription>
+                    </Alert>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setStep("email");
+                        setPassword("");
+                        setFirstName("");
+                        setLastName("");
+                        setCompany("");
+                        setError("");
+                      }}
+                      className="w-full"
+                    >
+                      Retour à la connexion
+                    </Button>
                   </div>
-
-                  <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950">
-                    <Mail className="h-4 w-4 text-orange-600" />
-                    <AlertDescription className="text-sm">
-                      <strong>Vérifiez votre boîte de réception</strong>
-                      <br />
-                      Cliquez sur le lien dans l'email pour activer votre
-                      compte. Si vous ne le voyez pas, vérifiez vos spams.
-                    </AlertDescription>
-                  </Alert>
-
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setStep("email");
-                      setPassword("");
-                      setFirstName("");
-                      setLastName("");
-                      setCompany("");
-                      setError("");
-                    }}
-                    className="w-full"
-                  >
-                    Retour à la connexion
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
         </div>
       </div>
     </div>
