@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { checkEmailExists } from "@/app/(auth)/(login)/actions/checkEmailExists";
 import { registerUser } from "@/app/(auth)/(login)/actions/registerUser";
+import { createProject } from "@/app/(main)/dashboard/actions/createProject";
 
 type Step = "email" | "login" | "register" | "verify-email";
 
@@ -47,6 +48,22 @@ export default function LoginPage() {
       router.push("/dashboard");
     }
   }, [status, session, router]);
+
+  const handleStartGuestSimulation = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // Créer un projet orphelin (sans userId)
+      const project = await createProject({ userId: null });
+
+      // Rediriger vers la première étape
+      router.push(`/${project.id}/informations`);
+    } catch (error) {
+      setError("Impossible de démarrer la simulation. Veuillez réessayer.");
+      setIsLoading(false);
+    }
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -273,12 +290,16 @@ export default function LoginPage() {
                   {/* Primary CTA - Guest Simulation */}
                   <div className="space-y-4 mb-6">
                     <Button
-                      onClick={() => console.log('click')}
+                      onClick={handleStartGuestSimulation}
                       disabled={isLoading}
                       className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all"
                       size="lg"
                     >
-                      <Zap className="mr-2 h-5 w-5" />
+                      {isLoading ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        <Zap className="mr-2 h-5 w-5" />
+                      )}
                       Démarrer une simulation gratuite
                     </Button>
                     <p className="text-sm text-center text-muted-foreground">

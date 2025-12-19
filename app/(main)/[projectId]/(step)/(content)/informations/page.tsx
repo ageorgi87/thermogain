@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useSession } from "next-auth/react";
 import { StepWrapper } from "@/app/(main)/[projectId]/(step)/components/StepWrapper";
 import { InformationsFields } from "@/app/(main)/[projectId]/(step)/(content)/informations/components/InformationsFields";
 import { saveInformationsData } from "@/app/(main)/[projectId]/(step)/(content)/informations/mutations/saveInformationsData/saveInformationsData";
@@ -18,6 +19,7 @@ export default function InformationsStepPage({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = use(params);
+  const { data: session } = useSession();
 
   const STEP_INFO = getStepInfo("informations")!;
 
@@ -66,6 +68,7 @@ export default function InformationsStepPage({
         formData={formData}
         errors={errors}
         onChange={handleChange}
+        isLoggedIn={!!session?.user}
       />
     </StepWrapper>
   );

@@ -13,12 +13,14 @@ interface InformationsFieldsProps {
   formData: Partial<InformationsData>;
   errors: Partial<Record<keyof InformationsData, string>>;
   onChange: (name: keyof InformationsData, value: any) => void;
+  isLoggedIn: boolean;
 }
 
 export function InformationsFields({
   formData,
   errors,
   onChange,
+  isLoggedIn,
 }: InformationsFieldsProps) {
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -84,63 +86,66 @@ export function InformationsFields({
           />
         </FormField>
 
-        <FormField
-          label="Email(s) pour recevoir les résultats"
-          error={errors.recipient_emails}
-        >
-          <div className="space-y-3">
-            {/* Email input */}
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="exemple@email.com"
-                value={emailInput}
-                onChange={(e) => {
-                  setEmailInput(e.target.value);
-                  setEmailError("");
-                }}
-                onKeyDown={handleKeyDown}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addEmail}
-                disabled={!emailInput}
-              >
-                <Plus className="h-4 w-4" /> Ajouter
-              </Button>
-            </div>
-
-            {/* Email error */}
-            {emailError && (
-              <p className="text-sm text-destructive">{emailError}</p>
-            )}
-
-            {/* Email list */}
-            {currentEmails.length > 0 && (
-              <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
-                {currentEmails.map((email) => (
-                  <Badge
-                    key={email}
-                    variant="secondary"
-                    className="pl-3 pr-2 py-1.5 text-sm"
-                  >
-                    {email}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2 hover:bg-destructive/20"
-                      onClick={() => removeEmail(email)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
+        {/* Email field - only visible for logged-in users */}
+        {isLoggedIn && (
+          <FormField
+            label="Email(s) pour recevoir les résultats"
+            error={errors.recipient_emails}
+          >
+            <div className="space-y-3">
+              {/* Email input */}
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="exemple@email.com"
+                  value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value);
+                    setEmailError("");
+                  }}
+                  onKeyDown={handleKeyDown}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addEmail}
+                  disabled={!emailInput}
+                >
+                  <Plus className="h-4 w-4" /> Ajouter
+                </Button>
               </div>
-            )}
-          </div>
-        </FormField>
+
+              {/* Email error */}
+              {emailError && (
+                <p className="text-sm text-destructive">{emailError}</p>
+              )}
+
+              {/* Email list */}
+              {currentEmails.length > 0 && (
+                <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/30">
+                  {currentEmails.map((email) => (
+                    <Badge
+                      key={email}
+                      variant="secondary"
+                      className="pl-3 pr-2 py-1.5 text-sm"
+                    >
+                      {email}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-4 w-4 p-0 ml-2 hover:bg-destructive/20"
+                        onClick={() => removeEmail(email)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </FormField>
+        )}
       </div>
 
       {/* Section 2: Projet */}

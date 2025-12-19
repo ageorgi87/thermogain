@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -50,15 +51,25 @@ type Project = {
 
 export default function ProjectsPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
+  // Redirect to home if not authenticated
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchProjects();
+    }
+  }, [status]);
 
   const fetchProjects = async () => {
     try {
@@ -109,12 +120,18 @@ export default function ProjectsPage() {
     return `/${project.id}/${stepKey}`;
   };
 
-  if (isLoading) {
+  // Show loading while checking auth or loading projects
+  if (status === "loading" || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
+  }
+
+  // Don't render content if not authenticated (while redirecting)
+  if (status !== "authenticated") {
+    return null;
   }
 
   return (
