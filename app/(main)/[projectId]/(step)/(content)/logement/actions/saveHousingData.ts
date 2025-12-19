@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import { housingSchema, type HousingData } from "./housingSchema";
 
@@ -13,20 +13,17 @@ export const saveHousingData = async ({
   projectId,
   data,
 }: SaveHousingDataParams) => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé");
-  }
+  await verifyProjectAccess({ projectId });
 
   const validatedData = housingSchema.parse(data);
 
-  // Check if project exists and belongs to user
+  // Get project to check current step
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: { currentStep: true },
   });
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé");
   }
 

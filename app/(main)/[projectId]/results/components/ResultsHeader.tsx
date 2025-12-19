@@ -9,7 +9,7 @@ import { SendResultsButton } from "./SendResultsButton";
 
 interface ResultsHeaderProps {
   projectId: string;
-  userId: string;
+  userId: string | null;
   hasRecipientEmails: boolean;
 }
 
@@ -38,8 +38,8 @@ export function ResultsHeader({
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          {/* Send Results Button - only show if recipient emails exist */}
-          {hasRecipientEmails && (
+          {/* Send Results Button - only show if user is logged in AND has recipient emails */}
+          {userId && hasRecipientEmails && (
             <SendResultsButton
               projectId={projectId}
               userId={userId}

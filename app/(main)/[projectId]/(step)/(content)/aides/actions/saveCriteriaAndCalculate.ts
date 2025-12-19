@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import { getProjectDataForFinancialAid } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/getProjectDataForFinancialAid";
 import { calculateAidesAirEau } from "@/app/(main)/[projectId]/(step)/(content)/aides/lib/calculateAides/calculateAidesAirEau";
@@ -38,28 +38,8 @@ interface CalculateAidesResult {
 export const saveCriteriaAndCalculate = async (
   params: SaveCriteriaParams
 ): Promise<CalculateAidesResult> => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return {
-      success: false,
-      error: "Non autorisé",
-    };
-  }
-
   try {
-    // Vérifier que le projet appartient à l'utilisateur
-    const project = await prisma.project.findUnique({
-      where: { id: params.projectId },
-      select: { userId: true },
-    });
-
-    if (!project || project.userId !== session.user.id) {
-      return {
-        success: false,
-        error: "Projet non trouvé",
-      };
-    }
+    await verifyProjectAccess({ projectId: params.projectId });
 
     // Sauvegarder les critères d'éligibilité en DB
     await prisma.projectFinancialAid.upsert({

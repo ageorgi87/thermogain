@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 
 interface GetFinancialAidDataParams {
@@ -8,16 +8,11 @@ interface GetFinancialAidDataParams {
 }
 
 export const getFinancialAidData = async ({ projectId }: GetFinancialAidDataParams) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé")
-  }
+  await verifyProjectAccess({ projectId })
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: {
-      userId: true,
       financialAid: {
         select: {
           // Montants des aides
@@ -35,7 +30,7 @@ export const getFinancialAidData = async ({ projectId }: GetFinancialAidDataPara
     },
   })
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé")
   }
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import type { ProjectData } from "@/types/projectData";
 
@@ -22,11 +22,7 @@ interface GetProjectDataForCalculationsParams {
 export const getProjectDataForCalculations = async ({
   projectId,
 }: GetProjectDataForCalculationsParams): Promise<ProjectData> => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé");
-  }
+  await verifyProjectAccess({ projectId });
 
   // Query optimisée : uniquement les relations nécessaires aux calculs
   // (exclut user pour réduire la charge)
@@ -43,7 +39,7 @@ export const getProjectDataForCalculations = async ({
     },
   });
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error(`Projet ${projectId} introuvable ou non autorisé`);
   }
 

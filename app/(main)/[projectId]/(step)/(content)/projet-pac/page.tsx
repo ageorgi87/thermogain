@@ -69,9 +69,9 @@ export default function ProjetPacStepPage({
     },
     saveData: async ({ projectId, data }) => {
       // Manual validation for water-based PACs
-      const heatPumpType = data.type_pac;
+      const heatPumpType = data.heatPumpType;
       if (heatPumpType === PacType.AIR_EAU || heatPumpType === PacType.EAU_EAU) {
-        if (!data.emetteurs || data.emetteurs.length === 0) {
+        if (!data.emitters) {
           throw new Error("Le type d'émetteurs est requis pour une PAC hydraulique");
         }
       }

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import {
   saveInformationsDataSchema,
@@ -17,20 +17,17 @@ export const saveInformationsData = async ({
   projectId,
   data,
 }: SaveInformationsDataParams) => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé");
-  }
+  await verifyProjectAccess({ projectId });
 
   const validatedData = saveInformationsDataSchema.parse(data);
 
-  // Check if project exists and belongs to user
+  // Get project to check current step
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: { currentStep: true },
   });
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé");
   }
 

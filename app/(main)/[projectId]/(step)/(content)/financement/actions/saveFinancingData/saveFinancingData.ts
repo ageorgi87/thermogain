@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 import { calculateMensualite } from "@/app/(main)/[projectId]/(step)/(content)/financement/lib/loanCalculations"
 import { financingSchema, type FinancingData } from "@/app/(main)/[projectId]/(step)/(content)/financement/actions/saveFinancingData/saveFinancingDataSchema"
@@ -14,19 +14,17 @@ export const saveFinancingData = async ({
   projectId,
   data,
 }: SaveFinancingDataParams) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé")
-  }
+  await verifyProjectAccess({ projectId })
 
   const validatedData = financingSchema.parse(data)
 
+  // Get project to check current step
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: { currentStep: true },
   })
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé")
   }
 

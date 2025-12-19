@@ -9,8 +9,8 @@ model Project {
   currentStep     Int      @default(1) // Track wizard progress (1-8)
   completed       Boolean  @default(false) // All steps completed
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relations to section tables (one-to-one relationships)
   housing        ProjectHousing?

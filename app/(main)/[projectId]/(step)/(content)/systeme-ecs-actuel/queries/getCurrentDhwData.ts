@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 import type { ProjectDhw } from "@prisma/client"
 import { EnergyType } from "@/types/energyType"
@@ -33,17 +33,11 @@ interface GetCurrentDhwDataResult {
 export const getCurrentDhwData = async ({
   projectId,
 }: GetCurrentDhwDataParams): Promise<GetCurrentDhwDataResult> => {
-  const session = await auth()
+  await verifyProjectAccess({ projectId })
 
-  if (!session?.user?.id) {
-    throw new Error("Non authentifié")
-  }
-
-  // Vérifier que le projet appartient à l'utilisateur
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: {
-      userId: true,
       dhw: true,
       housing: {
         select: {
@@ -65,10 +59,6 @@ export const getCurrentDhwData = async ({
 
   if (!project) {
     throw new Error("Projet non trouvé")
-  }
-
-  if (project.userId !== session.user.id) {
-    throw new Error("Non autorisé")
   }
 
   // Récupérer les prix par défaut depuis la table EnergyPriceCache

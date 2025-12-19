@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import {
   heatPumpProjectSchema,
@@ -18,22 +18,24 @@ export const saveHeatPumpProjectData = async ({
   projectId,
   data,
 }: SaveHeatPumpProjectDataParams) => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé");
-  }
+  await verifyProjectAccess({ projectId });
 
   const validatedData = heatPumpProjectSchema.parse(data);
 
+  // Get project data needed for calculations and step update
   const project = await prisma.project.findUnique({
     where: { id: projectId },
-    include: {
-      housing: true,
+    select: {
+      currentStep: true,
+      housing: {
+        select: {
+          postalCode: true,
+        },
+      },
     },
   });
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé");
   }
 

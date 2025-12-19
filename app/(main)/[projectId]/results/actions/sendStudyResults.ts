@@ -108,7 +108,7 @@ export const sendStudyResults = async ({
       emailsTo = [recipientEmail];
     } else if (project.recipientEmails && project.recipientEmails.length > 0) {
       emailsTo = project.recipientEmails;
-    } else if (project.user.email) {
+    } else if (project.user?.email) {
       emailsTo = [project.user.email];
     }
 
@@ -137,16 +137,16 @@ export const sendStudyResults = async ({
     const emailData = {
       recipientFirstName: undefined, // Multi-destinataires
       professionalName:
-        project.user.firstName && project.user.lastName
+        project.user?.firstName && project.user?.lastName
           ? `${project.user.firstName} ${project.user.lastName}`
-          : project.user.firstName || undefined,
-      professionalCompany: project.user.company || undefined,
-      professionalSiret: project.user.siret || undefined,
-      professionalAddress: project.user.address || undefined,
-      professionalPhone: project.user.phone || undefined,
-      professionalCity: project.user.city || undefined,
-      professionalPostalCode: project.user.postalCode || undefined,
-      professionalWebsite: project.user.website || undefined,
+          : project.user?.firstName || undefined,
+      professionalCompany: project.user?.company || undefined,
+      professionalSiret: project.user?.siret || undefined,
+      professionalAddress: project.user?.address || undefined,
+      professionalPhone: project.user?.phone || undefined,
+      professionalCity: project.user?.city || undefined,
+      professionalPostalCode: project.user?.postalCode || undefined,
+      professionalWebsite: project.user?.website || undefined,
       projectName: project.name,
       currentHeatingType:
         project.currentHeating?.heatingType || "système actuel",

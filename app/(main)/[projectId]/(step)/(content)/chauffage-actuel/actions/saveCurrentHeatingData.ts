@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess";
 import { prisma } from "@/lib/prisma";
 import type { ProjectCurrentHeating } from "@prisma/client";
 import {
@@ -17,19 +17,17 @@ export const saveCurrentHeatingData = async ({
   projectId,
   data,
 }: SaveCurrentHeatingDataParams): Promise<ProjectCurrentHeating> => {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé");
-  }
+  await verifyProjectAccess({ projectId });
 
   const validatedData = currentHeatingSchema.parse(data);
 
+  // Get project to check current step
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select: { currentStep: true },
   });
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé");
   }
 

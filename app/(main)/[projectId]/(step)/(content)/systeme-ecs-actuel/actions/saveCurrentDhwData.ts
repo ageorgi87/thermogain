@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 import type { CurrentDhwData } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/actions/currentDhwSchema"
 import { estimateDhwConsumption } from "@/app/(main)/[projectId]/(step)/(content)/systeme-ecs-actuel/lib/estimateDhwConsumption"
@@ -21,25 +21,7 @@ export const saveCurrentDhwData = async ({
   nombreOccupants,
 }: SaveCurrentDhwDataParams) => {
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      return { error: "Non authentifié" }
-    }
-
-    // Vérifier que le projet appartient à l'utilisateur
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { userId: true },
-    })
-
-    if (!project) {
-      return { error: "Projet non trouvé" }
-    }
-
-    if (project.userId !== session.user.id) {
-      return { error: "Non autorisé" }
-    }
+    await verifyProjectAccess({ projectId })
 
     // Calculer la consommation si nécessaire
     let finalConsumption = data.dhwConsumptionKwh

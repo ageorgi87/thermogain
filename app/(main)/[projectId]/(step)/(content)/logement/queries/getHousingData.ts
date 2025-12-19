@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 
 interface GetHousingDataParams {
@@ -8,21 +8,16 @@ interface GetHousingDataParams {
 }
 
 export const getHousingData = async ({ projectId }: GetHousingDataParams) => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    throw new Error("Non autorisé")
-  }
+  await verifyProjectAccess({ projectId })
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
     select: {
-      userId: true,
       housing: true,
     },
   })
 
-  if (!project || project.userId !== session.user.id) {
+  if (!project) {
     throw new Error("Projet non trouvé")
   }
 

@@ -1,15 +1,11 @@
 "use server"
 
-import { auth } from "@/lib/auth"
+import { verifyProjectAccess } from "@/lib/auth/verifyProjectAccess"
 import { prisma } from "@/lib/prisma"
 
 export const getProject = async (id: string) => {
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      throw new Error("Non autorisé")
-    }
+    await verifyProjectAccess({ projectId: id })
 
     const project = await prisma.project.findUnique({
       where: { id },
@@ -24,7 +20,7 @@ export const getProject = async (id: string) => {
       },
     })
 
-    if (!project || project.userId !== session.user.id) {
+    if (!project) {
       throw new Error("Projet non trouvé")
     }
 
