@@ -43,46 +43,32 @@ export default function LoginPage() {
   const [company, setCompany] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [projectIdToAssociate, setProjectIdToAssociate] = useState<string | null>(null);
-
-  // Check for projectId in URL on mount and persist it
-  useEffect(() => {
-    const projectId = searchParams.get("projectId");
-    console.log("[LoginPage] projectId from URL:", projectId);
-    if (projectId) {
-      setProjectIdToAssociate(projectId);
-      // Store in sessionStorage to persist across redirects
-      sessionStorage.setItem("pendingProjectAssociation", projectId);
-      console.log("[LoginPage] Set projectIdToAssociate and stored in sessionStorage:", projectId);
-    } else {
-      // Check if there's a pending association from sessionStorage
-      const pendingProjectId = sessionStorage.getItem("pendingProjectAssociation");
-      if (pendingProjectId) {
-        console.log("[LoginPage] Found pending projectId in sessionStorage:", pendingProjectId);
-        setProjectIdToAssociate(pendingProjectId);
-      }
-    }
-  }, [searchParams]);
+  const [hasCheckedProjectId, setHasCheckedProjectId] = useState(false);
+  const projectIdFromUrl = searchParams.get("projectId");
 
   // Redirect to dashboard if already logged in (unless there's a project to associate)
   useEffect(() => {
+    // Wait until we've checked for projectId
+    if (!hasCheckedProjectId) {
+      setHasCheckedProjectId(true);
+      return;
+    }
+
     if (status === "authenticated" && session?.user) {
-      console.log("[LoginPage] User authenticated, projectIdToAssociate:", projectIdToAssociate);
-      if (projectIdToAssociate) {
-        console.log("[LoginPage] Associating orphan project:", projectIdToAssociate);
+      console.log("[LoginPage] User authenticated, projectIdFromUrl:", projectIdFromUrl);
+      if (projectIdFromUrl) {
+        console.log("[LoginPage] Associating orphan project:", projectIdFromUrl);
         // Associate the orphan project and redirect to it
-        associateOrphanProject({ projectId: projectIdToAssociate }).then((result) => {
+        associateOrphanProject({ projectId: projectIdFromUrl }).then((result) => {
           console.log("[LoginPage] Association result:", result);
-          // Clear from sessionStorage after successful association
-          sessionStorage.removeItem("pendingProjectAssociation");
-          router.push(`/${projectIdToAssociate}/informations`);
+          router.push(`/${projectIdFromUrl}/informations`);
         });
       } else {
         console.log("[LoginPage] No project to associate, redirecting to dashboard");
         router.push("/dashboard");
       }
     }
-  }, [status, session, router, projectIdToAssociate]);
+  }, [status, session, router, projectIdFromUrl, hasCheckedProjectId]);
 
   const handleStartGuestSimulation = async () => {
     setIsLoading(true);
@@ -142,16 +128,14 @@ export default function LoginPage() {
           setError("Mot de passe invalide");
         }
       } else if (result?.ok) {
-        console.log("[LoginPage handleLogin] Login successful, projectIdToAssociate:", projectIdToAssociate);
+        console.log("[LoginPage handleLogin] Login successful, projectIdFromUrl:", projectIdFromUrl);
         // Login successful - associate orphan project if present
-        if (projectIdToAssociate) {
-          console.log("[LoginPage handleLogin] Associating orphan project:", projectIdToAssociate);
-          const associationResult = await associateOrphanProject({ projectId: projectIdToAssociate });
+        if (projectIdFromUrl) {
+          console.log("[LoginPage handleLogin] Associating orphan project:", projectIdFromUrl);
+          const associationResult = await associateOrphanProject({ projectId: projectIdFromUrl });
           console.log("[LoginPage handleLogin] Association result:", associationResult);
-          // Clear from sessionStorage after successful association
-          sessionStorage.removeItem("pendingProjectAssociation");
           // Redirect to the project
-          router.push(`/${projectIdToAssociate}/informations`);
+          router.push(`/${projectIdFromUrl}/informations`);
         } else {
           console.log("[LoginPage handleLogin] No project to associate, redirecting to dashboard");
           // No project to associate - redirect to dashboard
@@ -180,15 +164,33 @@ export default function LoginPage() {
         company,
       });
 
-      // Show success screen
-      setStep("verify-email");
-      setIsLoading(false);
+      console.log("[LoginPage handleRegister] Registration successful, projectIdFromUrl:", projectIdFromUrl);
 
-      // Redirect to login after 5 seconds
-      setTimeout(() => {
-        router.push("/");
-        router.refresh();
-      }, 5000);
+      // TEMPORARY: Auto-login after registration (email verification disabled for testing)
+      // In production, show verify-email screen instead
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.ok) {
+        console.log("[LoginPage handleRegister] Auto-login successful");
+        // Associate orphan project if present
+        if (projectIdFromUrl) {
+          console.log("[LoginPage handleRegister] Associating orphan project:", projectIdFromUrl);
+          const associationResult = await associateOrphanProject({ projectId: projectIdFromUrl });
+          console.log("[LoginPage handleRegister] Association result:", associationResult);
+          // Redirect to the project
+          router.push(`/${projectIdFromUrl}/informations`);
+        } else {
+          // No project to associate - redirect to dashboard
+          router.push("/dashboard");
+        }
+      } else {
+        setError("Inscription réussie mais connexion automatique échouée. Veuillez vous connecter manuellement.");
+        setIsLoading(false);
+      }
     } catch (error: any) {
       setError(
         error.message || "Une erreur s'est produite. Veuillez réessayer."
