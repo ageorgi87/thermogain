@@ -45,23 +45,40 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [projectIdToAssociate, setProjectIdToAssociate] = useState<string | null>(null);
 
-  // Check for projectId in URL on mount
+  // Check for projectId in URL on mount and persist it
   useEffect(() => {
     const projectId = searchParams.get("projectId");
+    console.log("[LoginPage] projectId from URL:", projectId);
     if (projectId) {
       setProjectIdToAssociate(projectId);
+      // Store in sessionStorage to persist across redirects
+      sessionStorage.setItem("pendingProjectAssociation", projectId);
+      console.log("[LoginPage] Set projectIdToAssociate and stored in sessionStorage:", projectId);
+    } else {
+      // Check if there's a pending association from sessionStorage
+      const pendingProjectId = sessionStorage.getItem("pendingProjectAssociation");
+      if (pendingProjectId) {
+        console.log("[LoginPage] Found pending projectId in sessionStorage:", pendingProjectId);
+        setProjectIdToAssociate(pendingProjectId);
+      }
     }
   }, [searchParams]);
 
   // Redirect to dashboard if already logged in (unless there's a project to associate)
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+      console.log("[LoginPage] User authenticated, projectIdToAssociate:", projectIdToAssociate);
       if (projectIdToAssociate) {
+        console.log("[LoginPage] Associating orphan project:", projectIdToAssociate);
         // Associate the orphan project and redirect to it
-        associateOrphanProject({ projectId: projectIdToAssociate }).then(() => {
+        associateOrphanProject({ projectId: projectIdToAssociate }).then((result) => {
+          console.log("[LoginPage] Association result:", result);
+          // Clear from sessionStorage after successful association
+          sessionStorage.removeItem("pendingProjectAssociation");
           router.push(`/${projectIdToAssociate}/informations`);
         });
       } else {
+        console.log("[LoginPage] No project to associate, redirecting to dashboard");
         router.push("/dashboard");
       }
     }
@@ -125,12 +142,18 @@ export default function LoginPage() {
           setError("Mot de passe invalide");
         }
       } else if (result?.ok) {
+        console.log("[LoginPage handleLogin] Login successful, projectIdToAssociate:", projectIdToAssociate);
         // Login successful - associate orphan project if present
         if (projectIdToAssociate) {
-          await associateOrphanProject({ projectId: projectIdToAssociate });
+          console.log("[LoginPage handleLogin] Associating orphan project:", projectIdToAssociate);
+          const associationResult = await associateOrphanProject({ projectId: projectIdToAssociate });
+          console.log("[LoginPage handleLogin] Association result:", associationResult);
+          // Clear from sessionStorage after successful association
+          sessionStorage.removeItem("pendingProjectAssociation");
           // Redirect to the project
           router.push(`/${projectIdToAssociate}/informations`);
         } else {
+          console.log("[LoginPage handleLogin] No project to associate, redirecting to dashboard");
           // No project to associate - redirect to dashboard
           router.push("/dashboard");
         }

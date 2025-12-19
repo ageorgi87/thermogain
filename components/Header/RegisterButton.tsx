@@ -10,13 +10,19 @@ export const RegisterButton = () => {
 
   const handleClick = () => {
     // Extract projectId from current path if user is on a project page
-    const projectIdMatch = pathname.match(/^\/([^/]+)\//);
+    // Pattern: /[projectId]/... (where projectId is a UUID-like string)
+    const projectIdMatch = pathname.match(/^\/([a-zA-Z0-9-]+)(?:\/|$)/);
     const projectId = projectIdMatch ? projectIdMatch[1] : null;
+
+    console.log("[RegisterButton] pathname:", pathname);
+    console.log("[RegisterButton] projectId extracted:", projectId);
 
     // Redirect to home with projectId as query param if present
     if (projectId) {
+      console.log("[RegisterButton] Redirecting to /?projectId=" + projectId);
       router.push(`/?projectId=${projectId}`);
     } else {
+      console.log("[RegisterButton] No projectId, redirecting to /");
       router.push("/");
     }
   };

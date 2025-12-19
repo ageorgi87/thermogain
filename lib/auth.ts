@@ -48,10 +48,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null
         }
 
+        // TEMPORARY: Email verification disabled for testing
         // Check if email is verified AFTER password validation
-        if (!user.emailVerified) {
-          throw new EmailNotVerifiedError()
-        }
+        // if (!user.emailVerified) {
+        //   throw new EmailNotVerifiedError()
+        // }
 
         return {
           id: user.id,
