@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,11 +27,13 @@ import {
 import { checkEmailExists } from "@/app/(auth)/(login)/actions/checkEmailExists";
 import { registerUser } from "@/app/(auth)/(login)/actions/registerUser";
 import { createProject } from "@/app/(main)/dashboard/actions/createProject";
+import { associateOrphanProject } from "@/app/(main)/dashboard/actions/associateOrphanProject";
 
 type Step = "email" | "login" | "register" | "verify-email";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
@@ -41,13 +43,29 @@ export default function LoginPage() {
   const [company, setCompany] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [projectIdToAssociate, setProjectIdToAssociate] = useState<string | null>(null);
 
-  // Redirect to dashboard if already logged in
+  // Check for projectId in URL on mount
+  useEffect(() => {
+    const projectId = searchParams.get("projectId");
+    if (projectId) {
+      setProjectIdToAssociate(projectId);
+    }
+  }, [searchParams]);
+
+  // Redirect to dashboard if already logged in (unless there's a project to associate)
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      router.push("/dashboard");
+      if (projectIdToAssociate) {
+        // Associate the orphan project and redirect to it
+        associateOrphanProject({ projectId: projectIdToAssociate }).then(() => {
+          router.push(`/${projectIdToAssociate}/informations`);
+        });
+      } else {
+        router.push("/dashboard");
+      }
     }
-  }, [status, session, router]);
+  }, [status, session, router, projectIdToAssociate]);
 
   const handleStartGuestSimulation = async () => {
     setIsLoading(true);
@@ -105,6 +123,16 @@ export default function LoginPage() {
           );
         } else {
           setError("Mot de passe invalide");
+        }
+      } else if (result?.ok) {
+        // Login successful - associate orphan project if present
+        if (projectIdToAssociate) {
+          await associateOrphanProject({ projectId: projectIdToAssociate });
+          // Redirect to the project
+          router.push(`/${projectIdToAssociate}/informations`);
+        } else {
+          // No project to associate - redirect to dashboard
+          router.push("/dashboard");
         }
       }
     } catch (error) {

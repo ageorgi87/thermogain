@@ -21,7 +21,6 @@ interface HeaderProps {
  * @param showUserMenu - Afficher le menu utilisateur (par défaut: true si session existe)
  */
 export const Header = ({ session }: HeaderProps) => {
-  const isRegisterButtonDisplayed = false;
   const hasSession = !!session;
 
   return (
@@ -30,21 +29,19 @@ export const Header = ({ session }: HeaderProps) => {
         <div className="flex items-center justify-between">
           <LogoLink />
 
-          {hasSession && (
-            <div className="flex items-center gap-4">
-              {isRegisterButtonDisplayed ? (
-                <RegisterButton />
-              ) : (
-                <>
-                  <BackToProjectsButton />
-                  <UserMenu
-                    userName={session.user?.name}
-                    userEmail={session.user?.email}
-                  />
-                </>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            {hasSession ? (
+              <>
+                <BackToProjectsButton />
+                <UserMenu
+                  userName={session.user?.name}
+                  userEmail={session.user?.email}
+                />
+              </>
+            ) : (
+              <RegisterButton />
+            )}
+          </div>
         </div>
       </div>
     </nav>
