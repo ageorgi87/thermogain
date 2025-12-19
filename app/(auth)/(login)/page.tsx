@@ -156,15 +156,17 @@ export default function LoginPage() {
     setError("");
 
     try {
+      // Register user and associate project in one step
       await registerUser({
         email,
         password,
         firstName,
         lastName,
         company,
+        projectIdToAssociate: projectIdFromUrl,
       });
 
-      console.log("[LoginPage handleRegister] Registration successful, projectIdFromUrl:", projectIdFromUrl);
+      console.log("[LoginPage handleRegister] Registration successful, project associated if provided");
 
       // TEMPORARY: Auto-login after registration (email verification disabled for testing)
       // In production, show verify-email screen instead
@@ -175,18 +177,9 @@ export default function LoginPage() {
       });
 
       if (result?.ok) {
-        console.log("[LoginPage handleRegister] Auto-login successful");
-        // Associate orphan project if present
-        if (projectIdFromUrl) {
-          console.log("[LoginPage handleRegister] Associating orphan project:", projectIdFromUrl);
-          const associationResult = await associateOrphanProject({ projectId: projectIdFromUrl });
-          console.log("[LoginPage handleRegister] Association result:", associationResult);
-          // Redirect to the project
-          router.push(`/${projectIdFromUrl}/informations`);
-        } else {
-          // No project to associate - redirect to dashboard
-          router.push("/dashboard");
-        }
+        console.log("[LoginPage handleRegister] Auto-login successful, redirecting to dashboard");
+        // Redirect to dashboard - project is already associated
+        router.push("/dashboard");
       } else {
         setError("Inscription réussie mais connexion automatique échouée. Veuillez vous connecter manuellement.");
         setIsLoading(false);

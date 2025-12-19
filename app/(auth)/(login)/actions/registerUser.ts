@@ -10,9 +10,12 @@ export const registerUser = async (data: {
   firstName?: string
   lastName?: string
   company?: string
+  projectIdToAssociate?: string | null
 }): Promise<{ id: string; email: string }> => {
   try {
-    const { email, password, firstName, lastName, company } = data
+    const { email, password, firstName, lastName, company, projectIdToAssociate } = data
+
+    console.log("[registerUser] Starting registration, projectIdToAssociate:", projectIdToAssociate)
 
     // Validate input
     if (!email || !password) {
@@ -42,6 +45,32 @@ export const registerUser = async (data: {
         emailVerified: null, // Email not verified yet
       },
     })
+
+    console.log("[registerUser] User created with ID:", user.id)
+
+    // Associate orphan project if provided
+    if (projectIdToAssociate) {
+      console.log("[registerUser] Associating orphan project:", projectIdToAssociate)
+      try {
+        const project = await prisma.project.findUnique({
+          where: { id: projectIdToAssociate },
+          select: { id: true, userId: true },
+        })
+
+        if (project && project.userId === null) {
+          await prisma.project.update({
+            where: { id: projectIdToAssociate },
+            data: { userId: user.id },
+          })
+          console.log("[registerUser] Project associated successfully")
+        } else {
+          console.log("[registerUser] Project not found or already has owner")
+        }
+      } catch (error) {
+        console.error("[registerUser] Failed to associate project:", error)
+        // Don't throw - user is created, just project association failed
+      }
+    }
 
     // Send verification email
     try {
