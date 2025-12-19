@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -27,11 +27,10 @@ import {
 import { checkEmailExists } from "@/app/(auth)/(login)/actions/checkEmailExists";
 import { registerUser } from "@/app/(auth)/(login)/actions/registerUser";
 import { createProject } from "@/app/(main)/dashboard/actions/createProject";
-import { associateOrphanProject } from "@/app/(main)/dashboard/actions/associateOrphanProject";
 
 type Step = "email" | "login" | "register" | "verify-email";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
@@ -43,32 +42,14 @@ export default function LoginPage() {
   const [company, setCompany] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [hasCheckedProjectId, setHasCheckedProjectId] = useState(false);
   const projectIdFromUrl = searchParams.get("projectId");
 
-  // Redirect to dashboard if already logged in (unless there's a project to associate)
+  // Redirect to dashboard if already logged in
   useEffect(() => {
-    // Wait until we've checked for projectId
-    if (!hasCheckedProjectId) {
-      setHasCheckedProjectId(true);
-      return;
-    }
-
     if (status === "authenticated" && session?.user) {
-      console.log("[LoginPage] User authenticated, projectIdFromUrl:", projectIdFromUrl);
-      if (projectIdFromUrl) {
-        console.log("[LoginPage] Associating orphan project:", projectIdFromUrl);
-        // Associate the orphan project and redirect to it
-        associateOrphanProject({ projectId: projectIdFromUrl }).then((result) => {
-          console.log("[LoginPage] Association result:", result);
-          router.push(`/${projectIdFromUrl}/informations`);
-        });
-      } else {
-        console.log("[LoginPage] No project to associate, redirecting to dashboard");
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     }
-  }, [status, session, router, projectIdFromUrl, hasCheckedProjectId]);
+  }, [status, session, router]);
 
   const handleStartGuestSimulation = async () => {
     setIsLoading(true);
@@ -128,19 +109,8 @@ export default function LoginPage() {
           setError("Mot de passe invalide");
         }
       } else if (result?.ok) {
-        console.log("[LoginPage handleLogin] Login successful, projectIdFromUrl:", projectIdFromUrl);
-        // Login successful - associate orphan project if present
-        if (projectIdFromUrl) {
-          console.log("[LoginPage handleLogin] Associating orphan project:", projectIdFromUrl);
-          const associationResult = await associateOrphanProject({ projectId: projectIdFromUrl });
-          console.log("[LoginPage handleLogin] Association result:", associationResult);
-          // Redirect to the project
-          router.push(`/${projectIdFromUrl}/informations`);
-        } else {
-          console.log("[LoginPage handleLogin] No project to associate, redirecting to dashboard");
-          // No project to associate - redirect to dashboard
-          router.push("/dashboard");
-        }
+        // Login successful - redirect to dashboard
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("SignIn error:", error);
@@ -166,24 +136,9 @@ export default function LoginPage() {
         projectIdToAssociate: projectIdFromUrl,
       });
 
-      console.log("[LoginPage handleRegister] Registration successful, project associated if provided");
-
-      // TEMPORARY: Auto-login after registration (email verification disabled for testing)
-      // In production, show verify-email screen instead
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.ok) {
-        console.log("[LoginPage handleRegister] Auto-login successful, redirecting to dashboard");
-        // Redirect to dashboard - project is already associated
-        router.push("/dashboard");
-      } else {
-        setError("Inscription réussie mais connexion automatique échouée. Veuillez vous connecter manuellement.");
-        setIsLoading(false);
-      }
+      // Show verify-email screen
+      setStep("verify-email");
+      setIsLoading(false);
     } catch (error: any) {
       setError(
         error.message || "Une erreur s'est produite. Veuillez réessayer."
@@ -603,5 +558,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

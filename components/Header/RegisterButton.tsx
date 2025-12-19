@@ -14,15 +14,10 @@ export const RegisterButton = () => {
     const projectIdMatch = pathname.match(/^\/([a-zA-Z0-9-]+)(?:\/|$)/);
     const projectId = projectIdMatch ? projectIdMatch[1] : null;
 
-    console.log("[RegisterButton] pathname:", pathname);
-    console.log("[RegisterButton] projectId extracted:", projectId);
-
     // Redirect to home with projectId as query param if present
     if (projectId) {
-      console.log("[RegisterButton] Redirecting to /?projectId=" + projectId);
       router.push(`/?projectId=${projectId}`);
     } else {
-      console.log("[RegisterButton] No projectId, redirecting to /");
       router.push("/");
     }
   };
