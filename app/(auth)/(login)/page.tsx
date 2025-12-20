@@ -319,6 +319,13 @@ function LoginPageContent() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Account Section Title */}
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-center">
+                      Connexion / Inscription
+                    </h3>
+                  </div>
                 </>
               )}
 
