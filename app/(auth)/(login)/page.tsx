@@ -182,7 +182,7 @@ function LoginPageContent() {
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Section - Branding & Value Proposition (Desktop only logo, mobile only description) */}
-          <div className="space-y-8 text-center md:text-left order-3 md:order-1">
+          <div className="space-y-8 text-center md:text-left order-2 md:order-1">
             {/* Logo & Brand Name - Desktop only */}
             <div className="hidden md:flex items-center justify-start gap-4">
               <Image
@@ -266,7 +266,7 @@ function LoginPageContent() {
           </div>
 
           {/* Right Section - Login Card */}
-          <Card className="w-full shadow-2xl border-2 order-2">
+          <Card className="w-full shadow-2xl border-2 order-1 md:order-2">
             <CardHeader className="space-y-4">
               <CardTitle className="text-2xl text-center">
                 {step === "email" && "Bienvenue"}
@@ -293,13 +293,13 @@ function LoginPageContent() {
                     <Button
                       onClick={handleStartGuestSimulation}
                       disabled={isLoading}
-                      className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all"
+                      className="w-full h-14 text-base md:text-lg font-semibold bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all whitespace-normal md:whitespace-nowrap"
                       size="lg"
                     >
                       {isLoading ? (
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin shrink-0" />
                       ) : (
-                        <Zap className="mr-2 h-5 w-5" />
+                        <Zap className="mr-2 h-5 w-5 shrink-0" />
                       )}
                       Démarrer une simulation gratuite
                     </Button>

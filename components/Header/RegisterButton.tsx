@@ -25,10 +25,10 @@ export const RegisterButton = () => {
   return (
     <Button
       onClick={handleClick}
-      className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
+      className="bg-linear-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
       size="sm"
     >
-      <UserPlus className="mr-2 h-4 w-4" />
+      <UserPlus className="hidden sm:inline-block mr-0 sm:mr-2 h-4 w-4" />
       S'inscrire
     </Button>
   );
