@@ -104,7 +104,7 @@ export default async function ResultsPage({ params }: PageProps) {
                   <strong className="text-brand-teal-600 font-semibold">
                     {results.netBenefitLifetime.toLocaleString("fr-FR")} €
                   </strong>{" "}
-                  sur {project.projetPac.duree_vie_pac} ans.
+                  sur {project.heatPump.heatPumpLifespanYears} ans.
                 </p>
               ) : (
                 <p className="text-lg text-foreground">
