@@ -29,9 +29,9 @@ export const getEnergyPriceEvolutionFromDB = async (
   }
 
   return {
-    tauxRecent: energyData.tauxRecent,
-    tauxEquilibre: energyData.tauxEquilibre,
-    anneesTransition: energyData.anneesTransition,
+    recentRate: energyData.recentRate,
+    equilibriumRate: energyData.equilibriumRate,
+    transitionYears: energyData.transitionYears,
     currentPrice: energyData.currentPrice
   }
 }

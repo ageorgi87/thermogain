@@ -16,11 +16,11 @@ export const apiEnergyTypeSchema = z.enum([
  * Schéma de validation pour le modèle d'évolution énergétique
  */
 export const energyEvolutionModelSchema = z.object({
-  tauxRecent: z.number().finite(),
+  recentRate: z.number().finite(),
 
-  tauxEquilibre: z.number().finite(),
+  equilibriumRate: z.number().finite(),
 
-  anneesTransition: z.number()
+  transitionYears: z.number()
     .int()
     .positive()
     .optional()

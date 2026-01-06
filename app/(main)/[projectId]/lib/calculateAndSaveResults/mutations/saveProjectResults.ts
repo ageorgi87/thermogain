@@ -37,15 +37,15 @@ export const saveProjectResults = async (
       where: { projectId },
       update: {
         // Year 1 costs
-        coutAnnuelActuel: results.coutAnnuelActuel,
-        coutAnnuelPac: results.coutAnnuelPac,
-        economiesAnnuelles: results.economiesAnnuelles,
+        currentAnnualCost: results.currentAnnualCost,
+        heatPumpAnnualCost: results.heatPumpAnnualCost,
+        annualSavings: results.annualSavings,
         consommationPacKwh: results.consommationPacKwh,
 
         // Monthly costs
-        coutMensuelActuel: results.coutMensuelActuel,
-        coutMensuelPac: results.coutMensuelPac,
-        economieMensuelle: results.economieMensuelle,
+        currentMonthlyCost: results.currentMonthlyCost,
+        heatPumpMonthlyCost: results.heatPumpMonthlyCost,
+        monthlySavings: results.monthlySavings,
 
         // ROI
         paybackPeriod: results.paybackPeriod,
@@ -54,16 +54,16 @@ export const saveProjectResults = async (
         // Total lifetime gains
         totalSavingsLifetime: results.totalSavingsLifetime,
         netBenefitLifetime: results.netBenefitLifetime,
-        tauxRentabilite: results.tauxRentabilite,
+        profitabilityRate: results.profitabilityRate,
 
         // Total lifetime costs
-        coutTotalActuelLifetime: results.coutTotalActuelLifetime,
-        coutTotalPacLifetime: results.coutTotalPacLifetime,
+        totalCurrentCostLifetime: results.totalCurrentCostLifetime,
+        totalHeatPumpCostLifetime: results.totalHeatPumpCostLifetime,
 
         // Financing
-        mensualiteCredit: results.mensualiteCredit ?? null,
-        coutTotalCredit: results.coutTotalCredit ?? null,
-        investissementReel: results.investissementReel,
+        monthlyLoanPayment: results.monthlyLoanPayment ?? null,
+        totalLoanCost: results.totalLoanCost ?? null,
+        actualInvestment: results.actualInvestment,
 
         // Yearly data (stored as JSON)
         yearlyData: results.yearlyData as unknown as Prisma.InputJsonValue,
@@ -73,15 +73,15 @@ export const saveProjectResults = async (
       create: {
         projectId,
         // Year 1 costs
-        coutAnnuelActuel: results.coutAnnuelActuel,
-        coutAnnuelPac: results.coutAnnuelPac,
-        economiesAnnuelles: results.economiesAnnuelles,
+        currentAnnualCost: results.currentAnnualCost,
+        heatPumpAnnualCost: results.heatPumpAnnualCost,
+        annualSavings: results.annualSavings,
         consommationPacKwh: results.consommationPacKwh,
 
         // Monthly costs
-        coutMensuelActuel: results.coutMensuelActuel,
-        coutMensuelPac: results.coutMensuelPac,
-        economieMensuelle: results.economieMensuelle,
+        currentMonthlyCost: results.currentMonthlyCost,
+        heatPumpMonthlyCost: results.heatPumpMonthlyCost,
+        monthlySavings: results.monthlySavings,
 
         // ROI
         paybackPeriod: results.paybackPeriod,
@@ -90,16 +90,16 @@ export const saveProjectResults = async (
         // Total lifetime gains
         totalSavingsLifetime: results.totalSavingsLifetime,
         netBenefitLifetime: results.netBenefitLifetime,
-        tauxRentabilite: results.tauxRentabilite,
+        profitabilityRate: results.profitabilityRate,
 
         // Total lifetime costs
-        coutTotalActuelLifetime: results.coutTotalActuelLifetime,
-        coutTotalPacLifetime: results.coutTotalPacLifetime,
+        totalCurrentCostLifetime: results.totalCurrentCostLifetime,
+        totalHeatPumpCostLifetime: results.totalHeatPumpCostLifetime,
 
         // Financing
-        mensualiteCredit: results.mensualiteCredit ?? null,
-        coutTotalCredit: results.coutTotalCredit ?? null,
-        investissementReel: results.investissementReel,
+        monthlyLoanPayment: results.monthlyLoanPayment ?? null,
+        totalLoanCost: results.totalLoanCost ?? null,
+        actualInvestment: results.actualInvestment,
 
         // Yearly data (stored as JSON)
         yearlyData: results.yearlyData as unknown as Prisma.InputJsonValue,

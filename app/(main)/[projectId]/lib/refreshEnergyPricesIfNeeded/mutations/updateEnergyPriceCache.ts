@@ -25,17 +25,17 @@ export const updateEnergyPriceCache = async (
   await prisma.energyPriceCache.upsert({
     where: { energyType: validatedData.energyType },
     update: {
-      tauxRecent: validatedData.model.tauxRecent,
-      tauxEquilibre: validatedData.model.tauxEquilibre,
-      anneesTransition: validatedData.model.anneesTransition,
+      recentRate: validatedData.model.recentRate,
+      equilibriumRate: validatedData.model.equilibriumRate,
+      transitionYears: validatedData.model.transitionYears,
       currentPrice: validatedData.model.currentPrice,
       lastUpdated: new Date()
     },
     create: {
       energyType: validatedData.energyType,
-      tauxRecent: validatedData.model.tauxRecent,
-      tauxEquilibre: validatedData.model.tauxEquilibre,
-      anneesTransition: validatedData.model.anneesTransition,
+      recentRate: validatedData.model.recentRate,
+      equilibriumRate: validatedData.model.equilibriumRate,
+      transitionYears: validatedData.model.transitionYears,
       currentPrice: validatedData.model.currentPrice,
       lastUpdated: new Date()
     }

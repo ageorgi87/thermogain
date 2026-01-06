@@ -132,7 +132,7 @@ export default async function ResultsPage({ params }: PageProps) {
       {/* Graphique principal des coûts cumulés */}
       <CumulativeCostChart
         yearlyData={results.yearlyData}
-        investmentCost={results.investissementReel}
+        investmentCost={results.actualInvestment}
         paybackYear={results.paybackYear}
         paybackPeriod={results.paybackPeriod}
         modeFinancement={project.financing?.financingMode}
@@ -145,7 +145,7 @@ export default async function ResultsPage({ params }: PageProps) {
       <YearlyBreakdownTable
         yearlyData={results.yearlyData}
         projectData={project}
-        investissementReel={results.investissementReel}
+        investissementReel={results.actualInvestment}
         modeFinancement={project.financing?.financingMode}
         montantCredit={project.financing?.loanAmount || undefined}
         tauxInteret={project.financing?.interestRate || undefined}
@@ -158,15 +158,15 @@ export default async function ResultsPage({ params }: PageProps) {
       {/* Cartes détaillées */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <ConsumptionCard
-          economiesAnnuelles={results.economiesAnnuelles}
-          coutTotalActuelLifetime={results.coutTotalActuelLifetime}
-          coutTotalPacLifetime={results.coutTotalPacLifetime}
+          economiesAnnuelles={results.annualSavings}
+          coutTotalActuelLifetime={results.totalCurrentCostLifetime}
+          coutTotalPacLifetime={results.totalHeatPumpCostLifetime}
           dureeVie={project.heatPump.heatPumpLifespanYears}
         />
         <FinancialSummaryCard
           resteACharge={project.costs.totalCost - project.financialAid.totalAid}
           modeFinancement={project.financing?.financingMode || undefined}
-          mensualite={results.mensualiteCredit}
+          mensualite={results.monthlyLoanPayment}
           dureeCreditMois={project.financing?.loanDurationMonths || undefined}
           apportPersonnel={project.financing?.downPayment || undefined}
         />
@@ -175,7 +175,7 @@ export default async function ResultsPage({ params }: PageProps) {
           paybackYear={results.paybackYear}
           netBenefit={results.netBenefitLifetime}
           dureeVie={project.heatPump.heatPumpLifespanYears}
-          tauxRentabilite={results.tauxRentabilite}
+          tauxRentabilite={results.profitabilityRate}
         />
       </div>
     </div>

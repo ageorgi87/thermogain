@@ -67,7 +67,7 @@ export const calculateAllResults = async (
   // Coûts année 1 - Chauffage actuel
   const currentVariableCost = calculateCurrentVariableCost(data);
   const currentFixedCosts = calculateCurrentFixedCosts(data);
-  const coutAnnuelActuel = currentVariableCost + currentFixedCosts.total + dhwCosts.currentDhwCost;
+  const currentAnnualCost = currentVariableCost + currentFixedCosts.total + dhwCosts.currentDhwCost;
 
   // Calcul des besoins énergétiques avec méthode MOYENNE (conso réelle + DPE)
   // Cette approche équilibrée tient compte de l'usage actuel ET anticipe un confort optimal
@@ -86,13 +86,13 @@ export const calculateAllResults = async (
   const pacVariableCost = consommationPacKwh * prixElec;
 
   const pacFixedCosts = calculatePacFixedCosts(data);
-  const coutAnnuelPac = pacVariableCost + pacFixedCosts.total + dhwCosts.futureDhwCost;
+  const heatPumpAnnualCost = pacVariableCost + pacFixedCosts.total + dhwCosts.futureDhwCost;
 
   // Calculer l'investissement réel selon le mode de financement
   // Mode Comptant : remainingCost
   // Mode Crédit : remainingCost + intérêts du crédit
   // Mode Mixte : downPayment + loanAmount + intérêts
-  let investissementReel = data.remainingCost;
+  let actualInvestment = data.remainingCost;
 
   if (
     data.financingMode === FinancingMode.CREDIT &&
@@ -100,16 +100,16 @@ export const calculateAllResults = async (
     data.interestRate !== undefined &&
     data.loanDurationMonths
   ) {
-    const mensualite = calculateMonthlyPayment({
+    const monthlyPayment = calculateMonthlyPayment({
       montant: data.loanAmount,
       tauxAnnuel: data.interestRate,
       dureeMois: data.loanDurationMonths,
     });
-    const coutTotalCredit = roundToDecimals(
-      mensualite * data.loanDurationMonths,
+    const totalLoanCost = roundToDecimals(
+      monthlyPayment * data.loanDurationMonths,
       2
     );
-    investissementReel = coutTotalCredit;
+    actualInvestment = totalLoanCost;
   } else if (
     data.financingMode === FinancingMode.MIXTE &&
     data.loanAmount &&
@@ -117,22 +117,22 @@ export const calculateAllResults = async (
     data.loanDurationMonths &&
     data.downPayment
   ) {
-    const mensualite = calculateMonthlyPayment({
+    const monthlyPayment = calculateMonthlyPayment({
       montant: data.loanAmount,
       tauxAnnuel: data.interestRate,
       dureeMois: data.loanDurationMonths,
     });
-    const coutTotalCredit = roundToDecimals(
-      mensualite * data.loanDurationMonths,
+    const totalLoanCost = roundToDecimals(
+      monthlyPayment * data.loanDurationMonths,
       2
     );
-    investissementReel = data.downPayment + coutTotalCredit;
+    actualInvestment = data.downPayment + totalLoanCost;
   }
 
   // Créer un objet ProjectData ajusté avec l'investissement réel
   const dataAjusteeROI: ProjectData = {
     ...data,
-    remainingCost: investissementReel,
+    remainingCost: actualInvestment,
   };
 
   // Projections sur la durée de vie de la PAC (utiliser dataAjusteeROI pour cohérence)
@@ -146,15 +146,15 @@ export const calculateAllResults = async (
   });
 
   // Calculer la moyenne des économies annuelles sur toute la durée de vie (hors investissement)
-  const economiesAnnuelles =
+  const annualSavings =
     yearlyData.length > 0
-      ? yearlyData.reduce((sum: number, y) => sum + y.economie, 0) /
+      ? yearlyData.reduce((sum: number, y) => sum + y.savings, 0) /
         yearlyData.length
-      : coutAnnuelActuel - coutAnnuelPac;
+      : currentAnnualCost - heatPumpAnnualCost;
 
   // ROI avec investissement réel (incluant intérêts du crédit)
   // Utiliser yearlyData déjà calculé au lieu de le recalculer
-  const paybackPeriod = calculatePaybackPeriod(yearlyData, investissementReel);
+  const paybackPeriod = calculatePaybackPeriod(yearlyData, actualInvestment);
 
   // Calculer l'année calendaire du ROI (inline)
   const paybackYear = paybackPeriod
@@ -163,46 +163,46 @@ export const calculateAllResults = async (
 
   // Gains totaux sur la durée de vie de la PAC (inline)
   const totalSavingsLifetime =
-    yearlyData[yearlyData.length - 1]?.economiesCumulees || 0;
+    yearlyData[yearlyData.length - 1]?.cumulativeSavings || 0;
 
   // Coûts totaux sur durée de vie et bénéfice net (inline)
-  const coutTotalActuelLifetime = yearlyData.reduce(
-    (sum, y) => sum + y.coutActuel,
+  const totalCurrentCostLifetime = yearlyData.reduce(
+    (sum, y) => sum + y.currentCost,
     0
   );
-  const coutTotalPacLifetime =
-    investissementReel + yearlyData.reduce((sum, y) => sum + y.coutPac, 0);
-  const netBenefitLifetime = coutTotalActuelLifetime - coutTotalPacLifetime;
+  const totalHeatPumpCostLifetime =
+    actualInvestment + yearlyData.reduce((sum, y) => sum + y.heatPumpCost, 0);
+  const netBenefitLifetime = totalCurrentCostLifetime - totalHeatPumpCostLifetime;
 
   // Taux de rentabilité annuel moyen (utiliser investissement réel)
   // Formule: ((Valeur finale / Investissement initial)^(1/nombre d'années) - 1) * 100
   // Valeur finale = Investissement + Gain net
-  let tauxRentabilite: number | null = null;
-  if (investissementReel > 0 && data.heatPumpLifespanYears > 0) {
-    const valeurFinale = investissementReel + netBenefitLifetime;
+  let profitabilityRate: number | null = null;
+  if (actualInvestment > 0 && data.heatPumpLifespanYears > 0) {
+    const valeurFinale = actualInvestment + netBenefitLifetime;
     // Calculer le taux même si négatif (perte annuelle moyenne)
     // Si valeurFinale <= 0, le taux sera négatif
     if (valeurFinale > 0) {
-      tauxRentabilite =
-        (Math.pow(valeurFinale / investissementReel, 1 / data.heatPumpLifespanYears) -
+      profitabilityRate =
+        (Math.pow(valeurFinale / actualInvestment, 1 / data.heatPumpLifespanYears) -
           1) *
         100;
     } else {
       // Pour les projets non rentables, calculer la perte annuelle moyenne en pourcentage
       // Perte totale / investissement / nombre d'années * 100
-      tauxRentabilite =
-        (netBenefitLifetime / investissementReel / data.heatPumpLifespanYears) * 100;
+      profitabilityRate =
+        (netBenefitLifetime / actualInvestment / data.heatPumpLifespanYears) * 100;
     }
   }
 
   // Coûts mensuels
-  const coutMensuelActuel = coutAnnuelActuel / 12;
-  const coutMensuelPac = coutAnnuelPac / 12;
-  const economieMensuelle = economiesAnnuelles / 12;
+  const currentMonthlyCost = currentAnnualCost / 12;
+  const heatPumpMonthlyCost = heatPumpAnnualCost / 12;
+  const monthlySavings = annualSavings / 12;
 
-  // Financement (pour affichage uniquement, déjà calculé dans investissementReel)
-  let mensualiteCredit: number | undefined;
-  let coutTotalCredit: number | undefined;
+  // Financement (pour affichage uniquement, déjà calculé dans actualInvestment)
+  let monthlyLoanPaymentValue: number | undefined;
+  let totalLoanCostValue: number | undefined;
 
   if (
     (data.financingMode === FinancingMode.CREDIT || data.financingMode === FinancingMode.MIXTE) &&
@@ -210,40 +210,40 @@ export const calculateAllResults = async (
     data.interestRate &&
     data.loanDurationMonths
   ) {
-    mensualiteCredit = calculateMonthlyPayment({
+    monthlyLoanPaymentValue = calculateMonthlyPayment({
       montant: data.loanAmount,
       tauxAnnuel: data.interestRate,
       dureeMois: data.loanDurationMonths,
     });
     // Inline: mensualite * duree
-    coutTotalCredit = roundToDecimals(
-      mensualiteCredit * data.loanDurationMonths,
+    totalLoanCostValue = roundToDecimals(
+      monthlyLoanPaymentValue * data.loanDurationMonths,
       2
     );
   }
 
   return {
-    coutAnnuelActuel: Math.round(coutAnnuelActuel),
-    coutAnnuelPac: Math.round(coutAnnuelPac),
-    economiesAnnuelles: Math.round(economiesAnnuelles),
+    currentAnnualCost: Math.round(currentAnnualCost),
+    heatPumpAnnualCost: Math.round(heatPumpAnnualCost),
+    annualSavings: Math.round(annualSavings),
     consommationPacKwh: Math.round(consommationPacKwh),
     yearlyData,
     paybackPeriod,
     paybackYear,
     totalSavingsLifetime: Math.round(totalSavingsLifetime),
     netBenefitLifetime: Math.round(netBenefitLifetime),
-    tauxRentabilite: tauxRentabilite
-      ? roundToDecimals(tauxRentabilite, 1)
+    profitabilityRate: profitabilityRate
+      ? roundToDecimals(profitabilityRate, 1)
       : null,
-    coutTotalActuelLifetime: Math.round(coutTotalActuelLifetime),
-    coutTotalPacLifetime: Math.round(coutTotalPacLifetime),
-    coutMensuelActuel: Math.round(coutMensuelActuel),
-    coutMensuelPac: Math.round(coutMensuelPac),
-    economieMensuelle: Math.round(economieMensuelle),
-    mensualiteCredit: mensualiteCredit
-      ? Math.round(mensualiteCredit)
+    totalCurrentCostLifetime: Math.round(totalCurrentCostLifetime),
+    totalHeatPumpCostLifetime: Math.round(totalHeatPumpCostLifetime),
+    currentMonthlyCost: Math.round(currentMonthlyCost),
+    heatPumpMonthlyCost: Math.round(heatPumpMonthlyCost),
+    monthlySavings: Math.round(monthlySavings),
+    monthlyLoanPayment: monthlyLoanPaymentValue
+      ? Math.round(monthlyLoanPaymentValue)
       : undefined,
-    coutTotalCredit: coutTotalCredit ? Math.round(coutTotalCredit) : undefined,
-    investissementReel: Math.round(investissementReel),
+    totalLoanCost: totalLoanCostValue ? Math.round(totalLoanCostValue) : undefined,
+    actualInvestment: Math.round(actualInvestment),
   };
 };

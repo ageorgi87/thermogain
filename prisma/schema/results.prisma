@@ -8,15 +8,15 @@ model ProjectResults {
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   // Year 1 costs
-  coutAnnuelActuel    Float // Current heating cost (year 1)
-  coutAnnuelPac       Float // PAC cost (year 1)
-  economiesAnnuelles  Float // Annual savings (year 1)
-  consommationPacKwh  Float // PAC annual electricity consumption (kWh/year)
+  currentAnnualCost    Float // Current heating cost (year 1)
+  heatPumpAnnualCost   Float // PAC cost (year 1)
+  annualSavings        Float // Annual savings (year 1)
+  consommationPacKwh   Float // PAC annual electricity consumption (kWh/year)
 
   // Monthly costs
-  coutMensuelActuel   Float // Current monthly heating cost
-  coutMensuelPac      Float // PAC monthly cost
-  economieMensuelle   Float // Monthly savings
+  currentMonthlyCost   Float // Current monthly heating cost
+  heatPumpMonthlyCost  Float // PAC monthly cost
+  monthlySavings       Float // Monthly savings
 
   // ROI (Return on Investment)
   paybackPeriod       Float? // Payback period in years (null if never breaks even)
@@ -25,19 +25,19 @@ model ProjectResults {
   // Total lifetime gains (over PAC lifespan)
   totalSavingsLifetime   Float  // Total savings over PAC lifetime
   netBenefitLifetime     Float  // Net benefit (savings - investment)
-  tauxRentabilite        Float? // Average annual return rate in %
+  profitabilityRate      Float? // Average annual return rate in %
 
   // Total lifetime costs
-  coutTotalActuelLifetime Float // Total current heating cost over PAC lifetime
-  coutTotalPacLifetime    Float // Total PAC cost (investment + electricity) over PAC lifetime
+  totalCurrentCostLifetime Float // Total current heating cost over PAC lifetime
+  totalHeatPumpCostLifetime Float // Total PAC cost (investment + electricity) over PAC lifetime
 
   // Financing
-  mensualiteCredit       Float? // Monthly credit payment (if financed)
-  coutTotalCredit        Float? // Total credit cost with interest
-  investissementReel     Float  // Real investment including credit interest
+  monthlyLoanPayment     Float? // Monthly credit payment (if financed)
+  totalLoanCost          Float? // Total credit cost with interest
+  actualInvestment       Float  // Real investment including credit interest
 
   // Yearly data (JSON array of YearlyData objects)
-  // Structure: [{ year, coutActuel, coutPac, economie, economiesCumulees }, ...]
+  // Structure: [{ year, currentCost, heatPumpCost, savings, cumulativeSavings }, ...]
   yearlyData Json
 
   createdAt DateTime @default(now())

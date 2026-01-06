@@ -26,15 +26,15 @@ export const getProjectResults = async (
     // Convert DB data to CalculationResults type
     return {
       // Year 1 costs
-      coutAnnuelActuel: results.coutAnnuelActuel,
-      coutAnnuelPac: results.coutAnnuelPac,
-      economiesAnnuelles: results.economiesAnnuelles,
+      currentAnnualCost: results.currentAnnualCost,
+      heatPumpAnnualCost: results.heatPumpAnnualCost,
+      annualSavings: results.annualSavings,
       consommationPacKwh: results.consommationPacKwh,
 
       // Monthly costs
-      coutMensuelActuel: results.coutMensuelActuel,
-      coutMensuelPac: results.coutMensuelPac,
-      economieMensuelle: results.economieMensuelle,
+      currentMonthlyCost: results.currentMonthlyCost,
+      heatPumpMonthlyCost: results.heatPumpMonthlyCost,
+      monthlySavings: results.monthlySavings,
 
       // Projections (parse JSON back to YearlyData[])
       yearlyData: results.yearlyData as unknown as YearlyData[],
@@ -46,16 +46,16 @@ export const getProjectResults = async (
       // Total lifetime gains
       totalSavingsLifetime: results.totalSavingsLifetime,
       netBenefitLifetime: results.netBenefitLifetime,
-      tauxRentabilite: results.tauxRentabilite,
+      profitabilityRate: results.profitabilityRate,
 
       // Total lifetime costs
-      coutTotalActuelLifetime: results.coutTotalActuelLifetime,
-      coutTotalPacLifetime: results.coutTotalPacLifetime,
+      totalCurrentCostLifetime: results.totalCurrentCostLifetime,
+      totalHeatPumpCostLifetime: results.totalHeatPumpCostLifetime,
 
       // Financing
-      mensualiteCredit: results.mensualiteCredit ?? undefined,
-      coutTotalCredit: results.coutTotalCredit ?? undefined,
-      investissementReel: results.investissementReel,
+      monthlyLoanPayment: results.monthlyLoanPayment ?? undefined,
+      totalLoanCost: results.totalLoanCost ?? undefined,
+      actualInvestment: results.actualInvestment,
     };
   } catch (error) {
     console.error(

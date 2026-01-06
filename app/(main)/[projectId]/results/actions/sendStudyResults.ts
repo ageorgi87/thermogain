@@ -77,7 +77,7 @@ export const sendStudyResults = async ({
         },
         results: {
           select: {
-            economiesAnnuelles: true,
+            annualSavings: true,
             paybackPeriod: true,
             netBenefitLifetime: true,
           },
@@ -154,7 +154,7 @@ export const sendStudyResults = async ({
       investmentTotal: Math.round(investmentTotal),
       aidesTotal: Math.round(aidesTotal),
       investmentNet: Math.round(investmentNet),
-      annualSavings: Math.round(results.economiesAnnuelles),
+      annualSavings: Math.round(results.annualSavings),
       roi: results.paybackPeriod || 0,
       benefitNet17Years: Math.round(results.netBenefitLifetime),
     };

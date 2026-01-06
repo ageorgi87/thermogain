@@ -91,7 +91,7 @@ interface ProjectCreateData {
 }
 
 interface ValidationRules {
-  economiesAnnuelles: { min: number; max: number }
+  annualSavings: { min: number; max: number }
   paybackPeriod: { min: number; max: number } | { allowNull: true }
   netBenefitLifetime: { min: number }
   expectedOutcome: string
@@ -183,7 +183,7 @@ const scenarios: TestScenario[] = [
       },
     },
     validation: {
-      economiesAnnuelles: { min: -1000, max: 15000 },
+      annualSavings: { min: -1000, max: 15000 },
       paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -40000 },
       expectedOutcome: "ROI variable - Dépend du prix fioul et consommation",
@@ -251,7 +251,7 @@ const scenarios: TestScenario[] = [
       },
     },
     validation: {
-      economiesAnnuelles: { min: -200, max: 3500 },
+      annualSavings: { min: -200, max: 3500 },
       paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -20000 },
       expectedOutcome: "ROI variable - Dépend de la consommation gaz",
@@ -318,7 +318,7 @@ const scenarios: TestScenario[] = [
       },
     },
     validation: {
-      economiesAnnuelles: { min: 800, max: 25000 },
+      annualSavings: { min: 800, max: 25000 },
       paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -10000 },
       expectedOutcome: "ROI généralement bon - GPL cher",
@@ -391,7 +391,7 @@ const scenarios: TestScenario[] = [
       },
     },
     validation: {
-      economiesAnnuelles: { min: -3000, max: 3000 },
+      annualSavings: { min: -3000, max: 3000 },
       paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -80000 },
       expectedOutcome: "ROI très variable - Mauvais si PAC air-air existante",
@@ -466,7 +466,7 @@ const scenarios: TestScenario[] = [
       },
     },
     validation: {
-      economiesAnnuelles: { min: -600, max: 2000 },
+      annualSavings: { min: -600, max: 2000 },
       paybackPeriod: { allowNull: true as const },
       netBenefitLifetime: { min: -18000 },
       expectedOutcome: "ROI limite ou négatif - Cas défavorable",
@@ -481,7 +481,7 @@ const scenarios: TestScenario[] = [
 interface TestResult {
   scenario: string
   passed: boolean
-  economiesAnnuelles?: number
+  annualSavings?: number
   paybackPeriod?: number | null
   netBenefit?: number
   error?: string
@@ -557,8 +557,8 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
     // Validation
     const { validation } = scenario
     const economiesOk =
-      r.economiesAnnuelles >= validation.economiesAnnuelles.min &&
-      r.economiesAnnuelles <= validation.economiesAnnuelles.max
+      r.annualSavings >= validation.annualSavings.min &&
+      r.annualSavings <= validation.annualSavings.max
 
     const paybackOk =
       'allowNull' in validation.paybackPeriod
@@ -572,7 +572,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
     // Warnings
     if (!economiesOk) {
       warnings.push(
-        `Économies hors limites: ${r.economiesAnnuelles}€ (attendu: ${validation.economiesAnnuelles.min}-${validation.economiesAnnuelles.max}€)`
+        `Économies hors limites: ${r.annualSavings}€ (attendu: ${validation.annualSavings.min}-${validation.annualSavings.max}€)`
       )
     }
     if (!paybackOk) {
@@ -591,7 +591,7 @@ const runScenario = async (scenario: TestScenario, userId: string): Promise<Test
     return {
       scenario: scenario.name,
       passed: economiesOk && paybackOk && netBenefitOk,
-      economiesAnnuelles: r.economiesAnnuelles,
+      annualSavings: r.annualSavings,
       paybackPeriod: r.paybackPeriod,
       netBenefit: r.netBenefitLifetime,
       warnings,
@@ -662,10 +662,10 @@ const runAllTests = async () => {
   }
 
   // Statistiques
-  const validResults = results.filter(r => r.economiesAnnuelles !== undefined)
+  const validResults = results.filter(r => r.annualSavings !== undefined)
   if (validResults.length > 0) {
     const avgEconomies =
-      validResults.reduce((sum, r) => sum + (r.economiesAnnuelles || 0), 0) / validResults.length
+      validResults.reduce((sum, r) => sum + (r.annualSavings || 0), 0) / validResults.length
     const avgROI =
       validResults.filter(r => r.paybackPeriod).reduce((sum, r) => sum + (r.paybackPeriod || 0), 0) /
       validResults.filter(r => r.paybackPeriod).length

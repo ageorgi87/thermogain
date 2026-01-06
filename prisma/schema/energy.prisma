@@ -8,12 +8,12 @@ model EnergyPriceCache {
   energyType String @unique // "fioul", "gaz", "electricite", "bois"
 
   // Mean Reversion Model parameters
-  // tauxRecent: Recent rate influenced by current market (ex: 8.7% for gas)
-  // tauxEquilibre: Long-term equilibrium rate (ex: 3.5% for gas)
-  // anneesTransition: Transition period in years (typically 5)
-  tauxRecent       Float @default(0)
-  tauxEquilibre    Float @default(0)
-  anneesTransition Int   @default(5)
+  // recentRate: Recent rate influenced by current market (ex: 8.7% for gas)
+  // equilibriumRate: Long-term equilibrium rate (ex: 3.5% for gas)
+  // transitionYears: Transition period in years (typically 5)
+  recentRate       Float @default(0)
+  equilibriumRate  Float @default(0)
+  transitionYears  Int   @default(5)
 
   // Legacy field (deprecated, kept for compatibility)
   currentPrice Float @default(0)

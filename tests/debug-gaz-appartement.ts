@@ -129,11 +129,11 @@ const debugTest = async () => {
   console.log(`📊 Résultats:`)
   if (projectWithResults?.results) {
     const r = projectWithResults.results
-    console.log(`   Économies annuelles: ${r.economiesAnnuelles}€`)
+    console.log(`   Économies annuelles: ${r.annualSavings}€`)
     console.log(`   ROI: ${r.paybackPeriod} ans`)
     console.log(`   Bénéfice net 17 ans: ${r.netBenefitLifetime}€`)
-    console.log(`   Coût total PAC lifetime: ${r.coutTotalPacLifetime}€`)
-    console.log(`   Investissement réel: ${r.investissementReel}€`)
+    console.log(`   Coût total PAC lifetime: ${r.totalHeatPumpCostLifetime}€`)
+    console.log(`   Investissement réel: ${r.actualInvestment}€`)
   } else {
     console.log(`   ⚠️  Aucun résultat trouvé`)
   }

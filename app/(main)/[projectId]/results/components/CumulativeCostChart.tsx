@@ -40,10 +40,10 @@ export function CumulativeCostChart({
   // Calculer les coûts cumulés
   let chartData = data.map((year, index) => {
     // Coût cumulé avec chauffage actuel (pas d'investissement initial)
-    const coutCumuleActuel = data.slice(0, index + 1).reduce((sum, y) => sum + y.coutActuel, 0)
+    const coutCumuleActuel = data.slice(0, index + 1).reduce((sum, y) => sum + y.currentCost, 0)
 
     // Coût cumulé avec PAC (investissement réel en année 1 + coûts annuels d'électricité)
-    const coutElectriciteCumule = data.slice(0, index + 1).reduce((sum, y) => sum + y.coutPac, 0)
+    const coutElectriciteCumule = data.slice(0, index + 1).reduce((sum, y) => sum + y.heatPumpCost, 0)
     const coutCumulePac = investissementReel + coutElectriciteCumule
 
     return {

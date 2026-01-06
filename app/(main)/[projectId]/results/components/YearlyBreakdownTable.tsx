@@ -54,7 +54,7 @@ export function YearlyBreakdownTable({
     // investissementReel inclut déjà le coût total du crédit si applicable
     const investissement = index === 0 ? investissementReel : 0
     const cumulePrecedent = index > 0 ? yearlyDataWithCumulative[index - 1].positionCumulee : 0
-    const positionCumulee = cumulePrecedent + yearData.economie - investissement
+    const positionCumulee = cumulePrecedent + yearData.savings - investissement
 
     yearlyDataWithCumulative.push({
       ...yearData,
@@ -69,9 +69,9 @@ export function YearlyBreakdownTable({
     : -1
 
   // Calcul des totaux
-  const totalCoutActuel = yearlyData.reduce((sum, year) => sum + year.coutActuel, 0)
-  const totalCoutPac = yearlyData.reduce((sum, year) => sum + year.coutPac, 0)
-  const totalEconomies = yearlyDataWithCumulative.reduce((sum, year) => sum + year.economie, 0)
+  const totalCoutActuel = yearlyData.reduce((sum, year) => sum + year.currentCost, 0)
+  const totalCoutPac = yearlyData.reduce((sum, year) => sum + year.heatPumpCost, 0)
+  const totalEconomies = yearlyDataWithCumulative.reduce((sum, year) => sum + year.savings, 0)
   const positionFinale = yearlyDataWithCumulative[yearlyDataWithCumulative.length - 1].positionCumulee
 
   // Déterminer si le coût total PAC (avec investissement) est supérieur au coût actuel
@@ -161,24 +161,24 @@ export function YearlyBreakdownTable({
 
                     {/* Coût actuel */}
                     <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {year.coutActuel.toLocaleString("fr-FR", {
+                      {year.currentCost.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })} €
                     </TableCell>
 
                     {/* Coût PAC (énergie annuelle) */}
-                    <TableCell className={`text-right tabular-nums ${year.coutPac > year.coutActuel ? 'bg-red-50/30 dark:bg-red-950/30' : 'bg-brand-teal-50/30 dark:bg-brand-teal-950/30'}`}>
-                      {year.coutPac.toLocaleString("fr-FR", {
+                    <TableCell className={`text-right tabular-nums ${year.heatPumpCost > year.currentCost ? 'bg-red-50/30 dark:bg-red-950/30' : 'bg-brand-teal-50/30 dark:bg-brand-teal-950/30'}`}>
+                      {year.heatPumpCost.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })} €
                     </TableCell>
 
                     {/* Économies */}
-                    <TableCell className={`text-right tabular-nums font-medium ${year.economie < 0 ? 'text-red-600' : 'text-brand-teal-600'}`}>
-                      {year.economie > 0 ? "+" : ""}
-                      {year.economie.toLocaleString("fr-FR", {
+                    <TableCell className={`text-right tabular-nums font-medium ${year.savings < 0 ? 'text-red-600' : 'text-brand-teal-600'}`}>
+                      {year.savings > 0 ? "+" : ""}
+                      {year.savings.toLocaleString("fr-FR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })} €

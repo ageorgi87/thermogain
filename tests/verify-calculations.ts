@@ -155,15 +155,15 @@ const verifCalculs = async () => {
   if (projectWithResults?.results) {
     const r = projectWithResults.results
     console.log('📊 RÉSULTATS CALCULÉS:\n')
-    console.log(`   Économies annuelles: ${r.economiesAnnuelles}€/an`)
+    console.log(`   Économies annuelles: ${r.annualSavings}€/an`)
     console.log(`   ROI: ${r.paybackPeriod ? r.paybackPeriod.toFixed(1) + ' ans' : 'N/A'}`)
     console.log(`   Bénéfice net sur 17 ans: ${r.netBenefitLifetime}€`)
-    console.log(`   Coût total PAC (17 ans): ${r.coutTotalPacLifetime}€`)
-    console.log(`   Investissement réel: ${r.investissementReel}€\n`)
+    console.log(`   Coût total PAC (17 ans): ${r.totalHeatPumpCostLifetime}€`)
+    console.log(`   Investissement réel: ${r.actualInvestment}€\n`)
 
     // Comparaison
     console.log('🔍 ANALYSE:\n')
-    const diff = economiesTheorique - r.economiesAnnuelles
+    const diff = economiesTheorique - r.annualSavings
     console.log(`   Différence économies théorique vs calculé: ${diff.toFixed(0)}€`)
 
     if (Math.abs(diff) > 50) {
@@ -173,17 +173,17 @@ const verifCalculs = async () => {
     }
 
     // Vérification ROI
-    if (r.economiesAnnuelles > 0 && r.investissementReel > 0) {
-      const roiTheorique = r.investissementReel / r.economiesAnnuelles
-      console.log(`\n   ROI théorique: ${r.investissementReel}€ ÷ ${r.economiesAnnuelles}€ = ${roiTheorique.toFixed(1)} ans`)
+    if (r.annualSavings > 0 && r.actualInvestment > 0) {
+      const roiTheorique = r.actualInvestment / r.annualSavings
+      console.log(`\n   ROI théorique: ${r.actualInvestment}€ ÷ ${r.annualSavings}€ = ${roiTheorique.toFixed(1)} ans`)
       console.log(`   ROI calculé: ${r.paybackPeriod?.toFixed(1)} ans`)
     } else {
       console.log(`\n   ⚠️  Économies négatives ou nulles → Pas de ROI`)
     }
 
     // Vérification bénéfice net
-    const beneficeTheorique = (r.economiesAnnuelles * 17) - r.investissementReel
-    console.log(`\n   Bénéfice net théorique: (${r.economiesAnnuelles}€ × 17) - ${r.investissementReel}€ = ${beneficeTheorique.toFixed(0)}€`)
+    const beneficeTheorique = (r.annualSavings * 17) - r.actualInvestment
+    console.log(`\n   Bénéfice net théorique: (${r.annualSavings}€ × 17) - ${r.actualInvestment}€ = ${beneficeTheorique.toFixed(0)}€`)
     console.log(`   Bénéfice net calculé: ${r.netBenefitLifetime}€`)
     const diffBenefice = Math.abs(beneficeTheorique - r.netBenefitLifetime)
     if (diffBenefice > 100) {

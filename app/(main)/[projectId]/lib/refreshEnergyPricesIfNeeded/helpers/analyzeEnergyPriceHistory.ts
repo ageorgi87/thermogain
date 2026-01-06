@@ -119,8 +119,8 @@ const calculateEquilibriumRate = (
  * Interface pour l'analyse d'historique des prix de l'énergie
  */
 interface HistoricalAnalysis {
-  tauxRecent: number; // Taux pondéré 70% sur 10 ans
-  tauxEquilibre: number; // Taux moyen hors crises (long terme)
+  recentRate: number; // Taux pondéré 70% sur 10 ans
+  equilibriumRate: number; // Taux moyen hors crises (long terme)
   yearsOfData: number; // Nombre d'années d'historique
   priceRecent: number; // Prix récent moyen (12 derniers mois)
   priceOldest: number; // Prix le plus ancien
@@ -199,8 +199,8 @@ export const analyzeEnergyPriceHistory = async (
         .reduce((a, b) => a + b, 0) / 12;
 
     return {
-      tauxRecent: roundToDecimals(tauxRecent, 1),
-      tauxEquilibre: roundToDecimals(tauxEquilibre, 1),
+      recentRate: roundToDecimals(tauxRecent, 1),
+      equilibriumRate: roundToDecimals(tauxEquilibre, 1),
       yearsOfData: roundToDecimals(yearsOfData, 1),
       priceRecent: roundToDecimals(recentAvg, 2),
       priceOldest: roundToDecimals(oldestAvg, 2),

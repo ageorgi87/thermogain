@@ -33,14 +33,14 @@ const meanReversionRate = (
   annee: number,
   model: EnergyEvolutionModel
 ): number => {
-  const { tauxRecent, tauxEquilibre, anneesTransition = 5 } = model;
+  const { recentRate, equilibriumRate, transitionYears = 5 } = model;
 
-  if (annee < anneesTransition) {
-    const progression = annee / anneesTransition;
-    return tauxRecent - (tauxRecent - tauxEquilibre) * progression;
+  if (annee < transitionYears) {
+    const progression = annee / transitionYears;
+    return recentRate - (recentRate - equilibriumRate) * progression;
   }
 
-  return tauxEquilibre;
+  return equilibriumRate;
 };
 
 /**
@@ -85,7 +85,7 @@ export const calculateYearlyCostProjections = async ({
   pacConsumptionKwh,
 }: CalculateYearlyCostProjectionsParams): Promise<YearlyData[]> => {
   const yearlyData: YearlyData[] = [];
-  let economiesCumulees = 0;
+  let cumulativeSavings = 0;
   const currentYear = new Date().getFullYear();
 
   // Calculer les coûts fixes UNE SEULE FOIS (année 1)
@@ -116,7 +116,7 @@ export const calculateYearlyCostProjections = async ({
     const coutActuelAbonnementGaz = currentFixedCosts.abonnementGaz * currentEvolutionFactors[i];
     const coutActuelEntretien = currentFixedCosts.entretien * inflationFactors[i];
     const coutActuelDhw = dhwCosts.currentDhwCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
-    const coutActuel = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien + coutActuelDhw;
+    const currentCost = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien + coutActuelDhw;
 
     // PAC
     // Variables + Abonnement électricité → évolution énergétique (électricité)
@@ -125,17 +125,17 @@ export const calculateYearlyCostProjections = async ({
     const coutPacAbonnement = pacFixedCosts.abonnementElec * pacEvolutionFactors[i];
     const coutPacEntretien = pacFixedCosts.entretien * inflationFactors[i];
     const coutPacDhw = dhwCosts.futureDhwCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
-    const coutPac = coutPacVariable + coutPacAbonnement + coutPacEntretien + coutPacDhw;
+    const heatPumpCost = coutPacVariable + coutPacAbonnement + coutPacEntretien + coutPacDhw;
 
-    const economie = coutActuel - coutPac;
-    economiesCumulees += economie;
+    const savings = currentCost - heatPumpCost;
+    cumulativeSavings += savings;
 
     yearlyData.push({
       year: currentYear + i,
-      coutActuel: coutActuel,
-      coutPac: coutPac,
-      economie: economie,
-      economiesCumulees: economiesCumulees,
+      currentCost: currentCost,
+      heatPumpCost: heatPumpCost,
+      savings: savings,
+      cumulativeSavings: cumulativeSavings,
     });
   }
 

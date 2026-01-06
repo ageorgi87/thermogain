@@ -129,7 +129,7 @@ const debugTest = async () => {
   console.log(`   results existe: ${projectWithResults?.results ? 'OUI' : 'NON'}`)
 
   if (projectWithResults?.results) {
-    console.log(`   Économies annuelles: ${projectWithResults.results.economiesAnnuelles}€`)
+    console.log(`   Économies annuelles: ${projectWithResults.results.annualSavings}€`)
     console.log(`   ROI: ${projectWithResults.results.paybackPeriod} ans`)
     console.log(`   Bénéfice net 17 ans: ${projectWithResults.results.netBenefitLifetime}€`)
   } else {
@@ -142,7 +142,7 @@ const debugTest = async () => {
 
     console.log(`   Résultats directs: ${directResults ? 'TROUVÉS' : 'NON TROUVÉS'}`)
     if (directResults) {
-      console.log(`   Économies: ${directResults.economiesAnnuelles}€`)
+      console.log(`   Économies: ${directResults.annualSavings}€`)
       console.log(`   ROI: ${directResults.paybackPeriod} ans`)
     }
   }

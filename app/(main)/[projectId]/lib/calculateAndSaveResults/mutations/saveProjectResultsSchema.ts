@@ -5,10 +5,10 @@ import { z } from "zod";
  */
 export const yearlyDataSchema = z.object({
   year: z.number().int().positive(),
-  coutActuel: z.number(),
-  coutPac: z.number(),
-  economie: z.number(),
-  economiesCumulees: z.number(),
+  currentCost: z.number(),
+  heatPumpCost: z.number(),
+  savings: z.number(),
+  cumulativeSavings: z.number(),
 });
 
 /**
@@ -16,14 +16,14 @@ export const yearlyDataSchema = z.object({
  */
 export const calculationResultsSchema = z.object({
   // Coûts année 1
-  coutAnnuelActuel: z.number().nonnegative(),
-  coutAnnuelPac: z.number().nonnegative(),
-  economiesAnnuelles: z.number(),
+  currentAnnualCost: z.number().nonnegative(),
+  heatPumpAnnualCost: z.number().nonnegative(),
+  annualSavings: z.number(),
 
   // Coûts mensuels
-  coutMensuelActuel: z.number().nonnegative(),
-  coutMensuelPac: z.number().nonnegative(),
-  economieMensuelle: z.number(),
+  currentMonthlyCost: z.number().nonnegative(),
+  heatPumpMonthlyCost: z.number().nonnegative(),
+  monthlySavings: z.number(),
 
   // ROI
   paybackPeriod: z.number().nullable(),
@@ -32,19 +32,20 @@ export const calculationResultsSchema = z.object({
   // Gains totaux sur durée de vie PAC
   totalSavingsLifetime: z.number(),
   netBenefitLifetime: z.number(),
-  tauxRentabilite: z.number().nullable(),
+  profitabilityRate: z.number().nullable(),
 
   // Coûts totaux sur durée de vie
-  coutTotalActuelLifetime: z.number().nonnegative(),
-  coutTotalPacLifetime: z.number().nonnegative(),
+  totalCurrentCostLifetime: z.number().nonnegative(),
+  totalHeatPumpCostLifetime: z.number().nonnegative(),
 
   // Financement
-  mensualiteCredit: z.number().nonnegative().optional(),
-  coutTotalCredit: z.number().nonnegative().optional(),
-  investissementReel: z.number().nonnegative(),
+  monthlyLoanPayment: z.number().nonnegative().optional(),
+  totalLoanCost: z.number().nonnegative().optional(),
+  actualInvestment: z.number().nonnegative(),
 
   // Projections annuelles
   yearlyData: z.array(yearlyDataSchema).min(1),
+  consommationPacKwh: z.number().nonnegative(),
 });
 
 /**

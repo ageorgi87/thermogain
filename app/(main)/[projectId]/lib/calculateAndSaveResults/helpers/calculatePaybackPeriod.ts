@@ -19,7 +19,7 @@ export const calculatePaybackPeriod = (
   for (let i = 0; i < yearlyData.length; i++) {
     // Déduire l'investissement en année 1 (index 0)
     const investissement = i === 0 ? investment : 0
-    positionCumulee = positionCumulee + yearlyData[i].economie - investissement
+    positionCumulee = positionCumulee + yearlyData[i].savings - investissement
 
     // ROI atteint quand position cumulée devient positive
     if (positionCumulee >= 0) {
@@ -31,12 +31,12 @@ export const calculatePaybackPeriod = (
 
       // Position cumulée de l'année précédente
       const prevPosition = i === 1
-        ? prevYear.economie - investment
-        : positionCumulee - currentYear.economie
+        ? prevYear.savings - investment
+        : positionCumulee - currentYear.savings
 
       // Montant restant à récupérer
       const remainingAmount = Math.abs(prevPosition)
-      const yearSavings = currentYear.economie
+      const yearSavings = currentYear.savings
 
       const fractionOfYear = remainingAmount / yearSavings
       // Le croisement se produit PENDANT l'année i

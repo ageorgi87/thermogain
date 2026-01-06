@@ -111,9 +111,9 @@ export const fetchOneEnergyDataFromAPI = async (
   );
 
   return {
-    tauxRecent: analysis.tauxRecent,
-    tauxEquilibre: analysis.tauxEquilibre,
-    anneesTransition: 5,
+    recentRate: analysis.recentRate,
+    equilibriumRate: analysis.equilibriumRate,
+    transitionYears: 5,
     currentPrice,
   };
 };
