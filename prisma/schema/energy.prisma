@@ -18,7 +18,8 @@ model EnergyPriceCache {
   // Legacy field (deprecated, kept for compatibility)
   currentPrice Float @default(0)
 
-  lastUpdated DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  lastUpdated      DateTime  @default(now())
+  lastAlertSent    DateTime? // Date de la dernière alerte email envoyée pour API obsolète
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
