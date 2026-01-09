@@ -38,7 +38,7 @@ export function CumulativeCostChart({
   const investissementReel = investmentCost
 
   // Calculer les coûts cumulés
-  let chartData = data.map((year, index) => {
+  const chartData = data.map((year, index) => {
     // Coût cumulé avec chauffage actuel (pas d'investissement initial)
     const coutCumuleActuel = data.slice(0, index + 1).reduce((sum, y) => sum + y.currentCost, 0)
 

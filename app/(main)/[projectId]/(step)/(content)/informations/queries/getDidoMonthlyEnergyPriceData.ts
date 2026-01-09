@@ -10,7 +10,7 @@ import { DIDO_API_BASE_URL } from "@/app/(main)/[projectId]/(step)/(content)/inf
 export const getDidoMonthlyEnergyPriceData = async (rid: string, limit: number = 100): Promise<any[]> => {
   try {
     // Essayer d'abord l'endpoint JSON
-    let response = await fetch(
+    const response = await fetch(
       `${DIDO_API_BASE_URL}/datafiles/${rid}/json`
     )
 
