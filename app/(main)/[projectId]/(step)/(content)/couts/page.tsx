@@ -46,16 +46,16 @@ export default function CostsStepPage({
 
   // Calcul du total
   const totalCost =
-    (formData.cout_pac || 0) +
-    (formData.cout_installation || 0) +
-    (formData.cout_travaux_annexes || 0);
+    (formData.heatPumpCost || 0) +
+    (formData.installationCost || 0) +
+    (formData.additionalWorkCost || 0);
 
   // Synchronisation du total calculé avec formData
   useEffect(() => {
-    if (formData.cout_total !== totalCost) {
-      handleChange("cout_total", totalCost);
+    if (formData.totalCost !== totalCost) {
+      handleChange("totalCost", totalCost);
     }
-  }, [totalCost, formData.cout_total]);
+  }, [totalCost, formData.totalCost]);
 
   const handleFieldChange = ({
     field,
@@ -82,9 +82,9 @@ export default function CostsStepPage({
       onNext={handleSubmit}
     >
       <CostsFieldsView
-        heatPumpCost={formData.cout_pac}
-        installationCost={formData.cout_installation}
-        additionalWorkCost={formData.cout_travaux_annexes}
+        heatPumpCost={formData.heatPumpCost}
+        installationCost={formData.installationCost}
+        additionalWorkCost={formData.additionalWorkCost}
         totalCost={totalCost}
         errors={errors}
         onChange={handleFieldChange}

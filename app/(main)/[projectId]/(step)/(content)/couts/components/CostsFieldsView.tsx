@@ -31,31 +31,31 @@ export const CostsFieldsView = ({
   onChange,
 }: CostsFieldsViewProps) => (
   <div className="space-y-4">
-    <FormField label="Coût de la PAC (€)" required error={errors.cout_pac}>
+    <FormField label="Coût de la PAC (€)" required error={errors.heatPumpCost}>
       <Input
         type="number"
         min="0"
         placeholder="ex: 8000"
         value={heatPumpCost ?? ""}
-        onChange={(e) => onChange({ field: "cout_pac", value: e.target.value })}
+        onChange={(e) => onChange({ field: "heatPumpCost", value: e.target.value })}
       />
     </FormField>
 
-    <FormField label="Coût d'installation (€)" error={errors.cout_installation}>
+    <FormField label="Coût d'installation (€)" error={errors.installationCost}>
       <Input
         type="number"
         min="0"
         placeholder="ex: 5000"
         value={installationCost ?? ""}
         onChange={(e) =>
-          onChange({ field: "cout_installation", value: e.target.value })
+          onChange({ field: "installationCost", value: e.target.value })
         }
       />
     </FormField>
 
     <FormField
       label="Coûts annexes (€)"
-      error={errors.cout_travaux_annexes}
+      error={errors.additionalWorkCost}
       description="Peinture, coffrages, etc."
     >
       <Input
@@ -64,7 +64,7 @@ export const CostsFieldsView = ({
         placeholder="ex: 1500"
         value={additionalWorkCost ?? ""}
         onChange={(e) =>
-          onChange({ field: "cout_travaux_annexes", value: e.target.value })
+          onChange({ field: "additionalWorkCost", value: e.target.value })
         }
       />
     </FormField>
