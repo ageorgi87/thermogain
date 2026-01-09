@@ -29,11 +29,11 @@ import {
 import { HelpCircle } from "lucide-react";
 
 interface SavedCriteria {
-  housingType?: string;
-  livingArea?: number;
-  referenceTaxIncome?: number;
-  isPrimaryResidence?: boolean;
-  isCompleteReplacement?: boolean;
+  housingType?: string | null;
+  livingArea?: number | null;
+  referenceTaxIncome?: number | null;
+  isPrimaryResidence?: boolean | null;
+  isCompleteReplacement?: boolean | null;
 }
 
 interface AidCalculatorProps {
@@ -76,13 +76,13 @@ export const AidCalculator = ({
       if (savedCriteria.housingType) {
         setTypeLogement(savedCriteria.housingType);
       }
-      if (savedCriteria.referenceTaxIncome !== undefined) {
+      if (savedCriteria.referenceTaxIncome !== undefined && savedCriteria.referenceTaxIncome !== null) {
         setRevenuFiscal(savedCriteria.referenceTaxIncome.toString());
       }
-      if (savedCriteria.isPrimaryResidence !== undefined) {
+      if (savedCriteria.isPrimaryResidence !== undefined && savedCriteria.isPrimaryResidence !== null) {
         setResidencePrincipale(savedCriteria.isPrimaryResidence ? "oui" : "non");
       }
-      if (savedCriteria.isCompleteReplacement !== undefined) {
+      if (savedCriteria.isCompleteReplacement !== undefined && savedCriteria.isCompleteReplacement !== null) {
         setRemplacementComplet(savedCriteria.isCompleteReplacement ? "oui" : "non");
       }
     }

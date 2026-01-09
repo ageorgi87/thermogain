@@ -3,10 +3,10 @@ import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement
 
 export const financialAidSchema = z.object({
   // Critères d'éligibilité (optionnels car renseignés dans le calculateur)
-  housingType: z.nativeEnum(TypeLogement).optional(),
-  referenceTaxIncome: z.number().min(0).optional(),
-  isPrimaryResidence: z.boolean().optional(),
-  isCompleteReplacement: z.boolean().optional(),
+  housingType: z.nativeEnum(TypeLogement).nullish(),
+  referenceTaxIncome: z.number().min(0).nullish(),
+  isPrimaryResidence: z.boolean().nullish(),
+  isCompleteReplacement: z.boolean().nullish(),
 
   // Montants des aides
   maPrimeRenov: z
