@@ -21,7 +21,7 @@ export const financialAidSchema = z.object({
     .number()
     .min(0, "Le montant ne peut pas être négatif")
     .optional(),
-  totalAid: z.number().min(0), // Calculé automatiquement
+  totalAid: z.number().min(0).optional(), // Calculé automatiquement
 })
 
 export type FinancialAidData = z.infer<typeof financialAidSchema>
