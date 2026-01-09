@@ -29,11 +29,11 @@ import {
 import { HelpCircle } from "lucide-react";
 
 interface SavedCriteria {
-  type_logement?: string;
-  surface_logement?: number;
-  revenu_fiscal_reference?: number;
-  residence_principale?: boolean;
-  remplacement_complet?: boolean;
+  housingType?: string;
+  livingArea?: number;
+  referenceTaxIncome?: number;
+  isPrimaryResidence?: boolean;
+  isCompleteReplacement?: boolean;
 }
 
 interface AidCalculatorProps {
@@ -46,12 +46,12 @@ interface AidCalculatorProps {
 }
 
 interface AidResult {
-  ma_prime_renov: number;
+  maPrimeRenov: number;
   cee: number;
-  total_aides: number;
-  eligible_ma_prime_renov: boolean;
-  eligible_cee: boolean;
-  raisons_ineligibilite?: string[];
+  totalAid: number;
+  eligibleMaPrimeRenov: boolean;
+  eligibleCee: boolean;
+  reasonsIneligibility?: string[];
 }
 
 export const AidCalculator = ({
@@ -73,17 +73,17 @@ export const AidCalculator = ({
   // Charger les critères sauvegardés quand le drawer s'ouvre
   useEffect(() => {
     if (open && savedCriteria) {
-      if (savedCriteria.type_logement) {
-        setTypeLogement(savedCriteria.type_logement);
+      if (savedCriteria.housingType) {
+        setTypeLogement(savedCriteria.housingType);
       }
-      if (savedCriteria.revenu_fiscal_reference !== undefined) {
-        setRevenuFiscal(savedCriteria.revenu_fiscal_reference.toString());
+      if (savedCriteria.referenceTaxIncome !== undefined) {
+        setRevenuFiscal(savedCriteria.referenceTaxIncome.toString());
       }
-      if (savedCriteria.residence_principale !== undefined) {
-        setResidencePrincipale(savedCriteria.residence_principale ? "oui" : "non");
+      if (savedCriteria.isPrimaryResidence !== undefined) {
+        setResidencePrincipale(savedCriteria.isPrimaryResidence ? "oui" : "non");
       }
-      if (savedCriteria.remplacement_complet !== undefined) {
-        setRemplacementComplet(savedCriteria.remplacement_complet ? "oui" : "non");
+      if (savedCriteria.isCompleteReplacement !== undefined) {
+        setRemplacementComplet(savedCriteria.isCompleteReplacement ? "oui" : "non");
       }
     }
   }, [open, savedCriteria]);
@@ -108,10 +108,10 @@ export const AidCalculator = ({
     try {
       const response = await saveCriteriaAndCalculate({
         projectId,
-        type_logement: typeLogement,
-        revenu_fiscal_reference: parseFloat(revenuFiscal),
-        residence_principale: residencePrincipale === "oui",
-        remplacement_complet: remplacementComplet === "oui",
+        housingType: typeLogement,
+        referenceTaxIncome: parseFloat(revenuFiscal),
+        isPrimaryResidence: residencePrincipale === "oui",
+        isCompleteReplacement: remplacementComplet === "oui",
       });
 
       if (response.success && response.data) {
@@ -136,7 +136,7 @@ export const AidCalculator = ({
 
   const handleUseAmounts = () => {
     if (result) {
-      onUseAmounts(result.ma_prime_renov, result.cee);
+      onUseAmounts(result.maPrimeRenov, result.cee);
       setOpen(false);
     }
   };
@@ -356,19 +356,19 @@ export const AidCalculator = ({
                   <>
                     {/* MaPrimeRénov' */}
                     <div
-                      className={`p-4 rounded-lg border-2 ${result.eligible_ma_prime_renov ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                      className={`p-4 rounded-lg border-2 ${result.eligibleMaPrimeRenov ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        {result.eligible_ma_prime_renov ? (
+                        {result.eligibleMaPrimeRenov ? (
                           <Check className="h-5 w-5 text-green-600" />
                         ) : (
                           <X className="h-5 w-5 text-red-600" />
                         )}
                         <p className="font-semibold">MaPrimeRénov'</p>
                       </div>
-                      {result.eligible_ma_prime_renov ? (
+                      {result.eligibleMaPrimeRenov ? (
                         <p className="text-2xl font-bold text-green-700">
-                          {result.ma_prime_renov.toLocaleString("fr-FR")} €
+                          {result.maPrimeRenov.toLocaleString("fr-FR")} €
                         </p>
                       ) : (
                         <p className="text-sm text-red-700">
@@ -379,17 +379,17 @@ export const AidCalculator = ({
 
                     {/* CEE */}
                     <div
-                      className={`p-4 rounded-lg border-2 ${result.eligible_cee ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+                      className={`p-4 rounded-lg border-2 ${result.eligibleCee ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        {result.eligible_cee ? (
+                        {result.eligibleCee ? (
                           <Check className="h-5 w-5 text-green-600" />
                         ) : (
                           <X className="h-5 w-5 text-red-600" />
                         )}
                         <p className="font-semibold">CEE (Certificats d'Économies d'Énergie)</p>
                       </div>
-                      {result.eligible_cee ? (
+                      {result.eligibleCee ? (
                         <p className="text-2xl font-bold text-green-700">
                           {result.cee.toLocaleString("fr-FR")} €
                         </p>
@@ -401,14 +401,14 @@ export const AidCalculator = ({
                     </div>
 
                     {/* Raisons d'inéligibilité */}
-                    {result.raisons_ineligibilite &&
-                      result.raisons_ineligibilite.length > 0 && (
+                    {result.reasonsIneligibility &&
+                      result.reasonsIneligibility.length > 0 && (
                         <Alert>
                           <AlertCircle className="h-4 w-4" />
                           <AlertDescription>
                             <strong>Raisons d'inéligibilité :</strong>
                             <ul className="list-disc list-inside mt-2">
-                              {result.raisons_ineligibilite.map((raison, index) => (
+                              {result.reasonsIneligibility.map((raison, index) => (
                                 <li key={index}>{raison}</li>
                               ))}
                             </ul>
@@ -422,7 +422,7 @@ export const AidCalculator = ({
           </div>
 
           <DrawerFooter>
-            {hasCalculated && result && (result.eligible_ma_prime_renov || result.eligible_cee) && (
+            {hasCalculated && result && (result.eligibleMaPrimeRenov || result.eligibleCee) && (
               <Button onClick={handleUseAmounts} className="w-full" size="lg">
                 Compléter le formulaire avec ces aides
               </Button>

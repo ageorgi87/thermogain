@@ -3,13 +3,13 @@ import { TypeLogement } from "@/app/(main)/[projectId]/(step)/(content)/logement
 
 export const financialAidSchema = z.object({
   // Critères d'éligibilité (optionnels car renseignés dans le calculateur)
-  type_logement: z.nativeEnum(TypeLogement).optional(),
-  revenu_fiscal_reference: z.number().min(0).optional(),
-  residence_principale: z.boolean().optional(),
-  remplacement_complet: z.boolean().optional(),
+  housingType: z.nativeEnum(TypeLogement).optional(),
+  referenceTaxIncome: z.number().min(0).optional(),
+  isPrimaryResidence: z.boolean().optional(),
+  isCompleteReplacement: z.boolean().optional(),
 
   // Montants des aides
-  ma_prime_renov: z
+  maPrimeRenov: z
     .number()
     .min(0, "Le montant ne peut pas être négatif")
     .optional(),
@@ -17,11 +17,11 @@ export const financialAidSchema = z.object({
     .number()
     .min(0, "Le montant ne peut pas être négatif")
     .optional(),
-  autres_aides: z
+  otherAid: z
     .number()
     .min(0, "Le montant ne peut pas être négatif")
     .optional(),
-  total_aides: z.number().min(0), // Calculé automatiquement
+  totalAid: z.number().min(0), // Calculé automatiquement
 })
 
 export type FinancialAidData = z.infer<typeof financialAidSchema>

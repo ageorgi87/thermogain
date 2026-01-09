@@ -18,19 +18,19 @@ export function FinancialAidFields({
   onChange,
   projectId,
 }: FinancialAidFieldsProps) {
-  const maPrimeRenov = formData.ma_prime_renov;
+  const maPrimeRenov = formData.maPrimeRenov;
   const cee = formData.cee;
-  const autresAides = formData.autres_aides;
+  const otherAid = formData.otherAid;
 
   // Calculate total (computed value, no need for useEffect)
-  const totalAides = (maPrimeRenov || 0) + (cee || 0) + (autresAides || 0);
+  const totalAid = (maPrimeRenov || 0) + (cee || 0) + (otherAid || 0);
 
   // Update form data with calculated total when any aid changes
   useEffect(() => {
-    if (formData.total_aides !== totalAides) {
-      onChange("total_aides", totalAides);
+    if (formData.totalAid !== totalAid) {
+      onChange("totalAid", totalAid);
     }
-  }, [totalAides, formData.total_aides, onChange]);
+  }, [totalAid, formData.totalAid, onChange]);
 
   return (
     <div className="space-y-4">
@@ -44,33 +44,33 @@ export function FinancialAidFields({
         <AidCalculator
           projectId={projectId}
           onUseAmounts={(maPrimeRenov, cee) => {
-            onChange("ma_prime_renov", maPrimeRenov);
+            onChange("maPrimeRenov", maPrimeRenov);
             onChange("cee", cee);
           }}
           savedCriteria={{
-            type_logement: formData.type_logement,
-            revenu_fiscal_reference: formData.revenu_fiscal_reference,
-            residence_principale: formData.residence_principale,
-            remplacement_complet: formData.remplacement_complet,
+            housingType: formData.housingType,
+            referenceTaxIncome: formData.referenceTaxIncome,
+            isPrimaryResidence: formData.isPrimaryResidence,
+            isCompleteReplacement: formData.isCompleteReplacement,
           }}
         />
       </div>
 
       <Separator />
 
-      <FormField label="MaPrimeRénov' (€)" error={errors.ma_prime_renov}>
+      <FormField label="MaPrimeRénov' (€)" error={errors.maPrimeRenov}>
         <Input
           type="number"
           min="0"
           placeholder="ex: 4000"
-          value={formData.ma_prime_renov ?? ""}
+          value={formData.maPrimeRenov ?? ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
-              onChange("ma_prime_renov", undefined);
+              onChange("maPrimeRenov", undefined);
             } else {
               const num = parseFloat(value);
-              onChange("ma_prime_renov", isNaN(num) ? undefined : num);
+              onChange("maPrimeRenov", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -99,21 +99,21 @@ export function FinancialAidFields({
 
       <FormField
         label="Autres aides (€)"
-        error={errors.autres_aides}
+        error={errors.otherAid}
         description="Aides locales, régionales, etc."
       >
         <Input
           type="number"
           min="0"
           placeholder="ex: 1000"
-          value={formData.autres_aides ?? ""}
+          value={formData.otherAid ?? ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
-              onChange("autres_aides", undefined);
+              onChange("otherAid", undefined);
             } else {
               const num = parseFloat(value);
-              onChange("autres_aides", isNaN(num) ? undefined : num);
+              onChange("otherAid", isNaN(num) ? undefined : num);
             }
           }}
         />
@@ -124,7 +124,7 @@ export function FinancialAidFields({
       <div className="flex justify-between items-center py-4 px-4 bg-brand-orange-100 border border-brand-orange-300 rounded-lg dark:bg-brand-orange-900/30 dark:border-brand-orange-700">
         <span className="text-lg font-semibold">Total des aides</span>
         <span className="text-2xl font-bold">
-          {totalAides.toLocaleString("fr-FR")} €
+          {totalAid.toLocaleString("fr-FR")} €
         </span>
       </div>
     </div>

@@ -9,21 +9,21 @@ import { calculateAidesGeothermique } from "@/app/(main)/[projectId]/(step)/(con
 
 interface SaveCriteriaParams {
   projectId: string;
-  type_logement: string;
-  revenu_fiscal_reference: number;
-  residence_principale: boolean;
-  remplacement_complet: boolean;
+  housingType: string;
+  referenceTaxIncome: number;
+  isPrimaryResidence: boolean;
+  isCompleteReplacement: boolean;
 }
 
 interface CalculateAidesResult {
   success: boolean;
   data?: {
-    ma_prime_renov: number;
+    maPrimeRenov: number;
     cee: number;
-    total_aides: number;
-    eligible_ma_prime_renov: boolean;
-    eligible_cee: boolean;
-    raisons_ineligibilite?: string[];
+    totalAid: number;
+    eligibleMaPrimeRenov: boolean;
+    eligibleCee: boolean;
+    reasonsIneligibility?: string[];
   };
   error?: string;
 }
@@ -46,20 +46,20 @@ export const saveCriteriaAndCalculate = async (
       where: { projectId: params.projectId },
       create: {
         projectId: params.projectId,
-        housingType: params.type_logement,
-        referenceTaxIncome: params.revenu_fiscal_reference,
-        isPrimaryResidence: params.residence_principale,
-        isCompleteReplacement: params.remplacement_complet,
+        housingType: params.housingType,
+        referenceTaxIncome: params.referenceTaxIncome,
+        isPrimaryResidence: params.isPrimaryResidence,
+        isCompleteReplacement: params.isCompleteReplacement,
         maPrimeRenov: 0,
         cee: 0,
         otherAid: 0,
         totalAid: 0,
       },
       update: {
-        housingType: params.type_logement,
-        referenceTaxIncome: params.revenu_fiscal_reference,
-        isPrimaryResidence: params.residence_principale,
-        isCompleteReplacement: params.remplacement_complet,
+        housingType: params.housingType,
+        referenceTaxIncome: params.referenceTaxIncome,
+        isPrimaryResidence: params.isPrimaryResidence,
+        isCompleteReplacement: params.isCompleteReplacement,
       },
     });
 

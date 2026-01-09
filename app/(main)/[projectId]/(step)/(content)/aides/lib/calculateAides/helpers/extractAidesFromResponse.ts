@@ -15,17 +15,17 @@ export const extractAidesFromResponse = (
   gesteField: PublicodesFieldResponse
 ): CalculateAidesResult => {
   // Le total est dans rawValue
-  const total_aides = gesteField.rawValue || 0;
+  const totalAid = gesteField.rawValue || 0;
 
   // Les détails MPR et CEE sont dans le champ "details"
-  let ma_prime_renov = 0;
+  let maPrimeRenov = 0;
   let cee = 0;
 
   if (gesteField.details && Array.isArray(gesteField.details)) {
     // Trouver MPR dans les détails
     const mprDetail = gesteField.details.find((d) => d.MPR);
     if (mprDetail?.MPR?.rawValue) {
-      ma_prime_renov = Math.round(mprDetail.MPR.rawValue);
+      maPrimeRenov = Math.round(mprDetail.MPR.rawValue);
     }
 
     // Trouver CEE ou Coup de pouce dans les détails
@@ -46,24 +46,24 @@ export const extractAidesFromResponse = (
   }
 
   // Vérifier l'éligibilité
-  const eligible_ma_prime_renov = ma_prime_renov > 0;
-  const eligible_cee = cee > 0;
+  const eligibleMaPrimeRenov = maPrimeRenov > 0;
+  const eligibleCee = cee > 0;
 
   // Collecter les raisons d'inéligibilité depuis missingVariables
-  const raisons_ineligibilite: string[] = [];
+  const reasonsIneligibility: string[] = [];
   if (gesteField.missingVariables && gesteField.missingVariables.length > 0) {
-    raisons_ineligibilite.push(
+    reasonsIneligibility.push(
       `Variables manquantes pour le calcul complet: ${gesteField.missingVariables.join(", ")}`
     );
   }
 
   return {
-    ma_prime_renov,
+    maPrimeRenov,
     cee,
-    total_aides,
-    eligible_ma_prime_renov,
-    eligible_cee,
-    raisons_ineligibilite:
-      raisons_ineligibilite.length > 0 ? raisons_ineligibilite : undefined,
+    totalAid,
+    eligibleMaPrimeRenov,
+    eligibleCee,
+    reasonsIneligibility:
+      reasonsIneligibility.length > 0 ? reasonsIneligibility : undefined,
   };
 };

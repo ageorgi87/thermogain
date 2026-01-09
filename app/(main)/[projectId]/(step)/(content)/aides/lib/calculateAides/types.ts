@@ -38,10 +38,10 @@ export interface PublicodesApiResponse {
  * Résultat du calcul des aides (retour de calculateAidesXXX)
  */
 export interface CalculateAidesResult {
-  ma_prime_renov: number;
+  maPrimeRenov: number;
   cee: number;
-  total_aides: number;
-  eligible_ma_prime_renov: boolean;
-  eligible_cee: boolean;
-  raisons_ineligibilite?: string[];
+  totalAid: number;
+  eligibleMaPrimeRenov: boolean;
+  eligibleCee: boolean;
+  reasonsIneligibility?: string[];
 }
