@@ -334,10 +334,11 @@ export function HeatPumpProjectFields({
                 // Use current subscribed power from form if available, otherwise default value
                 const currentPower =
                   currentSubscribedPower ?? currentElectricPower;
-                const recommendedPower = heatPumpPowerKw
+                const recommendedPower = heatPumpPowerKw && formData.estimatedCop
                   ? getRecommendedHeatPumpSubscribedPower(
                       heatPumpPowerKw,
-                      currentPower
+                      currentPower,
+                      formData.estimatedCop
                     )
                   : 9;
 

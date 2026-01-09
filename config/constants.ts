@@ -496,7 +496,37 @@ export const ECS_ESTIMATION = {
 } as const
 
 // ============================================================================
-// 11. MÉTADONNÉES DE MAINTENANCE
+// 11. COEFFICIENT DE FOISONNEMENT (DIVERSITY FACTOR)
+// ============================================================================
+
+/**
+ * Coefficient de foisonnement pour ajout d'une PAC
+ *
+ * Source: Norme NF C 15-100 (installations électriques basse tension)
+ * Utilisé dans: app/(main)/[projectId]/(step)/(content)/projet-pac/lib/getRecommendedHeatPumpSubscribedPower.ts
+ * Dernière mise à jour: Janvier 2026
+ *
+ * PRINCIPE:
+ * Le coefficient de foisonnement traduit le fait que tous les appareils électriques
+ * d'un logement ne fonctionnent jamais simultanément à leur puissance maximale.
+ *
+ * APPLICATION:
+ * Lorsqu'on ajoute une PAC à une installation existante, on applique le coefficient
+ * uniquement sur la consommation électrique de la PAC, car l'abonnement actuel
+ * est déjà optimisé pour le foyer.
+ *
+ * Formule: Puissance recommandée = Abonnement actuel + (Conso élec PAC × 0.7)
+ *
+ * Exemple:
+ * - Abonnement actuel: 6 kVA
+ * - PAC: 8 kW thermique, COP 3.5 → 2.29 kW électrique
+ * - Avec coefficient: 2.29 × 0.7 = 1.60 kW
+ * - Total: 6 + 1.60 = 7.60 kW → Recommandation: 9 kVA
+ */
+export const HEAT_PUMP_DIVERSITY_FACTOR = 0.7
+
+// ============================================================================
+// 12. MÉTADONNÉES DE MAINTENANCE
 // ============================================================================
 
 /**
