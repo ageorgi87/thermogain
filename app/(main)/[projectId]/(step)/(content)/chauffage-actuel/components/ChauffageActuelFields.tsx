@@ -239,7 +239,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.01"
               min="0"
-              placeholder="ex: 1.20"
+              placeholder={defaultPrices?.fioul ? `ex: ${defaultPrices.fioul.toFixed(2)}` : "ex: 1.20"}
               value={formData.fuelPricePerLiter ?? ""}
               onChange={onNumberChange("fuelPricePerLiter")}
             />
@@ -278,7 +278,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.001"
               min="0"
-              placeholder="ex: 0.10"
+              placeholder={defaultPrices?.gaz ? `ex: ${defaultPrices.gaz.toFixed(3)}` : "ex: 0.10"}
               value={formData.gasPricePerKwh ?? ""}
               onChange={onNumberChange("gasPricePerKwh")}
             />
@@ -332,7 +332,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.01"
               min="0"
-              placeholder="ex: 2.50"
+              placeholder={defaultPrices?.gpl ? `ex: ${defaultPrices.gpl.toFixed(2)}` : "ex: 2.50"}
               value={formData.lpgPricePerKg ?? ""}
               onChange={onNumberChange("lpgPricePerKg")}
             />
@@ -369,9 +369,9 @@ export const ChauffageActuelFields = ({
           >
             <Input
               type="number"
-              step="0.01"
+              step="0.001"
               min="0"
-              placeholder="ex: 0.35"
+              placeholder={defaultPrices?.bois ? `ex: ${defaultPrices.bois.toFixed(3)}` : "ex: 0.350"}
               value={formData.pelletsPricePerKg ?? ""}
               onChange={onNumberChange("pelletsPricePerKg")}
             />
@@ -410,7 +410,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.01"
               min="0"
-              placeholder="ex: 80"
+              placeholder={defaultPrices?.bois ? `ex: ${defaultPrices.bois.toFixed(2)}` : "ex: 80"}
               value={formData.woodPricePerStere ?? ""}
               onChange={onNumberChange("woodPricePerStere")}
             />
@@ -449,7 +449,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.001"
               min="0"
-              placeholder="ex: 0.17"
+              placeholder={defaultPrices?.electricite ? `ex: ${defaultPrices.electricite.toFixed(3)}` : "ex: 0.17"}
               value={formData.electricityPricePerKwh ?? ""}
               onChange={onNumberChange("electricityPricePerKwh")}
             />
@@ -508,7 +508,7 @@ export const ChauffageActuelFields = ({
               type="number"
               step="0.001"
               min="0"
-              placeholder="ex: 0.17"
+              placeholder={defaultPrices?.electricite ? `ex: ${defaultPrices.electricite.toFixed(3)}` : "ex: 0.17"}
               value={formData.electricityPricePerKwh ?? ""}
               onChange={onNumberChange("electricityPricePerKwh")}
             />

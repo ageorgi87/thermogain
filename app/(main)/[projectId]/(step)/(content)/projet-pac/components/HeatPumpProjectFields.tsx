@@ -271,7 +271,7 @@ export function HeatPumpProjectFields({
                 type="number"
                 step="0.001"
                 min="0"
-                placeholder="ex: 0.23"
+                placeholder={defaultElectricityPrice ? `ex: ${defaultElectricityPrice.toFixed(3)}` : "ex: 0.23"}
                 value={formData.electricityPricePerKwh ?? ""}
                 onChange={handleNumberChange("electricityPricePerKwh")}
               />
