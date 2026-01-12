@@ -187,21 +187,23 @@ Ce modèle évite de surestimer l'impact des crises récentes (Ukraine 2022) sur
 **Coûts VARIABLES** (évoluent avec l'inflation énergétique) :
 - Consommation d'énergie (fioul, gaz, GPL, pellets, bois, électricité)
 - Calculés avec les prix unitaires (€/L, €/kWh, €/kg, etc.)
+- **Évolution** : Modèle Mean Reversion (6-9%/an les 5 premières années → 2-3.5%/an ensuite)
 
-**Coûts FIXES** (restent constants en euros constants) :
+**Coûts FIXES** (évoluent avec l'inflation générale) :
 - Abonnements électricité et gaz
 - Entretien annuel du système de chauffage
-- Ces coûts suivent l'inflation générale (~2%), pas l'inflation énergétique (~7%)
+- **Évolution** : Inflation générale (~2%/an), pas l'inflation énergétique
 
 **Méthodologie de projection** :
 ```
-Coût(année n) = [Coût variable × (1 + évolution)^n] + Coûts fixes
+Coût(année n) = [Coût variable × facteur_évolution_énergétique(n)] + [Coûts fixes × (1.02)^n]
 ```
 
 **Justification** :
-- Les abonnements sont des tarifs réglementés quasi-stables
-- L'entretien suit l'inflation générale, pas l'inflation énergétique
-- Cette approche évite de surestimer les coûts futurs
+- Les tarifs réglementés EDF/Engie suivent l'inflation générale, pas les prix de gros de l'énergie
+- L'entretien suit l'inflation générale (coût de la main d'œuvre)
+- Cette approche est plus réaliste : les abonnements augmentent légèrement avec l'inflation générale
+- Sur 17 ans : abonnement × 1.4 (avec 2%) vs × 3.2 (avec 7% énergétique)
 
 ## Coefficients de conversion énergétique
 

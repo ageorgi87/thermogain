@@ -109,22 +109,26 @@ export const calculateYearlyCostProjections = async ({
 
   for (let i = 0; i < years; i++) {
     // CHAUFFAGE ACTUEL
-    // Variables + Abonnements → évolution énergétique (selon type d'énergie)
+    // Variables → évolution énergétique (selon type d'énergie)
+    // Abonnements → inflation générale (2%)
     // Entretien → inflation générale (2%)
+    // ECS → évolution énergétique (selon type d'énergie actuelle)
     const coutActuelVariable = currentVariableCostYear1 * currentEvolutionFactors[i];
-    const coutActuelAbonnementElec = currentFixedCosts.abonnementElec * currentEvolutionFactors[i];
-    const coutActuelAbonnementGaz = currentFixedCosts.abonnementGaz * currentEvolutionFactors[i];
+    const coutActuelAbonnementElec = currentFixedCosts.abonnementElec * inflationFactors[i];
+    const coutActuelAbonnementGaz = currentFixedCosts.abonnementGaz * inflationFactors[i];
     const coutActuelEntretien = currentFixedCosts.entretien * inflationFactors[i];
-    const coutActuelDhw = dhwCosts.currentDhwCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
+    const coutActuelDhw = dhwCosts.currentDhwCost * currentEvolutionFactors[i];
     const currentCost = coutActuelVariable + coutActuelAbonnementElec + coutActuelAbonnementGaz + coutActuelEntretien + coutActuelDhw;
 
     // PAC
-    // Variables + Abonnement électricité → évolution énergétique (électricité)
+    // Variables → évolution énergétique (électricité)
+    // Abonnement électricité → inflation générale (2%)
     // Entretien PAC → inflation générale (2%)
+    // ECS → évolution énergétique (électricité)
     const coutPacVariable = pacVariableCostYear1 * pacEvolutionFactors[i];
-    const coutPacAbonnement = pacFixedCosts.abonnementElec * pacEvolutionFactors[i];
+    const coutPacAbonnement = pacFixedCosts.abonnementElec * inflationFactors[i];
     const coutPacEntretien = pacFixedCosts.entretien * inflationFactors[i];
-    const coutPacDhw = dhwCosts.futureDhwCost * pacEvolutionFactors[i]; // ECS évolue comme l'électricité
+    const coutPacDhw = dhwCosts.futureDhwCost * pacEvolutionFactors[i];
     const heatPumpCost = coutPacVariable + coutPacAbonnement + coutPacEntretien + coutPacDhw;
 
     const savings = currentCost - heatPumpCost;

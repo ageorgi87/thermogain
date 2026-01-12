@@ -96,28 +96,31 @@ Coût total = Coût variable + Coût fixe
 Calcule le coût projeté pour une année donnée avec distinction coûts variables/fixes.
 
 **⚠️ IMPORTANT - Logique d'évolution:**
-- **Coûts VARIABLES** (énergie): Évoluent selon le taux d'inflation énergétique
-- **Coûts FIXES** (abonnements, entretien): Restent **constants** en euros courants
+- **Coûts VARIABLES** (énergie): Évoluent selon l'inflation énergétique (6-9%/an selon énergie)
+- **Coûts FIXES** (abonnements, entretien): Évoluent avec l'inflation générale (~2%/an)
 
 **Formule:**
 ```
-Coût(année n) = [Coût variable base × (1 + évolution)^n] + Coûts fixes
+Coût(année n) = [Coût variable × (1 + évolution énergétique)^n] + [Coûts fixes × (1 + inflation)^n]
 ```
 
 ### Structure des coûts énergétiques
 
-#### Coûts VARIABLES (évolutifs)
+#### Coûts VARIABLES (inflation énergétique)
 - **Nature**: Consommation énergétique (kWh, litres, kg, stères)
-- **Évolution**: Suit le prix de l'énergie (+3% à +9%/an selon l'énergie)
-- **Formule**: `Consommation × Prix unitaire`
+- **Évolution**: Suit le prix de l'énergie (modèle Mean Reversion: 3% à 9%/an selon l'énergie)
+- **Formule**: `Consommation × Prix unitaire × facteur d'évolution énergétique`
+- **Exemple**: Gaz à 1500 €/an en année 1 → ~3555 €/an en année 10 (avec 8.7% → 3.5%)
 
-#### Coûts FIXES (constants en € courants)
+#### Coûts FIXES (inflation générale)
 - **Nature**: Frais récurrents indépendants de la consommation
-- **Évolution**: Inflation générale (~2%/an) = 0% en euros constants
+- **Évolution**: Inflation générale (~2%/an) - Les tarifs réglementés EDF/Engie suivent l'inflation
+- **Formule**: `Coût fixe × (1 + 2%)^n`
 - **Composantes**:
-  1. **Abonnement électricité** (obligatoire): 115-301 €/an selon puissance
-  2. **Abonnement gaz** (si applicable): 103-267 €/an selon consommation
+  1. **Abonnement électricité** (obligatoire): 141-369 €/an selon puissance (tarifs EDF 2025)
+  2. **Abonnement gaz** (si applicable): 103-267 €/an selon consommation (tarifs Engie 2024)
   3. **Entretien annuel**: 0-150 €/an selon le type
+- **Exemple**: Abonnement à 185 €/an en année 1 → ~226 €/an en année 10 (avec 2%)
 
 ### Exemple complet
 
@@ -150,14 +153,14 @@ COÛTS FIXES:
 TOTAL ANNÉE 0: 1500 + 425 = 1925 €/an
 ```
 
-**Projection 10 ans (exemple fictif):**
+**Projection 10 ans (exemple avec corrections):**
 ```
 ANNÉE 10:
-- Variables: 1500 × (1.087)^10 = 3555 €/an
-- Fixes: 425 €/an (constant)
-- TOTAL: 3980 €/an
+- Variables: 1500 × (1.087)^5 × (1.035)^5 = 2810 €/an (Mean Reversion: 8.7% → 3.5%)
+- Fixes: 425 × (1.02)^10 = 518 €/an (inflation générale 2%)
+- TOTAL: 3328 €/an
 
-CUMUL sur 10 ans: ~28 000 €
+CUMUL sur 10 ans: ~25 500 €
 ```
 
 ## Coûts avec PAC
