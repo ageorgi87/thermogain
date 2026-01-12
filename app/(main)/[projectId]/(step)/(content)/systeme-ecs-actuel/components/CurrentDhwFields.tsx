@@ -284,7 +284,7 @@ export const CurrentDhwFields = ({
             label={
               <LabelWithTooltip
                 label={getPriceLabel()}
-                tooltip={`Prix moyen conseillé : ${getDefaultPrice().toFixed(3)} ${getPriceUnit()} (source : données gouvernementales, mise à jour mensuelle)`}
+                tooltip={`Prix moyen conseillé : ${getDefaultPrice().toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} ${getPriceUnit()} (source : données gouvernementales, mise à jour mensuelle)`}
               />
             }
             error={errors.dhwEnergyPricePerKwh}
@@ -297,7 +297,7 @@ export const CurrentDhwFields = ({
                 min="0"
                 max="2"
                 step="0.001"
-                placeholder={getDefaultPrice() > 0 ? `ex: ${getDefaultPrice().toFixed(3)}` : "ex: 0.252"}
+                placeholder={getDefaultPrice() > 0 ? `ex: ${getDefaultPrice().toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}` : "ex: 0,252"}
                 value={formData.dhwEnergyPricePerKwh ?? ""}
                 onChange={onNumberChange("dhwEnergyPricePerKwh")}
                 className={errors.dhwEnergyPricePerKwh ? "border-red-500" : ""}

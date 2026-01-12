@@ -181,7 +181,7 @@ export function HeatPumpProjectFields({
               type="number"
               step="0.1"
               min="0"
-              placeholder="ex: 3.5"
+              placeholder="ex: 3,5"
               value={formData.estimatedCop ?? ""}
               onChange={handleNumberChange("estimatedCop")}
             />
@@ -271,7 +271,7 @@ export function HeatPumpProjectFields({
                 type="number"
                 step="0.001"
                 min="0"
-                placeholder={defaultElectricityPrice ? `ex: ${defaultElectricityPrice.toFixed(3)}` : "ex: 0.23"}
+                placeholder={defaultElectricityPrice ? `ex: ${defaultElectricityPrice.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}` : "ex: 0,230"}
                 value={formData.electricityPricePerKwh ?? ""}
                 onChange={handleNumberChange("electricityPricePerKwh")}
               />
