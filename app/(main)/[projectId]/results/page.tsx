@@ -169,6 +169,14 @@ export default async function ResultsPage({ params }: PageProps) {
           mensualite={results.monthlyLoanPayment}
           dureeCreditMois={project.financing?.loanDurationMonths || undefined}
           apportPersonnel={project.financing?.downPayment || undefined}
+          coutInstallation={project.costs.totalCost}
+          totalAides={project.financialAid.totalAid}
+          interetsCredit={
+            results.totalLoanCost
+              ? results.totalLoanCost - (project.financing?.loanAmount || 0)
+              : undefined
+          }
+          investissementReel={results.actualInvestment}
         />
         <ProfitabilityCard
           paybackPeriod={results.paybackPeriod}
