@@ -11,20 +11,25 @@ import { getTemperatureFromEmitterType } from "@/app/(main)/[projectId]/(step)/(
  * ⚠️ Ne s'applique QUE aux PAC avec circuit d'eau (Air/Eau, Eau/Eau)
  * Les PAC Air/Air n'ont pas de circuit d'eau donc ce facteur = 1.0
  *
- * Référence : Courbes de performance des PAC air/eau
+ * Sources multiples (ADEME 2026, constructeurs, terrain) :
+ * - ADEME : -39% entre 35°C et 55°C (mesures terrain 100 PAC)
+ * - Datasheets constructeurs : COP A7W35=4.5 / A7W55=2.85 (ratio 0.63)
+ * - Retours UK : SCOP 35°C=4.0 / 55°C=3.0 (ratio 0.75)
+ * - Thermodynamique Carnot : -33% à -42% théorique
+ *
+ * Facteurs appliqués (moyenne des sources) :
  * - 35°C (plancher chauffant) : référence (1.0)
- * - 45°C (radiateurs BT) : -15%
- * - 55°C (radiateurs MT) : -25%
- * - 65°C (radiateurs HT) : -35%
+ * - 40°C (ventilo-convecteurs) : -10% (compromis sources)
+ * - 45°C (radiateurs BT) : -22% (moyenne datasheets + règle 2.5%/°C)
+ * - 55°C (radiateurs MT) : -33% (moyenne ADEME -39%, datasheets -37%, UK -25%)
+ * - 65°C (radiateurs HT) : -45% (extrapolation + pénalité haute température)
  */
 const getTemperatureAdjustment = (temperatureDepart: number): number => {
-  if (temperatureDepart <= 35) return 1.0; // Conditions optimales
-  if (temperatureDepart <= 40) return 0.95; // Plancher + radiateurs BT
-  if (temperatureDepart <= 45) return 0.85; // Radiateurs basse température
-  if (temperatureDepart <= 50) return 0.8; // Radiateurs moyenne température (début)
-  if (temperatureDepart <= 55) return 0.75; // Radiateurs moyenne température
-  if (temperatureDepart <= 60) return 0.7; // Radiateurs haute température (début)
-  return 0.65; // Radiateurs haute température
+  if (temperatureDepart <= 35) return 1.0; // Conditions optimales (plancher chauffant)
+  if (temperatureDepart <= 40) return 0.90; // Ventilo-convecteurs (-10%)
+  if (temperatureDepart <= 45) return 0.78; // Radiateurs basse température (-22%)
+  if (temperatureDepart <= 55) return 0.67; // Radiateurs moyenne température (-33%)
+  return 0.55; // Radiateurs haute température (-45%)
 };
 
 
